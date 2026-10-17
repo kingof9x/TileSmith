@@ -79,3 +79,6 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
   (mock-ups in /mnt/user-data/outputs/tilesmith-phone-layout-options.png). Tablets use the desktop layout.
 - Licence for the project (MIT discussed; disguise test-pattern images, ffmpeg GPL and the NDI® runtime need care).
+- 2026-10-17 power labels: Distribution cable setting `pdt` (Socapex 6 / L14-30 2 legs X,Y / L21-30 3 legs X,Y,Z); no phase anywhere
+  (labels, reports, CSV column is now PowerCable); `lblPow` = cable+circuit / circuit only / cable only; data labels are fully
+  green (primary) or red (return); power labels carry a wall-shade flag. Add to HISTORY at the next package, with Linux NDI/ffmpeg support.

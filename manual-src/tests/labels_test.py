@@ -18,11 +18,16 @@ async def main():
         # power
         await pg.evaluate("()=>{S.pdist=true;S.pmode='Snake';sync()}"); await pg.wait_for_timeout(200)
         r = await pg.evaluate("()=>({n:labelList().length,pw:powerPlan().flat().length,pl:portPlan().flat().length,p:labelList().filter(x=>x[0].kind=='p')[0]})")
-        print('DATA+POWER', json.dumps(r)[:500]); ok &= r['n'] == 2 * r['pl'] + r['pw'] and r['p'][0]['big'] == 'S1-1' and 'phase A' in r['p'][0]['lines'][0]
-        await pg.evaluate("()=>{S.lblWhat='Power only';sync()}"); r = await pg.evaluate("()=>labelList().every(x=>x[0].kind=='p')"); print('POWER ONLY', r); ok &= r
+        print('DATA+POWER', json.dumps(r)[:500]); ok &= r['n'] == 2 * r['pl'] + r['pw'] + -(-r['pw'] // 6) and r['p'][0]['big'] == 'S1' and 'Socapex cable 1 of' in r['p'][0]['lines'][0] and 'hase' not in json.dumps(r['p'])
+        # power distribution types and the three power label scopes
+        for pdt, per, first, leg in (('Socapex (6 circuits per cable)', 6, 'S1-1', 'circuit 1 of 6'), ('L14-30 (2 circuits per cable)', 2, 'L14-1-X', 'leg X'), ('L21-30 (3 circuits per cable)', 3, 'L21-1-X', 'leg X')):
+            r = await pg.evaluate("([t,sc])=>{S.pdt=t;S.lblWhat='Power only';const out={};for(const m of ['Cable and circuit labels','Circuit labels only','Cable labels only']){S.lblPow=m;sync();out[m]=labelList().length}S.lblPow='Cable and circuit labels';sync();const L=labelList(),legs=L.filter(q=>q[0].big!=null&&/-[X1-6YZ]$/.test(q[0].big)),cab=powerTotals(powerPlan()).cables;return{out,n:powerPlan().flat().length,cab,leg:L.find(q=>q[0].big==sc)&&L.find(q=>q[0].big==sc)[0].lines[0],cols:L.every(q=>q[0].col==q[0].wall.col),noph:!/hase/.test(JSON.stringify(L)),rep:powRowsCanvas(powerPlan()).map(x=>x.join(':')).join('|')}}", [pdt, first])
+            print(pdt, json.dumps(r)[:420]); n, cab = r['n'], r['cab']
+            ok &= cab == -(-n // per) and r['out']['Cable and circuit labels'] == n + cab and r['out']['Circuit labels only'] == n and r['out']['Cable labels only'] == cab and leg in (r['leg'] or '') and r['cols'] and r['noph'] and 'hase' not in r['rep']
+        await pg.evaluate("()=>{S.pdt='Socapex (6 circuits per cable)';S.lblWhat='Power only';sync()}"); r = await pg.evaluate("()=>labelList().every(x=>x[0].kind=='p')"); print('POWER ONLY', r); ok &= r
         await pg.evaluate("()=>{S.lblWhat='Data and power';S.lblJump=true;sync()}"); r = await pg.evaluate("()=>labelList().length")
         tiles = await pg.evaluate("()=>portPlan().flat().reduce((a,x)=>a+x.tiles.length-1,0)+powerPlan().flat().reduce((a,x)=>a+x.tiles.length-1,0)")
-        base = await pg.evaluate("()=>portPlan().flat().length*2+powerPlan().flat().length")
+        base = await pg.evaluate("()=>portPlan().flat().length*2+powerPlan().flat().length+powerTotals(powerPlan()).cables")
         print('JUMPERS', r, base, tiles); ok &= r == base + tiles
         await pg.evaluate("()=>{S.lblJump=false;sync()}")
         # sheet maths
@@ -42,6 +47,8 @@ async def main():
         print('CUSTOM', r); ok &= r['pages'] == r['n'] and r['css'] and r['cust'] != 'none'
         # wrap-around options: layouts x flag styles, colours, wall mark only with several walls
         r = await pg.evaluate("()=>{const x=labelList()[0][0],y=labelList().find(q=>q[0].kind=='d'&&/^R/.test(q[0].big))[0];return{wallOn:x.wallOn,col:x.col,ret:y.col,ft:x.ft}}")
+        r2 = await pg.evaluate("()=>{S.lblWhat='Data only';sync();const h=labelsHTML(),m=h.match(/class=\"l\" style=\"[^\"]*\"/g);return{fills:m.filter(z=>/background:#22c55e/.test(z)).length,reds:m.filter(z=>/background:#e11d48/.test(z)).length,all:m.length,flagTxt:/>PRIMARY</.test(h)}}"); print('FILLED DATA', r2); ok &= r2['fills'] > 0 and r2['reds'] > 0 and r2['fills'] + r2['reds'] == r2['all'] and not r2['flagTxt']
+        await pg.evaluate("()=>{S.lblWhat='Data and power';sync()}")
         print('ONE WALL', r); ok &= (not r['wallOn']) and r['col'] == '#22c55e' and r['ret'] == '#e11d48' and r['ft'] == 'PRIMARY'
         await pg.evaluate("()=>{S.lblWall='Always show wall mark';sync()}"); r = await pg.evaluate("()=>labelList()[0][0].wallOn"); print('ALWAYS', r); ok &= r
         await pg.evaluate("()=>{S.lblWall=LBLWAL[0];sync();addWall(false);S.shadeC='#d97706';S.wmode='Snake';S.pmode='Snake';sync();loadWall(0);sync()}")

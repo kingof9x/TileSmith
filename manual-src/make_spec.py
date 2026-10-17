@@ -29,7 +29,7 @@ KEYDESC = {
  'proc': 'LED processor model (or None). Gates all data/port features.', 'fps': 'Processor frame rate in Hz (affects pixels per port).',
  'bpc': 'Processor bit depth (8, 10, 12).', 'ull': 'Brompton Ultra Low Latency (halves port capacity).', 'ppx': 'Pixels per port in use (from spec, editable).',
  'pports': 'Ports per processor / sending card (editable).', 'ret': 'Count a return port (R#) for every primary port.', 'showData': 'Draw data paths on the canvas.',
- 'pdist': 'Power distribution ticked (Socapex, 6 circuits per cable). Gates all power features.', 'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
+ 'pdist': 'Power distribution ticked. Gates all power features.', 'pdt': 'Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" or "L21-30 (3 circuits per cable)".', 'lblPow': 'Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only".', 'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
  'pamps': 'Breaker size in amps (1-400).', 'derate': 'Load circuits to 80% (continuous load rule).', 'showPow': 'Draw power runs on the canvas.',
  'resSl': 'Resolume XML slice mode: One slice per LED wall | One slice per tile.', 'loop': 'Restart the build animation continuously.', 'loopHold': 'Seconds to pause before restarting (0-600).',
  'ndiName': 'NDI source name (default TileSmith-LED-Out).', 'ndiFps': 'NDI frame rate (see NDI).', 'ndiIdle': 'Save CPU: when nothing moves, send about 4 frames per second instead of the full rate.',
@@ -40,7 +40,7 @@ KEYDESC = {
  'lblSize': 'Label sheet preset: Avery 5160 (30 per US Letter), Avery 5163 (10 per US Letter), Avery L7160 (21 per A4), Label roll 62 x 29 mm, or Custom label roll.',
  'lblW': 'Custom roll label width in mm (20-300).', 'lblH': 'Custom roll label height in mm (10-300).',
  'lblCopies': 'Copies printed of each cable end (1-4).', 'lblSkip': 'First label position to use on a sheet (skips used labels).',
- 'lblColor': 'Colour flags on each label (green primary, red return, power phase A black / B orange / C blue, wall shade); off = no flags or wall marks.',
+ 'lblColor': 'Colour the labels: data labels are completely green (primary) or red (return); power labels carry a flag in the wall\'s Tile-shade colour; off = plain labels, no flags or wall marks.',
  'lblLayout': 'Wrap layout: Two identical panels (default), Flag fold-over (second panel rotated 180 degrees), Text in the middle, colour on the ends.',
  'lblFlag': 'Colour flag style: Big end blocks (default), Top and bottom bars, Big corner squares.',
  'lblWall': 'Wall mark: Wall-shade block + name (several walls only, default), Always show wall mark, Wall tint + block (light tint of the wall shade as label background).',
@@ -387,19 +387,18 @@ each segment midpoint; a filled circle badge "P#" at the first tile and a dark r
 
 ## 11. Power
 
-Tick **Power distribution** (Socapex, 6 circuits per cable) to enable. Usable watts per circuit = V x A x (0.8 if
+Tick **Power distribution** to enable and choose the Distribution cable (setting pdt). Usable watts per circuit = V x A x (0.8 if
 "Load circuits to 80%"). Tiles per circuit t = floor(usable / wmax), capped by the power link limit if set. Note text:
 "One 120 V 20 A circuit loaded to 80% supplies 1,920 W, enough for 12 tiles of ... at 150 W max each."
 
-Circuits are numbered k = 1, 2, ... across walls; labels S1-1 ... S1-6, S2-1 ... (cable = ceil(k/6), circuit =
-(k-1) mod 6 + 1); phase = ABC[(k-1) mod 3] (circuits 1 and 4 on A, 2 and 5 on B, 3 and 6 on C). Power wiring works
+Circuits are numbered k = 1, 2, ... across walls; with n circuits per cable (Socapex 6, L14-30 2, L21-30 3) circuit k is on cable ceil(k/n) as leg (k-1) mod n (legs 1-6 for Socapex, X,Y for
+L14-30, X,Y,Z for L21-30); labels S1-1 ... S1-6, S2-1 ... or L14-1-X, L14-1-Y, L14-2-X ... No phase is assigned (the PDU does that). Power wiring works
 like data wiring with the same patterns, corners and areas (Fewest circuits / Whole rows or columns / One continuous
 path), capacity t, plus the power link limit; on half-tile layouts by each piece's own watts (circuit full when watts >
 usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "This circuit is full (12 tiles)."
 
-Canvas rows: Power distribution "Socapex, 6 circuits per cable", Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
-Circuits used, Min. circuits if every circuit is full, Socapex cables "2 (3 spare circuits)", Peak load per phase "A
-45.0 A · B 45.0 A · C 30.0 A" (sum of circuit watts / V by phase), Over capacity. CSV adds Circuit, CircuitPos, Phase.
+Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
+Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "S1 24.0 A · S2 12.0 A" (sum of circuit watts / V per cable), Over capacity. CSV adds Circuit, CircuitPos, PowerCable.
 
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 {d['POWC']} by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
@@ -505,10 +504,9 @@ tilesmith-build-YYYYMMDD-HHMMSS.ext. Click again to cancel. Estimated length is 
 data wiring (a processor is chosen and at least one port exists) or power wiring (Power distribution on and at least one
 circuit exists) is defined). Button "Print labels" (mobile: "Save label sheet"). One entry per cable with two labels
 (end 1/2 and 2/2): data cable P<n> (processor port -> first tile, DATA IN), return cable R<n> when Return is on (last
-tile DATA OUT -> processor return), power circuit <S?-?> (distribution end -> first tile POWER IN; shows circuit number,
-phase, voltage, breaker amps, tile count and watts); optional tile-to-tile jumper labels (P<n>-<i>, <circuit>-<i>). Each
+tile DATA OUT -> processor return), power cable <S?> / <L14-?> / <L21-?> (one pair per distribution cable: distro end and fan-out/wall end, circuits used, walls, watts) and power circuit <S?-?> (distribution end -> first tile POWER IN; shows cable x of y, circuit or leg, voltage, breaker amps, tile count and watts), selected by lblPow; optional tile-to-tile jumper labels (P<n>-<i>, <circuit>-<i>). Each
 label shows a small DATA/POWER + end caption, the cable name in large bold type, then three text lines (from/to with
-wall name, tile id Tnn and col/row; tile count and pixels or watts). Settings lblWhat, lblSize, lblW, lblH, lblCopies,
+wall name, tile id Tnn and col/row; tile count and pixels or watts). Settings lblWhat, lblPow, lblSize, lblW, lblH, lblCopies,
 lblSkip, lblColor, lblJump, lblKeep (see the settings table). Sheet presets (mm): Avery 5160 66.675x25.4, 3x10, margins
 4.76/12.7, gap 3.175; Avery 5163 101.6x50.8, 2x5, 3.97/12.7, gap 4.76; Avery L7160 63.5x38.1 on A4, 3x7, 7.21/15.15, gap
 2.54; roll 62x29 and custom: one label per page. Output is an HTML page with one absolutely positioned div per label

@@ -205,8 +205,7 @@ Check: a 6 × 4 Unilumin UpadIV 2.6 wall must show 24 tiles, 1152 × 768 px (884
    - Show power runs.
    Usable watts per circuit is circW(), and tiles per circuit is tpcW().
 2. Power wiring: the same patterns, 8 starts and five Wiring preferences (PFILL/PFILLN) as data wiring. Port
-   powChains, powerPlan and powerTotals. Circuits are labelled S1-1 … S1-6, S2-1 … (cLabel), with phases A, B, C
-   (cPhase).
+   powChains, powerPlan and powerTotals. Circuits are labelled S1-1 … S1-6, S2-1 … (cLabel) for Socapex, or L14-1-X … / L21-1-X … for NEMA L14-30 (2 circuits per cable) and L21-30 (3 per cable), chosen with the Distribution cable setting (PDT, PD, cCab, cLeg). No phase is assigned.
 3. Manual power wiring: Wire tiles, New circuit, Undo, Clear, with the messages from pmanAdd()/pwMsg().
 4. Drawing (the power part of render()):
    - a dashed line (dash 3w, gap 2w, w = max(2, min(tw, th)/36)) in POWC[circuit mod 6];
@@ -216,7 +215,7 @@ Check: a 6 × 4 Unilumin UpadIV 2.6 wall must show 24 tiles, 1152 × 768 px (884
    - power runs at plus 0.2 width and plus 0.2 height, white on a black casing (2.4× width), with white badges.
    Over-capacity circuits stay red.
 5. Fill the power rows of the engineering panel (powRowsCanvas: circuits used, min. circuits, Socapex cables with
-   spare circuits, peak load per phase).""",
+   spare circuits, peak load per cable).""",
   spec=['11'], code=[('PFILL', 'powerTotals'), ('pwMsg', 'pmanAdd'), ('bolt', 'bolt'), ('powRowsCanvas', 'powRowsCanvas'), ('render', 'render')]),
 
  dict(n=8, slug='wall-shapes', title='Wall shapes: removed tiles and half tiles',

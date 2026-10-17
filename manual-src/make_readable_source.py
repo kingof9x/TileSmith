@@ -34,7 +34,7 @@ ROLE = {
  'autoChains': 'Automatic data/power chains for Snake/Linear patterns with the five wiring preferences.',
  'blockGrid': 'Fewest ports / Whole rows: picks the block grid that uses the fewest chains.',
  'portPlan': 'Data ports (P#/R#) for every wall, numbered across walls, with over-capacity flags.',
- 'powerPlan': 'Power circuits for every wall, numbered across walls, with watts and phases.',
+ 'powerPlan': 'Power circuits for every wall, numbered across walls, with watts; cables are Socapex, L14-30 or L21-30 (no phases).',
  'pickCrew': 'Picks the next crew member for a wall, never one already busy on another wall.',
  'dvdStep': 'Moves the DVD logo(s) (free bounce or perfect loop).',
  'dvdRun': 'Free bounce for one area: move, detect wall/corner hits, recolour.',

@@ -173,7 +173,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 {img('t06-manual-data-wiring.png', 'Manual wiring: P1 is full, P2 is being drawn')}</section>
 
 <section class="chap"><h1>10. Power and power wiring</h1>
-<div class="side"><div><p>Tick <b>Power distribution</b> (Socapex, 6 circuits per cable) to see the power options. Set the circuit voltage, the breaker size and whether circuits are loaded to 80%; TileSmith shows how many tiles one circuit can supply. <b>Power link limit</b> caps the tiles per circuit. <b>Power wiring</b> works like data wiring, with circuits S1-1 … S1-6, S2-1 … and phases A, B and C.</p></div>{img('ui-power-wiring.png', 'Power wiring')}</div>
+<div class="side"><div><p>Tick <b>Power distribution</b> (Socapex, L14-30 or L21-30 cables) to see the power options. Set the circuit voltage, the breaker size and whether circuits are loaded to 80%; TileSmith shows how many tiles one circuit can supply. <b>Power link limit</b> caps the tiles per circuit. <b>Power wiring</b> works like data wiring, with circuits S1-1 … S1-6, S2-1 … (or L14-1-X, L14-1-Y … for twist-lock cables). Phases are left to the distro.</p></div>{img('ui-power-wiring.png', 'Power wiring')}</div>
 {pfills}
 {img('cv-power-wiring-all.png', 'The five preferences on a 10 × 5 wall, 16 tiles per circuit')}
 {img('cv-data-and-power.png', 'Data and power together: power is drawn white on black, with lightning-bolt badges')}</section>
@@ -197,7 +197,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p>Export PNG, Export CSV, Spec sheet and Resolume XML open the device's <b>share sheet</b>, where you pick where the file goes: Files, Google Drive, iCloud Drive, AirDrop, Quick Share, e-mail, a messaging app and so on.</p>
 <ul><li>When you pick an app, TileSmith says <i>Saved …</i>. If you close the sheet, it says <i>Not saved: …</i> and nothing is kept.</li>
 <li><b>Export PNG</b>: <code>tilesmith-canvas.png</code>, the full canvas at its real size.</li>
-<li><b>Export CSV</b>: <code>patching.csv</code>, one row per tile, with its position, pixels, port, circuit, phase and watts.</li>
+<li><b>Export CSV</b>: <code>patching.csv</code>, one row per tile, with its position, pixels, port, circuit, power cable and watts.</li>
 <li><b>Spec sheet</b>: <code>tilesmith-spec.html</code>. Open it in a browser to read, print or save it as a PDF.</li>
 <li><b>Save label sheet</b> (Label printing options, shown once data or power wiring is defined): <code>tilesmith-cable-labels.html</code>, a sheet of labels for both ends of every data and power cable. Open it in a browser and print it at 100% scale on Avery 5160, 5163, L7160 or roll labels.</li>
 <li><b>Resolume XML</b>: <code>tilesmith-WxH.xml</code>. Copy it to <i>Documents/Resolume Arena/Presets/Advanced Output</i> on the computer that runs Resolume, then pick it in Arena's Advanced Output.</li></ul>
