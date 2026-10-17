@@ -65,6 +65,7 @@ Copyright (c) 2026 Callum Davenport-Lambton.
 ## Downloads and builds
 
 Open **Actions > Build and release > Run workflow**, type a version such as `3.3` and run it. GitHub builds the Windows portable
-app, the Mac universal installer and Linux packages (`.AppImage` and `.deb`, no Spout/Syphon/NDI there yet) and attaches them
-to a release named `v3.3` together with the manuals. The builds are unsigned. On Ubuntu 24.04 and newer, the AppImage may need
-`--no-sandbox` (or install the `.deb`).
+app, the Mac universal installer and the Linux packages (`.AppImage`, `.deb`, `.rpm`, `.pacman` for Arch, `.snap` and `.flatpak`;
+no Spout/Syphon/NDI there yet), attaches them to a release named `v3.3` together with the manuals, and stores them under the
+repository's **Packages** (ghcr.io, for example `oras pull ghcr.io/kingof9x/tilesmith:3.3`). The builds are unsigned. On Ubuntu
+24.04 and newer, the AppImage may need `--no-sandbox` (or install the `.deb`).

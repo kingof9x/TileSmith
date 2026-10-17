@@ -1,10 +1,12 @@
 # Builds TileSmith for Windows, Mac and Linux and attaches the files to a GitHub Release.
 #
 # To publish a version: Actions tab > Build and release > Run workflow > type the version (for example 3.4) > Run.
-# The workflow builds both apps, then creates the release v3.4 itself. (Pushing a tag such as v3.4 also works.)
-# Old note:  Releases > Draft a new release > choose a new tag such as v3.4 > Publish release
-# (or push a git tag v3.4). Tags starting with v or a digit (v3.4 or 3.4) both work. The workflow then builds and attaches the files to that release. To only TEST the build, open the Actions tab > "Build and release" > Run workflow;
-# the finished files are then kept for 7 days under that run's Artifacts and no release is made.
+# The workflow builds everything, then creates the release v3.4 itself. (Pushing a tag such as v3.4 also works.)
+# Leave the version box empty to only TEST the build: the files are then kept for 7 days under the run's Artifacts.
+#
+# Linux: .AppImage, .deb, .rpm and .pacman (Arch) come from the "linux" job; .snap and .flatpak have their own jobs
+# that may fail without stopping the release. After a release, every file is also stored under the repository's
+# Packages (ghcr.io) with the version as its tag.
 #
 # The builds are UNSIGNED (Windows shows SmartScreen, on a Mac use right-click > Open). They do NOT contain the
 # NDI(R) runtime or ffmpeg (their licences do not allow putting them in the repository); NDI(R) output needs the free
@@ -23,6 +25,7 @@ on:
 
 permissions:
   contents: write
+  packages: write
 
 jobs:
   windows:
@@ -77,6 +80,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: Tools for .rpm and Arch packages
+        run: sudo apt-get update && sudo apt-get install -y rpm libarchive-tools
       - run: npm install
       - run: npm run dist:linux
       - uses: actions/upload-artifact@v4
@@ -85,12 +90,60 @@ jobs:
           path: |
             tilesmith-desktop/dist/TileSmith-*-linux-x64.AppImage
             tilesmith-desktop/dist/TileSmith-*-linux-x64.deb
+            tilesmith-desktop/dist/TileSmith-*-linux-x64.rpm
+            tilesmith-desktop/dist/TileSmith-*-linux-x64.pacman
+          if-no-files-found: error
+          retention-days: 7
+
+  snap:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: tilesmith-desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: sudo snap install snapcraft --classic
+      - run: npm install
+      - run: npm run dist:snap
+      - uses: actions/upload-artifact@v4
+        with:
+          name: snap
+          path: tilesmith-desktop/dist/*.snap
+          if-no-files-found: error
+          retention-days: 7
+
+  flatpak:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: tilesmith-desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Flatpak tools and runtimes
+        run: |
+          sudo apt-get update && sudo apt-get install -y flatpak flatpak-builder elfutils
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user -y flathub org.freedesktop.Platform//24.08 org.freedesktop.Sdk//24.08 org.electronjs.Electron2.BaseApp//24.08
+      - run: npm install
+      - run: npm run dist:flatpak
+      - uses: actions/upload-artifact@v4
+        with:
+          name: flatpak
+          path: tilesmith-desktop/dist/*.flatpak
           if-no-files-found: error
           retention-days: 7
 
   release:
-    needs: [windows, mac, linux]
-    if: ${{ startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '') }}
+    needs: [windows, mac, linux, snap, flatpak]
+    if: ${{ !cancelled() && needs.windows.result == 'success' && needs.mac.result == 'success' && needs.linux.result == 'success' && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -105,12 +158,47 @@ jobs:
           if [ -n "$INPUT_VERSION" ]; then TAG="v${INPUT_VERSION#v}"; else TAG="$GITHUB_REF_NAME"; fi
           VER="${TAG#v}"
           echo "Publishing release $TAG"
-          cp dist-files/windows/TileSmith-Portable.exe "TileSmith-$VER-windows-portable.exe"
-          FILES=("TileSmith-$VER-windows-portable.exe" dist-files/mac/*.dmg dist-files/linux/* tilesmith-desktop/TileSmith-Manual.pdf tilesmith-desktop/TileSmith-Mobile-Manual.pdf tilesmith-desktop/TileSmith-App-Spec.md)
+          mkdir upload
+          cp dist-files/*/* upload/
+          mv upload/TileSmith-Portable.exe "upload/TileSmith-$VER-windows-portable.exe"
+          cp tilesmith-desktop/TileSmith-Manual.pdf tilesmith-desktop/TileSmith-Mobile-Manual.pdf tilesmith-desktop/TileSmith-App-Spec.md upload/
+          ls -la upload
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "${FILES[@]}" --clobber
+            gh release upload "$TAG" upload/* --clobber
           else
             gh release create "$TAG" --target "$GITHUB_SHA" --title "TileSmith $VER" \
-              --notes "Windows portable app and Mac universal installer (unsigned). Manuals and the app spec are attached. NDI runtime and ffmpeg are not included: see BUILD-WINDOWS.txt / BUILD-MAC.txt." \
-              "${FILES[@]}"
+              --notes "Windows portable app, Mac universal installer and Linux packages (AppImage, deb, rpm, Arch pacman, snap, flatpak), unsigned. Manuals and the app spec are attached. NDI runtime and ffmpeg are not included: see BUILD-WINDOWS.txt / BUILD-MAC.txt." \
+              upload/*
           fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-files
+          path: upload/*
+          retention-days: 7
+
+  packages:
+    needs: [release]
+    if: ${{ !cancelled() && needs.release.result == 'success' }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-files
+          path: upload
+      - uses: oras-project/setup-oras@v1
+      - name: Store the files under the repository's Packages (ghcr.io)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ -n "$INPUT_VERSION" ]; then TAG="v${INPUT_VERSION#v}"; else TAG="$GITHUB_REF_NAME"; fi
+          VER="${TAG#v}"
+          REPO="${GITHUB_REPOSITORY,,}"
+          echo "$GH_TOKEN" | oras login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
+          cd upload
+          ARGS=(); for f in *; do ARGS+=("$f:application/octet-stream"); done
+          oras push "ghcr.io/$REPO:$VER" --artifact-type application/vnd.tilesmith.release.v1 \
+            --annotation "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
+            --annotation "org.opencontainers.image.description=TileSmith $VER installers and manuals" \
+            "${ARGS[@]}"

@@ -16,7 +16,9 @@
     "dist:mac": "electron-builder --mac --universal --publish never",
     "postdist:mac": "node scripts/finish-mac.js",
     "clean": "node scripts/clean.js",
-    "dist:linux": "electron-builder --linux AppImage deb --x64 --publish never"
+    "dist:linux": "electron-builder --linux AppImage deb rpm pacman --x64 --publish never",
+    "dist:snap": "electron-builder --linux snap --x64 --publish never",
+    "dist:flatpak": "electron-builder --linux flatpak --x64 --publish never"
   },
   "dependencies": {
     "koffi": "^2.16.3"
@@ -149,7 +151,9 @@
     "linux": {
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "rpm",
+        "pacman"
       ],
       "icon": "build/icon.png",
       "category": "Graphics",
@@ -160,6 +164,17 @@
       "provider": "github",
       "owner": "kingof9x",
       "repo": "TileSmith"
+    },
+    "snap": {
+      "grade": "stable",
+      "confinement": "strict"
+    },
+    "flatpak": {
+      "runtime": "org.freedesktop.Platform",
+      "runtimeVersion": "24.08",
+      "sdk": "org.freedesktop.Sdk",
+      "base": "org.electronjs.Electron2.BaseApp",
+      "baseVersion": "24.08"
     }
   },
   "homepage": "https://github.com/kingof9x/TileSmith"
