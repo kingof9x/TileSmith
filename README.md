@@ -14,10 +14,10 @@ included in the Windows and Mac downloads, so they need nothing extra** (their l
 | Feature | Windows | Mac | Linux |
 |---|---|---|---|
 | Test patterns, wiring, labels, exports, animation | Nothing to install | Nothing to install | Nothing to install |
-| **NDI® output** (needs this install) | NDI® Runtime: <https://ndi.link/NDIRedistV6> or the free NDI® Tools: <https://ndi.video/tools/> | NDI® Runtime for Mac: <https://ndi.link/NDIRedistV6Apple> or NDI® Tools: <https://ndi.video/tools/> | Not available yet |
+| **NDI® output** (needs this install) | NDI® Runtime: <https://ndi.link/NDIRedistV6> or the free NDI® Tools: <https://ndi.video/tools/> | NDI® Runtime for Mac: <https://ndi.link/NDIRedistV6Apple> or NDI® Tools: <https://ndi.video/tools/> | NDI® Runtime (`libndi.so.6`): get "NDI SDK for Linux" or the Linux tools from <https://ndi.video/for-developers/ndi-sdk/> and copy `libndi.so.6` to `/usr/local/lib` (then run `sudo ldconfig`), or point `NDI_RUNTIME_DIR_V6` at its folder |
 | **Spout output** | Included. Needs a DirectX 11 graphics card. Pick the card under *Spout options* if the picture is black | not applicable | not applicable |
 | **Syphon output** | not applicable | Included | not applicable |
-| **Video export** (needs this install) | An ffmpeg "full" build with the HAP encoder: <https://www.gyan.dev/ffmpeg/builds/> (`ffmpeg-release-full`). Unzip it and put `ffmpeg.exe` in the same folder as `TileSmith-Portable.exe` | `brew install ffmpeg` (Homebrew: <https://brew.sh/>). For HAP video see step 5 in `tilesmith-desktop/BUILD-MAC.txt` | Not available yet |
+| **Video export** (needs this install) | An ffmpeg "full" build with the HAP encoder: <https://www.gyan.dev/ffmpeg/builds/> (`ffmpeg-release-full`). Unzip it and put `ffmpeg.exe` in the same folder as `TileSmith-Portable.exe` | `brew install ffmpeg` (Homebrew: <https://brew.sh/>). For HAP video see step 5 in `tilesmith-desktop/BUILD-MAC.txt` | `sudo apt install ffmpeg` (Debian, Ubuntu), `sudo dnf install ffmpeg` (Fedora, needs RPM Fusion), `sudo pacman -S ffmpeg` (Arch). HAP video needs an ffmpeg built with the HAP encoder; otherwise use the MP4 formats. You can also set `TILESMITH_FFMPEG` to your ffmpeg path |
 
 You also need a program to receive the picture, for example Resolume, vMix, OBS, MadMapper or TouchDesigner.
 If NDI® or video export is not set up, TileSmith shows a message saying what is missing; nothing else is affected.

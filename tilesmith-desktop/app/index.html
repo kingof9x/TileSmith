@@ -977,7 +977,7 @@ if(DESK){try{const fs=require('fs'),path=require('path'),os=require('os'),dir=pa
 if(MOBILE){mobSave(new Blob([xml],{type:'application/xml'}),fn,`Saved ${fn}. Copy it to Documents/Resolume Arena/Presets/Advanced Output on the computer that runs Resolume, then pick it in Arena's Advanced Output preset list.`);return}
 dl(new Blob([xml],{type:'application/xml'}),fn);msg(`Saved ${fn}. Copy it to Documents/Resolume Arena/Presets/Advanced Output, pick it in Arena's Advanced Output preset list, then assign the screen to your real output.`)}
 // ---------- real NDI® output (desktop app): loads TileSmith's built-in NDI® runtime, or an installed one, via koffi
-const PLAT=(typeof process!='undefined'&&process.platform)||'web',MAC=PLAT=='darwin',WIN=PLAT=='win32';
+const PLAT=(typeof process!='undefined'&&process.platform)||'web',MAC=PLAT=='darwin',WIN=PLAT=='win32',LIN=PLAT=='linux';
 const DESK=typeof require=='function'&&typeof process!='undefined'&&!!(process.versions&&process.versions.electron);let nd=null;
 // the Android / iOS app (Capacitor): files are saved through the share sheet and video is recorded with the device's encoder
 // (mobile/src/mobile-bridge.js provides window.TSM); NDI®, Spout and Syphon controls are hidden there
@@ -992,17 +992,20 @@ const PERF={render:0,read:0,send:0,frames:0,t0:performance.now(),fps:0},ema=(k,v
 function perfTick(){const now=performance.now(),dt=(now-PERF.t0)/1000;if(dt>=1){PERF.fps=Math.round(PERF.frames/dt);PERF.frames=0;PERF.t0=now}}
 // tell the desktop app when NDI® output or a recording is running, so the system does not nap or throttle it
 function outSync(){const on=!!nd||!!shOut||!!REC||!!LOOPREC;if(on===outSync.v)return;outSync.v=on;if(DESK)try{require('electron').ipcRenderer.send('output-active',on)}catch(e){}}
-function ndiOwn(fs,path){const N0=MAC?'libndi.dylib':'Processing.NDI.Lib.x64.dll',c=[];if(process.resourcesPath)c.push(path.join(process.resourcesPath,'ndi',N0));
- c.push(MAC?path.join(process.cwd(),'bin','mac','ndi',N0):path.join(process.cwd(),'bin','ndi',N0));for(const f of c){try{if(fs.existsSync(f))return f}catch(e){}}return null}
+function ndiOwn(fs,path){const N0=MAC?'libndi.dylib':LIN?'libndi.so.6':'Processing.NDI.Lib.x64.dll',c=[];if(process.resourcesPath)c.push(path.join(process.resourcesPath,'ndi',N0));
+ c.push(MAC?path.join(process.cwd(),'bin','mac','ndi',N0):path.join(process.cwd(),'bin',...(LIN?['linux']:[]),'ndi',N0));for(const f of c){try{if(fs.existsSync(f))return f}catch(e){}}return null}
 function ndiFind(fs,path,env){const own=ndiOwn(fs,path);if(own){NDI_FROM='built-in NDI® runtime';return own}NDI_FROM='installed NDI® Runtime';
 if(MAC){const c=[];for(const k of Object.keys(env).filter(k=>/^NDI_RUNTIME_DIR_V\d+$/i.test(k)).sort().reverse())c.push(path.join(env[k],'libndi.dylib'));
 c.push('/usr/local/lib/libndi.dylib','/opt/homebrew/lib/libndi.dylib','/Library/NDI SDK for Apple/lib/macOS/libndi.dylib','/Library/NDI/lib/libndi.dylib');
 for(const f of c){try{if(fs.existsSync(f))return f}catch(e){}}return null}
+if(LIN){const c=[],h=require('os').homedir();for(const k of Object.keys(env).filter(k=>/^NDI_RUNTIME_DIR_V\d+$/i.test(k)).sort().reverse())c.push(path.join(env[k],'libndi.so.6'),path.join(env[k],'libndi.so'));
+ for(const d of ['/usr/local/lib','/usr/lib','/usr/lib/x86_64-linux-gnu','/usr/lib/aarch64-linux-gnu','/usr/lib64','/usr/local/lib/x86_64-linux-gnu','/usr/local/lib/aarch64-linux-gnu','/opt/ndi/lib','/opt/NDI SDK for Linux/lib/x86_64-linux-gnu',path.join(h,'.local','lib'),path.join(h,'NDI SDK for Linux','lib','x86_64-linux-gnu')])c.push(path.join(d,'libndi.so.6'),path.join(d,'libndi.so'));
+ for(const f of c){try{if(fs.existsSync(f))return f}catch(e){}}return null}
 const N='Processing.NDI.Lib.x64.dll';
 for(const k of Object.keys(env).filter(k=>/^NDI_RUNTIME_DIR_V\d+$/i.test(k)).sort().reverse()){const f=path.join(env[k],N);if(fs.existsSync(f))return f}
 const walk=(d,n)=>{if(n<0)return null;try{const f=path.join(d,N);if(fs.existsSync(f))return f;for(const e of fs.readdirSync(d,{withFileTypes:true}))if(e.isDirectory()){const r=walk(path.join(d,e.name),n-1);if(r)return r}}catch(e){}return null};
 for(const b of [env.ProgramFiles,env.ProgramW6432,'C:\\Program Files'].filter(Boolean)){const r=walk(path.join(b,'NDI'),3);if(r)return r}return null}
-function ndiLoad(){if(NL)return NL;const koffi=require('koffi'),path=require('path'),fs=require('fs'),env=process.env,N=MAC?'libndi.dylib':'Processing.NDI.Lib.x64.dll',f=ndiFind(fs,path,env);let lib;
+function ndiLoad(){if(NL)return NL;const koffi=require('koffi'),path=require('path'),fs=require('fs'),env=process.env,N=MAC?'libndi.dylib':LIN?'libndi.so.6':'Processing.NDI.Lib.x64.dll',f=ndiFind(fs,path,env);let lib;
 try{lib=koffi.load(f||N)}catch(e){throw Error('NDI® runtime not found or failed to load ('+(f||N)+'). Rebuild TileSmith with the free NDI® SDK installed so the runtime is built in (see the BUILD instructions), or install the NDI® Runtime or NDI® Tools from ndi.video, then relaunch. '+e.message)}
 koffi.struct('NDIlib_send_create_t',{p_ndi_name:'const char *',p_groups:'const char *',clock_video:'bool',clock_audio:'bool'});
 koffi.struct('NDIlib_video_frame_v2_t',{xres:'int',yres:'int',FourCC:'int',frame_rate_N:'int',frame_rate_D:'int',picture_aspect_ratio:'float',frame_format_type:'int',timecode:'int64_t',p_data:'uint8_t *',line_stride_in_bytes:'int',p_metadata:'const char *',timestamp:'int64_t'});
@@ -1155,10 +1158,11 @@ function ffFind(){const vc=vcodec(),re=new RegExp('^\\s*V\\S*\\s+'+vc.enc+'\\s',
 if(env.TILESMITH_FFMPEG)c.push(env.TILESMITH_FFMPEG);
 if(process.resourcesPath)c.push(path.join(process.resourcesPath,X));
 if(WIN)for(const d of [env.PORTABLE_EXECUTABLE_DIR,path.dirname(process.execPath)].filter(Boolean))c.push(path.join(d,X));
+if(LIN)c.push('/usr/bin/ffmpeg','/usr/local/bin/ffmpeg','/snap/bin/ffmpeg','/var/lib/flatpak/exports/bin/ffmpeg',path.join(require('os').homedir(),'.local','bin','ffmpeg'),path.join(require('os').homedir(),'bin','ffmpeg'));
 if(MAC)c.push('/opt/homebrew/bin/ffmpeg','/usr/local/bin/ffmpeg','/opt/local/bin/ffmpeg',path.join(require('os').homedir(),'bin','ffmpeg'));
 try{c.push(String(require('ffmpeg-static')).replace(/app\.asar(?!\.unpacked)/,'app.asar.unpacked'))}catch(e){}
 for(const f of c){try{if(!fs.existsSync(f))continue;const o=cp.spawnSync(f,['-hide_banner','-encoders'],{encoding:'utf8',windowsHide:true});if(re.test(o.stdout||''))return f}catch(e){}}
-throw Error(`No ffmpeg with the ${vc.enc} encoder (${S.vCodec}) found. `+(MAC?'Install one (see BUILD-MAC.txt step 5), then try again.':'Put a "full" ffmpeg.exe (gyan.dev) next to the app and try again.'))}
+throw Error(`No ffmpeg with the ${vc.enc} encoder (${S.vCodec}) found. `+(MAC?'Install one (see BUILD-MAC.txt step 5), then try again.':LIN?'Install ffmpeg with your package manager (for example: sudo apt install ffmpeg), then try again.':'Put a "full" ffmpeg.exe (gyan.dev) next to the app and try again.'))}
 function recStartFF(r,ff){const fs=require('fs'),os=require('os'),path=require('path'),cp=require('child_process'),W=M.width,H=M.height,z=n=>String(n).padStart(2,'0'),d=new Date();
 const dir=path.join(os.homedir(),MAC?'Movies':'Videos','TileSmith');fs.mkdirSync(dir,{recursive:true});
 const out=path.join(dir,`tilesmith-build-${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}.${vcodec().ext}`);
@@ -1316,7 +1320,7 @@ function loop(){requestAnimationFrame(loop);try{const now=performance.now();
  if(!OC.on||REC){const F=1000/60;if(now>=nextT-F*.25){tick(now);nextT+=F;if(nextT<now)nextT=now+F}}
  if(gen!==vpGen||now-lastAct<1200){vpDraw();vpGen=gen}}catch(e){console.error(e)}}
 const SKEY='tilesmith-state-v1',SKIP=['patImg','boxImg','play'];let saveT=null;
-function stFile(){const path=require('path');const d=MAC?path.join(require('os').homedir(),'Library','Application Support','TileSmith'):path.join(process.env.APPDATA||require('os').homedir(),'TileSmith');return{d,f:path.join(d,'state.json')}}
+function stFile(){const path=require('path');const d=MAC?path.join(require('os').homedir(),'Library','Application Support','TileSmith'):LIN?path.join(process.env.XDG_CONFIG_HOME||path.join(require('os').homedir(),'.config'),'TileSmith'):path.join(process.env.APPDATA||require('os').homedir(),'TileSmith');return{d,f:path.join(d,'state.json')}}
 function saveNow(){if(window.__noSave)return;let o;try{storeWall();o={sv:23,S:{},walls:walls.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?(w[k]&&w[k].__src||null):w[k]);return x}),cur,crew:crew.map(c=>[c[0],c[1],c[2]&&c[2].__src||null,c[3]]),logo:logoImg&&logoImg.__src||null,dvd:dvdImg&&dvdImg.__src||null};for(const k in S)if(!SKIP.includes(k))o.S[k]=S[k]}catch(e){return}
 const w=obj=>{const j=JSON.stringify(obj);if(DESK){const{d,f}=stFile(),fs=require('fs');fs.mkdirSync(d,{recursive:true});fs.writeFileSync(f,j)}else localStorage.setItem(SKEY,j)};
 try{w(o)}catch(e){try{o.walls.forEach(x=>{x.patImg=null;x.boxImg=null});o.logo=null;o.dvd=null;o.crew.forEach(c=>c[2]=null);w(o)}catch(e2){}}}
