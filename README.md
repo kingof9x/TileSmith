@@ -1,5 +1,7 @@
 # TileSmith
 
+**[TLDR I just want to download it](#download)**
+
 Pre production software for LED walls. Engineering specs, cable labels, pixel maps and test patterns with some fun animation for vidiots
 Current version: **3.4**.
 
