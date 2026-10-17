@@ -173,7 +173,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 {img('t06-manual-data-wiring.png', 'Manual wiring: P1 is full, P2 is being drawn')}</section>
 
 <section class="chap"><h1>10. Power and power wiring</h1>
-<div class="side"><div><p>Tick <b>Power distribution</b> (Socapex, L14-30 or L21-30 cables) to see the power options. Set the circuit voltage, the breaker size and whether circuits are loaded to 80%; TileSmith shows how many tiles one circuit can supply. <b>Power link limit</b> caps the tiles per circuit. <b>Power wiring</b> works like data wiring, with circuits S1-1 … S1-6, S2-1 … (or L14-1-X, L14-1-Y … for twist-lock cables). Phases are left to the distro.</p></div>{img('ui-power-wiring.png', 'Power wiring')}</div>
+<div class="side"><div><p>Tick <b>Power distribution</b> (Socapex, L14-30 or L21-30 cables) to see the power options. Set the circuit voltage, the breaker size and whether circuits are loaded to 80%; TileSmith shows how many tiles one circuit can supply. <b>Power link limit</b> caps the tiles per circuit. <b>Power wiring</b> works like data wiring, with circuits 1-1 … 1-6, 2-1 … (or 1-X, 1-Y … for twist-lock cables). Phases are left to the distro.</p></div>{img('ui-power-wiring.png', 'Power wiring')}</div>
 {pfills}
 {img('cv-power-wiring-all.png', 'The five preferences on a 10 × 5 wall, 16 tiles per circuit')}
 {img('cv-data-and-power.png', 'Data and power together: power is drawn white on black, with lightning-bolt badges')}</section>

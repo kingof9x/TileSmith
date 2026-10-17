@@ -392,13 +392,13 @@ Tick **Power distribution** to enable and choose the Distribution cable (setting
 "One 120 V 20 A circuit loaded to 80% supplies 1,920 W, enough for 12 tiles of ... at 150 W max each."
 
 Circuits are numbered k = 1, 2, ... across walls; with n circuits per cable (Socapex 6, L14-30 2, L21-30 3) circuit k is on cable ceil(k/n) as leg (k-1) mod n (legs 1-6 for Socapex, X,Y for
-L14-30, X,Y,Z for L21-30); labels S1-1 ... S1-6, S2-1 ... or L14-1-X, L14-1-Y, L14-2-X ... No phase is assigned (the PDU does that). Power wiring works
+L14-30, X,Y,Z for L21-30); labels cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ... No phase is assigned (the PDU does that). Power wiring works
 like data wiring with the same patterns, corners and areas (Fewest circuits / Whole rows or columns / One continuous
 path), capacity t, plus the power link limit; on half-tile layouts by each piece's own watts (circuit full when watts >
 usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "This circuit is full (12 tiles)."
 
 Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
-Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "S1 24.0 A · S2 12.0 A" (sum of circuit watts / V per cable), Over capacity. CSV adds Circuit, CircuitPos, PowerCable.
+Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "cable 1 24.0 A · cable 2 12.0 A" (sum of circuit watts / V per cable), Over capacity. CSV adds Circuit, CircuitPos, PowerCable.
 
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 {d['POWC']} by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
@@ -504,7 +504,7 @@ tilesmith-build-YYYYMMDD-HHMMSS.ext. Click again to cancel. Estimated length is 
 data wiring (a processor is chosen and at least one port exists) or power wiring (Power distribution on and at least one
 circuit exists) is defined). Button "Print labels" (mobile: "Save label sheet"). One entry per cable with two labels
 (end 1/2 and 2/2): data cable P<n> (processor port -> first tile, DATA IN), return cable R<n> when Return is on (last
-tile DATA OUT -> processor return), power cable <S?> / <L14-?> / <L21-?> (one pair per distribution cable: distro end and fan-out/wall end, circuits used, walls, watts) and power circuit <S?-?> (distribution end -> first tile POWER IN; shows cable x of y, circuit or leg, voltage, breaker amps, tile count and watts), selected by lblPow; optional tile-to-tile jumper labels (P<n>-<i>, <circuit>-<i>). Each
+tile DATA OUT -> processor return), power cable <n> (one pair per distribution cable: distro end and fan-out/wall end, circuits used, walls, watts) and power circuit <n-m> (distribution end -> first tile POWER IN; shows cable x of y, circuit or leg, voltage, breaker amps, tile count and watts), selected by lblPow; optional tile-to-tile jumper labels (P<n>-<i>, <circuit>-<i>). Each
 label shows a small DATA/POWER + end caption, the cable name in large bold type, then three text lines (from/to with
 wall name, tile id Tnn and col/row; tile count and pixels or watts). Settings lblWhat, lblPow, lblSize, lblW, lblH, lblCopies,
 lblSkip, lblColor, lblJump, lblKeep (see the settings table). Sheet presets (mm): Avery 5160 66.675x25.4, 3x10, margins

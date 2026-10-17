@@ -18,9 +18,9 @@ async def main():
         # power
         await pg.evaluate("()=>{S.pdist=true;S.pmode='Snake';sync()}"); await pg.wait_for_timeout(200)
         r = await pg.evaluate("()=>({n:labelList().length,pw:powerPlan().flat().length,pl:portPlan().flat().length,p:labelList().filter(x=>x[0].kind=='p')[0]})")
-        print('DATA+POWER', json.dumps(r)[:500]); ok &= r['n'] == 2 * r['pl'] + r['pw'] + -(-r['pw'] // 6) and r['p'][0]['big'] == 'S1' and 'Socapex cable 1 of' in r['p'][0]['lines'][0] and 'hase' not in json.dumps(r['p'])
+        print('DATA+POWER', json.dumps(r)[:500]); ok &= r['n'] == 2 * r['pl'] + r['pw'] + -(-r['pw'] // 6) and r['p'][0]['big'] == '1' and 'Socapex cable 1 of' in r['p'][0]['lines'][0] and 'hase' not in json.dumps(r['p'])
         # power distribution types and the three power label scopes
-        for pdt, per, first, leg in (('Socapex (6 circuits per cable)', 6, 'S1-1', 'circuit 1 of 6'), ('L14-30 (2 circuits per cable)', 2, 'L14-1-X', 'leg X'), ('L21-30 (3 circuits per cable)', 3, 'L21-1-X', 'leg X')):
+        for pdt, per, first, leg in (('Socapex (6 circuits per cable)', 6, '1-1', 'circuit 1 of 6'), ('L14-30 (2 circuits per cable)', 2, '1-X', 'leg X'), ('L21-30 (3 circuits per cable)', 3, '1-X', 'leg X')):
             r = await pg.evaluate("([t,sc])=>{S.pdt=t;S.lblWhat='Power only';const out={};for(const m of ['Cable and circuit labels','Circuit labels only','Cable labels only']){S.lblPow=m;sync();out[m]=labelList().length}S.lblPow='Cable and circuit labels';sync();const L=labelList(),legs=L.filter(q=>q[0].big!=null&&/-[X1-6YZ]$/.test(q[0].big)),cab=powerTotals(powerPlan()).cables;return{out,n:powerPlan().flat().length,cab,leg:L.find(q=>q[0].big==sc)&&L.find(q=>q[0].big==sc)[0].lines[0],cols:L.every(q=>q[0].col==q[0].wall.col),noph:!/hase/.test(JSON.stringify(L)),rep:powRowsCanvas(powerPlan()).map(x=>x.join(':')).join('|')}}", [pdt, first])
             print(pdt, json.dumps(r)[:420]); n, cab = r['n'], r['cab']
             ok &= cab == -(-n // per) and r['out']['Cable and circuit labels'] == n + cab and r['out']['Circuit labels only'] == n and r['out']['Cable labels only'] == cab and leg in (r['leg'] or '') and r['cols'] and r['noph'] and 'hase' not in r['rep']

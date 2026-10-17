@@ -257,7 +257,7 @@ const eb=document.querySelector('[data-a=wedit]');if(eb){eb.textContent=wiring?'
  if(pl)pl.textContent=`${S.pmode=='Linear'?'Linear':'Snake'} from the ${S.pcorner.toLowerCase()} tile: ${vt2?'columns':'rows'} first, ${vt2?(bt2?'bottom to top':'top to bottom'):(rt2?'right to left':'left to right')}${S.pmode=='Linear'?', every line in the same direction':', turning back at the end of each line'}.`;
  if(pf2)pf2.textContent=PFILLN[Math.max(0,PFILL.indexOf(S.pfill))];
  const pe=document.querySelector('[data-a=pedit]');if(pe){pe.textContent=pwiring?'Stop wiring':'Wire tiles';pe.setAttribute('aria-pressed',pwiring)}
- const sn=$('#socaNote');if(sn){const d=PD(),tx=d.n==6?'Power runs on Socapex, 6 circuits per cable. Circuits are numbered S1-1 to S1-6, then S2-1 and so on. The distro (not TileSmith) decides which phase each circuit lands on.':`Power runs on ${d.name} cables, ${d.n} circuits per cable (legs ${d.legs.join(', ')}). Circuits are numbered ${d.pre}1-X, ${d.pre}1-Y${d.n>2?', '+d.pre+"1-Z":""}, then ${d.pre}2-X and so on. The distro decides which phase each cable lands on.`;if(sn.textContent!==tx)sn.textContent=tx}
+ const sn=$('#socaNote');if(sn){const d=PD(),tx=d.n==6?'Power runs on Socapex, 6 circuits per cable. Circuits are numbered 1-1 to 1-6 (cable-circuit), then 2-1 and so on. The distro (not TileSmith) decides which phase each circuit lands on.':`Power runs on ${d.name} cables, ${d.n} circuits per cable (legs ${d.legs.join(', ')}). Circuits are numbered 1-X, 1-Y${d.n>2?', 1-Z':''}, then 2-X and so on (cable-leg). The distro decides which phase each cable lands on.`;if(sn.textContent!==tx)sn.textContent=tx}
  const w=walls[cur],pn2=$('#pwnote');if(pn2&&pon){const t=tpcCalc(w),tx=`One ${S.pvolt} V ${S.pamps} A circuit${S.derate?' loaded to 80%':''} supplies ${Math.round(circW()).toLocaleString()} W, enough for ${t} tile${t==1?'':'s'} of ${w.preset} at ${w.wmax} W max each.`;if(pn2.textContent!==tx)pn2.textContent=tx}
  const ps=$('#pstat');if(ps&&pon){const t=tpcW(w),pp2=powerPlan(),mine=pp2[cur]||[],pw=mine.reduce((a,x)=>a+x.tiles.length,0);let h=t<1?'<span class="bad">One tile draws more than a circuit can supply. Check the breaker size and the tile model\'s max watts.</span>':`Each circuit powers up to <b>${t}</b> tiles of this model${w.plink>0&&w.plink<tpcCalc(w)?' (power link limit)':''}.`;
   if(S.pmode!='None')h+='<br>'+(mine.length?mine.map(x=>`${cLabel(x.k)}: ${x.half?Math.round(x.watts).toLocaleString()+'/'+Math.round(circW()).toLocaleString()+' W':x.tiles.length+'/'+t}${x.over?' <span class="bad">over capacity</span>':''}`).join(', '):'No circuits wired yet.')+(pw<tN(w)?`<br><span class="bad">${tN(w)-pw} tile${tN(w)-pw==1?'':'s'} without power.</span>`:'<br>All tiles powered.');
@@ -655,9 +655,9 @@ const pdOn=()=>S.pdist===true;
 const circW=()=>S.pvolt*S.pamps*(S.derate?.8:1),tpcCalc=w=>Math.floor(circW()/Math.max(1,w.wmax)),tpcW=w=>{const t=tpcCalc(w);return w.plink>0?Math.min(t,w.plink):t};
 // Power distribution type: how circuits are bundled into cables. Socapex carries 6 circuits (numbered 1-6); a NEMA L14-30 carries
 // 2 (legs X, Y) and an L21-30 carries 3 (legs X, Y, Z). Circuit k is leg ((k-1) mod n) of cable ceil(k/n).
-const PDT={'Socapex (6 circuits per cable)':{n:6,name:'Socapex',pre:'S',legs:['1','2','3','4','5','6'],leg:'circuit',src:'DISTRO END',end:'FAN-OUT END'},
- 'L14-30 (2 circuits per cable)':{n:2,name:'L14-30',pre:'L14-',legs:['X','Y'],leg:'leg',src:'DISTRO END',end:'WALL END'},
- 'L21-30 (3 circuits per cable)':{n:3,name:'L21-30',pre:'L21-',legs:['X','Y','Z'],leg:'leg',src:'DISTRO END',end:'WALL END'}};
+const PDT={'Socapex (6 circuits per cable)':{n:6,name:'Socapex',pre:'',legs:['1','2','3','4','5','6'],leg:'circuit',src:'DISTRO END',end:'FAN-OUT END'},
+ 'L14-30 (2 circuits per cable)':{n:2,name:'L14-30',pre:'',legs:['X','Y'],leg:'leg',src:'DISTRO END',end:'WALL END'},
+ 'L21-30 (3 circuits per cable)':{n:3,name:'L21-30',pre:'',legs:['X','Y','Z'],leg:'leg',src:'DISTRO END',end:'WALL END'}};
 const PD=()=>PDT[S.pdt]||PDT[Object.keys(PDT)[0]],cCab=k=>Math.ceil(k/PD().n),cLeg=k=>PD().legs[(k-1)%PD().n],
  cLabel=k=>{const d=PD();return d.pre+cCab(k)+'-'+cLeg(k)};
 function powChains(w){if(!pdOn()||w.pmode=='None')return[];if(w.pmode=='Manual')return manChains(w,'pman');const t=tpcW(w);if(t<1)return[];
@@ -859,7 +859,7 @@ function powRowsCanvas(plan){const T=powerTotals(plan),need=walls.reduce((a,w)=>
  const r=[['Power distribution',S.pdt],['Circuit',`${S.pvolt} V · ${S.pamps} A${S.derate?' · loaded to 80%':''} = ${Math.round(circW()).toLocaleString()} W usable`],
   ['Circuits used',T.n?T.n:'Not wired'],['Min. circuits if every circuit is full',isFinite(need)?need:'A tile exceeds one circuit']];
  r.push([PD().name+' cables',T.n?`${T.cables}${T.spare?` (${T.spare} spare circuit${T.spare>1?'s':''})`:''}`:'-']);
- if(T.n)r.push(['Peak load per cable',Object.keys(T.cab).map(c=>`${PD().pre}${c} ${T.cab[c].toFixed(1)} A`).join(' · ')]);
+ if(T.n)r.push(['Peak load per cable',Object.keys(T.cab).map(c=>`cable ${c} ${T.cab[c].toFixed(1)} A`).join(' · ')]);
  if(T.over)r.push(['Over capacity',`${T.over} circuit${T.over>1?'s':''}`]);return r}
 function procRowsCanvas(plan){const m=PROC[S.proc],all=plan.flat(),prim=all.length,ret=S.ret?prim:0,phys=prim+ret,px=walls.reduce((a,w)=>a+wst(w).px,0);
  const units=Math.max(1,Math.ceil(phys/Math.max(1,S.pports)),m.max?Math.ceil(px/m.max):1),over=all.filter(x=>x.over).length;
