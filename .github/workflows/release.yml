@@ -158,7 +158,12 @@ jobs:
           echo "Publishing release $TAG"
           mkdir upload
           cp dist-files/*/* upload/
-          mv upload/TileSmith-Portable.exe "upload/TileSmith-$VER-windows-portable.exe"
+          # file names without the version, so the README can link to .../releases/latest/download/<name> forever
+          shopt -s nullglob
+          mv upload/TileSmith-Portable.exe upload/TileSmith-windows-portable.exe
+          for f in upload/TileSmith-"$VER"-*; do mv "$f" "${f/-$VER-/-}"; done
+          for f in upload/*.snap; do mv "$f" upload/TileSmith-linux-x64.snap; done
+          for f in upload/*.flatpak; do mv "$f" upload/TileSmith-linux-x64.flatpak; done
           cp tilesmith-desktop/TileSmith-Manual.pdf tilesmith-desktop/TileSmith-Mobile-Manual.pdf tilesmith-desktop/TileSmith-App-Spec.md upload/
           ls -la upload
           if gh release view "$TAG" >/dev/null 2>&1; then

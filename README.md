@@ -25,6 +25,28 @@ The Mac and Windows apps are unsigned: on Windows click *More info > Run anyway*
 
 NDI® is a registered trademark of Vizrt NDI AB. Learn more about NDI® at <https://ndi.video/>.
 
+## Download
+
+Get the latest build from the **[Releases page](https://github.com/kingof9x/TileSmith/releases/latest)**, or use the direct links
+below (they always point at the newest release). The builds are unsigned, and NDI® output and video export need the free
+software listed in *Software to install* above.
+
+| Platform | File | What it is |
+|---|---|---|
+| **Windows** 10/11, 64-bit | [TileSmith-windows-portable.exe](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-windows-portable.exe) | Portable app: no install, just run it. Includes Spout. |
+| **Mac** (Apple Silicon and Intel) | [TileSmith-mac-universal.dmg](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-mac-universal.dmg) | Open it and drag TileSmith to Applications. Includes Syphon. Right-click the app and choose *Open* the first time. |
+| **Linux**, any distribution | [TileSmith-linux-x64.AppImage](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.AppImage) | Runs without installing: make it executable, then run it. |
+| **Debian, Ubuntu, Mint** | [TileSmith-linux-x64.deb](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.deb) | `sudo apt install ./TileSmith-linux-x64.deb` |
+| **Fedora, RHEL, openSUSE** | [TileSmith-linux-x64.rpm](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.rpm) | `sudo dnf install ./TileSmith-linux-x64.rpm` |
+| **Arch, Manjaro** | [TileSmith-linux-x64.pacman](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.pacman) | `sudo pacman -U TileSmith-linux-x64.pacman` |
+| **Linux (Snap)** | [TileSmith-linux-x64.snap](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.snap) | `sudo snap install --dangerous TileSmith-linux-x64.snap` |
+| **Linux (Flatpak)** | [TileSmith-linux-x64.flatpak](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.flatpak) | `flatpak install --user TileSmith-linux-x64.flatpak` |
+| **All platforms** | [TileSmith-Manual.pdf](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Manual.pdf) | User manual for the desktop app. |
+| **Android / iOS** | [TileSmith-Mobile-Manual.pdf](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Mobile-Manual.pdf) | Manual for the phone and tablet app (the apps are built from `tilesmith-desktop/mobile`, see `BUILD-ANDROID.txt` and `BUILD-IOS.txt`). |
+| **Developers** | [TileSmith-App-Spec.md](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-App-Spec.md) | Full written specification of the app. |
+
+On Ubuntu 24.04 and newer the AppImage may need `--no-sandbox`; installing the `.deb` avoids that.
+
 ## What is in this repository
 
 | Folder or file | What it is |
