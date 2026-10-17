@@ -1,6 +1,8 @@
 # Builds TileSmith for Windows and Mac and attaches the files to a GitHub Release.
 #
-# To publish a version: on GitHub, Releases > Draft a new release > choose a new tag such as v3.4 > Publish release
+# To publish a version: Actions tab > Build and release > Run workflow > type the version (for example 3.4) > Run.
+# The workflow builds both apps, then creates the release v3.4 itself. (Pushing a tag such as v3.4 also works.)
+# Old note:  Releases > Draft a new release > choose a new tag such as v3.4 > Publish release
 # (or push a git tag v3.4). Tags starting with v or a digit (v3.4 or 3.4) both work. The workflow then builds and attaches the files to that release. To only TEST the build, open the Actions tab > "Build and release" > Run workflow;
 # the finished files are then kept for 7 days under that run's Artifacts and no release is made.
 #
@@ -13,6 +15,11 @@ on:
   push:
     tags: ['v*', '[0-9]*']
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish as a release, for example 3.3 (leave empty to only test the build)'
+        required: false
+        default: ''
 
 permissions:
   contents: write
@@ -60,7 +67,7 @@ jobs:
 
   release:
     needs: [windows, mac]
-    if: startsWith(github.ref, 'refs/tags/')
+    if: ${{ startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -70,14 +77,17 @@ jobs:
       - name: Create or update the release
         env:
           GH_TOKEN: ${{ github.token }}
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          VER="${GITHUB_REF_NAME#v}"
+          if [ -n "$INPUT_VERSION" ]; then TAG="v${INPUT_VERSION#v}"; else TAG="$GITHUB_REF_NAME"; fi
+          VER="${TAG#v}"
+          echo "Publishing release $TAG"
           cp dist-files/windows/TileSmith-Portable.exe "TileSmith-$VER-windows-portable.exe"
           FILES=("TileSmith-$VER-windows-portable.exe" dist-files/mac/*.dmg tilesmith-desktop/TileSmith-Manual.pdf tilesmith-desktop/TileSmith-Mobile-Manual.pdf tilesmith-desktop/TileSmith-App-Spec.md)
-          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release upload "$GITHUB_REF_NAME" "${FILES[@]}" --clobber
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${FILES[@]}" --clobber
           else
-            gh release create "$GITHUB_REF_NAME" --title "TileSmith $VER" \
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "TileSmith $VER" \
               --notes "Windows portable app and Mac universal installer (unsigned). Manuals and the app spec are attached. NDI runtime and ffmpeg are not included: see BUILD-WINDOWS.txt / BUILD-MAC.txt." \
               "${FILES[@]}"
           fi
