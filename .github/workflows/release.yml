@@ -214,3 +214,60 @@ jobs:
           name: release-files
           path: upload/*
           retention-days: 7
+
+  virustotal:
+    needs: [release]
+    if: ${{ !cancelled() && needs.release.result == 'success' }}
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-files
+          path: upload
+      - name: Scan every release file on VirusTotal and add the report links to the release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ -z "$VT_API_KEY" ]; then echo "::warning::No VT_API_KEY secret, so the VirusTotal scan was skipped."; exit 0; fi
+          if [ -n "$INPUT_VERSION" ]; then TAG="v${INPUT_VERSION#v}"; else TAG="$GITHUB_REF_NAME"; fi
+          API=https://www.virustotal.com/api/v3
+          ROWS=""
+          cd upload
+          for f in *; do
+            case "$f" in *.pdf|*.md) continue;; esac     # documents are not programs
+            SHA=$(sha256sum "$f" | cut -d' ' -f1)
+            SIZE=$(stat -c %s "$f")
+            if [ "$SIZE" -gt 30000000 ]; then URL=$(curl -sS -H "x-apikey: $VT_API_KEY" "$API/files/upload_url" | jq -r .data); else URL="$API/files"; fi
+            ID=$(curl -sS -H "x-apikey: $VT_API_KEY" -F "file=@$f" "$URL" | jq -r '.data.id // empty')
+            RES="not scanned"
+            if [ -n "$ID" ]; then
+              for i in $(seq 1 60); do
+                sleep 15
+                J=$(curl -sS -H "x-apikey: $VT_API_KEY" "$API/analyses/$ID")
+                if [ "$(echo "$J" | jq -r '.data.attributes.status // empty')" = "completed" ]; then
+                  BAD=$(echo "$J" | jq -r '(.data.attributes.stats.malicious // 0) + (.data.attributes.stats.suspicious // 0)')
+                  TOT=$(echo "$J" | jq -r '[.data.attributes.stats[]] | add - (.data.attributes.stats["type-unsupported"] // 0) - (.data.attributes.stats.timeout // 0)')
+                  RES="$BAD / $TOT engines flag it"; break
+                fi
+              done
+              [ "$RES" = "not scanned" ] && RES="scan still running"
+            fi
+            echo "$f: $RES"
+            ROWS="$ROWS| $f | [$RES](https://www.virustotal.com/gui/file/$SHA) | \`$SHA\` |"$'\n'
+            sleep 16        # free VirusTotal keys allow 4 requests a minute
+          done
+          {
+            echo "## VirusTotal scan"
+            echo
+            echo "Every program file in this release was uploaded to [VirusTotal](https://www.virustotal.com/) by the build. TileSmith is unsigned, and a few engines sometimes flag unsigned Electron apps by mistake (false positives); the source code is public so you can check what was built."
+            echo
+            echo "| File | Result | SHA-256 |"
+            echo "|---|---|---|"
+            printf "%s" "$ROWS"
+          } > /tmp/vt.md
+          BODY=$(gh release view "$TAG" --json body -q .body | sed '/^## VirusTotal scan/,$d')
+          printf "%s\n\n%s\n" "$BODY" "$(cat /tmp/vt.md)" > /tmp/notes.md
+          gh release edit "$TAG" --notes-file /tmp/notes.md

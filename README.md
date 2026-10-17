@@ -58,6 +58,8 @@ software listed in *Software to install* above.
 
 On Ubuntu 24.04 and newer the AppImage may need `--no-sandbox`; installing the `.deb` avoids that.
 
+Every release also lists VirusTotal scan results for each file in its release notes, with the SHA-256 of each file so you can check your download.
+
 ## What is in this repository
 
 | Folder or file | What it is |
