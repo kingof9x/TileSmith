@@ -5,8 +5,7 @@
 # Leave the version box empty to only TEST the build: the files are then kept for 7 days under the run's Artifacts.
 #
 # Linux: .AppImage, .deb, .rpm and .pacman (Arch) come from the "linux" job; .snap and .flatpak have their own jobs
-# that may fail without stopping the release. After a release, every file is also stored under the repository's
-# Packages (ghcr.io) with the version as its tag.
+# that may fail without stopping the release. The downloads live on the Releases page (no container Packages).
 #
 # The builds are UNSIGNED (Windows shows SmartScreen, on a Mac use right-click > Open). They do NOT contain the
 # NDI(R) runtime or ffmpeg (their licences do not allow putting them in the repository); NDI(R) output needs the free
@@ -25,7 +24,6 @@ on:
 
 permissions:
   contents: write
-  packages: write
 
 jobs:
   windows:
@@ -175,30 +173,3 @@ jobs:
           name: release-files
           path: upload/*
           retention-days: 7
-
-  packages:
-    needs: [release]
-    if: ${{ !cancelled() && needs.release.result == 'success' }}
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-files
-          path: upload
-      - uses: oras-project/setup-oras@v1
-      - name: Store the files under the repository's Packages (ghcr.io)
-        env:
-          GH_TOKEN: ${{ github.token }}
-          INPUT_VERSION: ${{ inputs.version }}
-        run: |
-          if [ -n "$INPUT_VERSION" ]; then TAG="v${INPUT_VERSION#v}"; else TAG="$GITHUB_REF_NAME"; fi
-          VER="${TAG#v}"
-          REPO="${GITHUB_REPOSITORY,,}"
-          echo "$GH_TOKEN" | oras login ghcr.io -u "${GITHUB_ACTOR}" --password-stdin
-          cd upload
-          ARGS=(); for f in *; do ARGS+=("$f:application/octet-stream"); done
-          oras push "ghcr.io/$REPO:$VER" --artifact-type application/vnd.tilesmith.release.v1 \
-            --annotation "org.opencontainers.image.source=https://github.com/$GITHUB_REPOSITORY" \
-            --annotation "org.opencontainers.image.description=TileSmith $VER installers and manuals" \
-            "${ARGS[@]}"
