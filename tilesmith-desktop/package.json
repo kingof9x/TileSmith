@@ -8,14 +8,15 @@
   "scripts": {
     "start": "electron .",
     "predist": "node scripts/check-deps.js && node scripts/check-ffmpeg.js && node scripts/get-ndi.js && node scripts/check-share.js",
-    "dist": "electron-builder --win portable --x64",
+    "dist": "electron-builder --win portable --x64 --publish never",
     "postdist": "node scripts/finish.js",
-    "dist:folder": "electron-builder --win dir --x64",
-    "dist:installer": "electron-builder --win nsis --x64",
+    "dist:folder": "electron-builder --win dir --x64 --publish never",
+    "dist:installer": "electron-builder --win nsis --x64 --publish never",
     "predist:mac": "node scripts/check-deps.js && node scripts/check-ffmpeg.js && node scripts/get-ndi.js && node scripts/check-share.js",
-    "dist:mac": "electron-builder --mac --universal",
+    "dist:mac": "electron-builder --mac --universal --publish never",
     "postdist:mac": "node scripts/finish-mac.js",
-    "clean": "node scripts/clean.js"
+    "clean": "node scripts/clean.js",
+    "dist:linux": "electron-builder --linux AppImage deb --x64 --publish never"
   },
   "dependencies": {
     "koffi": "^2.16.3"
@@ -144,6 +145,22 @@
     "dmg": {
       "title": "TileSmith ${version}",
       "icon": "build/icon.icns"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "icon": "build/icon.png",
+      "category": "Graphics",
+      "maintainer": "Callum Davenport-Lambton <tilesmithapp@gmail.com>",
+      "artifactName": "TileSmith-${version}-linux-x64.${ext}"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "kingof9x",
+      "repo": "TileSmith"
     }
-  }
+  },
+  "homepage": "https://github.com/kingof9x/TileSmith"
 }

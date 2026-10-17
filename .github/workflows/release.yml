@@ -1,4 +1,4 @@
-# Builds TileSmith for Windows and Mac and attaches the files to a GitHub Release.
+# Builds TileSmith for Windows, Mac and Linux and attaches the files to a GitHub Release.
 #
 # To publish a version: Actions tab > Build and release > Run workflow > type the version (for example 3.4) > Run.
 # The workflow builds both apps, then creates the release v3.4 itself. (Pushing a tag such as v3.4 also works.)
@@ -43,6 +43,7 @@ jobs:
         with:
           name: windows
           path: tilesmith-desktop/TileSmith-Portable.exe
+          if-no-files-found: error
           retention-days: 7
 
   mac:
@@ -63,10 +64,32 @@ jobs:
         with:
           name: mac
           path: tilesmith-desktop/TileSmith-*.dmg
+          if-no-files-found: error
+          retention-days: 7
+
+  linux:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tilesmith-desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npm run dist:linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: |
+            tilesmith-desktop/dist/TileSmith-*-linux-x64.AppImage
+            tilesmith-desktop/dist/TileSmith-*-linux-x64.deb
+          if-no-files-found: error
           retention-days: 7
 
   release:
-    needs: [windows, mac]
+    needs: [windows, mac, linux]
     if: ${{ startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '') }}
     runs-on: ubuntu-latest
     steps:
@@ -83,7 +106,7 @@ jobs:
           VER="${TAG#v}"
           echo "Publishing release $TAG"
           cp dist-files/windows/TileSmith-Portable.exe "TileSmith-$VER-windows-portable.exe"
-          FILES=("TileSmith-$VER-windows-portable.exe" dist-files/mac/*.dmg tilesmith-desktop/TileSmith-Manual.pdf tilesmith-desktop/TileSmith-Mobile-Manual.pdf tilesmith-desktop/TileSmith-App-Spec.md)
+          FILES=("TileSmith-$VER-windows-portable.exe" dist-files/mac/*.dmg dist-files/linux/* tilesmith-desktop/TileSmith-Manual.pdf tilesmith-desktop/TileSmith-Mobile-Manual.pdf tilesmith-desktop/TileSmith-App-Spec.md)
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "${FILES[@]}" --clobber
           else

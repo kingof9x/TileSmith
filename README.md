@@ -61,3 +61,10 @@ Copyright (c) 2026 Callum Davenport-Lambton.
 - **Animated technician** (character design, artwork, animations, the TileSmith name and logo): all rights reserved,
   not GPL. See [`tilesmith-desktop/COPYRIGHT-AND-ARTWORK.txt`](tilesmith-desktop/COPYRIGHT-AND-ARTWORK.txt).
 - **Third parties** (NDI runtime, Spout, Syphon, ffmpeg, npm packages) keep their own licences, listed in the same file.
+
+## Downloads and builds
+
+Open **Actions > Build and release > Run workflow**, type a version such as `3.3` and run it. GitHub builds the Windows portable
+app, the Mac universal installer and Linux packages (`.AppImage` and `.deb`, no Spout/Syphon/NDI there yet) and attaches them
+to a release named `v3.3` together with the manuals. The builds are unsigned. On Ubuntu 24.04 and newer, the AppImage may need
+`--no-sandbox` (or install the `.deb`).
