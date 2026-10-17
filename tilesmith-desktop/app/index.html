@@ -930,7 +930,13 @@ function labelsHTML(){const L=labelList(),g=lblGeom(),pages=labelPages(L),mm=v=>
 function printLabels(){storeWall();if(!lblHas().on){toast('Wire some data or power cables first.');return}
  const html=labelsHTML();
  if(MOBILE){mobSave(new Blob([html],{type:'text/html'}),'tilesmith-cable-labels.html','Label sheet saved. Open it in a browser and print it at 100% scale.');return}
- const x=open('','_blank');if(!x){alert('Pop-ups are blocked.');return}x.document.write(html+'<script>onload=()=>print()<\/script>');x.document.close()}
+ let x=null;try{x=open('','_blank')}catch(e){}
+ if(!x){lblPreview(html);return}x.document.write(html+'<script>onload=()=>print()<\/script>');x.document.close()}
+// shown inside the page when the browser blocks pop-up windows (for example the hosted web preview)
+function lblPreview(html){let o=$('#lblPrev');if(o)o.remove();o=document.createElement('div');o.id='lblPrev';o.style.cssText='position:fixed;inset:0;z-index:99999;background:#222;display:flex;flex-direction:column';
+ o.innerHTML='<div style="display:flex;gap:8px;align-items:center;padding:8px;background:#111;color:#ddd;font:13px sans-serif"><button data-p="1">Print</button><button data-p="0">Close</button><span>Label preview. If Print does nothing here, use the desktop app, or your browser\'s own print command (Ctrl/Cmd+P) with this preview focused.</span></div><iframe style="flex:1;border:0;background:#ccc" title="Label preview"></iframe>';
+ document.body.appendChild(o);const f=o.querySelector('iframe');f.srcdoc=html;
+ o.addEventListener('click',e=>{const b=e.target.closest('button[data-p]');if(!b)return;if(b.dataset.p=='0')o.remove();else{try{f.contentWindow.focus();f.contentWindow.print()}catch(err){toast('Printing is blocked here. Use the desktop app or press Ctrl/Cmd+P.')}}})}
 function spec(){storeWall();const x=MOBILE?null:open('','_blank');if(!x&&!MOBILE){alert('Pop-ups are blocked.');return}const plan=procOn()?portPlan():walls.map(()=>[]),pplan=pdOn()?powerPlan():walls.map(()=>[]);
 const w={document:{h:'',write(t){this.h+=t},close(){}}},doc=MOBILE?w.document:x.document;
 doc.write(`<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TileSmith spec</title><body style="font:14px sans-serif;max-width:720px;margin:20px auto"><h1>TileSmith - LED Wall Spec</h1><table>${thr('Entire canvas')+trs(canvasRows().concat(procOn()?procRowsCanvas(plan):[],pdOn()?powRowsCanvas(pplan):[]))}${walls.map((w,i)=>thr(w.name||'Wall '+(i+1))+trs(wallRows(w,plan[i]||[],pplan[i]||[]))).join('')}</table><style>td{border-bottom:1px solid #ccc;padding:4px}td+td{text-align:right}th{text-align:left;padding:16px 0 4px;font-size:16px}table{width:100%;border-collapse:collapse}</style>${MOBILE?'':'<script>onload=()=>print()<\/script>'}`);doc.close();
