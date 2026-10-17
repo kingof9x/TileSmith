@@ -139,8 +139,38 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  android:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    defaults:
+      run:
+        working-directory: tilesmith-desktop/mobile
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: android-actions/setup-android@v3
+      - run: npm install
+      - run: npm run web
+      - run: npx cap sync android
+      - name: Build the APK (debug-signed, installs on any device or emulator)
+        working-directory: tilesmith-desktop/mobile/android
+        run: ./gradlew assembleDebug --no-daemon
+      - run: cp android/app/build/outputs/apk/debug/app-debug.apk TileSmith-android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android
+          path: tilesmith-desktop/mobile/TileSmith-android.apk
+          if-no-files-found: error
+          retention-days: 7
+
   release:
-    needs: [windows, mac, linux, snap, flatpak]
+    needs: [windows, mac, linux, snap, flatpak, android]
     if: ${{ !cancelled() && needs.windows.result == 'success' && needs.mac.result == 'success' && needs.linux.result == 'success' && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
     runs-on: ubuntu-latest
     steps:
@@ -170,7 +200,7 @@ jobs:
             gh release upload "$TAG" upload/* --clobber
           else
             gh release create "$TAG" --target "$GITHUB_SHA" --title "TileSmith $VER" \
-              --notes "Windows portable app, Mac universal installer and Linux packages (AppImage, deb, rpm, Arch pacman, snap, flatpak), unsigned. Manuals and the app spec are attached. NDI runtime and ffmpeg are not included: see BUILD-WINDOWS.txt / BUILD-MAC.txt." \
+              --notes "Windows portable app, Mac universal installer and Linux packages (AppImage, deb, rpm, Arch pacman, snap, flatpak) and an Android APK (debug-signed, for testing), unsigned. Manuals and the app spec are attached. NDI runtime and ffmpeg are not included: see BUILD-WINDOWS.txt / BUILD-MAC.txt." \
               upload/*
           fi
       - uses: actions/upload-artifact@v4

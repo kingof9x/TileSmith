@@ -41,8 +41,9 @@ software listed in *Software to install* above.
 | **Arch, Manjaro** | [TileSmith-linux-x64.pacman](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.pacman) | `sudo pacman -U TileSmith-linux-x64.pacman` |
 | **Linux (Snap)** | [TileSmith-linux-x64.snap](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.snap) | `sudo snap install --dangerous TileSmith-linux-x64.snap` |
 | **Linux (Flatpak)** | [TileSmith-linux-x64.flatpak](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.flatpak) | `flatpak install --user TileSmith-linux-x64.flatpak` |
+| **Android** 7.0 or newer (phone, tablet or emulator) | [TileSmith-android.apk](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-android.apk) | Test build. Copy it to the device, tap it and allow *Install unknown apps*; or on a computer run `adb install TileSmith-android.apk`. Debug-signed, so not for Google Play. |
 | **All platforms** | [TileSmith-Manual.pdf](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Manual.pdf) | User manual for the desktop app. |
-| **Android / iOS** | [TileSmith-Mobile-Manual.pdf](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Mobile-Manual.pdf) | Manual for the phone and tablet app (the apps are built from `tilesmith-desktop/mobile`, see `BUILD-ANDROID.txt` and `BUILD-IOS.txt`). |
+| **Android / iOS** manual | [TileSmith-Mobile-Manual.pdf](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Mobile-Manual.pdf) | Manual for the phone and tablet app (the iPhone/iPad app has to be built on a Mac with Xcode: see `BUILD-IOS.txt`). |
 | **Developers** | [TileSmith-App-Spec.md](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-App-Spec.md) | Full written specification of the app. |
 
 On Ubuntu 24.04 and newer the AppImage may need `--no-sandbox`; installing the `.deb` avoids that.
@@ -107,6 +108,6 @@ Copyright (c) 2026 Callum Davenport-Lambton.
 ## Downloads and builds
 
 Open **Actions > Build and release > Run workflow**, type a version such as `3.3` and run it. GitHub builds the Windows portable
-app, the Mac universal installer and the Linux packages (`.AppImage`, `.deb`, `.rpm`, `.pacman` for Arch, `.snap` and `.flatpak`;
+app, the Mac universal installer and an Android APK, and the Linux packages (`.AppImage`, `.deb`, `.rpm`, `.pacman` for Arch, `.snap` and `.flatpak`;
 no Spout or Syphon there; NDI® needs the runtime installed), and attaches them to a release named `v3.3` together with the manuals. Downloads are on the **Releases** page. The builds are unsigned. On Ubuntu
 24.04 and newer, the AppImage may need `--no-sandbox` (or install the `.deb`).
