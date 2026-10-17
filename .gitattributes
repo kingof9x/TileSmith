@@ -1,0 +1,15 @@
+# Text files are stored with LF line endings; Windows batch files keep CRLF.
+* text=auto
+*.bat text eol=crlf
+*.cmd text eol=crlf
+gradlew text eol=lf
+*.sh text eol=lf
+# Binary files
+*.png binary
+*.gif binary
+*.ico binary
+*.icns binary
+*.pdf binary
+*.dll binary
+*.node binary
+*.jar binary

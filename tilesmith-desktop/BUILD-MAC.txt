@@ -1,0 +1,189 @@
+TILESMITH v3.3 - BUILD INSTRUCTIONS FOR MAC (Apple Silicon + Intel, one universal app)
+=====================================================================================
+Result: TileSmith-3.3.0-mac-universal.dmg - one installer that runs on BOTH Apple Silicon (M1/M2/M3/M4)
+and Intel Macs. The app is UNSIGNED (fine for personal/internal use; see step 8).
+You must build on a Mac. Needs internet only while building. The finished app works offline.
+Commands are typed in the Terminal app (Applications > Utilities > Terminal).
+How to use the app: see TileSmith-Manual.pdf in this folder.
+The Android and iOS apps are built from the "mobile" folder: see BUILD-ANDROID.txt and BUILD-IOS.txt (the desktop build ignores that folder).
+NDI® output is built in: Macs that RUN TileSmith do not need NDI® Tools or the NDI® Runtime.
+Syphon output is built in too (bin/mac/syphon comes in the zip; nothing extra to download or install).
+
+IMPORTANT: this Mac version has NOT been tested by its author. If something fails, copy the exact
+error text and send it back and it will be fixed.
+
+STEP 1 - Install Apple's command line tools (once)
+     xcode-select --install
+  (Click Install in the window that appears. Skip if it says they are already installed.)
+
+STEP 2 - Install Homebrew (once; skip if you already have it)
+  Follow the one-line installer at  https://brew.sh  and then run the two "Next steps"
+  commands it prints (they add brew to your PATH).
+
+STEP 3 - Install Node.js
+     brew install node
+     node --version        (should print v18 or newer)
+
+STEP 4 - Install the NDI® SDK for Apple (free), on THIS build Mac only
+     https://ndi.video/for-developers/ndi-sdk/   ->  Download NDI® SDK  ->  run the Apple installer
+  It installs to  /Library/NDI SDK for Apple . The build copies the NDI® runtime (libndi.dylib, which runs on
+  both Apple Silicon and Intel) and its license notices into bin/mac/ndi and packs them inside the app.
+  Nothing NDI® needs installing on the Macs that run TileSmith.
+  (Already have the files? Copy libndi.dylib and the license .txt next to it into tilesmith-desktop/bin/mac/ndi
+   yourself; then the SDK is not needed.)
+  Optional: NDI® Tools (https://ndi.video/tools/) for monitoring with Studio Monitor. TileSmith does not need them.
+
+STEP 5 - Install ffmpeg with the HAP encoder (needed ONLY for "Export video")
+     brew install ffmpeg
+     ffmpeg -hide_banner -encoders | grep hap
+  You should see a line containing:  hap   Vidvox Hap
+  If NOTHING prints, that ffmpeg has no HAP encoder. Try one of these, then run the grep again:
+     a) brew tap homebrew-ffmpeg/ffmpeg
+        brew install homebrew-ffmpeg/ffmpeg/ffmpeg       (may need extra options; run: brew options homebrew-ffmpeg/ffmpeg/ffmpeg)
+     b) Download a Mac ffmpeg build that includes HAP, rename the file to exactly  ffmpeg ,
+        put it in the project folder  bin/mac/  , then in Terminal run:
+           chmod +x bin/mac/ffmpeg
+           xattr -d com.apple.quarantine bin/mac/ffmpeg
+  The app looks in these places, in order: bin/mac/ffmpeg (packed into the app), the environment
+  variable TILESMITH_FFMPEG, /opt/homebrew/bin/ffmpeg, /usr/local/bin/ffmpeg, /opt/local/bin/ffmpeg.
+  Homebrew ffmpeg also includes the MP4 (H.264, H.265) and ProRes encoders.
+  Everything else in TileSmith works without ffmpeg; only video export needs it.
+
+STEP 6 - Unzip the project into a NEW folder
+  Double-click tilesmith-desktop.zip, move the resulting "tilesmith-desktop" folder to your home
+  folder (so it is ~/tilesmith-desktop). Do not build inside an old copy.
+
+STEP 7 - Build
+     cd ~/tilesmith-desktop
+     npm run clean
+     npm install
+     npm run dist:mac
+  (npm run clean also deletes package-lock.json, so npm install always picks current, patched versions.)
+  ("npm run clean" just removes leftovers from an old build; on a fresh folder it prints "clean done".)
+  You will first see either "[ok] HAP-capable ffmpeg found ..." or "[WARN] ..." (see step 5),
+  and either "[ok] The NDI® runtime will be built into TileSmith ... NDI® license notices included: ..."
+  or "[WARN] NDI® SDK not found ..." (see step 4; the build still works, but then every Mac that runs TileSmith
+  needs the NDI® Runtime or NDI® Tools for NDI® output),
+  and "[ok] Syphon output will be built into TileSmith ..." (or "[info] ... Syphon output will NOT be built in"
+  if bin/mac/syphon is missing; the build still works, without Syphon).
+  The build takes several minutes (it builds Apple Silicon and Intel and merges them).
+  When finished it prints DONE and leaves this file in the project folder:
+     TileSmith-3.3.0-mac-universal.dmg
+
+STEP 8 - Install and open
+  1) Double-click the .dmg and drag TileSmith onto the Applications folder.
+  2) FIRST launch only: in Applications, RIGHT-CLICK (or Control-click) TileSmith -> Open -> Open.
+     (The app is unsigned, so a normal double-click is blocked the first time.)
+  3) If macOS says the app "is damaged and can't be opened", run this, then open it again:
+        xattr -cr /Applications/TileSmith.app
+  4) If Settings > Privacy & Security shows "TileSmith was blocked", click "Open Anyway".
+  5) The first time you start NDI®, macOS may ask to allow "local network" access. Click Allow.
+  Check you have the right version: the window title and header say "v3.3".
+
+USING NDI®
+  Click "Start NDI®" in the top bar (it turns green and reads "Stop NDI®" while live).
+  The source is named TileSmith-LED-Out; change the name, frame rate and Save CPU under
+  Animation Options -> NDI® options (change the name before starting). Pick it in vMix, OBS (NDI® plugin), Resolume, NDI® Studio Monitor.
+  The status line shows which NDI® runtime is in use: "built-in NDI® runtime" (from step 4) or "installed NDI® Runtime".
+  If you see "NDI® runtime not found": redo step 4 and rebuild, or install the NDI® Runtime
+  (https://ndi.link/NDIRedistV6Apple) or NDI® Tools on that Mac, then relaunch.
+  To keep CPU use down: NDI® work grows with the canvas size and frame rate. Click "Fit canvas to walls" so
+  no empty black area is sent, pick the lowest Frame rate your show needs (30 needs roughly half the NDI® work of 60),
+  and tick "Save CPU while the picture is still" if your receivers are happy holding the last frame.
+  Without a built-in runtime the app looks for /usr/local/lib/libndi.dylib (and /opt/homebrew/lib/libndi.dylib).
+
+USING SYPHON (sharing the picture with other apps on the SAME Mac)
+  Click "Start Syphon" in the top bar (it turns green and reads "Stop Syphon" while live). The button is only there
+  when the app was built with bin/mac/syphon (it comes in the zip).
+  Syphon passes the master canvas to other apps on this Mac through the graphics card: no network, no compression,
+  almost no delay and very little CPU. In Resolume pick it under Sources > Syphon; also MadMapper, VDMX, Millumin,
+  TouchDesigner (Syphon Spout In TOP) and OBS (add a "Syphon Client" source).
+  The server is named TileSmith; change the name, frame rate and Save CPU under Animation Options -> Syphon options
+  (change the name before starting). Some apps list it with the app name "TileSmith Helper (Renderer)": that is TileSmith.
+  It runs alongside NDI® and video export; while NDI® runs, Syphon uses the NDI® frame rate.
+  To save work, TileSmith only sends Syphon frames while at least one app is receiving them.
+  If the picture arrives upside down in a receiver, please report which app it was.
+  To build WITHOUT Syphon, delete the bin/mac/syphon folder before "npm run dist:mac"; the Syphon button is then hidden.
+
+USING VIDEO EXPORT
+  "Export video" saves to  ~/Movies/TileSmith  and reveals the file in Finder.
+  Pick the format under Video export > Format:
+     HAP (.mov)            for media servers (Resolume, disguise, Millumin); large files, light playback
+     H.264 (.mp4)          plays almost anywhere, small files
+     H.265 / HEVC (.mp4)   smaller than H.264, needs a newer player
+     ProRes 422 HQ (.mov)  editing master (Premiere, Final Cut, Resolve)
+     ProRes 4444 (.mov)    highest-quality editing master, full colour on every pixel
+  If it says no ffmpeg with the encoder was found, redo step 5.
+
+WHERE TILESMITH KEEPS YOUR SETTINGS
+  ~/Library/Application Support/TileSmith/state.json
+  (Info button > "Reset saved settings" clears it.)
+
+OTHER
+     npm start      run the app straight from the project folder without building
+
+NDI® LICENSING (if you share TileSmith with other people)
+  TileSmith ships NDI®'s runtime under the NDI® SDK License Agreement (https://ndi.link/ndisdk_license).
+  The build includes NDI®'s license notices, and the Info button shows the NDI® trademark statement,
+  links to https://ndi.video/ and https://ndi.video/tools/, and a button to view the notices.
+  Do not bundle or redistribute NDI® Tools themselves; link to https://ndi.video/tools/ instead.
+  NDI® asks to be told about commercial applications that use NDI® (see the SDK documentation).
+
+SYPHON LICENSING
+  TileSmith includes the Syphon framework by Tom Butterworth & Anton Marini (https://syphon.github.io/), BSD licence,
+  and node-syphon's syphon.node by Benoît Lahoz (https://github.com/benoitlahoz/node-syphon), MIT licence.
+  Both licence texts (in bin/mac/syphon) are packed into the app, and the Info button shows the credits and a button
+  to open them. Keep them with any copy of TileSmith you share.
+
+RESOLUME EXPORT
+  "Resolume XML" saves an Advanced Output preset. If ~/Documents/Resolume Arena/Presets/Advanced Output exists,
+  the file is saved straight there; otherwise it goes to Downloads, so copy it into that folder yourself.
+  In Arena: Output > Advanced Output, pick the preset from the list, then assign the screen to your real output.
+
+TROUBLESHOOTING
+  "8 moderate severity vulnerabilities" mentioning sprintf-js / roarr / global-agent / @electron/get
+     sprintf-js has a new advisory with no fixed version yet. It only reaches this project through an optional
+     proxy helper (global-agent) in electron-builder's Electron downloader. The project's .npmrc file
+     (its omit[]=optional line) skips that helper, so a clean install should not include it. Make sure the hidden file
+     .npmrc is in your project folder (it comes in the zip), then:
+        npm run clean
+        npm install
+        npm run dist:mac
+     NEVER run  npm audit fix --force  for this: it "fixes" it by downgrading electron-builder to 26.5.0,
+     which brings back high and critical vulnerabilities (the loop seen before).
+  "npm warn install-scripts ... not yet covered by allowScripts"  (newer npm versions)
+     New npm versions skip install scripts until they are approved. TileSmith's package.json already approves
+     the two it needs (electron downloads its runtime, koffi loads the NDI® runtime) and declines electron-winstaller
+     (only used for "Squirrel" Windows installers, which TileSmith does not build), so a fresh install should not show this.
+     If you still see it (for example in an older project folder), run:
+        npm install-scripts approve electron koffi
+        npm rebuild
+  "N vulnerabilities" after npm install (tar, app-builder-lib, builder-util-runtime, electron-builder ...)
+     Usually an old package-lock.json is pinning old versions. Clear it and install fresh:
+        npm run clean
+        npm install
+        npm run dist:mac
+     Do not run  npm audit fix --force  (it can swap in incompatible versions and break the build).
+     If npm still reports vulnerabilities after a clean install, send the  npm audit  output so it can be checked.
+  "npm warn deprecated inflight@1.0.6 / rimraf@2.6.3 / glob@7.2.3"
+     These came from electron-builder's add-on for Squirrel.Windows installers, which TileSmith does not use
+     (chain: electron-builder-squirrel-windows -> electron-winstaller -> temp -> rimraf 2 -> glob 7 -> inflight).
+     npm installs it automatically because electron-builder lists it as a "peer" package. The project's .npmrc
+     (its omit[]=peer line) now skips it. If you still see these lines, the .npmrc file is missing or old:
+     unzip a fresh copy of tilesmith-desktop.zip, then  npm run clean  and  npm install.
+     They were never part of the finished app; they only ever sat in node_modules on the build computer.
+     If you run  npm ls  it may list electron-builder-squirrel-windows as "missing". That is expected.
+  "Syphon failed to load" or a macOS warning that "syphon.node" or "Syphon" cannot be opened
+     The files were blocked by the download quarantine. The build clears it (scripts/check-share.js), but if you copied
+     the app from elsewhere, run   xattr -cr /Applications/TileSmith.app   and open it again.
+  Any other "npm warn deprecated ..." line
+     A notice from an old helper inside the build tools (electron-builder, Electron's downloader). It is not
+     part of the finished app. Send the exact line so it can be traced.
+  "[STOP] package.json contains package(s) TileSmith does not use" / npm audit warns about uglify-js and "dist"
+     A package called "dist" was installed by typing  npm install dist  instead of  npm run dist:mac.
+     It is unrelated to TileSmith and would be packed into the app. Remove it and rebuild:
+        npm uninstall dist
+        npm run clean
+        npm install
+        npm run dist:mac
+     (Or unzip a fresh copy of tilesmith-desktop.zip into a new folder.) The build is  npm RUN dist, never npm install dist.

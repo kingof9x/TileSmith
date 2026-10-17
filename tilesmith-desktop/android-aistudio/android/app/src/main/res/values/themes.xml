@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- light theme. The WebView reports prefers-color-scheme from this theme (light here, dark in values-night),
+         which switches the TileSmith page between its light and dark colours. -->
+    <style name="Theme.TileSmith" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/tilesmith_bg</item>
+    </style>
+</resources>

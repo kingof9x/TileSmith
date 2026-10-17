@@ -1,0 +1,8 @@
+{
+  "appId": "com.tilesmith.app",
+  "appName": "TileSmith",
+  "webDir": "www",
+  "backgroundColor": "#0d1217",
+  "android": { "backgroundColor": "#0d1217" },
+  "ios": { "backgroundColor": "#0d1217", "contentInset": "never" }
+}

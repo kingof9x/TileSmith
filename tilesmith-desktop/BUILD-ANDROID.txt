@@ -1,0 +1,92 @@
+TILESMITH v3.3 - BUILD INSTRUCTIONS FOR ANDROID (phones and tablets)
+====================================================================
+Result: the TileSmith app on your Android phone or tablet (Android 7.0 or newer), built from the same app page as
+the desktop version, so every feature you add shows up in both.
+You can build on Windows or on a Mac. You need internet while building; the finished app works offline.
+How to use the app: see TileSmith-Mobile-Manual.pdf.
+
+WHAT THE MOBILE APP DOES DIFFERENTLY
+  - Export PNG, Export CSV, Spec sheet and Resolume XML open the share sheet: save to Files or Google Drive,
+    or send by e-mail, Bluetooth, Quick Share and so on.
+  - Export video records an H.264 MP4 in real time with the device's own encoder (the screen stays on while it
+    records), then opens the share sheet. HAP, ProRes and the DVD "Export loop video" are desktop only.
+  - NDI®, Spout and Syphon are not in the mobile app (yet); their buttons and menus are hidden.
+  - Two fingers pinch to zoom and drag to pan the viewport; one finger drags walls, wires tiles and so on.
+  - Tablets are the best fit. On a phone the screen is small (a phone layout is planned).
+
+STEP 1 - Install the tools (once)
+  a) Node.js 22 or newer (the LTS version is fine). If you already build the desktop app, check it with
+        node --version
+     It must print v22 or higher; otherwise install the current LTS from https://nodejs.org
+  b) Android Studio 2025.2.1 or newer: https://developer.android.com/studio
+     Install it with the default ("Standard") setup and open it once, so it downloads the Android SDK.
+     Android Studio brings its own Java, so nothing else is needed.
+
+STEP 2 - Unzip the project
+  Use the same tilesmith-desktop.zip as the desktop build. The mobile app lives in its "mobile" folder:
+     tilesmith-desktop\mobile        (Windows)        ~/tilesmith-desktop/mobile        (Mac)
+
+STEP 3 - Prepare the Android project
+  Windows: open a Command Prompt in the mobile folder (File Explorer: open tilesmith-desktop\mobile, click the
+  address bar, type  cmd  and press Enter). Mac: open Terminal and type  cd ~/tilesmith-desktop/mobile
+     npm install
+     npm run android
+  "npm run android" copies the current TileSmith page into the Android project (you will see
+  "[ok] www is ready: TileSmith v3.3 ...") and opens it in Android Studio.
+
+STEP 4 - Let Android Studio finish setting up
+  The first time, Android Studio downloads the build tools (several hundred MB) and runs "Gradle sync".
+  Wait until the progress bar at the bottom is gone. If it asks to install a missing SDK platform or to
+  "Upgrade Gradle", accept the SDK install, but do NOT upgrade Gradle or the Android Gradle Plugin.
+
+STEP 5a - Run it on your phone or tablet (cable)
+  1) On the device: Settings > About phone (or About tablet) > tap "Build number" 7 times to turn on
+     Developer options. Then Settings > System > Developer options > turn on "USB debugging".
+  2) Connect the device with a USB cable and allow the "USB debugging" prompt on its screen.
+  3) In Android Studio pick the device in the toolbar at the top and click the green Run button (triangle).
+  TileSmith installs and opens. It stays installed like any other app.
+
+STEP 5b - Or make an APK file to install on any device
+  In Android Studio: Build > Build App Bundle(s) / APK(s) > Build APK(s). When it finishes, click "locate".
+  The file is  mobile\android\app\build\outputs\apk\debug\app-debug.apk
+  Copy it to the device (cable, Drive, e-mail ...), tap it and allow "Install unknown apps" when asked.
+
+AFTER YOU CHANGE TILESMITH
+  Run  npm run android  again (it copies the new app page across), then click Run in Android Studio.
+  The app keeps its saved settings when you install a newer build over it.
+
+PUTTING IT ON GOOGLE PLAY (optional, later)
+  Google Play needs a developer account (one-time US$25 fee) and a signed release:
+  Build > Generate Signed App Bundle or APK > Android App Bundle, and create a key store when asked.
+  KEEP THE KEY STORE FILE AND ITS PASSWORDS SAFE: every future update must be signed with the same key.
+  Before publishing, give the app its own unique ID: change "com.tilesmith.app" in
+  mobile/capacitor.config.json and mobile/android/app/build.gradle (applicationId) to something only you use,
+  for example com.yourname.tilesmith.
+
+ANOTHER WAY: THE KOTLIN APP FOR GOOGLE AI STUDIO (optional)
+  The "android-aistudio" folder holds a second Android app: Kotlin with Jetpack Compose (what Google AI Studio's
+  Android builder writes), showing the same TileSmith page. It works the same as this build and has its own app ID
+  (com.tilesmith.android), so both can be installed side by side. See android-aistudio/README.txt, or the
+  TileSmith Android AI Studio kit (00-START-HERE.md) to build it in AI Studio.
+
+TROUBLESHOOTING
+  "npm ERR! engine Unsupported" or "Capacitor CLI requires NodeJS >=22"
+     Install the current Node.js LTS (step 1a), close and reopen the command window, then run step 3 again.
+  "[STOP] Capacitor is not installed yet"
+     Run  npm install  in the mobile folder first.
+  "SDK location not found" / Android Studio cannot find the SDK
+     Open Android Studio's Settings > Languages & Frameworks > Android SDK and install the SDK it suggests,
+     then File > Sync Project with Gradle Files.
+  The device does not appear in Android Studio
+     Check the cable carries data, unlock the device, and accept the USB debugging prompt. On Windows some
+     phones need the maker's USB driver.
+  "npm.ps1 cannot be loaded" (PowerShell)
+     Use Command Prompt instead (see step 3), as for the desktop build.
+  A save or share does nothing
+     Pick an app in the share sheet (Files, Drive ...). Closing the sheet cancels the save, and TileSmith
+     says "Not saved".
+  Export video says "this device cannot record MP4 video"
+     Recording MP4 needs a recent "Android System WebView": update it (and Chrome) from Google Play. Devices on
+     Android 7 cannot get a new enough version; everything else in TileSmith still works there.
+  npm warnings: the mobile folder has its own package.json with pinned versions and 0 known vulnerabilities at
+     the time of writing. Never run  npm audit fix --force  here either; send the exact message instead.

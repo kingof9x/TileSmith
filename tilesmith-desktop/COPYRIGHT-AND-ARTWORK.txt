@@ -1,0 +1,49 @@
+TileSmith - copyright and licence notice
+========================================
+
+Copyright (c) 2026 Callum Davenport-Lambton. All rights reserved except as stated below.
+tilesmithapp@gmail.com  |  https://ko-fi.com/kingof9x
+
+1. PROGRAM CODE: GNU GPL v3 or later
+------------------------------------
+The TileSmith program (the HTML, CSS and JavaScript page app/index.html, the Electron, Capacitor and Android wrappers,
+the scripts and the documentation text) is free software: you can redistribute it and/or modify it under the terms of
+the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version. See the file LICENSE.
+
+TileSmith is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+If you distribute TileSmith or a modified version, keep this notice and the copyright line above, state your changes,
+and make the complete source code available under the GPL.
+
+2. RESERVED: THE ANIMATED TECHNICIAN
+------------------------------------
+The following are NOT licensed under the GPL. They are the creative work and identity of the author and all rights are
+reserved. Copyright (c) 2026 Callum Davenport-Lambton:
+
+  - the design and appearance of the animated technician character (face, hair, hard hat, vest, proportions, colour
+    schemes, crew members and name tags, and the TileSmith logo and name);
+  - the artwork, animation frames, poses, timings and the build-animation concept as a finished look and feel;
+  - the TileSmith name, logo and icons.
+
+You may not use, copy, redistribute or make derivative versions of these items, or ship a product that looks like or is
+presented as the TileSmith technician, without written permission from the author. Using the program as published,
+including the customisation options it provides (hat, vest, logo text, crew names), is permitted.
+
+Note: the source code that draws the technician is part of the program and is under the GPL (section 1). The reservation
+above covers the character's artwork and identity, not the right to study or reuse the code that makes the program run.
+If you reuse that code under the GPL, replace the technician's artwork and name with your own.
+
+3. THIRD-PARTY COMPONENTS (not covered by the GPL grant above)
+---------------------------------------------------------------
+- NDI(R) runtime library (Processing.NDI.Lib.x64.dll, libndi.dylib), (c) Vizrt NDI AB, under the NDI SDK License
+  Agreement. NDI(R) is a registered trademark of Vizrt NDI AB. https://ndi.video/
+  GPL additional permission: TileSmith is allowed to load and call the separately licensed NDI(R) runtime, and that
+  runtime may be shipped alongside TileSmith. The runtime remains under its own licence.
+- Spout: SpoutDX.dll from the Spout SDK by Lynn Jarvis, Simplified BSD licence (bin/spout/Spout-licence.txt).
+- Syphon framework and node-syphon (bin/mac/syphon), BSD / MIT licences (licence files in that folder).
+- ffmpeg, if installed or bundled, under its own licence (LGPL/GPL depending on the build).
+- Electron, Capacitor, koffi and other npm packages, under their own licences.
+
+Each third-party component keeps its own licence and copyright.

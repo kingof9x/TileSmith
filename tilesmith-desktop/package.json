@@ -1,0 +1,149 @@
+{
+  "name": "tilesmith",
+  "version": "3.3.0",
+  "description": "TileSmith - LED Wall Builder: pixel mapping, engineering layout and live NDI®, Spout and Syphon output",
+  "main": "main.js",
+  "author": "Callum Davenport-Lambton <tilesmithapp@gmail.com>",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "start": "electron .",
+    "predist": "node scripts/check-deps.js && node scripts/check-ffmpeg.js && node scripts/get-ndi.js && node scripts/check-share.js",
+    "dist": "electron-builder --win portable --x64",
+    "postdist": "node scripts/finish.js",
+    "dist:folder": "electron-builder --win dir --x64",
+    "dist:installer": "electron-builder --win nsis --x64",
+    "predist:mac": "node scripts/check-deps.js && node scripts/check-ffmpeg.js && node scripts/get-ndi.js && node scripts/check-share.js",
+    "dist:mac": "electron-builder --mac --universal",
+    "postdist:mac": "node scripts/finish-mac.js",
+    "clean": "node scripts/clean.js"
+  },
+  "dependencies": {
+    "koffi": "^2.16.3"
+  },
+  "devDependencies": {
+    "electron": "^44.0.0",
+    "electron-builder": "^26.15.3"
+  },
+  "overrides": {
+    "tar": "^7.5.21"
+  },
+  "allowScripts": {
+    "electron": true,
+    "koffi": true,
+    "electron-winstaller": false
+  },
+  "build": {
+    "appId": "com.tilesmith.app",
+    "productName": "TileSmith",
+    "files": [
+      "main.js",
+      "app/**/*",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "node_modules/koffi/**"
+    ],
+    "extraResources": [],
+    "win": {
+      "target": "portable",
+      "icon": "build/icon.ico",
+      "extraResources": [
+        {
+          "from": "bin",
+          "to": ".",
+          "filter": [
+            "ffmpeg.exe"
+          ]
+        },
+        {
+          "from": "bin/ndi",
+          "to": "ndi",
+          "filter": [
+            "Processing.NDI.Lib.x64.dll",
+            "*[Ll]icen[cs]e*"
+          ]
+        },
+        {
+          "from": "bin/spout",
+          "to": "spout",
+          "filter": [
+            "SpoutDX.dll",
+            "*[Ll]icen[cs]e*"
+          ]
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "TileSmith-Portable.exe"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
+      "icon": "build/icon.icns",
+      "category": "public.app-category.video",
+      "identity": "-",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "artifactName": "TileSmith-${version}-mac-universal.${ext}",
+      "extraResources": [
+        {
+          "from": "bin/mac",
+          "to": ".",
+          "filter": [
+            "ffmpeg"
+          ]
+        },
+        {
+          "from": "bin/mac/ndi",
+          "to": "ndi",
+          "filter": [
+            "libndi.dylib",
+            "*[Ll]icen[cs]e*"
+          ]
+        },
+        {
+          "from": "bin/mac/syphon/bin",
+          "to": ".",
+          "filter": [
+            "syphon.node"
+          ]
+        },
+        {
+          "from": "bin/mac/syphon",
+          "to": "syphon",
+          "filter": [
+            "*[Ll]icen[cs]e*"
+          ]
+        }
+      ],
+      "extraFiles": [
+        {
+          "from": "bin/mac/syphon/Frameworks/Syphon.framework",
+          "to": "Frameworks/Syphon.framework"
+        }
+      ],
+      "extendInfo": {
+        "NSLocalNetworkUsageDescription": "TileSmith sends NDI® video to other computers on your network.",
+        "NSBonjourServices": [
+          "_ndi._tcp"
+        ]
+      },
+      "x64ArchFiles": "{koffi.node,ffmpeg,libndi.dylib,syphon.node,Syphon}"
+    },
+    "dmg": {
+      "title": "TileSmith ${version}",
+      "icon": "build/icon.icns"
+    }
+  }
+}

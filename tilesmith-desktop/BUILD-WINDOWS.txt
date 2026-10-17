@@ -1,0 +1,180 @@
+TILESMITH v3.3 - BUILD INSTRUCTIONS FOR WINDOWS
+================================================
+Result: ONE stand-alone file, TileSmith-Portable.exe. Copy it anywhere and double-click.
+NDI® output is built in: computers that RUN TileSmith do not need NDI® Tools or the NDI® Runtime.
+Spout output is built in too (bin\spout comes in the zip; nothing extra to download or install).
+How to use the app: see TileSmith-Manual.pdf in this folder.
+The Android and iOS apps are built from the "mobile" folder: see BUILD-ANDROID.txt and BUILD-IOS.txt (the desktop build ignores that folder).
+Needs internet only while building. The finished app works fully offline.
+(Open this file in Notepad. Commands are typed in Command Prompt or PowerShell.)
+
+STEP 1 - Install the tools (once)
+  a) Node.js LTS, 64-bit:        https://nodejs.org   (keep all defaults)
+  b) NDI® SDK (free), on THIS build computer only:
+        https://ndi.video/for-developers/ndi-sdk/   ->  Download NDI® SDK  ->  run the Windows installer
+     The build copies the NDI® runtime (Processing.NDI.Lib.x64.dll) and its license notices from the SDK
+     into bin\ndi and packs them inside TileSmith-Portable.exe. Nothing NDI® needs installing where TileSmith runs.
+     (Already have the two files? Copy Processing.NDI.Lib.x64.dll and Processing.NDI.Lib.Licenses.txt into
+      tilesmith-desktop\bin\ndi yourself; then the SDK is not needed.)
+     Optional: NDI® Tools (https://ndi.video/tools/) for monitoring with Studio Monitor. TileSmith does not need them.
+  c) ffmpeg "full" build (for video export: HAP, MP4, ProRes):
+        https://www.gyan.dev/ffmpeg/builds/   ->  ffmpeg-release-full
+     Unzip it and copy  ffmpeg.exe  (from its "bin" folder) into this project's "bin" folder,
+     so you have:   tilesmith-desktop\bin\ffmpeg.exe
+
+STEP 2 - Unzip the project
+  Unzip tilesmith-desktop.zip into a NEW, EMPTY folder, for example  C:\tilesmith-desktop
+  (Do not build inside an old copy.)
+
+STEP 3 - Open a command window in the project folder
+  Easiest: in File Explorer open the project folder, click the address bar at the top, type  cmd  and press Enter.
+  USE COMMAND PROMPT (cmd). PowerShell often blocks npm with "running scripts is disabled on this system"
+  (see TROUBLESHOOTING at the bottom). Every command below is the same in either shell.
+
+STEP 4 - Check ffmpeg has HAP (optional but recommended)
+     .\bin\ffmpeg.exe -hide_banner -encoders | findstr hap
+  You should see a line containing:  hap   Vidvox Hap
+
+STEP 5 - Build
+     npm run clean
+     npm install
+     npm run dist
+  (npm run clean also deletes package-lock.json, so npm install always picks current, patched versions.)
+  (These work in Command Prompt AND PowerShell. "npm run clean" just removes leftovers from an old build.
+   If it is your first build in a fresh folder it simply prints "clean done".)
+  Before the build you will see either
+     [ok] bin/ffmpeg.exe has the HAP encoder and will be bundled.
+  or [WARN] ...   (go back to step 1c)
+  and either
+     [ok] The NDI® runtime will be built into TileSmith ... NDI® license notices included: ...
+  or [WARN] NDI® SDK not found ...   (go back to step 1b; the build still works, but then every PC that runs
+     TileSmith needs the NDI® Runtime or NDI® Tools for NDI® output)
+  and
+     [ok] Spout output will be built into TileSmith: bin/spout/SpoutDX.dll ... Spout licence included: Spout-licence.txt
+  or [info] bin/spout/SpoutDX.dll not found ...   (the build still works, without Spout; see USING SPOUT)
+  When finished it prints DONE and leaves ONE file in the project folder:
+     TileSmith-Portable.exe
+
+STEP 6 - Run it
+  Copy ONLY TileSmith-Portable.exe wherever you want and double-click it.
+  Never use anything inside dist\win-unpacked (it only works next to its own files).
+  Windows SmartScreen may warn about an unsigned app: click "More info" -> "Run anyway".
+  Check you have the right version: the window title and header say "v3.3".
+
+USING NDI®
+  Click "Start NDI®" in the top bar (it turns green and reads "Stop NDI®" while live).
+  The source is named TileSmith-LED-Out; change the name, frame rate and Save CPU under
+  Animation Options -> NDI® options (change the name before starting). Pick it in vMix, OBS (NDI® plugin), Resolume, NDI® Studio Monitor.
+  The status line shows which NDI® runtime is in use: "built-in NDI® runtime" (from step 1b) or "installed NDI® Runtime".
+  If you see "NDI® runtime not found": redo step 1b and rebuild, or install the NDI® Runtime
+  (https://ndi.link/NDIRedistV6) or NDI® Tools on that PC, then relaunch.
+  To keep CPU use down: NDI® work grows with the canvas size and frame rate. Click "Fit canvas to walls" so
+  no empty black area is sent, pick the lowest Frame rate your show needs (30 needs roughly half the NDI® work of 60),
+  and tick "Save CPU while the picture is still" if your receivers are happy holding the last frame.
+  If other PCs cannot see it: allow TileSmith through Windows Firewall (Private networks).
+
+USING SPOUT (sharing the picture with other programs on the SAME PC)
+  Click "Start Spout" in the top bar (it turns green and reads "Stop Spout" while live). The button is only there
+  when the app was built with bin\spout\SpoutDX.dll (it comes in the zip).
+  Spout passes the master canvas to other programs on this PC through the graphics card: no network, no compression,
+  almost no delay and very little CPU. In Resolume pick it under Sources > Spout; in TouchDesigner use a
+  Syphon Spout In TOP; in OBS install the free Spout2 plugin and add a "Spout2 Capture" source.
+  The sender is named TileSmith; change the name, frame rate and Save CPU under Animation Options -> Spout options
+  (change the name before starting). It runs alongside NDI® and video export; while NDI® runs, Spout uses the NDI® frame rate.
+  If a sender with the same name is already running, Spout adds _1, _2 ... to the name; the status line shows the real name.
+  GRAPHICS CARD: Spout passes the picture through the graphics card, so the receiving program must run on the SAME card.
+  Spout options -> Graphics card: "Automatic" (default) uses the high-performance card, where Resolume and most media
+  servers run. The status line ends with the card TileSmith is using.
+  The receiver lists TileSmith but shows BLACK (typical on laptops with Intel + NVIDIA/AMD):
+     pick the card the receiver runs on under Graphics card, or set the receiver to "High performance" in
+     Windows Settings > System > Display > Graphics. Changing the card while Spout runs restarts the sender on it.
+  "Spout could not send frames" or "could not start DirectX 11": pick another card and update the graphics driver.
+  Spout needs DirectX 11 (every PC from the last decade has it). Spout writes a log to
+     %APPDATA%\TileSmith\spout-log.txt   (type that into the File Explorer address bar)
+  To build WITHOUT Spout, delete bin\spout\SpoutDX.dll before "npm run dist"; the Spout button is then hidden.
+
+USING VIDEO EXPORT
+  "Export video" saves to  C:\Users\<you>\Videos\TileSmith  and opens the folder.
+  Pick the format under Video export > Format:
+     HAP (.mov)            for media servers (Resolume, disguise, Millumin); large files, light playback
+     H.264 (.mp4)          plays almost anywhere, small files
+     H.265 / HEVC (.mp4)   smaller than H.264, needs a newer player
+     ProRes 422 HQ (.mov)  editing master (Premiere, Final Cut, Resolve)
+     ProRes 4444 (.mov)    highest-quality editing master, full colour on every pixel
+  If it says no ffmpeg with the encoder was found, redo step 1c and rebuild (the "full" build has all of them).
+
+OTHER BUILDS (optional)
+     npm start                  run without building
+     npm run dist:installer     build a normal Setup.exe
+
+TROUBLESHOOTING
+  "8 moderate severity vulnerabilities" mentioning sprintf-js / roarr / global-agent / @electron/get
+     sprintf-js has a new advisory with no fixed version yet. It only reaches this project through an optional
+     proxy helper (global-agent) in electron-builder's Electron downloader. The project's .npmrc file
+     (its omit[]=optional line) skips that helper, so a clean install should not include it. Make sure the hidden file
+     .npmrc is in your project folder (it comes in the zip), then:
+        npm run clean
+        npm install
+        npm run dist
+     NEVER run  npm audit fix --force  for this: it "fixes" it by downgrading electron-builder to 26.5.0,
+     which brings back high and critical vulnerabilities (the loop seen before).
+  "npm warn install-scripts ... not yet covered by allowScripts"  (newer npm versions)
+     New npm versions skip install scripts until they are approved. TileSmith's package.json already approves
+     the two it needs (electron downloads its runtime, koffi loads the NDI® runtime and Spout) and declines electron-winstaller
+     (only used for "Squirrel" Windows installers, which TileSmith does not build), so a fresh install should not show this.
+     If you still see it (for example in an older project folder), run:
+        npm install-scripts approve electron koffi
+        npm rebuild
+  "N vulnerabilities" after npm install (tar, app-builder-lib, builder-util-runtime, electron-builder ...)
+     Usually an old package-lock.json is pinning old versions. Clear it and install fresh:
+        npm run clean
+        npm install
+        npm run dist
+     Do not run  npm audit fix --force  (it can swap in incompatible versions and break the build).
+     If npm still reports vulnerabilities after a clean install, send the  npm audit  output so it can be checked.
+  "npm warn deprecated inflight@1.0.6 / rimraf@2.6.3 / glob@7.2.3"
+     These came from electron-builder's add-on for Squirrel.Windows installers, which TileSmith does not use
+     (chain: electron-builder-squirrel-windows -> electron-winstaller -> temp -> rimraf 2 -> glob 7 -> inflight).
+     npm installs it automatically because electron-builder lists it as a "peer" package. The project's .npmrc
+     (its omit[]=peer line) now skips it. If you still see these lines, the .npmrc file is missing or old:
+     unzip a fresh copy of tilesmith-desktop.zip, then  npm run clean  and  npm install.
+     They were never part of the finished app; they only ever sat in node_modules on the build computer.
+     If you run  npm ls  it may list electron-builder-squirrel-windows as "missing". That is expected.
+  Any other "npm warn deprecated ..." line
+     A notice from an old helper inside the build tools (electron-builder, Electron's downloader). It is not
+     part of the finished app. Send the exact line so it can be traced.
+  "[STOP] package.json contains package(s) TileSmith does not use" / npm audit warns about uglify-js and "dist"
+     A package called "dist" was installed by typing  npm install dist  instead of  npm run dist.
+     It is unrelated to TileSmith and would be packed into the app. Remove it and rebuild:
+        npm uninstall dist
+        npm run clean
+        npm install
+        npm run dist
+     (Or unzip a fresh copy of tilesmith-desktop.zip into a new folder.) The build is  npm RUN dist, never npm install dist.
+  "npm.ps1 cannot be loaded because running scripts is disabled on this system"  (PowerShell only)
+     Easiest fix: use Command Prompt instead (step 3: type  cmd  in the folder's address bar).
+     Or allow scripts for your user only (safe, does not need administrator), in PowerShell:
+        Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+     then close and reopen PowerShell. (Or run npm.cmd install  /  npm.cmd run dist  in PowerShell.)
+  "[STOP] bin/spout/SpoutDX.dll is not the SpoutDX.dll TileSmith expects"
+     TileSmith calls Spout's functions by name and needs the exact DLL from the zip (Spout SDK 2.007.017, MT build).
+     Unzip a fresh copy of tilesmith-desktop.zip, or delete bin\spout\SpoutDX.dll to build without Spout.
+  "'node' / 'npm' is not recognized"
+     Close and reopen the command window after installing Node.js (step 1a), or reboot.
+
+NDI® LICENSING (if you share TileSmith with other people)
+  TileSmith ships NDI®'s runtime under the NDI® SDK License Agreement (https://ndi.link/ndisdk_license).
+  The build includes NDI®'s license notices, and the Info button shows the NDI® trademark statement,
+  links to https://ndi.video/ and https://ndi.video/tools/, and a button to view the notices.
+  Do not bundle or redistribute NDI® Tools themselves; link to https://ndi.video/tools/ instead.
+  NDI® asks to be told about commercial applications that use NDI® (see the SDK documentation).
+
+SPOUT LICENSING
+  TileSmith includes SpoutDX.dll from the Spout SDK by Lynn Jarvis (https://spout.zeal.co/), Simplified BSD licence.
+  The licence text (bin\spout\Spout-licence.txt) is packed into the app, and the Info button shows the credit
+  and a button to open it. Keep it with any copy of TileSmith you share.
+
+RESOLUME EXPORT
+  "Resolume XML" saves an Advanced Output preset. If Documents\Resolume Arena\Presets\Advanced Output exists,
+  the file is saved straight there; otherwise it goes to Downloads, so copy it into that folder yourself.
+  In Arena: Output > Advanced Output, pick the preset from the list, then assign the screen to your real output.

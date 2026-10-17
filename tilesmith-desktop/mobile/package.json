@@ -1,0 +1,28 @@
+{
+  "name": "tilesmith-mobile",
+  "version": "3.3.0",
+  "private": true,
+  "description": "TileSmith - LED Wall Builder for Android and iOS (Capacitor). Uses the same app page as the desktop build (../app).",
+  "scripts": {
+    "web": "node scripts/sync-web.js",
+    "sync": "node scripts/sync-web.js && cap sync",
+    "android": "node scripts/sync-web.js && cap sync android && cap open android",
+    "ios": "node scripts/sync-web.js && cap sync ios && cap open ios",
+    "clean": "node scripts/clean.js"
+  },
+  "dependencies": {
+    "@capacitor-community/keep-awake": "8.0.1",
+    "@capacitor/android": "8.5.3",
+    "@capacitor/browser": "8.0.5",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/filesystem": "8.1.4",
+    "@capacitor/ios": "8.5.3",
+    "@capacitor/share": "8.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

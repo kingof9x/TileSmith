@@ -1,0 +1,75 @@
+TILESMITH v3.3 - BUILD INSTRUCTIONS FOR iOS AND iPadOS (iPhone and iPad)
+=======================================================================
+Result: the TileSmith app on your iPhone or iPad (iOS / iPadOS 15 or newer), built from the same app page as
+the desktop version, so every feature you add shows up in both.
+You must build on a Mac. You need internet while building; the finished app works offline.
+Commands are typed in the Terminal app (Applications > Utilities > Terminal).
+How to use the app: see TileSmith-Mobile-Manual.pdf.
+
+WHAT THE MOBILE APP DOES DIFFERENTLY
+  - Export PNG, Export CSV, Spec sheet and Resolume XML open the share sheet: Save to Files, AirDrop, Mail,
+    Messages and so on.
+  - Export video records an H.264 MP4 in real time with the device's own encoder (the screen stays on while it
+    records), then opens the share sheet ("Save Video" puts it in Photos). HAP, ProRes and the DVD
+    "Export loop video" are desktop only.
+  - NDI®, Spout and Syphon are not in the mobile app (yet); their buttons and menus are hidden.
+  - Two fingers pinch to zoom and drag to pan the viewport; one finger drags walls, wires tiles and so on.
+  - iPad is the best fit. On an iPhone the screen is small (a phone layout is planned).
+
+STEP 1 - Install the tools (once)
+  a) Xcode 26 or newer, free from the Mac App Store. Open it once, accept the licence and let it install the
+     iOS platform it offers.
+  b) Node.js 22 or newer. If you already build the Mac desktop app you have it; check with
+        node --version
+     If it prints less than v22:   brew upgrade node
+  (CocoaPods is NOT needed: the project uses Swift Package Manager, which is built into Xcode.)
+
+STEP 2 - Unzip the project
+  Use the same tilesmith-desktop.zip as the desktop build. The mobile app lives in its "mobile" folder:
+     ~/tilesmith-desktop/mobile
+
+STEP 3 - Prepare the iOS project
+     cd ~/tilesmith-desktop/mobile
+     npm install
+     npm run ios
+  "npm run ios" copies the current TileSmith page into the iOS project (you will see
+  "[ok] www is ready: TileSmith v3.3 ...") and opens it in Xcode. The first time, Xcode downloads Capacitor
+  (Swift packages); wait until "Resolving package graph" is finished.
+
+STEP 4 - Sign the app with your Apple ID (once)
+  1) Xcode > Settings > Accounts > "+" > Apple Account, and sign in. A free Apple ID is enough to start.
+  2) In the left column click "App" (the blue project icon), then the "App" target, then "Signing & Capabilities".
+  3) Tick "Automatically manage signing" and pick your Team ("Your Name (Personal Team)").
+  4) If Xcode says the bundle identifier "com.tilesmith.app" is not available, change Bundle Identifier to
+     something only you use, for example com.yourname.tilesmith, and press Enter.
+
+STEP 5 - Run it on your iPhone or iPad
+  1) Connect the device with a cable, unlock it and tap "Trust This Computer".
+  2) On the device turn on Developer Mode: Settings > Privacy & Security > Developer Mode > On, then restart it.
+  3) In Xcode pick the device at the top (next to "App") and click the Run button (triangle).
+  4) The first time, the device may say the developer is not trusted: open Settings > General >
+     VPN & Device Management, tap your Apple ID under "Developer App" and tap Trust. Then run again.
+  No device to hand? Pick an iPad simulator at the top and click Run to try TileSmith on the Mac.
+
+  With a FREE Apple ID the app works for 7 days; after that, connect the device and click Run again.
+  The paid Apple Developer Program (US$99 a year) removes that limit and lets you use TestFlight and the App Store.
+
+AFTER YOU CHANGE TILESMITH
+  Run  npm run ios  again (it copies the new app page across), then click Run in Xcode.
+  The app keeps its saved settings when you install a newer build over it.
+
+TESTFLIGHT AND THE APP STORE (optional, later; needs the paid Apple Developer Program)
+  In Xcode choose "Any iOS Device" at the top, then Product > Archive, and in the Organizer window
+  Distribute App > App Store Connect. The app already declares that it uses no special encryption.
+
+TROUBLESHOOTING
+  "Capacitor CLI requires NodeJS >=22"                 brew upgrade node, then run step 3 again.
+  "[STOP] Capacitor is not installed yet"             Run  npm install  in the mobile folder first.
+  "Missing package product 'CapApp-SPM'" or package errors in Xcode
+     Close Xcode, run  npm install  and  npm run ios  again (Xcode reads the Capacitor packages from
+     mobile/node_modules). Then File > Packages > Reset Package Caches.
+  "Signing for "App" requires a development team"     Do step 4.
+  "Failed to register bundle identifier"              Change the Bundle Identifier (step 4.4).
+  "Untrusted Developer" on the device                 Step 5.4.
+  "Could not launch" after 7 days                     Free Apple ID limit: run it again from Xcode.
+  Export video says "this device cannot record MP4 video"   Update iOS / iPadOS (needs iOS 15 or newer).

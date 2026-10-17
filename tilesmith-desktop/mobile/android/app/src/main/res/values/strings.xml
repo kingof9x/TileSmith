@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TileSmith</string>
+    <string name="title_activity_main">TileSmith</string>
+    <string name="package_name">com.tilesmith.app</string>
+    <string name="custom_url_scheme">com.tilesmith.app</string>
+</resources>

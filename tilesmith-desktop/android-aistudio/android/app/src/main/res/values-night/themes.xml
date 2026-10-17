@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- dark theme (system dark mode): the TileSmith page shows its dark colours -->
+    <style name="Theme.TileSmith" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/tilesmith_bg</item>
+    </style>
+</resources>
