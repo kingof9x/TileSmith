@@ -5,6 +5,26 @@ Current version: **3.3**.
 
 Concept and development: Callum Davenport-Lambton · tilesmithapp@gmail.com · https://ko-fi.com/kingof9x
 
+## Software to install before you use a downloaded build
+
+The downloads on the **Releases** page do not contain the NDI® runtime or ffmpeg (their licences do not allow it), so these two
+features need a free install on the computer that runs TileSmith. Everything else works straight away. **Spout and Syphon are
+included in the Windows and Mac downloads, so they need nothing extra** (their licences are in `tilesmith-desktop/bin`).
+
+| Feature | Windows | Mac | Linux |
+|---|---|---|---|
+| Test patterns, wiring, labels, exports, animation | Nothing to install | Nothing to install | Nothing to install |
+| **NDI® output** (needs this install) | NDI® Runtime: <https://ndi.link/NDIRedistV6> or the free NDI® Tools: <https://ndi.video/tools/> | NDI® Runtime for Mac: <https://ndi.link/NDIRedistV6Apple> or NDI® Tools: <https://ndi.video/tools/> | Not available yet |
+| **Spout output** | Included. Needs a DirectX 11 graphics card. Pick the card under *Spout options* if the picture is black | not applicable | not applicable |
+| **Syphon output** | not applicable | Included | not applicable |
+| **Video export** (needs this install) | An ffmpeg "full" build with the HAP encoder: <https://www.gyan.dev/ffmpeg/builds/> (`ffmpeg-release-full`). Unzip it and put `ffmpeg.exe` in the same folder as `TileSmith-Portable.exe` | `brew install ffmpeg` (Homebrew: <https://brew.sh/>). For HAP video see step 5 in `tilesmith-desktop/BUILD-MAC.txt` | Not available yet |
+
+You also need a program to receive the picture, for example Resolume, vMix, OBS, MadMapper or TouchDesigner.
+If NDI® or video export is not set up, TileSmith shows a message saying what is missing; nothing else is affected.
+The Mac and Windows apps are unsigned: on Windows click *More info > Run anyway*; on a Mac right-click the app and choose *Open*.
+
+NDI® is a registered trademark of Vizrt NDI AB. Learn more about NDI® at <https://ndi.video/>.
+
 ## What is in this repository
 
 | Folder or file | What it is |
