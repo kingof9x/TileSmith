@@ -90,11 +90,12 @@ const HALF={'ROE Carbon CB3':['ROE Carbon CB3 Half','h'],'ROE Carbon CB5':['ROE 
 const R={'1080p Full HD':[1920,1080],'4K UHD':[3840,2160],'2K DCI':[2048,1080],'4K DCI':[4096,2160],'720p HD':[1280,720],'32:9 Banner':[3840,1080]};
 const S={cw:1920,ch:1080,ox:0,oy:0,cols:6,rows:4,preset:'Unilumin UpadIV 2.6',tw:192,th:192,wmm:500,hmm:500,dmm:70,kg:6.3,wmax:120,pitch:2.6,
 bc:'#22d3ee',bt:3,pat:'tileshade',tpos:true,half:[],gone:[],lay:{},ids:true,addr:false,mm:false,speed:1,dvdOn:false,dvdSrc:'TileSmith logo',dvdText:'TILESMITH',dvdArea:'Each LED wall',dvdSize:20,dvdSpeed:1,dvdCorner:10,dvdTint:true,dvdLoop:false,dvdLoopLen:30,dvdLoopCorners:true,vIntro:5,vHold:10,vCodec:'HAP (.mov)',hapFmt:'hap',name:'LED Wall',corner:'Top-left',dir:'Horizontal',wmode:'None',wcorner:'Top-left',wdir:'Horizontal',wfill:'Fewest ports',wman:[],pmode:'None',pcorner:'Top-left',pwdir:'Horizontal',pfill:'Fewest circuits',plink:0,pman:[],proc:'None',fps:60,bpc:8,ull:false,ppx:0,pports:0,ret:true,showData:true,pdist:false,pvolt:120,pamps:20,derate:true,showPow:true,resSl:'One slice per LED wall',pfit:'Stretch to wall',pdir:'none',pspd:1,patImg:null,loop:false,loopHold:3,shadeC:'#3f8080',boxMode:'Nothing',boxText:'',boxCol:'#ffffff',boxImg:null,
-ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblSize:'Avery 5160 (30 per US Letter sheet)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',logo:'TILESMITH',cd:true,play:true};
+ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',logo:'TILESMITH',cd:true,play:true};
 const LBL={'Avery 5160 (30 per US Letter sheet)':{pw:215.9,ph:279.4,w:66.675,h:25.4,c:3,r:10,x:4.76,y:12.7,gx:3.175,gy:0},
 'Avery 5163 (10 per US Letter sheet)':{pw:215.9,ph:279.4,w:101.6,h:50.8,c:2,r:5,x:3.97,y:12.7,gx:4.76,gy:0},
 'Avery L7160 (21 per A4 sheet)':{pw:210,ph:297,w:63.5,h:38.1,c:3,r:7,x:7.21,y:15.15,gx:2.54,gy:0},
 'Label roll 62 x 29 mm (one per page)':{pw:62,ph:29,w:62,h:29,c:1,r:1,x:0,y:0,gx:0,gy:0,roll:1},
+'Wrap-around strip 100 x 30 mm (one per page)':{pw:100,ph:30,w:100,h:30,c:1,r:1,x:0,y:0,gx:0,gy:0,roll:1},
 'Custom label roll (one per page)':{roll:1,custom:1}};
 const HAIR=['#2b1d14','#4a3020','#6b4a2b','#14100c','#0f0f0f','#1c1410'];
 const defCrew=()=>[['Marcus','#8d5524'],['Elena','#e0ac69'],['David','#f1c27d'],['Chen','#ffdbac'],['Priya','#c68642'],['Malik','#5c3a21']].map((c,i)=>[c[0],c[1],null,HAIR[i]]);
@@ -227,10 +228,10 @@ ${SUB(`${SHN} options`,`<div class="g">${F('shName',SHK=='Syphon'?'Syphon server
 <div class="g">${F('lblWhat','Cables to label','select',['Data and power','Data only','Power only'],'w')}${F('lblSize','Label sheet','select',Object.keys(LBL),'w')}
 <div id="lblCustom" class="g w">${F('lblW','Label width (mm)','number','min=20 max=300 step=0.5')}${F('lblH','Label height (mm)','number','min=10 max=300 step=0.5')}</div>
 ${F('lblCopies','Copies of each end','number','min=1 max=4 step=1')}${F('lblSkip','Start at label no.','number','min=1 max=500 step=1')}
-${F('lblColor','Colour band (per port, or per power phase)','check')}${F('lblJump','Also label the tile-to-tile links','check')}<span id="lblKeepW" class="w">${F('lblKeep','Keep the two ends of a cable in one row','check')}</span></div>
+${F('lblLayout','Wrap layout','select',['Two identical panels','Flag fold-over (second panel upside down)','Text in the middle, colour on the ends'],'w')}${F('lblFlag','Colour flag style','select',['Big end blocks','Top and bottom bars','Big corner squares'],'w')}${F('lblWall','Wall mark','select',['Wall-shade block + name (several walls only)','Always show wall mark','Wall tint + block (several walls only)'],'w')}${F('lblColor','Colour flags (green primary, red return, power phase, wall shade)','check')}${F('lblJump','Also label the tile-to-tile links','check')}<span id="lblKeepW" class="w">${F('lblKeep','Keep the two ends of a cable in one row','check')}</span></div>
 <div id="lblStat" style="font-size:12px;color:var(--mu);margin:6px 0"></div>
 <div class="row">${MOBILE?B('lbl','Save label sheet'):B('lbl','Print labels')}</div>
-<div style="color:var(--mu);font-size:12px">${MOBILE?'The label sheet is saved as a web page: open it in a browser and print it at 100% scale (no "fit to page").':'Print at 100% scale (turn off "fit to page") so the labels line up with the sheet.'} Each label shows the cable name, which end it is, what it plugs into and where the other end goes.</div></div>`);
+<div style="color:var(--mu);font-size:12px">${MOBILE?'The label sheet is saved as a web page: open it in a browser and print it at 100% scale (no "fit to page").':'Print at 100% scale (turn off "fit to page") so the labels line up with the sheet.'} Each label is a wrap-around strip: it wraps around the cable and sticks to itself. Each label shows the cable name, which end it is, what it plugs into and where the other end goes.</div></div>`);
 $('#bar').innerHTML=B('about','ⓘ Info')+B('pp','Play / Pause')+B('rs','Start build')+B('sk','Instant skip')+B('fit','Reset fit')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('csv','Export CSV')+B('spec','Spec sheet')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+B('rec','Export video')+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>';
 sync();crewUI();}
 function sync(){storeWall();document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
@@ -887,7 +888,8 @@ walls.forEach((w,wi)=>{const port={},pos={},stp={};(plan[wi]||[]).forEach(pt=>pt
  [...pieces(w).list].sort((a,b)=>a.id-b.id).forEach(R=>{const i=R.key,x=w.ox+R.x,y=w.oy+R.y,mx=R.sp.W;s+=`${nm},T${pad(R.id-1)},${R.c+1},${R.r+1},${stp[i]},${x},${y},${x+R.w},${y+R.h},${R.w},${R.h},${port[i]||''},${pos[i]||''},${circ[i]||''},${cpos[i]||''},${cph[i]||''},${mx},${Math.round(mx*.4)},${R.half?'half '+R.side:R.rot?'full on its side':'full'}\n`})});return s}
 
 // ---------- cable labels: both ends of every data cable (P/R ports) and power cable (circuits)
-const LBLCOL=['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#0aa5a5','#c9a400','#f032e6','#808000','#7a4a2a'],LBLPH={A:'#222222',B:'#d33a2c',C:'#2563c9'};
+const LBLCOL=['#e6194b','#3cb44b','#4363d8','#f58231','#911eb4','#0aa5a5','#c9a400','#f032e6','#808000','#7a4a2a'],LBLPH={A:'#222222',B:'#f59e0b',C:'#2563c9'};
+const LBLLAY=['Two identical panels','Flag fold-over (second panel upside down)','Text in the middle, colour on the ends'],LBLFLG=['Big end blocks','Top and bottom bars','Big corner squares'],LBLWAL=['Wall-shade block + name (several walls only)','Always show wall mark','Wall tint + block (several walls only)'];
 function lblHas(){const d=procOn()&&portPlan().flat().length>0,p=pdOn()&&powerPlan().flat().length>0;return{d,p,on:d||p}}
 function lblVis(){const h=lblHas(),b=$('#lblBox');if(!b)return;const dt=b.closest('details');if(dt)dt.style.display=h.on?'':'none';if(!h.on)return;
  const sel=b.querySelector('[data-k=lblWhat]'),lw=sel&&sel.closest('label');if(lw)lw.style.display=h.d&&h.p?'':'none';
@@ -899,19 +901,22 @@ function labelList(){const h=lblHas(),W=S.lblWhat,out=[],dOn=h.d&&W!='Power only
  const nm=(w,i)=>w.name||'Wall '+(i+1),T=(w,e)=>{const R=pieceOf(w,e);return R?'T'+pad(R.id-1):'?'},at=(w,e)=>{const R=pieceOf(w,e);return R?`col ${R.c+1}, row ${R.r+1}`:''};
  const proc=S.proc;
  walls.forEach((w,wi)=>(pl[wi]||[]).forEach(pt=>{const ch=pt.tiles,n=ch.length,a=ch[0],z=ch[n-1],col=LBLCOL[(pt.p-1)%LBLCOL.length],W2=nm(w,wi),info=`${n} tile${n==1?'':'s'}, ${pt.px.toLocaleString()} px`;
-  out.push([{big:'P'+pt.p,tag:'1/2 PROCESSOR END',col,lines:[`${proc} port ${pt.p}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,info],kind:'d'},
-            {big:'P'+pt.p,tag:'2/2 TILE END',col,lines:[`${W2} ${T(w,a)} DATA IN`,`from ${proc} port ${pt.p}`,info],kind:'d'}]);
-  if(S.ret)out.push([{big:'R'+pt.p,tag:'1/2 PROCESSOR END',col,lines:[`${proc} return ${pt.p}`,`from ${W2} ${T(w,z)} (${at(w,z)})`,info],kind:'d'},
-            {big:'R'+pt.p,tag:'2/2 TILE END',col,lines:[`${W2} ${T(w,z)} DATA OUT (return)`,`to ${proc} return ${pt.p}`,info],kind:'d'}]);
+  out.push([{big:'P'+pt.p,tag:'1/2 PROCESSOR END',col,lines:[`${proc} port ${pt.p}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,info],kind:'d',wl:[w,wi]},
+            {big:'P'+pt.p,tag:'2/2 TILE END',col,lines:[`${W2} ${T(w,a)} DATA IN`,`from ${proc} port ${pt.p}`,info],kind:'d',wl:[w,wi]}]);
+  if(S.ret)out.push([{big:'R'+pt.p,tag:'1/2 PROCESSOR END',col,lines:[`${proc} return ${pt.p}`,`from ${W2} ${T(w,z)} (${at(w,z)})`,info],kind:'d',wl:[w,wi]},
+            {big:'R'+pt.p,tag:'2/2 TILE END',col,lines:[`${W2} ${T(w,z)} DATA OUT (return)`,`to ${proc} return ${pt.p}`,info],kind:'d',wl:[w,wi]}]);
   if(S.lblJump)for(let i=0;i<n-1;i++){const x=ch[i],y=ch[i+1],id=`P${pt.p}-${i+1}`;
-   out.push([{big:id,tag:'1/2 OUT END',col,lines:[`${T(w,x)} DATA OUT`,`to ${T(w,y)} DATA IN`,`${W2}, link ${i+1} of ${n-1}`],kind:'d'},
-             {big:id,tag:'2/2 IN END',col,lines:[`${T(w,y)} DATA IN`,`from ${T(w,x)} DATA OUT`,`${W2}, link ${i+1} of ${n-1}`],kind:'d'}])}}));
+   out.push([{big:id,tag:'1/2 OUT END',col,lines:[`${T(w,x)} DATA OUT`,`to ${T(w,y)} DATA IN`,`${W2}, link ${i+1} of ${n-1}`],kind:'d',wl:[w,wi]},
+             {big:id,tag:'2/2 IN END',col,lines:[`${T(w,y)} DATA IN`,`from ${T(w,x)} DATA OUT`,`${W2}, link ${i+1} of ${n-1}`],kind:'d',wl:[w,wi]}])}}));
  walls.forEach((w,wi)=>(pp[wi]||[]).forEach(ci=>{const ch=ci.tiles,n=ch.length,a=ch[0],lab=cLabel(ci.k),ph=cPhase(ci.k),col=LBLPH[ph],W2=nm(w,wi),info=`${n} tile${n==1?'':'s'}, ${Math.round(ci.watts)} W`,v=`${S.pvolt} V, ${S.pamps} A breaker`;
-  out.push([{big:lab,tag:'1/2 POWER SOURCE END',col,lines:[`Circuit ${ci.k}, phase ${ph}, ${v}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,info],kind:'p'},
-            {big:lab,tag:'2/2 TILE END',col,lines:[`${W2} ${T(w,a)} POWER IN`,`from circuit ${lab}, phase ${ph}`,info],kind:'p'}]);
+  out.push([{big:lab,tag:'1/2 POWER SOURCE END',col,lines:[`Circuit ${ci.k}, phase ${ph}, ${v}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,info],kind:'p',ph,wl:[w,wi]},
+            {big:lab,tag:'2/2 TILE END',col,lines:[`${W2} ${T(w,a)} POWER IN`,`from circuit ${lab}, phase ${ph}`,info],kind:'p',ph,wl:[w,wi]}]);
   if(S.lblJump)for(let i=0;i<n-1;i++){const x=ch[i],y=ch[i+1],id=`${lab}-${i+1}`;
-   out.push([{big:id,tag:'1/2 OUT END',col,lines:[`${T(w,x)} POWER OUT`,`to ${T(w,y)} POWER IN`,`${W2}, circuit ${lab}, phase ${ph}`],kind:'p'},
-             {big:id,tag:'2/2 IN END',col,lines:[`${T(w,y)} POWER IN`,`from ${T(w,x)} POWER OUT`,`${W2}, circuit ${lab}, phase ${ph}`],kind:'p'}])}}));
+   out.push([{big:id,tag:'1/2 OUT END',col,lines:[`${T(w,x)} POWER OUT`,`to ${T(w,y)} POWER IN`,`${W2}, circuit ${lab}, phase ${ph}`],kind:'p',ph,wl:[w,wi]},
+             {big:id,tag:'2/2 IN END',col,lines:[`${T(w,y)} POWER IN`,`from ${T(w,x)} POWER OUT`,`${W2}, circuit ${lab}, phase ${ph}`],kind:'p',ph,wl:[w,wi]}])}}));
+ const wi2=LBLWAL.indexOf(S.lblWall),wallOn=wi2==1||walls.length>1;
+ out.forEach(pr=>pr.forEach(x=>{const[w,wi]=x.wl;delete x.wl;x.wall={i:wi,name:nm(w,wi),col:w.shadeC||'#3f8080'};x.wallOn=wallOn;x.tint=wi2==2&&wallOn;
+  if(x.kind=='p'){x.col=LBLPH[x.ph];x.ft='PHASE '+x.ph;x.fs=x.ph}else if(/^R/.test(x.big)){x.col='#e11d48';x.ft='RETURN';x.fs='R'}else{x.col='#22c55e';x.ft='PRIMARY';x.fs='P'}}));
  return out}
 function lblGeom(){const g=LBL[S.lblSize]||LBL[Object.keys(LBL)[0]];return g.custom?{pw:S.lblW,ph:S.lblH,w:S.lblW,h:S.lblH,c:1,r:1,x:0,y:0,gx:0,gy:0,roll:1}:g}
 // cells -> pages (arrays of label objects or null for a blank cell)
@@ -921,12 +926,30 @@ function labelPages(L){const g=lblGeom(),per=g.c*g.r,cells=[];
   if(!g.roll&&S.lblKeep&&grp.length<=g.c){const left=g.c-cells.length%g.c;if(left<grp.length&&left<g.c)for(let i=0;i<left;i++)cells.push(null)}
   grp.forEach(x=>cells.push(x))});
  const pages=[];for(let i=0;i<cells.length;i+=per)pages.push(cells.slice(i,i+per));return pages}
-function labelsHTML(){const L=labelList(),g=lblGeom(),pages=labelPages(L),mm=v=>+v.toFixed(3)+'mm',pad2=Math.min(2,g.h*.08);
- const cell=(x,c,r)=>{const left=g.x+c*(g.w+g.gx),top=g.y+r*(g.h+g.gy);if(!x)return'';
-  const lf=Math.max(1.6,Math.min(g.h*.1,g.w*.055)),tag=Math.max(1.5,lf*.85),band=S.lblColor?Math.min(3,g.w*.05):0,bigF=Math.max(3,Math.min(g.h*.42,g.w*.5/Math.max(2.2,x.big.length*.62),(g.h-2*pad2-tag*1.25-3*lf*1.2)/1.05));
-  return `<div class="l" style="left:${mm(left)};top:${mm(top)};width:${mm(g.w)};height:${mm(g.h)};padding:${mm(pad2)} ${mm(pad2+1)} ${mm(pad2)} ${mm(pad2+1+band)}">${band?`<i style="width:${mm(band)};background:${x.col}"></i>`:''}<div class="t" style="font-size:${mm(tag)}"><b>${x.kind=='d'?'DATA':'POWER'}</b> ${esc(x.tag)}</div><div class="b" style="font-size:${mm(bigF)};line-height:${mm(bigF*1.05)}">${esc(x.big)}</div>${x.lines.map(t=>`<div class="s" style="font-size:${mm(lf)};line-height:${mm(lf*1.18)}">${esc(t)}</div>`).join('')}</div>`};
+const lblRGB=c=>{const n=parseInt(String(c).replace('#','').padEnd(6,'0').slice(0,6),16)||0;return[n>>16&255,n>>8&255,n&255]},lblInk=c=>{const[r,g,b]=lblRGB(c);return .299*r+.587*g+.114*b>150?'#000':'#fff'},lblTint=c=>'rgb('+lblRGB(c).map(v=>Math.round(v*.18+255*.82)).join(',')+')';
+// one panel of a wrap-around label: colour blocks plus (unless textless) the cable text. o: {mirror, textless, plain}
+function lblPanel(x,pw,h,o){const st=Math.max(0,LBLFLG.indexOf(S.lblFlag)),pad=Math.min(1.5,h*.06),B=[];let T={x:pad,y:pad,w:pw-2*pad,h:h-2*pad};
+ const fl=S.lblColor&&!o.plain?{c:x.col,t:x.ft,s:x.fs}:null,wl=S.lblColor&&!o.plain&&x.wallOn?{c:x.wall.col,t:x.wall.name,s:'W'+(x.wall.i+1)}:null,it=[fl,wl].filter(Boolean),n=it.length;
+ if(n){
+  if(o.textless){if(st==0){let cx=0;const ws=n==2?[.58,.42]:[1];it.forEach((m,i)=>{B.push([cx,0,pw*ws[i],h,m,'v']);cx+=pw*ws[i]})}
+   else if(st==1){const bh=h/n;it.forEach((m,i)=>B.push([0,i*bh,pw,bh,m,'h']))}
+   else{const bh=h/n,q=Math.min(pw,bh);it.forEach((m,i)=>B.push([(pw-q)/2,i*bh+(bh-q)/2,q,q,m,'q']))}}
+  else if(st==0){const fw=pw*(wl?.2:.26),ww=wl?pw*.14:0;B.push([0,0,fw,h,fl,'v']);if(wl)B.push([fw,0,ww,h,wl,'v']);T={x:fw+ww+pad,y:pad,w:pw-fw-ww-2*pad,h:h-2*pad}}
+  else if(st==1){const bh=h*.17;B.push([0,0,pw,bh,fl,'h']);if(wl)B.push([0,h-bh,pw,bh,wl,'h']);T={x:pad,y:bh+pad,w:pw-2*pad,h:h-bh*(wl?2:1)-2*pad}}
+  else{const q=Math.min(h*.36,pw*.3);B.push([0,0,q,q,fl,'q']);if(wl)B.push([0,h-q,q,q,wl,'q']);T={x:q+pad,y:pad,w:pw-q-2*pad,h:h-2*pad}}}
+ const fx=(bx,bw)=>o.mirror?pw-bx-bw:bx,mm=v=>+v.toFixed(3)+'mm';let out='';
+ B.forEach(([bx,by,bw,bh,m,k])=>{const len=Math.max(3,String(k=='q'?m.s:m.t).length),f=k=='v'?Math.min(bw*.62,bh*.9/(len*.62)):k=='h'?Math.min(bh*.7,bw*.9/(len*.62)):Math.min(bw,bh)*.6;
+  out+=`<div class="k" style="left:${mm(fx(bx,bw))};top:${mm(by)};width:${mm(bw)};height:${mm(bh)};background:${m.c};color:${lblInk(m.c)};font-size:${mm(f)}"><span${k=='v'?' class="v"':''}>${esc(k=='q'?m.s:m.t)}</span></div>`});
+ if(!o.textless){const tx=fx(T.x,T.w),lf=Math.max(1.7,Math.min(h*.1,T.w*.075)),tg=lf*.85,bigF=Math.max(3,Math.min(h*.4,T.w*.85/Math.max(2.6,x.big.length*.62),(T.h-tg*1.3-3*lf*1.25)/1.05)),fit=(t,f0)=>Math.max(1.4,Math.min(f0,T.w/(Math.max(4,t.length)*.52)));
+  out+=`<div class="t" style="left:${mm(tx)};top:${mm(T.y)};width:${mm(T.w)};height:${mm(T.h)}"><div class="s" style="font-size:${mm(fit(x.kind=='d'?'DATA '+x.tag:'POWER '+x.tag,tg))}"><b>${x.kind=='d'?'DATA':'POWER'}</b> ${esc(x.tag)}</div><div class="b" style="font-size:${mm(bigF)};line-height:${mm(bigF*1.05)}">${esc(x.big)}</div>${x.lines.map(t=>`<div class="s" style="font-size:${mm(fit(t,lf))};line-height:${mm(lf*1.25)}">${esc(t)}</div>`).join('')}</div>`}
+ return out}
+function labelsHTML(){const L=labelList(),g=lblGeom(),pages=labelPages(L),mm=v=>+v.toFixed(3)+'mm',lay=Math.max(0,LBLLAY.indexOf(S.lblLayout));
+ const cell=(x,c,r)=>{if(!x)return'';const left=g.x+c*(g.w+g.gx),top=g.y+r*(g.h+g.gy),H=g.h,W=g.w,pn=(l,w,o,rot)=>`<div class="p" style="left:${mm(l)};top:${mm(0)};width:${mm(w)};height:${mm(H)}${rot?';transform:rotate(180deg)':''}">${lblPanel(x,w,H,o)}</div>`;
+  let body;if(lay==2){const t=Math.min(W*.2,H*1.1);body=pn(0,t,{textless:1})+pn(t,W-2*t,{plain:1})+pn(W-t,t,{textless:1,mirror:1})}
+  else body=pn(0,W/2,{})+pn(W/2,W/2,{mirror:lay==0},lay==1)+`<i class="f" style="left:${mm(W/2)}"></i>`;
+  return `<div class="l" style="left:${mm(left)};top:${mm(top)};width:${mm(W)};height:${mm(H)}${x.tint?';background:'+lblTint(x.wall.col):''}">${body}</div>`};
  const body=pages.map(pg=>`<section class="pg" style="width:${mm(g.pw)};height:${mm(g.ph)}">${pg.map((x,i)=>cell(x,i%g.c,Math.floor(i/g.c))).join('')}</section>`).join('');
- return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TileSmith cable labels</title><style>@page{size:${mm(g.pw)} ${mm(g.ph)};margin:0}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff}.pg{position:relative;overflow:hidden;page-break-after:always;break-after:page}.pg:last-child{page-break-after:auto;break-after:auto}.l{position:absolute;overflow:hidden;color:#000}.l i{position:absolute;left:0;top:0;bottom:0}.l .b{font-weight:800;white-space:nowrap}.l .s,.l .t{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.l .t{letter-spacing:.02em}@media screen{body{background:#ccc}.pg{background:#fff;margin:8px auto}.l{outline:.2mm dashed #bbb}}</style><body>${body}`}
+ return `<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TileSmith cable labels</title><style>@page{size:${mm(g.pw)} ${mm(g.ph)};margin:0}*{box-sizing:border-box;-webkit-print-color-adjust:exact;print-color-adjust:exact}body{margin:0;font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff}.pg{position:relative;overflow:hidden;page-break-after:always;break-after:page}.pg:last-child{page-break-after:auto;break-after:auto}.l{position:absolute;overflow:hidden;color:#000}.p{position:absolute;overflow:hidden}.k{position:absolute;display:flex;align-items:center;justify-content:center;overflow:hidden;font-weight:800;white-space:nowrap}.k .v{writing-mode:vertical-rl;transform:rotate(180deg)}.t{position:absolute;overflow:hidden}.t .b{font-weight:800;white-space:nowrap}.t .s{white-space:nowrap;overflow:hidden}.f{position:absolute;top:0;bottom:0;border-left:.2mm dashed #888}@media screen{body{background:#ccc}.pg{background:#fff;margin:8px auto}.l{outline:.2mm dashed #bbb}}</style><body>${body}`}
 function printLabels(){storeWall();if(!lblHas().on){toast('Wire some data or power cables first.');return}
  const html=labelsHTML();
  if(MOBILE){mobSave(new Blob([html],{type:'text/html'}),'tilesmith-cable-labels.html','Label sheet saved. Open it in a browser and print it at 100% scale.');return}

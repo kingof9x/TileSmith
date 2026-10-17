@@ -40,7 +40,10 @@ KEYDESC = {
  'lblSize': 'Label sheet preset: Avery 5160 (30 per US Letter), Avery 5163 (10 per US Letter), Avery L7160 (21 per A4), Label roll 62 x 29 mm, or Custom label roll.',
  'lblW': 'Custom roll label width in mm (20-300).', 'lblH': 'Custom roll label height in mm (10-300).',
  'lblCopies': 'Copies printed of each cable end (1-4).', 'lblSkip': 'First label position to use on a sheet (skips used labels).',
- 'lblColor': 'Colour band on each label: per data port, or per power phase (A black, B red, C blue).',
+ 'lblColor': 'Colour flags on each label (green primary, red return, power phase A black / B orange / C blue, wall shade); off = no flags or wall marks.',
+ 'lblLayout': 'Wrap layout: Two identical panels (default), Flag fold-over (second panel rotated 180 degrees), Text in the middle, colour on the ends.',
+ 'lblFlag': 'Colour flag style: Big end blocks (default), Top and bottom bars, Big corner squares.',
+ 'lblWall': 'Wall mark: Wall-shade block + name (several walls only, default), Always show wall mark, Wall tint + block (light tint of the wall shade as label background).',
  'lblJump': 'Also print labels for the tile-to-tile links (data and power jumpers).',
  'lblKeep': 'Sheets: keep the two ends of one cable in the same row (pad with a blank cell).',
  'shGpu': 'Spout graphics card (Windows): Automatic (the high-performance card) or a card name from the list. The receiver must be on the same card.',
@@ -510,8 +513,14 @@ lblSkip, lblColor, lblJump, lblKeep (see the settings table). Sheet presets (mm)
 4.76/12.7, gap 3.175; Avery 5163 101.6x50.8, 2x5, 3.97/12.7, gap 4.76; Avery L7160 63.5x38.1 on A4, 3x7, 7.21/15.15, gap
 2.54; roll 62x29 and custom: one label per page. Output is an HTML page with one absolutely positioned div per label
 (@page size = the sheet, margin 0). Desktop opens it in a new window and calls print(); mobile saves
-tilesmith-cable-labels.html through the share sheet. Colour band: per data port from a 10-colour list, per power phase
-A black / B red / C blue. With "keep together" the two ends never straddle a row on a sheet.
+tilesmith-cable-labels.html through the share sheet; if window.open is blocked an in-page iframe preview with Print/Close
+is shown. Labels are wrap-around strips (stick to themselves around the cable): the text is printed on both halves (lblLayout
+0 identical halves with flags at the outer ends, 1 second half rotated 180 degrees, 2 text in the centre with colour-only
+end tails). Flags: primary green #22c55e (P), return red #e11d48 (R), power by phase (A #222, B #f59e0b, C #2563c9). Wall mark:
+the wall's shadeC colour with the wall name (or W1, W2 in corner squares), shown when more than one wall exists (or always,
+or as a background tint). Flag styles: full-height end blocks (flag 20% + wall 14% of a half), top/bottom bars (17% of the
+height each), corner squares (36% of height). Black or white text is chosen by colour luminance. Extra preset: wrap-around
+strip roll 100x30 mm; the default sheet is Avery 5163. With "keep together" the two ends never straddle a row on a sheet.
 **PNG**: the full canvas as tilesmith-canvas.png. **CSV** (patching.csv), one row per tile (piece), columns: {csvcols}.
 Port = "P1" or "P1 / R1" for the last tile; Tile = full | half top/bottom/left/right | full on its side; coordinates
 are canvas px; MaxW/TypW per piece. **Resolume XML**: an Arena Advanced Output preset (XmlState > ScreenSetup >

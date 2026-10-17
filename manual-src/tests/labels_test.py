@@ -40,6 +40,23 @@ async def main():
         await pg.evaluate("()=>{S.lblCopies=1;S.lblSize='Custom label roll (one per page)';S.lblW=50;S.lblH=20;sync()}")
         r = await pg.evaluate("()=>({pages:labelPages(labelList()).length,n:labelList().length*2,css:/size:50mm 20mm/.test(labelsHTML()),cust:getComputedStyle(document.querySelector('#lblCustom')).display})")
         print('CUSTOM', r); ok &= r['pages'] == r['n'] and r['css'] and r['cust'] != 'none'
+        # wrap-around options: layouts x flag styles, colours, wall mark only with several walls
+        r = await pg.evaluate("()=>{const x=labelList()[0][0],y=labelList().find(q=>q[0].kind=='d'&&/^R/.test(q[0].big))[0];return{wallOn:x.wallOn,col:x.col,ret:y.col,ft:x.ft}}")
+        print('ONE WALL', r); ok &= (not r['wallOn']) and r['col'] == '#22c55e' and r['ret'] == '#e11d48' and r['ft'] == 'PRIMARY'
+        await pg.evaluate("()=>{S.lblWall='Always show wall mark';sync()}"); r = await pg.evaluate("()=>labelList()[0][0].wallOn"); print('ALWAYS', r); ok &= r
+        await pg.evaluate("()=>{S.lblWall=LBLWAL[0];sync();addWall(false);S.shadeC='#d97706';S.wmode='Snake';S.pmode='Snake';sync();loadWall(0);sync()}")
+        r = await pg.evaluate("()=>{const L=labelList(),w2=L.filter(q=>q[0].wall.i==1);return{walls:walls.length,on:L[0][0].wallOn,w2:w2.length,col:w2[0]&&w2[0][0].col,wc:w2[0]&&w2[0][0].wall.col}}")
+        print('TWO WALLS', r); ok &= r['on'] and r['w2'] > 0 and r['wc'] == '#d97706'
+        for lay in range(3):
+            for fl in range(3):
+                for wl in range(3):
+                    r = await pg.evaluate("([l,f,w])=>{S.lblLayout=LBLLAY[l];S.lblFlag=LBLFLG[f];S.lblWall=LBLWAL[w];S.lblSize=Object.keys(LBL)[1];const h=labelsHTML(),n=labelList().length*2;return{cells:(h.match(/class=\"l\"/g)||[]).length,n,k:(h.match(/class=\"k\"/g)||[]).length,tint:/background:rgb\(/.test(h)}}", [lay, fl, wl])
+                    good = r['cells'] == r['n'] and r['k'] > 0 and (r['tint'] == (wl == 2))
+                    if not good: print('BAD', lay, fl, wl, r)
+                    ok &= good
+        print('LAYOUT x FLAG x WALL grid ok', ok)
+        await pg.evaluate("()=>{S.lblColor=false;sync()}"); r = await pg.evaluate("()=>(labelsHTML().match(/class=\"k\"/g)||[]).length"); print('FLAGS OFF', r); ok &= r == 0
+        await pg.evaluate("()=>{S.lblColor=true;S.lblWall=LBLWAL[0];S.lblLayout=LBLLAY[0];S.lblFlag=LBLFLG[0];sync()}")
         # screenshot of an Avery sheet for a look
         await pg.evaluate("()=>{S.lblSize='Avery 5160 (30 per US Letter sheet)';S.lblKeep=true;S.lblSkip=1;sync()}")
         h = await pg.evaluate("()=>labelsHTML()"); open('/tmp/claude-0/-home-claude/bbcc68aa-c062-5897-954c-d77804faf3e4/scratchpad/labels.html', 'w').write(h)

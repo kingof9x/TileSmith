@@ -1,6 +1,6 @@
 # TileSmith 3.3 - app specification for building a clone
 
-Generated 2026-10-14 from TileSmith v3.3 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-10-17 from TileSmith v3.3 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -65,6 +65,7 @@ the selected wall.
   - Video export
   - NDI® options
   - Spout / Syphon options
+- **Label printing options**
 
 Visibility rules:
 - Data wiring (inside LED processor) and all processor fields appear only when a processor other than None is picked;
@@ -167,6 +168,19 @@ dialog) deletes the state and reloads.
 | `shName` | TileSmith | Spout sender name (Windows) or Syphon server name (Mac), default TileSmith. Applies the next time it starts. |
 | `shFps` | 60 | Spout/Syphon frame rate while NDI is off: 60, 50, 30 or 25 (while NDI runs, its rate is used). |
 | `shIdle` | true | Spout/Syphon Save CPU (default on): a still picture is sent about 4 times a second instead of the full rate. |
+| `shGpu` | Automatic | Spout graphics card (Windows): Automatic (the high-performance card) or a card name from the list. The receiver must be on the same card. |
+| `lblWhat` | Data and power | Label printing: which cables to label: Data and power (default), Data only, Power only. |
+| `lblSize` | Avery 5163 (10 per US Letter sheet) | Label sheet preset: Avery 5160 (30 per US Letter), Avery 5163 (10 per US Letter), Avery L7160 (21 per A4), Label roll 62 x 29 mm, or Custom label roll. |
+| `lblLayout` | Two identical panels | Wrap layout: Two identical panels (default), Flag fold-over (second panel rotated 180 degrees), Text in the middle, colour on the ends. |
+| `lblFlag` | Big end blocks | Colour flag style: Big end blocks (default), Top and bottom bars, Big corner squares. |
+| `lblWall` | Wall-shade block + name (several walls only) | Wall mark: Wall-shade block + name (several walls only, default), Always show wall mark, Wall tint + block (light tint of the wall shade as label background). |
+| `lblW` | 62 | Custom roll label width in mm (20-300). |
+| `lblH` | 29 | Custom roll label height in mm (10-300). |
+| `lblCopies` | 1 | Copies printed of each cable end (1-4). |
+| `lblColor` | true | Colour flags on each label (green primary, red return, power phase A black / B orange / C blue, wall shade); off = no flags or wall marks. |
+| `lblJump` | false | Also print labels for the tile-to-tile links (data and power jumpers). |
+| `lblKeep` | true | Sheets: keep the two ends of one cable in the same row (pad with a blank cell). |
+| `lblSkip` | 1 | First label position to use on a sheet (skips used labels). |
 | `hat` | #ffcc00 | Technician hard hat colour. |
 | `vest` | #b6ff00 | Technician vest colour. |
 | `logo` | TILESMITH | Vest logo text. |
@@ -551,6 +565,10 @@ rate (frames go out evenly even when the window is hidden); with Save CPU, a fra
 60 fps · 1920×1080 · per frame: render 0.4 ms, read 10.1 ms, send 0.0 ms · built-in NDI® runtime". The app keeps full
 speed when hidden or minimised and blocks system app-suspension while NDI or recording runs. Runtime loading order:
 TileSmith's own copy (resources/ndi), then NDI_RUNTIME_DIR_V* folders, then standard install paths.
+Project licence: TileSmith is GPL-3.0-or-later, (c) 2026 Callum Davenport-Lambton; the animated technician's artwork,
+character design, name and logo are reserved (all rights reserved, not GPL). An app built from this spec must not copy
+that artwork or name: draw your own technician. Info dialog shows a Licence line stating this.
+
 Licensing: show "NDI® is a registered trademark of Vizrt NDI AB" with links to https://ndi.video/ and
 https://ndi.video/tools/, mark NDI with ® everywhere, ship the runtime's license notices (Info dialog "View NDI® license
 notices"), do not bundle NDI® Tools, and follow the NDI® SDK License Agreement (https://ndi.link/ndisdk_license).
@@ -569,7 +587,16 @@ Spout: SpoutDX.dll (Spout SDK 2.007.017, MT build, no VC++ runtime) loaded with 
 their exported decorated names with a 1 MB zeroed object from HeapAlloc: constructor, SetSenderFormat(28 =
 DXGI_FORMAT_R8G8B8A8_UNORM, the canvas byte order), SetSenderName(name) (Spout appends _1, _2 when taken; GetName gives
 the real one), SendImage(rgba, w, h, 0) each frame (size changes are handled by Spout), ReleaseSender on stop. Three
-failed sends at the start (or 120 in a row later) stop it with "Spout could not send frames" (update the driver).
+failed sends at the start (or 120 in a row later) stop it with "Spout could not send frames on <card>".
+Graphics card (shGpu, Windows only): a Spout texture can only be opened by programs on the same graphics card, and on
+laptops with two graphics chips the DirectX default is often the built-in chip while the receiver (e.g. Resolume) runs
+on the fast one, which shows black. The list comes from GetNumAdapters/GetAdapterName ("Automatic" first). Before the
+DirectX 11 device opens: a named card → SetAdapter(index); Automatic → SetPreferredAdapter(2 = high performance), or
+when Windows has no preference the first card whose name is not Intel or Microsoft. Then OpenDirectX11(null) and
+GetDX11Device must be non-null (else "Spout could not start DirectX 11 on the graphics card"). Changing the card while
+running stops, closes the device (CloseDirectX11) and starts again. The status line ends with the card in use
+(GetAdapter → GetAdapterName). Spout's own log goes to %APPDATA%/TileSmith/spout-log.txt (EnableSpoutLogFile) and
+error messages name it. A saved card the PC does not have falls back to Automatic.
 Syphon: node-syphon 1.5.5's syphon.node (N-API, universal) with Syphon.framework 5; new MetalServer(name), then
 publishImageData(Uint8ClampedArray rgba, {x:0,y:0,width:w,height:h}, {width:w,height:h}, flipped=false) per frame,
 only while server.hasClients (the first frame always goes out), dispose() on stop. Packaging: Windows
@@ -591,6 +618,26 @@ tilesmith-build-YYYYMMDD-HHMMSS.ext. Click again to cancel. Estimated length is 
 | ProRes 422 HQ (.mov) | mov | prores_ks | `-vf pad=ceil(iw/2)*2:ceil(ih/2)*2:0:0:black,scale=out_color_matrix=bt709:out_range=tv,format=yuv422p10le -c:v prores_ks -profile:v 3 -vendor apl0 -colorspace bt709 -color_primaries bt709 -color_trc bt709` | Editing master for Premiere, Final Cut, Resolve. Large files, 10-bit 4:2:2. |
 | ProRes 4444 (.mov) | mov | prores_ks | `-vf pad=ceil(iw/2)*2:ceil(ih/2)*2:0:0:black,scale=out_color_matrix=bt709:out_range=tv,format=yuva444p10le -c:v prores_ks -profile:v 4444 -vendor apl0 -colorspace bt709 -color_primaries bt709 -color_trc bt709` | Highest-quality editing master with full colour on every pixel (4:4:4). Largest files. |
 
+**Cable labels** (section "Label printing options", placed after Animation Options; the whole section is hidden unless
+data wiring (a processor is chosen and at least one port exists) or power wiring (Power distribution on and at least one
+circuit exists) is defined). Button "Print labels" (mobile: "Save label sheet"). One entry per cable with two labels
+(end 1/2 and 2/2): data cable P<n> (processor port -> first tile, DATA IN), return cable R<n> when Return is on (last
+tile DATA OUT -> processor return), power circuit <S?-?> (distribution end -> first tile POWER IN; shows circuit number,
+phase, voltage, breaker amps, tile count and watts); optional tile-to-tile jumper labels (P<n>-<i>, <circuit>-<i>). Each
+label shows a small DATA/POWER + end caption, the cable name in large bold type, then three text lines (from/to with
+wall name, tile id Tnn and col/row; tile count and pixels or watts). Settings lblWhat, lblSize, lblW, lblH, lblCopies,
+lblSkip, lblColor, lblJump, lblKeep (see the settings table). Sheet presets (mm): Avery 5160 66.675x25.4, 3x10, margins
+4.76/12.7, gap 3.175; Avery 5163 101.6x50.8, 2x5, 3.97/12.7, gap 4.76; Avery L7160 63.5x38.1 on A4, 3x7, 7.21/15.15, gap
+2.54; roll 62x29 and custom: one label per page. Output is an HTML page with one absolutely positioned div per label
+(@page size = the sheet, margin 0). Desktop opens it in a new window and calls print(); mobile saves
+tilesmith-cable-labels.html through the share sheet; if window.open is blocked an in-page iframe preview with Print/Close
+is shown. Labels are wrap-around strips (stick to themselves around the cable): the text is printed on both halves (lblLayout
+0 identical halves with flags at the outer ends, 1 second half rotated 180 degrees, 2 text in the centre with colour-only
+end tails). Flags: primary green #22c55e (P), return red #e11d48 (R), power by phase (A #222, B #f59e0b, C #2563c9). Wall mark:
+the wall's shadeC colour with the wall name (or W1, W2 in corner squares), shown when more than one wall exists (or always,
+or as a background tint). Flag styles: full-height end blocks (flag 20% + wall 14% of a half), top/bottom bars (17% of the
+height each), corner squares (36% of height). Black or white text is chosen by colour luminance. Extra preset: wrap-around
+strip roll 100x30 mm; the default sheet is Avery 5163. With "keep together" the two ends never straddle a row on a sheet.
 **PNG**: the full canvas as tilesmith-canvas.png. **CSV** (patching.csv), one row per tile (piece), columns: `Wall`, `TileID`, `Col`, `Row`, `BuildStep`, `StartX`, `StartY`, `EndX`, `EndY`, `W_px`, `H_px`, `Port`, `PortPos`, `Circuit`, `CircuitPos`, `Phase`, `MaxW`, `TypW`, `Tile`.
 Port = "P1" or "P1 / R1" for the last tile; Tile = full | half top/bottom/left/right | full on its side; coordinates
 are canvas px; MaxW/TypW per piece. **Resolume XML**: an Arena Advanced Output preset (XmlState > ScreenSetup >

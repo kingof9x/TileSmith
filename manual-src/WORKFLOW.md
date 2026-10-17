@@ -62,6 +62,9 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
   data or power wiring is defined (lblVis/labelList/labelPages/labelsHTML/printLabels in index.html; S keys lbl*; LBL sheet
   presets). Design chosen by the user: selectable sheet presets, big ID + route, two labels per cable side by side.
   Test: tests/labels_test.py (ALL OK). Manual: chapter 18 "Cable labels"; spec: "Cable labels" paragraph + KEYDESC.
+  Wrap-around revision (2026-10-17): labels are wrap strips with text on both halves; user-selectable Wrap layout (identical /
+  fold-over / colour ends), Colour flag style (end blocks / bars / corner squares), Wall mark (block / always / tint), green
+  primary + red return flags, wall flag = wall shadeC; default sheet Avery 5163; power phase B is now orange.
   TODO before package: add to HISTORY, mention in mobile manual / kit docs if wanted, refresh WIP backup + git repo.
 
 ## GitHub (2026-10-14)
