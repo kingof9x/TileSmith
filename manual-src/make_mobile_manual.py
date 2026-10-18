@@ -110,7 +110,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['<b>Instant skip</b>', 'Shows every wall finished.'],
  ['<b>Center canvas</b>', 'Centres the canvas in the viewport.'],
  ['<b>Show entire canvas</b>', 'Fits the whole canvas in the viewport again.'],
- ['<b>New canvas</b>', 'Asks first, then wipes everything and starts a blank canvas. Undo brings it back.'],
+ ['<b>New Project</b>', 'Asks first, then wipes everything and starts a blank canvas. Undo brings it back.'],
  ['<b>Undo</b>', 'Opens a list of the last 20 changes; tap one to go back to just before it. The first item can be <i>Redo</i>.'],
  ['<b>Next pattern</b>', 'Moves the selected wall to the next test pattern; a message at the bottom names it.'],
  ['<b>Export PNG / Export CSV / Spec sheet</b>', 'Save the canvas picture, the patching list or the spec sheet (chapter 14).'],

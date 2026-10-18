@@ -208,14 +208,14 @@ goes to the output.
 - Walls snap to canvas edges and other walls' edges within 10 screen px (magenta dashed guides while dragging); after
   dropping, overlapping walls are pushed apart to keep a {d['GAP']} px gap. Hold Alt to place freely.
 - Click a wall to select it. Show entire canvas (the old Reset fit) fits the canvas (margin min(60 px, 10% of the viewport)); Center canvas keeps the
-  zoom and centres the canvas; New canvas asks, then resets every setting, wall, crew and logo to the start-up defaults
+  zoom and centres the canvas; New Project asks, then resets every setting, wall, crew and logo to the start-up defaults
   (S_DEF); the canvas also refits when the window resizes. Undo menu (top bar, "Undo (n) v"): a snapshot of the whole design (all
   settings except images and play state, every wall's keys, the selected wall, crew and logos) is compared after every
   input/change/click and at the end of a wall/marking/wiring drag; if it differs the previous snapshot is pushed as a step
   named after the control ("Columns -> 9", "Add wall", "Moved LED Wall", "Marked half tiles"). Typing in one box within 1.5 s
   is one step. Up to 20 steps; the menu lists them newest first and picking step n restores the state before it (n undos);
   a Redo item appears on top after an undo. Ctrl/Cmd+Z undoes, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z redoes (not while typing in a
-  text or number box). Selecting a wall, panning/zooming, playing and exporting are not steps. New canvas is one step.
+  text or number box). Selecting a wall, panning/zooming, playing and exporting are not steps. New Project is one step.
 - Editing modes (one at a time): manual data wiring, manual power wiring, Mark half tiles, Remove tiles. In these modes
   the cursor is a crosshair over the selected wall and drags edit instead of moving the wall. While Remove tiles or
   Mark half tiles is on, empty spots of the selected wall show a red dashed outline with an X (viewport only).

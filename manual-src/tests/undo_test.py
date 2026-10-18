@@ -1,4 +1,4 @@
-"""Undo/redo (20 steps, menu, Ctrl+Z), centre/show-all buttons, New canvas. Prints ALL OK."""
+"""Undo/redo (20 steps, menu, Ctrl+Z), centre/show-all buttons, New Project. Prints ALL OK."""
 import asyncio, json
 from playwright.async_api import async_playwright
 APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
@@ -53,7 +53,7 @@ async def main():
         vis = await ev("()=>!!document.querySelector('#newc')"); ok = ok and bool(vis)
         await pg.click('#newc button[data-n="0"]'); r = await ev("()=>walls.length"); ok = ok and bool(r == 2)
         await pg.click('[data-a=newc]'); await pg.click('#newc button[data-n="1"]'); await pg.wait_for_timeout(300)
-        r = await ev("()=>({walls:walls.length,cols:S.cols,pat:S.pat,ndi:S.ndiName,last:UN.st[UN.st.length-1].label})"); print('NEW', r); ok = ok and bool(r['walls'] == 1 and r['cols'] == 6 and r['ndi'] == 'TileSmith-LED-Out' and r['last'] == 'New canvas')
+        r = await ev("()=>({walls:walls.length,cols:S.cols,pat:S.pat,ndi:S.ndiName,last:UN.st[UN.st.length-1].label})"); print('NEW', r); ok = ok and bool(r['walls'] == 1 and r['cols'] == 6 and r['ndi'] == 'TileSmith-LED-Out' and r['last'] == 'New Project')
         await pg.keyboard.press('Control+z'); await pg.wait_for_timeout(300)
         r = await ev("()=>({walls:walls.length,cols:walls[0].cols,ndi:S.ndiName})"); print('NEW UNDO', r); ok = ok and bool(r['walls'] == 2 and r['ndi'] == 'MyNdi')
         print('errors', errs); ok = ok and bool(not errs)

@@ -71,7 +71,7 @@ viewport and the engineering panel are placeholders for now.
    - Canvas presets come from R.
 5. Saving. Save as the same JSON as saveNow() ({sv:23,S,walls,cur,crew,logo,dvd}) in filesDir/state.json, 400 ms
    after any change. Load and validate it at start-up as loadState() does.
-6. Top bar buttons: ⓘ Info, Play / Pause, Start build, Instant skip, Center canvas, Show entire canvas, New canvas, Undo menu, Next pattern, Export PNG, Export CSV,
+6. Top bar buttons: ⓘ Info, Play / Pause, Start build, Instant skip, Center canvas, Show entire canvas, New Project, Undo menu, Next pattern, Export PNG, Export CSV,
    Spec sheet, Resolume XML ▾ (menu: One slice per LED wall / One slice per tile), Export video. After them, a red
    recording status, the zoom % and the fps label. They can do nothing yet.
 7. LED walls list (wallsUI) with Add wall / Duplicate / Remove working on the list (positions come in step 4).""",

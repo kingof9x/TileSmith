@@ -91,7 +91,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."""),
 ]
 HISTORY = [
- ('3.4', 'Undo: the Undo menu in the top bar lists the last 20 changes and goes back to just before any of them; Ctrl/Cmd+Z undoes one step, Ctrl/Cmd+Y redoes. New canvas (asks first), Center canvas and Show entire canvas (the old Reset fit) are in the top bar.'),
+ ('3.4', 'Undo: the Undo menu in the top bar lists the last 20 changes and goes back to just before any of them; Ctrl/Cmd+Z undoes one step, Ctrl/Cmd+Y redoes. New Project (asks first), Center canvas and Show entire canvas (the old Reset fit) are in the top bar.'),
  ('3.4', 'Half tiles: the controls moved to Size of LED Wall; Convert bottom row / top row to half tiles (press again to restore); a red STOP MARKING HALF TILES button appears over the viewport while marking. A wall with half tiles is as big as its real tiles: patterns scale to that area and the size, position, snapping and spec sheet follow it.'),
  ('3.4', 'Power labels: choose Socapex, L14-30 or L21-30 distribution cables; labels are numbered cable-circuit (1-1 to 1-6 for Socapex, 1-X, 1-Y, 1-Z for the twist-lock cables) with cable labels, circuit labels or both, no phase; data labels are completely green (primary) or red (return); wall marks use the wall\'s Tile-shade colour.'),
  ('3.4', 'Linux: NDI® output (libndi.so.6 from the NDI® runtime) and video export (system ffmpeg) now work in the Linux packages. Releases are built by GitHub Actions for Windows, Mac, Linux (AppImage, deb, rpm, Arch, snap, flatpak) and Android (APK), with VirusTotal scan links in the release notes.'),
@@ -308,7 +308,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['Instant skip', 'Shows every wall fully built.'],
  ['Center canvas', 'Centres the canvas in the viewport without changing the zoom.'],
  ['Show entire canvas', 'Zooms so the whole canvas fits in the viewport.'],
- ['New canvas', 'Asks first, then erases every wall, wiring, half tile, pattern and setting (including output, label and video options) and starts from a blank canvas. <b>Undo</b> brings it back.'],
+ ['New Project', 'First button in the top bar. Asks first, then erases every wall, wiring, half tile, pattern and setting (including output, label and video options) and starts from a blank canvas. <b>Undo</b> brings it back.'],
  ['Undo ▾', 'Lists the last 20 changes, newest first. Click one to go back to just before it. <b>Ctrl+Z</b> (<b>Cmd+Z</b> on a Mac) undoes one step, <b>Ctrl+Y</b> or <b>Ctrl+Shift+Z</b> redoes it. Moving the view, playing the animation and exporting are not changes.'],
  ['Next pattern', 'Moves the selected wall to the next test pattern in the list, and back to the first after the last. <i>custom</i> is skipped until you upload an image.'],
  ['Start NDI®', 'Starts sending the canvas as an NDI® source (desktop app). While it runs the button is green and reads <b>Stop NDI®</b>; click it again to stop. Settings are in Animation Options › NDI® options.'],
