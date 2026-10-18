@@ -1,6 +1,6 @@
 {
   "name": "tilesmith",
-  "version": "3.3.0",
+  "version": "3.5.0",
   "description": "TileSmith - LED Wall Builder: pixel mapping, engineering layout and live NDI®, Spout and Syphon output",
   "main": "main.js",
   "author": "Callum Davenport-Lambton <tilesmithapp@gmail.com>",

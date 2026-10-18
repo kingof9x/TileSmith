@@ -6,7 +6,7 @@ Licensed under the GNU General Public License v3.0 or later (see LICENSE).
 The animated technician's artwork, character design, name and logo are NOT under the GPL: all rights reserved (see COPYRIGHT-AND-ARTWORK.txt).
 Third-party components (NDI runtime, Spout, Syphon, ffmpeg) keep their own licences.
 -->
-<html lang="en"><head><meta charset="utf-8"><title>TileSmith v3.3 - LED Wall Builder</title>
+<html lang="en"><head><meta charset="utf-8"><title>TileSmith v3.5 - LED Wall Builder</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 10 10%27%3E%3Crect width=%2710%27 height=%2710%27 rx=%272%27 fill=%27%230f1720%27/%3E%3Cg fill=%27%2322808a%27%3E%3Crect x=%271.5%27 y=%271.5%27 width=%272.2%27 height=%272.2%27/%3E%3Crect x=%276.3%27 y=%271.5%27 width=%272.2%27 height=%272.2%27/%3E%3Crect x=%273.9%27 y=%273.9%27 width=%272.2%27 height=%272.2%27/%3E%3Crect x=%271.5%27 y=%276.3%27 width=%272.2%27 height=%272.2%27/%3E%3C/g%3E%3Crect x=%276.3%27 y=%276.3%27 width=%272.2%27 height=%272.2%27 fill=%27%23ffb300%27/%3E%3C/svg%3E">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
@@ -48,7 +48,7 @@ main{container-type:inline-size;position:relative}#halfStop{position:absolute;le
 <main><div id="bar"></div><canvas id="vp"></canvas><button id="halfStop" data-a="hedit" hidden>STOP MARKING HALF TILES</button></main>
 <aside id="right"></aside></div>
 <div class="ov" id="about" role="dialog" aria-modal="true" aria-labelledby="abt"><div class="dlg">
-<h2 id="abt">TileSmith - LED Wall Builder</h2><div style="color:var(--mu);font-size:12px;margin:-2px 0 6px">Version 3.3 · build 2026-10-14</div><div class="sub">Pixel mapping and an animated tech to build the wall.</div>
+<h2 id="abt">TileSmith - LED Wall Builder</h2><div style="color:var(--mu);font-size:12px;margin:-2px 0 6px">Version 3.5 · build 2026-10-18</div><div class="sub">Pixel mapping and an animated tech to build the wall.</div>
 <dl style="margin:0"><dt>Concept &amp; development</dt><dd>Callum Davenport-Lambton</dd>
 <dt>Licence</dt><dd style="font-size:13px">© 2026 Callum Davenport-Lambton. The program is free software under the GNU General Public License v3 or later, without any warranty. The animated technician’s artwork, character design, name and logo are not under the GPL: all rights reserved. Third-party parts keep their own licences.</dd>
 <dt>Contact</dt><dd><a id="mail" href="mailto:tilesmithapp@gmail.com">tilesmithapp@gmail.com</a></dd>
@@ -182,7 +182,7 @@ const SW=(k,cs)=>`<div class="row w">${cs.map(c=>`<button class="sw" title="${c}
 const SUB=(t,h,open,cls)=>`<details class="subd${cls?' '+cls:''}"${open?' open':''}><summary>${t}</summary><div class="sec">${h}</div></details>`;
 function sect(h){const q=h.split('<h2>');return q[0]+q.slice(1).map(p=>{const i=p.indexOf('</h2>');return `<details open><summary>${p.slice(0,i)}</summary><div class="sec">${p.slice(i+5)}</div></details>`}).join('')}
 function build(){
-$('#left').innerHTML=sect(`<h1>TileSmith <span style="font-size:11px;font-weight:600;color:var(--am)">v3.3</span></h1><div style="color:var(--mu)">LED Wall Pixel Map &amp; Test Pattern Generator</div>
+$('#left').innerHTML=sect(`<h1>TileSmith <span style="font-size:11px;font-weight:600;color:var(--am)">v3.5</span></h1><div style="color:var(--mu)">LED Wall Pixel Map &amp; Test Pattern Generator</div>
 <h2>Canvas</h2><div class="g">${F('cw','Width px')}${F('ch','Height px')}</div>
 <div class="row">${Object.keys(R).map(k=>B('res',k,k)).join('')}${B('match','Fit canvas to walls')}</div>
 ${SUB('LED walls',`<div id="wlist"></div>

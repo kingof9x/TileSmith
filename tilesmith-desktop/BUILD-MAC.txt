@@ -1,6 +1,6 @@
-TILESMITH v3.3 - BUILD INSTRUCTIONS FOR MAC (Apple Silicon + Intel, one universal app)
+TILESMITH v3.5 - BUILD INSTRUCTIONS FOR MAC (Apple Silicon + Intel, one universal app)
 =====================================================================================
-Result: TileSmith-3.3.0-mac-universal.dmg - one installer that runs on BOTH Apple Silicon (M1/M2/M3/M4)
+Result: TileSmith-3.5.0-mac-universal.dmg - one installer that runs on BOTH Apple Silicon (M1/M2/M3/M4)
 and Intel Macs. The app is UNSIGNED (fine for personal/internal use; see step 8).
 You must build on a Mac. Needs internet only while building. The finished app works offline.
 Commands are typed in the Terminal app (Applications > Utilities > Terminal).
@@ -68,7 +68,7 @@ STEP 7 - Build
   if bin/mac/syphon is missing; the build still works, without Syphon).
   The build takes several minutes (it builds Apple Silicon and Intel and merges them).
   When finished it prints DONE and leaves this file in the project folder:
-     TileSmith-3.3.0-mac-universal.dmg
+     TileSmith-3.5.0-mac-universal.dmg
 
 STEP 8 - Install and open
   1) Double-click the .dmg and drag TileSmith onto the Applications folder.
@@ -78,7 +78,7 @@ STEP 8 - Install and open
         xattr -cr /Applications/TileSmith.app
   4) If Settings > Privacy & Security shows "TileSmith was blocked", click "Open Anyway".
   5) The first time you start NDI®, macOS may ask to allow "local network" access. Click Allow.
-  Check you have the right version: the window title and header say "v3.3".
+  Check you have the right version: the window title and header say "v3.5".
 
 USING NDI®
   Click "Start NDI®" in the top bar (it turns green and reads "Stop NDI®" while live).

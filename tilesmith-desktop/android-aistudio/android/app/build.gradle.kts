@@ -13,8 +13,8 @@ android {
         applicationId = "com.tilesmith.android"
         minSdk = 24
         targetSdk = 36
-        versionCode = 30300
-        versionName = "3.3"
+        versionCode = 30500
+        versionName = "3.5"
     }
 
     buildTypes {

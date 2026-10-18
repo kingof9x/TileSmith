@@ -1,6 +1,6 @@
 {
   "name": "tilesmith-mobile",
-  "version": "3.3.0",
+  "version": "3.5.0",
   "private": true,
   "description": "TileSmith - LED Wall Builder for Android and iOS (Capacitor). Uses the same app page as the desktop build (../app).",
   "scripts": {

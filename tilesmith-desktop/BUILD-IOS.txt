@@ -1,4 +1,4 @@
-TILESMITH v3.3 - BUILD INSTRUCTIONS FOR iOS AND iPadOS (iPhone and iPad)
+TILESMITH v3.5 - BUILD INSTRUCTIONS FOR iOS AND iPadOS (iPhone and iPad)
 =======================================================================
 Result: the TileSmith app on your iPhone or iPad (iOS / iPadOS 15 or newer), built from the same app page as
 the desktop version, so every feature you add shows up in both.
@@ -33,7 +33,7 @@ STEP 3 - Prepare the iOS project
      npm install
      npm run ios
   "npm run ios" copies the current TileSmith page into the iOS project (you will see
-  "[ok] www is ready: TileSmith v3.3 ...") and opens it in Xcode. The first time, Xcode downloads Capacitor
+  "[ok] www is ready: TileSmith v3.5 ...") and opens it in Xcode. The first time, Xcode downloads Capacitor
   (Swift packages); wait until "Resolving package graph" is finished.
 
 STEP 4 - Sign the app with your Apple ID (once)

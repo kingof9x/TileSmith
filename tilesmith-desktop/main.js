@@ -17,7 +17,7 @@ ipcMain.on('output-active', (e, on) => {
 
 app.whenReady().then(() => {
   const w = new BrowserWindow({
-    width: 1500, height: 900, backgroundColor: '#0d1217', title: 'TileSmith v3.3 - LED Wall Builder',
+    width: 1500, height: 900, backgroundColor: '#0d1217', title: 'TileSmith v3.5 - LED Wall Builder',
     icon: require('path').join(__dirname, 'app', 'icon.png'), autoHideMenuBar: true,
     webPreferences: { nodeIntegration: true, contextIsolation: false, backgroundThrottling: false }
   });

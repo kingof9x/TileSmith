@@ -1,4 +1,4 @@
-TILESMITH v3.3 - BUILD INSTRUCTIONS FOR ANDROID (phones and tablets)
+TILESMITH v3.5 - BUILD INSTRUCTIONS FOR ANDROID (phones and tablets)
 ====================================================================
 Result: the TileSmith app on your Android phone or tablet (Android 7.0 or newer), built from the same app page as
 the desktop version, so every feature you add shows up in both.
@@ -32,7 +32,7 @@ STEP 3 - Prepare the Android project
      npm install
      npm run android
   "npm run android" copies the current TileSmith page into the Android project (you will see
-  "[ok] www is ready: TileSmith v3.3 ...") and opens it in Android Studio.
+  "[ok] www is ready: TileSmith v3.5 ...") and opens it in Android Studio.
 
 STEP 4 - Let Android Studio finish setting up
   The first time, Android Studio downloads the build tools (several hundred MB) and runs "Gradle sync".

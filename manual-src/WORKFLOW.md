@@ -92,3 +92,5 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - The manual no longer has a Version history chapter.
 - VirusTotal is its own workflow (.github/workflows/virustotal.yml, scripts in .github/scripts) that runs after a
   release and writes VIRUSTOTAL.md in the project root. The release workflow no longer scans.
+- Source version is 3.5 (set 2026-10-18). From now on versions are decided in GitHub (Actions > Build and release >
+  version box); do not bump the source version for ordinary revisions, only when the user asks.

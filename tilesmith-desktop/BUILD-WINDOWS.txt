@@ -1,4 +1,4 @@
-TILESMITH v3.3 - BUILD INSTRUCTIONS FOR WINDOWS
+TILESMITH v3.5 - BUILD INSTRUCTIONS FOR WINDOWS
 ================================================
 Result: ONE stand-alone file, TileSmith-Portable.exe. Copy it anywhere and double-click.
 NDI® output is built in: computers that RUN TileSmith do not need NDI® Tools or the NDI® Runtime.
@@ -59,7 +59,7 @@ STEP 6 - Run it
   Copy ONLY TileSmith-Portable.exe wherever you want and double-click it.
   Never use anything inside dist\win-unpacked (it only works next to its own files).
   Windows SmartScreen may warn about an unsigned app: click "More info" -> "Run anyway".
-  Check you have the right version: the window title and header say "v3.3".
+  Check you have the right version: the window title and header say "v3.5".
 
 USING NDI®
   Click "Start NDI®" in the top bar (it turns green and reads "Stop NDI®" while live).
