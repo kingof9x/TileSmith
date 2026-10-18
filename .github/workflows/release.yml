@@ -259,7 +259,15 @@ jobs:
             SHA=$(sha256sum "$f" | cut -d' ' -f1)
             SIZE=$(stat -c %s "$f")
             if [ "$SIZE" -gt 30000000 ]; then URL=$(curl -sS -H "x-apikey: $VT_API_KEY" "$API/files/upload_url" | jq -r .data); else URL="$API/files"; fi
-            ID=$(curl -sS -H "x-apikey: $VT_API_KEY" -F "file=@$f" "$URL" | jq -r '.data.id // empty')
+            ID=""
+            for try in 1 2 3; do
+              OUT=$(curl -sS -H "x-apikey: $VT_API_KEY" -F "file=@$f" "$URL" || true)
+              ID=$(echo "$OUT" | jq -r '.data.id // empty' 2>/dev/null || true)
+              [ -n "$ID" ] && break
+              echo "Upload of $f failed (try $try): $(echo "$OUT" | head -c 300)"
+              sleep 60
+              if [ "$SIZE" -gt 30000000 ]; then URL=$(curl -sS -H "x-apikey: $VT_API_KEY" "$API/files/upload_url" | jq -r .data); fi
+            done
             RES="not scanned"
             if [ -n "$ID" ]; then
               for i in $(seq 1 60); do
@@ -286,6 +294,6 @@ jobs:
             echo "|---|---|---|"
             printf "%s" "$ROWS"
           } > /tmp/vt.md
-          BODY=$(gh release view "$TAG" --json body -q .body | sed '/^## VirusTotal scan/,$d')
+          BODY=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json body -q .body | sed '/^## VirusTotal scan/,$d')
           printf "%s\n\n%s\n" "$BODY" "$(cat /tmp/vt.md)" > /tmp/notes.md
-          gh release edit "$TAG" --notes-file /tmp/notes.md
+          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file /tmp/notes.md
