@@ -142,7 +142,7 @@ async def main():
         await ev("()=>document.querySelector('[data-a=gedit]').click()")
         await ev(f"""()=>{{S.gone=[];S.preset='ROE Carbon CB5';applyPreset();S.cols=6;S.rows=3;S.half=[];S.lay={{s:'h',uc:6,ur:6,p:[[0,1,1,1],[1,0,1,2],[2,0,1,2],[3,0,1,2],[4,0,1,2],[5,1,1,1],[0,2,1,2],[1,2,1,2],[2,2,2,1],[2,3,1,1],[3,3,1,1],[4,2,1,2],[5,2,1,2],[0,4,1,2],[1,4,1,2],[2,4,1,2],[3,4,1,2],[4,4,1,2],[5,4,1,2]]}};{PREP};{ZOOM}}}""")
         await ev("()=>document.querySelector('[data-a=hedit]').click()"); await opensub('Tile model')
-        await ui('Tile model', 'ui-tile-model-half.png', 'Tile model submenu on a model with a half version', 'Shows the half-tile note and Mark half tiles / Clear half tiles.')
+        await ui('Size of LED Wall', 'ui-tile-model-half.png', 'Size of LED Wall submenu on a model with a half version', 'Shows the half-tile note, Convert bottom / top row to half tiles, Mark half tiles and Clear half tiles.')
         await full('t11-half-tiles.png', 'Mark half tiles mode (ROE Carbon CB5)', 'Half tiles along the top and in row 2, one full tile turned on its side; empty half spaces show a red X.')
         await ev("()=>document.querySelector('[data-a=hedit]').click()")
         await ev(f"""()=>{{S.preset='Unilumin UpadIV 2.6';applyPreset();S.lay={{}};S.cols=6;S.rows=4;{PREP}}}""")

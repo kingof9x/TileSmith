@@ -33,7 +33,7 @@ async def main():
         await pg.click('#bar [data-a=png]'); await pg.wait_for_timeout(1200)
         await pg.click('#bar [data-a=csv]'); await pg.wait_for_timeout(500)
         await pg.click('#bar [data-a=spec]'); await pg.wait_for_timeout(700)
-        await pg.click('#bar [data-a=rxmlm]'); await pg.click('#rxmlm [data-v="One slice per tile"]'); await pg.wait_for_timeout(700)
+        await pg.evaluate("document.querySelector('#bar [data-a=rxmlm]').scrollIntoView({inline:'center'})"); await pg.wait_for_timeout(300); await pg.click('#bar [data-a=rxmlm]'); await pg.click('#rxmlm [data-v="One slice per tile"]'); await pg.wait_for_timeout(700)
         r = await pg.evaluate("()=>({calls:__calls.filter(c=>c[0]=='share'),toast:document.querySelector('#toast').textContent})")
         print('SHARES', r)
         files = await pg.evaluate('__files')

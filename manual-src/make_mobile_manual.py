@@ -108,7 +108,10 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['<b>Play / Pause</b>', 'Pauses or resumes the build animation.'],
  ['<b>Start build</b>', 'Clears every wall and lets the technician build them again.'],
  ['<b>Instant skip</b>', 'Shows every wall finished.'],
- ['<b>Reset fit</b>', 'Fits the whole canvas in the viewport again.'],
+ ['<b>Center canvas</b>', 'Centres the canvas in the viewport.'],
+ ['<b>Show entire canvas</b>', 'Fits the whole canvas in the viewport again.'],
+ ['<b>New canvas</b>', 'Asks first, then wipes everything and starts a blank canvas. Undo brings it back.'],
+ ['<b>Undo</b>', 'Opens a list of the last 20 changes; tap one to go back to just before it. The first item can be <i>Redo</i>.'],
  ['<b>Next pattern</b>', 'Moves the selected wall to the next test pattern; a message at the bottom names it.'],
  ['<b>Export PNG / Export CSV / Spec sheet</b>', 'Save the canvas picture, the patching list or the spec sheet (chapter 14).'],
  ['<b>Resolume XML ▾</b>', 'Saves a Resolume Arena Advanced Output preset: One slice per LED wall or One slice per tile.'],
@@ -124,7 +127,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <b>One finger on empty space</b><span>Pans the viewport.</span>
 <b>Two fingers</b><span>Pinch to zoom (up to 500%) around your fingers, and move to pan. Only the viewport zooms, never the whole screen.</span>
 <b>Scroll</b><span>Swipe the settings or engineering panel to scroll it. On a phone, swipe outside the viewport to scroll the page.</span>
-<b>Reset fit</b><span>Brings the whole canvas back into view.</span></div>
+<b>Show entire canvas</b><span>Brings the whole canvas back into view.</span></div>
 <p>Text and number fields open the keyboard. Colour fields open the system colour picker. Upload fields open the photo picker or file browser. Web links, Ko-fi and e-mail open in your browser or mail app.</p></section>
 
 <section class="chap"><h1>5. Quick start</h1><ol>
@@ -150,7 +153,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p><b>Size of LED Wall</b> sets Columns and Rows, with quick buttons 4×3, 6×4, 8×5, 10×6 and 16×9.</p></div>{img('ui-tile-model.png', 'Tile model')}</div>
 <h2>Removing tiles</h2><p>For a wall that is not a rectangle, tap <b>Remove tiles</b> (Size of LED Wall). Then tap tiles in the viewport to take them out or put them back, or drag across several. Removed spots show a red ✕ in the viewport only, never in the output. <b>Restore all tiles</b> puts them all back.</p>
 {row(img('t10-remove-tiles.png', 'Remove tiles mode'), img('cv-removed-tiles.png', 'The output: six corner tiles removed'))}
-<h2>Half tiles</h2><p>Some models also come as a half tile (ROE Carbon CB3/CB5/CB8, YES TECH MU 500×1000, YES TECH MT II 1000×500). For these, the Tile model submenu shows <b>Mark half tiles</b>. Tap it, then tap in the viewport:</p>
+<h2>Half tiles</h2><p>Some models also come as a half tile (ROE Carbon CB3/CB5/CB8, YES TECH MU 500×1000, YES TECH MT II 1000×500). For these, the <b>Size of LED Wall</b> submenu shows <b>Convert bottom row to half tiles</b> and <b>Convert top row to half tiles</b> (tap again to restore full tiles) and <b>Mark half tiles</b>. While marking, a red <b>STOP MARKING HALF TILES</b> button sits at the top of the viewport. Tap in the viewport:</p>
 <ul><li>Tap one half of a full tile to keep just that half.</li><li>Tap an empty half to put a half tile there.</li>
 <li>Tap the line between two half tiles to join them into a full tile. This works upright, offset by half a tile, or on its side (ROE frames).</li><li>Tap a half tile to take it out.</li></ul>
 <p>Drag to repeat the first tap's action. <b>Clear half tiles</b> goes back to full tiles.</p>

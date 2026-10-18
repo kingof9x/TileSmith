@@ -29,7 +29,7 @@ KEYDESC = {
  'proc': 'LED processor model (or None). Gates all data/port features.', 'fps': 'Processor frame rate in Hz (affects pixels per port).',
  'bpc': 'Processor bit depth (8, 10, 12).', 'ull': 'Brompton Ultra Low Latency (halves port capacity).', 'ppx': 'Pixels per port in use (from spec, editable).',
  'pports': 'Ports per processor / sending card (editable).', 'ret': 'Count a return port (R#) for every primary port.', 'showData': 'Draw data paths on the canvas.',
- 'pdist': 'Power distribution ticked. Gates all power features.', 'pdt': 'Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" or "L21-30 (3 circuits per cable)".', 'lblPow': 'Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only".', 'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
+ 'pdist': 'Power distribution ticked. Gates all power features.', 'pdt': 'Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" or "L21-30 (3 circuits per cable)".', 'gx': 'Wall key: how far (px) the top-left of the wall\'s real tiles sits right of the full tile grid. Set by the app, not the user; ox/oy are the canvas position of those tiles.', 'gy': 'Wall key: like gx, downwards (a converted top row makes it half a tile).', 'lblPow': 'Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only".', 'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
  'pamps': 'Breaker size in amps (1-400).', 'derate': 'Load circuits to 80% (continuous load rule).', 'showPow': 'Draw power runs on the canvas.',
  'resSl': 'Resolume XML slice mode: One slice per LED wall | One slice per tile.', 'loop': 'Restart the build animation continuously.', 'loopHold': 'Seconds to pause before restarting (0-600).',
  'ndiName': 'NDI source name (default TileSmith-LED-Out).', 'ndiFps': 'NDI frame rate (see NDI).', 'ndiIdle': 'Save CPU: when nothing moves, send about 4 frames per second instead of the full rate.',
@@ -207,8 +207,15 @@ goes to the output.
 - Drag empty space to pan. Drag a wall to move it (unless an editing mode is on).
 - Walls snap to canvas edges and other walls' edges within 10 screen px (magenta dashed guides while dragging); after
   dropping, overlapping walls are pushed apart to keep a {d['GAP']} px gap. Hold Alt to place freely.
-- Click a wall to select it. Reset fit fits the canvas (margin min(60 px, 10% of the viewport)); the canvas also
-  refits when the window resizes.
+- Click a wall to select it. Show entire canvas (the old Reset fit) fits the canvas (margin min(60 px, 10% of the viewport)); Center canvas keeps the
+  zoom and centres the canvas; New canvas asks, then resets every setting, wall, crew and logo to the start-up defaults
+  (S_DEF); the canvas also refits when the window resizes. Undo menu (top bar, "Undo (n) v"): a snapshot of the whole design (all
+  settings except images and play state, every wall's keys, the selected wall, crew and logos) is compared after every
+  input/change/click and at the end of a wall/marking/wiring drag; if it differs the previous snapshot is pushed as a step
+  named after the control ("Columns -> 9", "Add wall", "Moved LED Wall", "Marked half tiles"). Typing in one box within 1.5 s
+  is one step. Up to 20 steps; the menu lists them newest first and picking step n restores the state before it (n undos);
+  a Redo item appears on top after an undo. Ctrl/Cmd+Z undoes, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z redoes (not while typing in a
+  text or number box). Selecting a wall, panning/zooming, playing and exporting are not steps. New canvas is one step.
 - Editing modes (one at a time): manual data wiring, manual power wiring, Mark half tiles, Remove tiles. In these modes
   the cursor is a crosshair over the selected wall and drags edit instead of moving the wall. While Remove tiles or
   Mark half tiles is on, empty spots of the selected wall show a red dashed outline with an X (viewport only).
@@ -268,7 +275,16 @@ The wall is a grid of half-tile **units**: for split h, units are tw x th/2 and 
 split w, units are tw/2 x th and the grid is 2*cols x rows. A piece is [u, v, a, b] = top-left unit and size in units:
 1x1 = half tile; the model's upright full tile = 1x2 (h) or 2x1 (w); ROE models may also use the turned full tile
 (2x1 for h). Pieces never overlap; any unit not covered is empty (black). The default layout is one upright full piece
-per non-removed cell. Mark half tiles mode (Tile model submenu); a press at a point decides one action:
+per non-removed cell. Half tile controls sit in the Size of LED Wall submenu (only for models in HALF): Convert bottom row to
+half tiles / Convert top row to half tiles (toggle: the label becomes Restore ... row to full tiles). Half-height models only ('h'):
+bottom row = remove the last unit row (full tiles shrink to their top half, lone bottom halves are dropped), top row = remove
+unit row 0 (full tiles keep their bottom half); restoring grows every lone half in the kept row back to a full tile when the
+removed unit above/below is free. Wall size (wW, wH) on a half-tile layout is the bounding box of the real pieces; piece x,y
+are relative to that box; wall position ox,oy is the box's top-left corner and gx,gy (wall keys, grid offset in px) record where
+that corner sits inside the full tile grid, so tiles keep their canvas position when the layout changes (wNorm). Patterns get the
+box size; the tile-shade checkerboard is drawn on the full grid shifted by (gx,gy). In marking mode the whole tile grid of the
+selected wall (dotted outline) is clickable and a red STOP MARKING HALF TILES button is shown over the top of the viewport (Esc also
+stops). Mark half tiles mode; a press at a point decides one action:
 
 1. If the point is within 22% of a unit edge, and the unit and the neighbour across that edge each hold a half piece,
    and the pair forms an allowed full tile (stacked = upright for h; side by side = turned, ROE only), **join** them

@@ -71,7 +71,7 @@ viewport and the engineering panel are placeholders for now.
    - Canvas presets come from R.
 5. Saving. Save as the same JSON as saveNow() ({sv:23,S,walls,cur,crew,logo,dvd}) in filesDir/state.json, 400 ms
    after any change. Load and validate it at start-up as loadState() does.
-6. Top bar buttons: ⓘ Info, Play / Pause, Start build, Instant skip, Reset fit, Next pattern, Export PNG, Export CSV,
+6. Top bar buttons: ⓘ Info, Play / Pause, Start build, Instant skip, Center canvas, Show entire canvas, New canvas, Undo menu, Next pattern, Export PNG, Export CSV,
    Spec sheet, Resolume XML ▾ (menu: One slice per LED wall / One slice per tile), Export video. After them, a red
    recording status, the zoom % and the fps label. They can do nothing yet.
 7. LED walls list (wallsUI) with Add wall / Duplicate / Remove working on the list (positions come in step 4).""",
@@ -98,7 +98,7 @@ viewport and the engineering panel are placeholders for now.
    - draw the bitmap scaled by zoom V.z and offset V.x/V.y, with a drop shadow;
    - a cyan #22d3ee outline around the canvas;
    - an amber outline around each wall: solid for the selected wall when there are several, dashed otherwise.
-   Port fit()/fitZ()/zMin()/viewBounds(): Reset fit fits the canvas with a margin of min(60, 10% of the view). Show the
+   Port fit()/fitZ()/zMin()/viewBounds(): Show entire canvas fits the canvas with a margin of min(60, 10% of the view). Show the
    zoom % in the top bar.
 4. Gestures. Pinch zooms around the fingers (zMin to 500%), two fingers pan, and one finger on empty space pans.
 5. Frame loop. Port tick()/loop()/animNow()/busyNow() with withFrameNanos: redraw only when something moves, else
@@ -226,7 +226,7 @@ Check: a 6 × 4 Unilumin UpadIV 2.6 wall must show 24 tiles, 1152 × 768 px (884
    - Remove tiles / Stop removing, and Restore all tiles.
    - Tap a tile to take it out or put it back; dragging repeats the first tap's choice on every tile crossed.
    - Removed spots show a red dashed outline with an X, in the viewport only (vpDraw).
-2. Half tiles (Tile model). Shown only for models in HALF. Mark half tiles / Stop marking, and Clear half tiles.
+2. Half tiles (Size of LED Wall). Shown only for models in HALF. Convert bottom / top row to half tiles (toggle), Mark half tiles / Stop marking (with a red STOP MARKING HALF TILES button over the viewport), and Clear half tiles. The wall is the bounding box of its real tiles (wW/wH/pieces X0,Y0, gx/gy).
    - Port unitG, layDefault, layPieces, unitAt, halfAct, halfDo, unitDrag, halfDrag, goneDrag and restoreAll.
    - A tap within 22% of a unit edge between two halves joins them (upright, or on its side for ROE); a tap on a full
      tile keeps the half that was tapped; a tap on an empty half fills it; a tap on a half takes it out.

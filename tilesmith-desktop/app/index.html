@@ -41,11 +41,11 @@ table{width:100%;border-collapse:collapse}td{padding:5px 0;border-bottom:1px sol
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.ov.on{display:flex}
 .dlg{background:var(--pn);color:var(--tx);border:1px solid var(--ln);border-radius:12px;padding:22px 26px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .dlg{max-height:90vh;overflow:auto}.dlg h2{margin:0 0 4px;font-size:20px}.dlg .sub{color:var(--mu);margin-bottom:16px}.dlg dt{color:var(--mu);font-size:12px;margin-top:12px}.dlg dd{margin:2px 0 0;font-size:15px}.dlg a{color:var(--ac)}.dlg a.kofi{display:inline-flex;align-items:center;gap:9px;background:#29abe0;color:#fff;text-decoration:none;font-weight:700;padding:8px 16px 8px 12px;border-radius:9px}.dlg a.kofi:hover,.dlg a.kofi:focus-visible{filter:brightness(1.1)}
-main{container-type:inline-size}@container (max-width:640px){#bar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}#bar>*{flex:0 0 auto}}@media(max-height:520px){#bar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}#bar>*{flex:0 0 auto}}
+main{container-type:inline-size;position:relative}#halfStop{position:absolute;left:50%;transform:translateX(-50%);z-index:6;padding:9px 18px;font-weight:800;letter-spacing:.04em;background:#e5484d;color:#fff;border:2px solid #fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:pointer}#halfStop[hidden]{display:none}@container (max-width:640px){#bar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}#bar>*{flex:0 0 auto}}@media(max-height:520px){#bar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}#bar>*{flex:0 0 auto}}
 @media(max-width:900px){#app{grid-template-columns:1fr;height:auto}main{height:70vh}aside{border:0}}
 </style></head><body><div id="app">
 <aside id="left"></aside>
-<main><div id="bar"></div><canvas id="vp"></canvas></main>
+<main><div id="bar"></div><canvas id="vp"></canvas><button id="halfStop" data-a="hedit" hidden>STOP MARKING HALF TILES</button></main>
 <aside id="right"></aside></div>
 <div class="ov" id="about" role="dialog" aria-modal="true" aria-labelledby="abt"><div class="dlg">
 <h2 id="abt">TileSmith - LED Wall Builder</h2><div style="color:var(--mu);font-size:12px;margin:-2px 0 6px">Version 3.3 · build 2026-10-14</div><div class="sub">Pixel mapping and an animated tech to build the wall.</div>
@@ -89,7 +89,7 @@ const HALF={'ROE Carbon CB3':['ROE Carbon CB3 Half','h'],'ROE Carbon CB5':['ROE 
  'YES TECH MT II 3.9-7.8 1000×500':['YES TECH MT II 3.9-7.8 500×500','w']};
 const R={'1080p Full HD':[1920,1080],'4K UHD':[3840,2160],'2K DCI':[2048,1080],'4K DCI':[4096,2160],'720p HD':[1280,720],'32:9 Banner':[3840,1080]};
 const S={cw:1920,ch:1080,ox:0,oy:0,cols:6,rows:4,preset:'Unilumin UpadIV 2.6',tw:192,th:192,wmm:500,hmm:500,dmm:70,kg:6.3,wmax:120,pitch:2.6,
-bc:'#22d3ee',bt:3,pat:'tileshade',tpos:true,half:[],gone:[],lay:{},ids:true,addr:false,mm:false,speed:1,dvdOn:false,dvdSrc:'TileSmith logo',dvdText:'TILESMITH',dvdArea:'Each LED wall',dvdSize:20,dvdSpeed:1,dvdCorner:10,dvdTint:true,dvdLoop:false,dvdLoopLen:30,dvdLoopCorners:true,vIntro:5,vHold:10,vCodec:'HAP (.mov)',hapFmt:'hap',name:'LED Wall',corner:'Top-left',dir:'Horizontal',wmode:'None',wcorner:'Top-left',wdir:'Horizontal',wfill:'Fewest ports',wman:[],pmode:'None',pcorner:'Top-left',pwdir:'Horizontal',pfill:'Fewest circuits',plink:0,pman:[],proc:'None',fps:60,bpc:8,ull:false,ppx:0,pports:0,ret:true,showData:true,pdist:false,pvolt:120,pamps:20,derate:true,showPow:true,resSl:'One slice per LED wall',pfit:'Stretch to wall',pdir:'none',pspd:1,patImg:null,loop:false,loopHold:3,shadeC:'#3f8080',boxMode:'Nothing',boxText:'',boxCol:'#ffffff',boxImg:null,
+bc:'#22d3ee',bt:3,pat:'tileshade',tpos:true,half:[],gone:[],lay:{},gx:0,gy:0,ids:true,addr:false,mm:false,speed:1,dvdOn:false,dvdSrc:'TileSmith logo',dvdText:'TILESMITH',dvdArea:'Each LED wall',dvdSize:20,dvdSpeed:1,dvdCorner:10,dvdTint:true,dvdLoop:false,dvdLoopLen:30,dvdLoopCorners:true,vIntro:5,vHold:10,vCodec:'HAP (.mov)',hapFmt:'hap',name:'LED Wall',corner:'Top-left',dir:'Horizontal',wmode:'None',wcorner:'Top-left',wdir:'Horizontal',wfill:'Fewest ports',wman:[],pmode:'None',pcorner:'Top-left',pwdir:'Horizontal',pfill:'Fewest circuits',plink:0,pman:[],proc:'None',fps:60,bpc:8,ull:false,ppx:0,pports:0,ret:true,showData:true,pdist:false,pvolt:120,pamps:20,derate:true,showPow:true,resSl:'One slice per LED wall',pfit:'Stretch to wall',pdir:'none',pspd:1,patImg:null,loop:false,loopHold:3,shadeC:'#3f8080',boxMode:'Nothing',boxText:'',boxCol:'#ffffff',boxImg:null,
 ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblPow:'Cable and circuit labels',pdt:'Socapex (6 circuits per cable)',lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',logo:'TILESMITH',cd:true,play:true};
 const LBL={'Avery 5160 (30 per US Letter sheet)':{pw:215.9,ph:279.4,w:66.675,h:25.4,c:3,r:10,x:4.76,y:12.7,gx:3.175,gy:0},
 'Avery 5163 (10 per US Letter sheet)':{pw:215.9,ph:279.4,w:101.6,h:50.8,c:2,r:5,x:3.97,y:12.7,gx:4.76,gy:0},
@@ -103,12 +103,15 @@ let crew=defCrew();
 let logoImg=null,sims=[],loopW=0,crewNext=0,V={z:1,x:0,y:0};
 const esc=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // ---------- LED walls (each wall has its own position, array, tile model, test pattern and build order)
-const WK=['half','gone','lay','name','ox','oy','cols','rows','preset','tw','th','wmm','hmm','dmm','kg','wmax','pitch','pat','pfit','pdir','pspd','shadeC','patImg','boxMode','boxText','boxCol','boxImg','corner','dir','wmode','wcorner','wdir','wfill','wman','pmode','pcorner','pwdir','pfill','plink','pman'];
+const WK=['half','gone','lay','gx','gy','name','ox','oy','cols','rows','preset','tw','th','wmm','hmm','dmm','kg','wmax','pitch','pat','pfit','pdir','pspd','shadeC','patImg','boxMode','boxText','boxCol','boxImg','corner','dir','wmode','wcorner','wdir','wfill','wman','pmode','pcorner','pwdir','pfill','plink','pman'];
 const wallFromS=()=>{const w={};WK.forEach(k=>w[k]=Array.isArray(S[k])?JSON.parse(JSON.stringify(S[k])):S[k]);return w};
 let walls=[wallFromS()],cur=0;
 function storeWall(){if(walls[cur])WK.forEach(k=>walls[cur][k]=S[k])}
 function loadWall(i){cur=Math.max(0,Math.min(walls.length-1,i|0));WK.forEach(k=>S[k]=walls[cur][k])}
-const wN=w=>w.cols*w.rows,wW=w=>w.cols*w.tw,wH=w=>w.rows*w.th;
+// Wall size. A wall on a half-tile layout is only as big as its real tiles: converting the bottom row to half tiles makes it
+// half a tile shorter. Wall position (ox, oy) is the top-left corner of those tiles; gx, gy remember how far that corner sits
+// inside the full tile grid, so tiles stay where they are on the canvas when the layout changes.
+const wN=w=>w.cols*w.rows,wW=w=>layOn(w)?pieces(w).bw:w.cols*w.tw,wH=w=>layOn(w)?pieces(w).bh:w.rows*w.th,wOff=w=>{if(!layOn(w))return{x:0,y:0};const v=pieces(w);return{x:v.X0,y:v.Y0}};
 // ---------- tiles of a wall ("pieces"). Normally one full tile per grid cell, minus removed tiles. Models with a half
 // version can instead use a layout on a grid of half-tile units: each piece is a half tile (one unit) or a full tile
 // (two units, upright, or for ROE also on its side), anywhere on that grid, so walls can step and offset by half a tile.
@@ -130,7 +133,7 @@ function layPieces(w){const g=unitG(w),L=w.lay,occ=new Set,out=[],ok=(a,b)=>a==1
  return out}
 // all tiles of a wall with their place (wall pixels), kind and build order; cached until the wall changes
 const PCQ=new WeakMap();
-function pieces(w){const g=unitG(w),lay=layOn(w),k=[w.cols,w.rows,w.tw,w.th,w.dir,w.corner,w.preset,w.kg,w.wmax,w.wmm,w.hmm].join('|');let e=PCQ.get(w);if(e&&e.k===k&&e.g===w.gone&&e.l===w.lay)return e.v;
+function pieces(w){const g=unitG(w),lay=layOn(w),k=[w.cols,w.rows,w.tw,w.th,w.dir,w.corner,w.preset,w.kg,w.wmax,w.wmm,w.hmm].join('|');let e=PCQ.get(w);if(e&&e.k===k&&e.g===w.gone&&e.l===w.lay){wNorm(w,e.v);return e.v}
  const ord=new Map;for(let i=0;i<w.cols*w.rows;i++){const q=seqRC(w,i);ord.set(q[1]*w.cols+q[0],i)}const list=[];
  if(lay){const hq=P[halfOf(w)[0]];layPieces(w).forEach(([u,v,a,b])=>{const x=u*g.uw,y=v*g.uh,pw=a*g.uw,ph=b*g.uh,c=Math.floor(u/g.ux),r=Math.floor(v/g.uy),half=a*b==1,
    rot=!half&&(a!=g.full[0]),side=half?(g.sp=='h'?(v%2?'bottom':'top'):(u%2?'right':'left')):rot?'on its side':'';
@@ -142,10 +145,14 @@ function pieces(w){const g=unitG(w),lay=layOn(w),k=[w.cols,w.rows,w.tw,w.th,w.di
    list.push({key:c+','+r,el:[c,r],x:c*w.tw,y:r*w.th,w:w.tw,h:w.th,c,r,half:false,rot:false,side:'',o:ord.get(i)*4,id:i+1,sp:{kg:w.kg,W:w.wmax,m2:w.wmm*w.hmm/1e6,mm:[w.wmm,w.hmm]}})}}
  const by=new Map(list.map(p=>[p.key,p])),seq=[...list].sort((p,q)=>p.o-q.o),um=new Map;seq.forEach((p,i)=>p.b=i);
  if(lay)list.forEach(p=>{for(let i=0;i<p.a;i++)for(let j=0;j<p.b2;j++)um.set((p.v+j)*g.uc+p.u+i,p)});
- const v={list,by,seq,lay,g,um,nh:list.filter(p=>p.half).length,ng:lay?0:goneSet(w).size};PCQ.set(w,{k,g:w.gone,l:w.lay,v});return v}
+ let X0=0,Y0=0,bw=w.cols*w.tw,bh=w.rows*w.th;
+ if(lay&&list.length){X0=Math.min(...list.map(p=>p.x));Y0=Math.min(...list.map(p=>p.y));bw=Math.max(...list.map(p=>p.x+p.w))-X0;bh=Math.max(...list.map(p=>p.y+p.h))-Y0;list.forEach(p=>{p.x-=X0;p.y-=Y0})}
+ const v={list,by,seq,lay,g,um,X0,Y0,bw,bh,nh:list.filter(p=>p.half).length,ng:lay?0:goneSet(w).size};PCQ.set(w,{k,g:w.gone,l:w.lay,v});wNorm(w,v);return v}
+// keep tiles where they are on the canvas when the top-left of the real tiles moves inside the grid
+function wNorm(w,v){const X=v.X0,Y=v.Y0;if((w.gx||0)!==X||(w.gy||0)!==Y){w.ox=(w.ox||0)+X-(w.gx||0);w.oy=(w.oy||0)+Y-(w.gy||0);w.gx=X;w.gy=Y}}
 const tN=w=>pieces(w).list.length,bseq=w=>pieces(w).seq;
 // the tile under a point (wall pixels), or null on an empty spot
-function pieceAt(w,x,y){const P2=pieces(w);if(x<0||y<0||x>=wW(w)||y>=wH(w))return null;if(P2.lay)return P2.um.get(Math.floor(y/P2.g.uh)*P2.g.uc+Math.floor(x/P2.g.uw))||null;return P2.by.get(Math.floor(x/w.tw)+','+Math.floor(y/w.th))||null}
+function pieceAt(w,x,y){const P2=pieces(w);if(x<0||y<0||x>=P2.bw||y>=P2.bh)return null;if(P2.lay)return P2.um.get(Math.floor((y+P2.Y0)/P2.g.uh)*P2.g.uc+Math.floor((x+P2.X0)/P2.g.uw))||null;return P2.by.get(Math.floor(x/w.tw)+','+Math.floor(y/w.th))||null}
 // a wiring chain entry is a cell [c, r] on a plain grid, or a tile key "u,v" on a half-tile layout
 const elKey=e=>Array.isArray(e)?(e[0]|0)+','+(e[1]|0):typeof e=='string'?e:'';
 const pieceOf=(w,e)=>pieces(w).by.get(elKey(e))||null;
@@ -165,7 +172,7 @@ document.querySelectorAll('.wn').forEach(x=>x.textContent=walls.length>1?(S.name
 const $=s=>document.querySelector(s),M=document.createElement('canvas'),mc=M.getContext('2d',{willReadFrequently:true});
 // gen counts how many times the master canvas has been redrawn; forceRen asks for one redraw on the next frame
 let gen=0,forceRen=true;
-const n=()=>S.cols*S.rows,WW=()=>S.cols*S.tw,WH=()=>S.rows*S.th;
+const n=()=>S.cols*S.rows,WW=()=>wW(S),WH=()=>wH(S);
 const F=(k,l,t='number',o,cls='')=>t=='select'?`<label class="${cls}">${l}<select data-k="${k}">${o.map(x=>`<option>${x}</option>`).join('')}</select></label>`:
  t=='check'?`<label class="chk w"><input type="checkbox" data-k="${k}">${l}</label>`:
  `<label class="${cls}">${l}<input data-k="${k}" type="${t}" ${o||''}></label>`;
@@ -184,10 +191,10 @@ ${SUB('LED walls',`<div id="wlist"></div>
 <div style="color:var(--mu)">Horizontal places a row at a time, vertical a column at a time. Settings marked with the wall's name edit the selected wall. Click a wall here, or click or drag it in the viewport, to select it.</div>`,1)}
 ${SUB('Tile model <span class="wn"></span>',`<div class="g">${presetSel()}${F('tw','Tile px W')}${F('th','Tile px H')}${F('pitch','Pitch mm','number','step=0.01')}
 <label>Density<span id="den" style="padding:5px 0"></span></label>${F('wmm','Width mm')}${F('hmm','Height mm')}${F('dmm','Depth mm')}${F('kg','Weight kg','number','step=0.1')}${F('wmax','Max watts')}<label>Typical (40%)<span id="typ" style="padding:5px 0"></span></label></div>
-<div id="halfBox"><div id="halfNote" style="color:var(--mu);font-size:12px"></div><div class="row">${B('hedit','Mark half tiles')}${B('hclr','Clear half tiles')}</div><div id="hmsg" style="font-size:12px"></div></div>`)}
+`)}
 ${SUB('Size of LED Wall <span class="wn"></span>',`<div class="g">${F('cols','Columns')}${F('rows','Rows')}</div>
 <div class="row">${['4x3','6x4','8x5','10x6','16x9'].map(k=>B('arr',k.replace('x','×'),k)).join('')}</div>
-<div id="goneBox"><div style="color:var(--mu);font-size:12px">Remove tiles to build a wall that is not a rectangle. Click Remove tiles, then click tiles in the viewport to take them out or put them back. Drag to do the same to every tile you cross.</div><div class="row">${B('gedit','Remove tiles')}${B('gclr','Restore all tiles')}</div><div id="gmsg" style="font-size:12px"></div></div>`)}
+<div id="goneBox"><div style="color:var(--mu);font-size:12px">Remove tiles to build a wall that is not a rectangle. Click Remove tiles, then click tiles in the viewport to take them out or put them back. Drag to do the same to every tile you cross.</div><div class="row">${B('gedit','Remove tiles')}${B('gclr','Restore all tiles')}</div><div id="gmsg" style="font-size:12px"></div></div><div id="halfBox"><div style="margin-top:8px;font-weight:600">Half tiles</div><div id="halfNote" style="color:var(--mu);font-size:12px"></div><div class="row">${B('hrowb','Convert bottom row to half tiles')}${B('hrowt','Convert top row to half tiles')}</div><div class="row">${B('hedit','Mark half tiles')}${B('hclr','Clear half tiles')}</div><div id="hmsg" style="font-size:12px"></div></div>`)}
 ${SUB('Wall position <span class="wn"></span>',`<div class="g">${F('ox','Offset X')}${F('oy','Offset Y')}</div>
 <div class="row">${B('al','Top-Left (0, 0)','tl')}${B('al','Center Both','c')}${B('al','Top-Center','tc')}${B('al','Bottom-Left','bl')}${B('al','Bottom-Center','bc')}</div>
 <div id="cov"></div><div style="color:var(--mu)">Drag a wall in the viewport to place it. It snaps to the canvas edges and to other walls, keeping a 2 px gap between walls. Hold Alt while dragging to place it freely. Drag empty space to pan.</div>`)}
@@ -232,7 +239,7 @@ ${F('lblLayout','Wrap layout','select',['Two identical panels','Flag fold-over (
 <div id="lblStat" style="font-size:12px;color:var(--mu);margin:6px 0"></div>
 <div class="row">${MOBILE?B('lbl','Save label sheet'):B('lbl','Print labels')}</div>
 <div style="color:var(--mu);font-size:12px">${MOBILE?'The label sheet is saved as a web page: open it in a browser and print it at 100% scale (no "fit to page").':'Print at 100% scale (turn off "fit to page") so the labels line up with the sheet.'} Each label is a wrap-around strip: it wraps around the cable and sticks to itself. Each label shows the cable name, which end it is, what it plugs into and where the other end goes.</div></div>`);
-$('#bar').innerHTML=B('about','ⓘ Info')+B('pp','Play / Pause')+B('rs','Start build')+B('sk','Instant skip')+B('fit','Reset fit')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('csv','Export CSV')+B('spec','Spec sheet')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+B('rec','Export video')+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>';
+$('#bar').innerHTML=B('about','ⓘ Info')+B('pp','Play / Pause')+B('rs','Start build')+B('sk','Instant skip')+B('ctr','Center canvas')+B('fit','Show entire canvas')+B('newc','New canvas')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('csv','Export CSV')+B('spec','Spec sheet')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+B('rec','Export video')+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>';
 sync();crewUI();}
 function sync(){storeWall();document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
 $('#crew').style.display=S.cd?'':'none';$('#den').textContent=Math.round(1e6/S.pitch**2).toLocaleString()+' px/m²';{const b=buildSecs(),t=S.vIntro+b+S.vHold,m=Math.floor(t/60),q=Math.round(t%60);const tx=m+':'+String(q).padStart(2,'0')+'  (build '+Math.round(b)+' s)';['#vest','#vestm'].forEach(k=>{const e=$(k);if(e)e.textContent=tx})}
@@ -240,8 +247,10 @@ $('#typ').textContent=Math.round(S.wmax*.4)+' W';wallsUI();uiVis();info()}
 function uiVis(){const on=procOn(),m=PROC[S.proc],hide=(id,h)=>{const e=$('#'+id);if(e)e.style.display=h?'none':''},plan=portPlan();lblVis();
 {const b=document.querySelector('[data-a=gedit]');if(b){b.textContent=goneEdit?'Stop removing':'Remove tiles';b.setAttribute('aria-pressed',goneEdit)}const g=pieces(S).ng,ms=layOn(S)?`${tN(S)} tiles on the half-tile layout.`:g?`${g} tile${g>1?'s':''} removed; ${tN(S)} left.`:'All tiles in place.',ge=$('#gmsg');if(ge&&ge.textContent!==ms)ge.textContent=ms}
 {const h=halfOf(S);hide('halfBox',!h);if(!h)halfEdit=false;else{const q=P[h[0]],hh=h[1]=='h',n1=hh?'top half':'left half',n2=hh?'bottom half':'right half',
-  nt=`This model also comes as a half tile (${h[0]}${q?`, ${q[0]}×${q[1]} mm, ${q[2]}×${q[3]} px`:''}). Click Mark half tiles, then click in the viewport: click a half of a full tile to keep just that half; click an empty half to put a half tile there; click the line between two half tiles to join them into a full tile${isROE(S)?' (side by side joins it on its side, for ROE frames)':''}; click a half tile to take it out. Drag to repeat the first click's action across tiles.`,
+  nt=`This model also comes as a half tile (${h[0]}${q?`, ${q[0]}×${q[1]} mm, ${q[2]}×${q[3]} px`:''}). The two Convert buttons turn the whole bottom or top row of tiles into half tiles (press again to restore full tiles). For anything else click Mark half tiles, then click in the viewport: click a half of a full tile to keep just that half; click an empty half to put a half tile there; click the line between two half tiles to join them into a full tile${isROE(S)?' (side by side joins it on its side, for ROE frames)':''}; click a half tile to take it out. Drag to repeat the first click's action across tiles.`,
   hn=$('#halfNote');if(hn&&hn.innerHTML!==nt)hn.innerHTML=nt;const b=document.querySelector('[data-a=hedit]');if(b){b.textContent=halfEdit?'Stop marking':'Mark half tiles';b.setAttribute('aria-pressed',halfEdit)}
+  for(const[a,sd]of[['hrowb','bottom'],['hrowt','top']]){const q=document.querySelector('[data-a='+a+']'),st=halfRowState(sd);if(q&&st){const t=st.half?`Restore ${sd} row to full tiles`:`Convert ${sd} row to half tiles`;if(q.textContent!==t)q.textContent=t}}
+  const sb=$('#halfStop');if(sb){sb.hidden=!halfEdit;if(halfEdit)sb.style.top=($('#bar').offsetHeight+10)+'px'}
   const P2=pieces(S),nr=P2.list.filter(x=>x.rot).length,ms=P2.lay?`${P2.list.length} tiles: ${P2.list.length-P2.nh} full${nr?` (${nr} on ${nr>1?'their':'its'} side)`:''}, ${P2.nh} half.`:'No half tiles yet.',he=$('#hmsg');if(he&&he.textContent!==ms)he.textContent=ms}}
 hide('procBox',!on);hide('pnone',on);hide('ullRow',!(on&&m.sc=='brompton'));hide('wautoBox',!['Snake','Linear'].includes(S.wmode));hide('wmanBox',S.wmode!='Manual');{const hl=document.querySelector('[data-k=hapFmt]');if(hl)hl.closest('label').style.display=S.vCodec=='HAP (.mov)'?'':'none';const vn=$('#vcn');if(vn&&vn.textContent!==vcodec().note)vn.textContent=vcodec().note}{hide('dvdBox',!S.dvdOn);const lb=k=>{const e=document.querySelector(`[data-k=${k}]`);return e&&e.closest('label')},tl=lb('dvdText');if(tl)tl.style.display=S.dvdSrc=='Text'?'':'none';hide('dvdUp',S.dvdSrc!='Uploaded image');hide('dvdLoopBox',!S.dvdLoop);hide('dvdCornerNote',!!S.dvdLoop);{const cl=lb('dvdCorner');if(cl)cl.style.display=S.dvdLoop?'none':''}
  const st=(id,t)=>{const e=$('#'+id);if(e&&e.textContent!==t)e.textContent=t};st('dvdSv',S.dvdSize+'%');st('dvdPv',S.dvdSpeed+'×');st('dvdCv',S.dvdCorner+'% (about '+Math.round(S.dvdCorner*DVD_MAX)+'% of bounces)')}{const pf=document.querySelector('select[data-k=pfit]');if(pf)pf.closest('label').style.display=isImgPat(S.pat)?'':'none';{const sc=document.querySelector('[data-k=shadeC]');if(sc)sc.closest('label').style.display=shadeColorPat(S.pat)?'':'none'}const hasBox=Object.hasOwn(PATIMG_BOX,S.pat),lab=k=>{const e=document.querySelector(`[data-k=${k}]`);return e&&e.closest('label')};
@@ -309,7 +318,7 @@ if(t.dataset.cs){crew[t.dataset.cs][1]=t.dataset.v;crewUI();return}
 if(t.dataset.rm){if(crew.length>1)crew.splice(+t.dataset.rm,1);crewUI();return}
 if(t.dataset.sw){S[t.dataset.sw]=t.dataset.v;sync();return}
 const a=t.dataset.a;if(!a)return;const v=t.dataset.v,cw=S.cw,ch=S.ch;
-({res(){[S.cw,S.ch]=R[v]},match(){fitCanvas()},wadd(){addWall(false)},pspec(){applySpec()},npat(){nextPattern()},hedit(){halfEdit=!halfEdit&&!!halfOf(S);if(halfEdit){wiring=false;pwiring=false;goneEdit=false}},gedit(){goneEdit=!goneEdit;if(goneEdit){wiring=false;pwiring=false;halfEdit=false}},gclr(){restoreAll()},hclr(){S.half=[];S.lay={};storeWall();showAll();sync()},dvdexp(){dvdExportLoop()},rxml(){if(v)S.resSl=v;ddClose();exportRes()},rxmlm(){const m=$('#rxmlm'),o=m.hidden;ddClose();if(o){const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-200))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');m.querySelector('button').focus()}},wedit(){wiring=!wiring;if(wiring){S.showData=true;pwiring=false;halfEdit=false;goneEdit=false}wireMsg(wiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},wnew(){if(!Array.isArray(S.wman))S.wman=[];const l=S.wman[S.wman.length-1];if(!l||l.length)S.wman.push([]);wireMsg('')},wundo(){const m=S.wman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();wireMsg('')},wclr(){S.wman=[];wireMsg('')},pedit(){pwiring=!pwiring;if(pwiring){S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg(pwiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},pnew(){if(!Array.isArray(S.pman))S.pman=[];const l=S.pman[S.pman.length-1];if(!l||l.length)S.pman.push([]);pwMsg('')},pundo(){const m=S.pman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();pwMsg('')},pclr(){S.pman=[];pwMsg('')},wdup(){addWall(true)},wdel(){delWall()},
+({undom(){const t=e.target.closest('button'),m=$('#undom'),o=m.hidden;ddClose();if(o){unUI();const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-260))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');const f=m.querySelector('button:not([disabled])');if(f)f.focus()}},undo(){ddClose();if(v)unUndo(+v)},redo(){ddClose();unRedo()},ctr(){const r=vp.getBoundingClientRect();V.x=(r.width-S.cw*V.z)/2;V.y=(r.height-S.ch*V.z)/2},newc(){newCanvasAsk()},res(){[S.cw,S.ch]=R[v]},match(){fitCanvas()},wadd(){addWall(false)},pspec(){applySpec()},npat(){nextPattern()},hrowb(){halfRow('bottom')},hrowt(){halfRow('top')},hedit(){halfEdit=!halfEdit&&!!halfOf(S);if(halfEdit){wiring=false;pwiring=false;goneEdit=false}},gedit(){goneEdit=!goneEdit;if(goneEdit){wiring=false;pwiring=false;halfEdit=false}},gclr(){restoreAll()},hclr(){S.half=[];S.lay={};storeWall();showAll();sync()},dvdexp(){dvdExportLoop()},rxml(){if(v)S.resSl=v;ddClose();exportRes()},rxmlm(){const m=$('#rxmlm'),o=m.hidden;ddClose();if(o){const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-200))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');m.querySelector('button').focus()}},wedit(){wiring=!wiring;if(wiring){S.showData=true;pwiring=false;halfEdit=false;goneEdit=false}wireMsg(wiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},wnew(){if(!Array.isArray(S.wman))S.wman=[];const l=S.wman[S.wman.length-1];if(!l||l.length)S.wman.push([]);wireMsg('')},wundo(){const m=S.wman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();wireMsg('')},wclr(){S.wman=[];wireMsg('')},pedit(){pwiring=!pwiring;if(pwiring){S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg(pwiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},pnew(){if(!Array.isArray(S.pman))S.pman=[];const l=S.pman[S.pman.length-1];if(!l||l.length)S.pman.push([]);pwMsg('')},pundo(){const m=S.pman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();pwMsg('')},pclr(){S.pman=[];pwMsg('')},wdup(){addWall(true)},wdel(){delWall()},
 al(){S.ox=v[0]=='c'||v=='tc'||v=='bc'?Math.round((cw-WW())/2):0;S.oy=v=='c'?Math.round((ch-WH())/2):v[0]=='b'?ch-WH():0;if(v=='tl'||v=='bl')S.ox=0},
 arr(){[S.cols,S.rows]=v.split('x').map(Number);showAll()},
 pp(){S.play=!S.play},rs(){reset();S.play=true},sk(){showAll()},fit,
@@ -363,13 +372,14 @@ vp.addEventListener('pointerdown',e=>{PTR.set(e.pointerId,{x:e.clientX,y:e.clien
 vp.addEventListener('pointermove',e=>{if(PTR.has(e.pointerId))PTR.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pinch&&PTR.size>=2){pinchMove();e.stopImmediatePropagation()}},true);
 const ptrEnd=e=>{PTR.delete(e.pointerId);if(pinch){if(PTR.size<2)pinch=null;drag=null;e.stopImmediatePropagation()}};
 vp.addEventListener('pointerup',ptrEnd,true);vp.addEventListener('pointercancel',e=>{ptrEnd(e);if(drag&&drag.mode=='wall'&&drag.moved){keepGap(cur);sync();saveSoon()}drag=null;vp.style.cursor=''},true);
-vp.onpointerdown=e=>{if(pinch||PTR.size>1)return;try{vp.setPointerCapture(e.pointerId)}catch(x){}const i=hitWall(e),[cx,cy]=toCv(e);
+const hitEdit=e=>{if(!(halfEdit||goneEdit)||!layOn(S))return -1;const[x,y]=toCv(e),o=wOff(S),g=unitG(S),gx=x-S.ox+o.x,gy=y-S.oy+o.y;return g&&gx>=0&&gy>=0&&gx<g.uc*g.uw&&gy<g.ur*g.uh?cur:-1};
+vp.onpointerdown=e=>{if(pinch||PTR.size>1)return;try{vp.setPointerCapture(e.pointerId)}catch(x){}const he=hitEdit(e),i=he>=0?he:hitWall(e),[cx,cy]=toCv(e);
  drag={x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY,cx,cy,moved:false,mode:'pan',sel:i>=0&&i!=cur,guides:[]};
  if(goneEdit&&i==cur){drag.mode='gone';goneDrag(e,'down');return}
  if(halfEdit&&halfOf(S)&&i==cur){drag.mode='half';halfDrag(e,'down');return}
  const mw=manWiring();if(mw&&i==cur){drag.mode='wire';drag.wk=mw;wireDrag(e,'down');return}
  if(i>=0&&!wiring&&!pwiring&&!halfEdit&&!goneEdit){if(i!=cur)selWall(i);drag.mode='wall';drag.sx=walls[i].ox;drag.sy=walls[i].oy}};
-vp.onpointermove=e=>{if(!drag){const i=hitWall(e);vp.style.cursor=wiring||pwiring||halfEdit||goneEdit?(i==cur?'crosshair':'grab'):(i>=0?'move':'grab');return}
+vp.onpointermove=e=>{if(!drag){const he=hitEdit(e),i=he>=0?he:hitWall(e);vp.style.cursor=wiring||pwiring||halfEdit||goneEdit?(i==cur?'crosshair':'grab'):(i>=0?'move':'grab');return}
  const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;if(Math.hypot(e.clientX-drag.x0,e.clientY-drag.y0)>=4)drag.moved=true;
  if(drag.mode=='wire'){wireDrag(e,'move');return}
  if(drag.mode=='half'){halfDrag(e,'move');return}
@@ -472,7 +482,7 @@ else if(p=='rgbramp'){['#f00','#0f0','#00f','#fff'].forEach((q,i)=>{const g=c.cr
 else if(p=='zone'){c.fillStyle='#000';c.fillRect(0,0,w,h);c.strokeStyle='#fff';c.lineWidth=1;const R=Math.hypot(w,h)/2;c.beginPath();for(let k=1;;k++){const r=Math.sqrt(k)*Math.max(6,R/45);if(r>R)break;c.moveTo(w/2+r,h/2);c.arc(w/2,h/2,r,0,7)}c.stroke()}
 else if(p=='cycle'){c.fillStyle=['#f00','#0f0','#00f','#fff','#000','#ff0','#0ff','#f0f'][Math.floor(T/1.5)%8];c.fillRect(0,0,w,h)}
 else if(isShade(p)){const clean=p=='tileshade-clean',cyc=p=='tileshade-cycle',u=T/TC_STEP,k=Math.floor(u),sl=TC_SLIDE/TC_STEP,fr=u-k,ep=fr>1-sl?(fr-1+sl)/sl:0,sp=ep*ep*(3-2*ep);
-for(let r=0;r<L.rows;r++)for(let q=0;q<L.cols;q++){const x=q*L.tw,y=r*L.th;if(cyc){tcycTile(c,q+2*r+k,x,y,L.tw,L.th,sp);continue}c.fillStyle=(q+r)%2?mixW(L.shadeC,.5):L.shadeC;c.fillRect(x,y,L.tw,L.th)}
+const GO=wOff(L);for(let r=0;r<L.rows;r++)for(let q=0;q<L.cols;q++){const x=q*L.tw-GO.x,y=r*L.th-GO.y;if(cyc){tcycTile(c,q+2*r+k,x,y,L.tw,L.th,sp);continue}c.fillStyle=(q+r)%2?mixW(L.shadeC,.5):L.shadeC;c.fillRect(x,y,L.tw,L.th)}
 const lw=Math.max(1.5,h/700),geo=()=>{c.beginPath();c.moveTo(0,0);c.lineTo(w,h);c.moveTo(w,0);c.lineTo(0,h);c.moveTo(w/2+h/4,h/2);c.arc(w/2,h/2,h/4,0,7);c.stroke()};
 if(cyc){c.strokeStyle='#000';c.lineWidth=lw*2.6;geo()}c.strokeStyle='#fff';c.lineWidth=lw;geo();  // dark edge keeps the lines visible on white tiles
 if(!clean)shadeBoxes(c,L,w,h).forEach(b=>{c.fillStyle=b.bg;c.fillRect(b.x,b.y,b.w,b.h);c.font=`500 ${b.fs}px sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillStyle=b.fg;c.fillText(b.t,b.x+b.w/2,b.y+b.h/2)});
@@ -671,7 +681,7 @@ let pwiring=false,halfEdit=false,goneEdit=false;
 const layGet=()=>layOn(S)?layPieces(S):layDefault(S);
 function laySet(p){const g=unitG(S);S.lay={s:g.sp,uc:g.uc,ur:g.ur,p};storeWall();showAll();sync()}
 const layAt=(L,u,v)=>L.findIndex(q=>u>=q[0]&&u<q[0]+q[2]&&v>=q[1]&&v<q[1]+q[3]);
-function unitAt(w,x,y){const g=unitG(w);if(!g||x<0||y<0||x>=wW(w)||y>=wH(w))return null;const u=Math.floor(x/g.uw),v=Math.floor(y/g.uh);if(u>=g.uc||v>=g.ur)return null;return{u,v,fx:x/g.uw-u,fy:y/g.uh-v,g}}
+function unitAt(w,x,y){const g=unitG(w);if(!g)return null;const o=wOff(w);x+=o.x;y+=o.y;if(x<0||y<0||x>=g.uc*g.uw||y>=g.ur*g.uh)return null;const u=Math.floor(x/g.uw),v=Math.floor(y/g.uh);if(u>=g.uc||v>=g.ur)return null;return{u,v,fx:x/g.uw-u,fy:y/g.uh-v,g}}
 // what a press does at a spot on a half-tile wall: on the line between two half tiles -> join them into a full tile (upright,
 // or on its side for ROE); on a full tile -> keep the half that was clicked; on an empty half -> put a half tile there;
 // on a half tile -> take it out
@@ -690,6 +700,16 @@ function unitDrag(e,how,first,each){const d=drag,[x,y]=toCv(e),w=walls[cur],g=un
  for(let k=1;k<=n;k++){const px=x0+(x-x0)*k/n-w.ox,py=y0+(y-y0)*k/n-w.oy,U=unitAt(w,px,py);if(!U)continue;const key=U.u+','+U.v;if(key===d.wt)continue;d.wt=key;
   if(how=='down'){d.brush=first(w,px,py,U);how='move'}if(d.brush)each(d.brush,U.u,U.v)}
  d.wx=x;d.wy=y}
+// Convert the bottom or top row of tiles to half tiles (half-height models: the unit grid has two unit rows per tile row).
+// Bottom row: the lower half of the last tile row is taken away, so each tile there keeps its top half. Top row: the upper
+// half of the first tile row is taken away, so each keeps its bottom half. Pressing it again puts full tiles back.
+function halfRowState(side){const g=unitG(S);if(!g||g.sp!='h')return null;const L=layGet(),out=side=='bottom'?g.ur-1:0,keep=side=='bottom'?g.ur-2:1,cover=v=>L.some(q=>v>=q[1]&&v<q[1]+q[3]);
+ return{g,L,out,keep,half:!cover(out)&&cover(keep)}}
+function halfRow(side){const st=halfRowState(side);if(!st)return;const{g,L,out,keep}=st;let n;
+ if(!st.half)n=L.filter(q=>!(q[3]==1&&q[1]==out)).map(q=>q[1]<=out&&out<q[1]+q[3]?[q[0],side=='bottom'?q[1]:1,q[2],q[3]-1]:q);
+ else{const occ=new Set;L.forEach(q=>{for(let i=0;i<q[2];i++)for(let j=0;j<q[3];j++)occ.add((q[1]+j)*g.uc+q[0]+i)});
+  n=L.map(q=>q[2]==1&&q[3]==1&&q[1]==keep&&!occ.has(out*g.uc+q[0])?[q[0],Math.min(keep,out),1,2]:q)}
+ laySet(n)}
 function halfDrag(e,how){if(!halfOf(S))return;unitDrag(e,how,(w,px,py)=>{const a=halfAct(w,px,py);if(a&&a.t=='join'){halfDo(a);return null}return a},(a,u,v)=>halfDo(a,u,v))}
 // remove tiles. Plain grid: the first tile pressed is taken out (or put back), and dragging does the same to every tile
 // crossed. Half-tile layout: a press on a tile takes the whole tile out; a press on an empty spot puts a tile back (a full
@@ -846,12 +866,12 @@ c.drawImage(M,0,0);c.lineWidth=2/z;c.strokeStyle='#22d3ee';c.strokeRect(0,0,S.cw
 walls.forEach((w,i)=>{const sel=i==cur&&walls.length>1;c.strokeStyle=sel?'#ffb300':'rgba(255,179,0,.6)';c.lineWidth=(sel?3:2)/z;c.setLineDash(sel?[]:[6/z,4/z]);c.strokeRect(w.ox,w.oy,wW(w),wH(w));c.setLineDash([]);
  if((goneEdit||halfEdit)&&i==cur){c.save();c.strokeStyle='rgba(255,90,90,.85)';c.lineWidth=1.5/z;c.setLineDash([5/z,4/z]);
   const X=(x,y,ww,hh)=>{const m=Math.min(ww,hh)*.18;c.strokeRect(x+2/z,y+2/z,ww-4/z,hh-4/z);c.beginPath();c.moveTo(x+ww/2-m,y+hh/2-m);c.lineTo(x+ww/2+m,y+hh/2+m);c.moveTo(x+ww/2+m,y+hh/2-m);c.lineTo(x+ww/2-m,y+hh/2+m);c.stroke()};
-  const P2=pieces(w);if(P2.lay){const g=P2.g;for(let v=0;v<g.ur;v++)for(let u=0;u<g.uc;u++)if(!P2.um.has(v*g.uc+u))X(w.ox+u*g.uw,w.oy+v*g.uh,g.uw,g.uh)}
+  const P2=pieces(w);if(P2.lay){const g=P2.g,gx0=w.ox-P2.X0,gy0=w.oy-P2.Y0;c.save();c.setLineDash([2/z,5/z]);c.strokeStyle='rgba(255,255,255,.5)';c.strokeRect(gx0,gy0,g.uc*g.uw,g.ur*g.uh);c.restore();for(let v=0;v<g.ur;v++)for(let u=0;u<g.uc;u++)if(!P2.um.has(v*g.uc+u))X(gx0+u*g.uw,gy0+v*g.uh,g.uw,g.uh)}
   else if(goneEdit)goneSet(w).forEach(j=>X(w.ox+(j%w.cols)*w.tw,w.oy+Math.floor(j/w.cols)*w.th,w.tw,w.th));c.restore()}});
 if(drag&&drag.mode=='wall'&&drag.guides.length){c.strokeStyle='#ff2bd6';c.lineWidth=1.5/z;c.setLineDash([6/z,4/z]);drag.guides.forEach(g=>{c.beginPath();if(g.v!=null){c.moveTo(g.v,-30/z);c.lineTo(g.v,S.ch+30/z)}else{c.moveTo(-30/z,g.h);c.lineTo(S.cw+30/z,g.h)}c.stroke()});c.setLineDash([])}
 c.restore();
 const zt=Math.round(z*100)+'%',ze=$('#zl');if(ze&&ze.textContent!==zt)ze.textContent=zt}
-function wst(w){const P2=pieces(w),N=P2.list.length,pw=wW(w),ph=wH(w),mw=w.cols*w.wmm/1000,mh=w.rows*w.hmm/1000;let px=0,A=0,kg=0,W=0;
+function wst(w){const P2=pieces(w),N=P2.list.length,pw=wW(w),ph=wH(w),mw=pw/w.tw*w.wmm/1000,mh=ph/w.th*w.hmm/1000;let px=0,A=0,kg=0,W=0;
  P2.list.forEach(p=>{px+=p.w*p.h;A+=p.sp.m2;kg+=p.sp.kg;W+=p.sp.W});
  return{N,nh:P2.nh,ng:P2.ng,pw,ph,px,mw,mh,A,kg,pk:W/1000}}
 const ft=x=>(x*3.28084).toFixed(2),kw=v=>v.toFixed(2)+' kW',amp=(kW,v)=>(kW*1000/v).toFixed(1)+' A';
@@ -1137,7 +1157,7 @@ catch(e){shStop();shMsg(SHN+' error: '+(e.message||e),1)}}
 addEventListener('beforeunload',shStop);
 function showAbout(on){const o=$('#about');o.classList.toggle('on',!!on);if(on)$('#cls').focus();else{const b=document.querySelector('[data-a=about]');b&&b.focus()}}
 $('#cls').onclick=()=>showAbout(0);$('#about').addEventListener('click',e=>{if(e.target.id=='about')showAbout(0)});
-addEventListener('keydown',e=>{if(e.key=='Escape'){showAbout(0);ddClose()}});
+addEventListener('keydown',e=>{if(e.key=='Escape'){showAbout(0);ddClose();if(halfEdit){stopMarking();sync()}}});
 // top-bar drop-down menus
 function ddClose(){document.querySelectorAll('.ddm').forEach(m=>{if(!m.hidden){m.hidden=true;const b=m.parentNode.querySelector('[aria-haspopup]');if(b)b.setAttribute('aria-expanded','false')}})}
 document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('.dd')))ddClose()});
@@ -1340,6 +1360,46 @@ function saveNow(){if(window.__noSave)return;let o;try{storeWall();o={sv:23,S:{}
 const w=obj=>{const j=JSON.stringify(obj);if(DESK){const{d,f}=stFile(),fs=require('fs');fs.mkdirSync(d,{recursive:true});fs.writeFileSync(f,j)}else localStorage.setItem(SKEY,j)};
 try{w(o)}catch(e){try{o.walls.forEach(x=>{x.patImg=null;x.boxImg=null});o.logo=null;o.dvd=null;o.crew.forEach(c=>c[2]=null);w(o)}catch(e2){}}}
 function saveSoon(){clearTimeout(saveT);saveT=setTimeout(saveNow,400)}
+// ---------- undo / redo: the last 20 changes. A snapshot holds the whole design (settings, every wall, the selected wall, crew, logos).
+// Changes are noticed after every edit (typing, buttons, the end of a drag) by comparing the new snapshot with the previous one.
+const S_DEF=JSON.parse(JSON.stringify(S));
+const UN={st:[],rd:[],last:null,key:'',lbl:'',t:0,MAX:20,busy:false,dm:''},UNIMG=new WeakMap;let UNN=0;
+const unImg=o=>{if(!UNIMG.has(o))UNIMG.set(o,++UNN);return UNIMG.get(o)},cl=v=>{try{return structuredClone(v)}catch(e){return JSON.parse(JSON.stringify(v))}};
+function unSnap(){storeWall();const s={};for(const k in S)if(!SKIP.includes(k))s[k]=cl(S[k]);
+ return{S:s,walls:walls.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?w[k]:cl(w[k]));return x}),cur,crew:crew.map(c=>c.slice()),logo:logoImg,dvd:dvdImg}}
+const unKey=sn=>{const o=Object.assign({},sn);delete o.cur;return JSON.stringify(o,(k,v)=>v&&typeof Node!='undefined'&&v instanceof Node?'img'+unImg(v):v)};
+function unRestore(sn){UN.busy=true;try{for(const k in sn.S)if(!SKIP.includes(k))S[k]=cl(sn.S[k]);
+ walls=sn.walls.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?w[k]:cl(w[k]));return x});crew=sn.crew.map(c=>c.slice());logoImg=sn.logo;dvdImg=sn.dvd;
+ loadWall(sn.cur);halfEdit=false;goneEdit=false;wiring=false;pwiring=false;drag=null;showAll();crewUI();sync();fit_if();saveSoon()}finally{UN.busy=false}}
+function unBase(){UN.last=unSnap();UN.key=unKey(UN.last);UN.lbl='';UN.t=0}
+// called after an edit: record it as one undo step (typing in the same box within 1.5 s counts as one step)
+function unCheck(label){if(UN.busy||!UN.last)return;const sn=unSnap(),k=unKey(sn);
+ if(k===UN.key){UN.last.cur=sn.cur;return}
+ const now=Date.now();if(!(label===UN.lbl&&now-UN.t<1500&&UN.st.length)){UN.st.push({label:label||'Change',snap:UN.last});if(UN.st.length>UN.MAX)UN.st.shift()}
+ UN.rd=[];UN.last=sn;UN.key=k;UN.lbl=label;UN.t=now;unUI()}
+function unUndo(n){let last='';n=n||1;while(n-->0&&UN.st.length){const e=UN.st.pop();UN.rd.push({label:e.label,snap:unSnap()});unRestore(e.snap);last=e.label}
+ if(last){unBase();unUI();toast('Undone: '+last,2500)}}
+function unRedo(){const e=UN.rd.pop();if(!e)return;UN.st.push({label:e.label,snap:unSnap()});unRestore(e.snap);unBase();unUI();toast('Redone: '+e.label,2500)}
+function unUI(){const b=document.querySelector('[data-a=undom]');if(b){b.textContent=UN.st.length?`Undo (${UN.st.length}) ▾`:'Undo ▾';b.title=UN.st.length?'Undo: '+UN.st[UN.st.length-1].label:'Nothing to undo yet'}
+ const m=$('#undom');if(!m)return;const it=(a,v,t,d)=>`<button role="menuitem" data-a="${a}" data-v="${v}"${d?' disabled':''}>${esc(t)}</button>`;
+ m.innerHTML=(UN.rd.length?it('redo','',`Redo: ${UN.rd[UN.rd.length-1].label}`):'')+(UN.st.length?`<div style="padding:4px 10px;color:var(--mu);font-size:11px">Click a change to go back to just before it</div>`+UN.st.slice().reverse().map((e,i)=>it('undo',i+1,`${i+1}. ${e.label}`)).join(''):it('undo','','Nothing to undo yet',1))}
+// a short name for what the user just did
+function unLabel(e){const t=e.target;if(!t||!t.closest)return'Change';const k=t.dataset&&t.dataset.k;
+ if(k){const lb=t.closest('label'),nm=lb?(lb.firstChild&&lb.firstChild.nodeType==3?lb.firstChild.textContent:lb.textContent).trim().replace(/\s+/g,' '):k;let v=t.type=='checkbox'?(t.checked?'on':'off'):t.tagName=='SELECT'?t.options[t.selectedIndex].text:t.value;v=String(v);if(v.length>28)v=v.slice(0,27)+'…';return`${nm.slice(0,40)} → ${v}`}
+ const b=t.closest('button');if(b){if(b.dataset.wsel!=null)return'Select wall';const a=b.dataset.a;return(b.textContent||a||'Change').trim().replace(/\s+/g,' ').slice(0,44)+(b.dataset.v&&a!='res'&&a!='arr'?'':b.dataset.v?' '+b.dataset.v:'')}
+ return'Change'}
+['input','change','click'].forEach(ev=>document.addEventListener(ev,e=>{if(ev=='click'&&e.target.closest&&e.target.closest('[data-a=undo],[data-a=redo],[data-a=undom]'))return;const l=unLabel(e);setTimeout(()=>unCheck(l),0)}));
+vp.addEventListener('pointerdown',()=>{UN.dm=drag?drag.mode:''});
+document.addEventListener('pointerup',e=>{const m=UN.dm;UN.dm='';if(!m||m=='pan')return;const nm=S.name||'wall',l=m=='wall'?'Moved '+nm:m=='half'?'Marked half tiles':m=='gone'?'Removed or restored tiles':m=='wire'?(pwiring?'Wired power':'Wired data'):'Edit';setTimeout(()=>unCheck(l),0)});
+addEventListener('keydown',e=>{const t=e.target,tx=t&&(t.tagName=='TEXTAREA'||t.tagName=='INPUT'&&/^(text|number|search|email|url|tel|password)$/.test(t.type));if(tx||!(e.ctrlKey||e.metaKey)||e.altKey)return;const k=e.key.toLowerCase();
+ if(k=='z'&&!e.shiftKey){e.preventDefault();unUndo(1)}else if(k=='y'||k=='z'&&e.shiftKey){e.preventDefault();unRedo()}});
+// ---------- New canvas: everything back to a fresh start (asks first; Undo brings it back)
+function newCanvasAsk(){let o=$('#newc');if(o)o.remove();o=document.createElement('div');o.id='newc';o.style.cssText='position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center';
+ o.innerHTML='<div role="dialog" aria-modal="true" aria-label="New canvas" style="background:var(--pn,#1c1c1c);color:var(--tx,#eee);border:1px solid #555;border-radius:10px;padding:18px;max-width:420px;margin:16px"><h3 style="margin:0 0 8px">Start a new canvas?</h3><p style="margin:0 0 14px;font-size:14px">This erases every wall, wiring, half tile, pattern and setting (including output, label and video options) and starts from a blank canvas. You can bring it back with Undo.</p><div class="row" style="justify-content:flex-end"><button data-n="0">Cancel</button><button data-n="1" style="border-color:#e5484d;color:#e5484d">Erase everything</button></div></div>';
+ document.body.appendChild(o);o.addEventListener('click',e=>{const b=e.target.closest('button[data-n]');if(!b&&e.target!==o)return;o.remove();if(b&&b.dataset.n=='1')newCanvas()});o.querySelector('button').focus()}
+function newCanvas(){stopMarking();for(const k in S)if(!SKIP.includes(k))S[k]=cl(S_DEF[k]);S.patImg=null;S.boxImg=null;walls=[wallFromS()];cur=0;crew=defCrew();logoImg=null;dvdImg=null;wiring=false;pwiring=false;halfEdit=false;goneEdit=false;
+ showAll();crewUI();sync();fit_if();fit();saveSoon();setTimeout(()=>unCheck('New canvas'),0)}
+function stopMarking(){halfEdit=false}
 function loadState(){let j=null;try{if(DESK){const{f}=stFile(),fs=require('fs');j=fs.existsSync(f)?fs.readFileSync(f,'utf8'):null}else j=localStorage.getItem(SKEY)}catch(e){}
 if(!j)return;try{const o=JSON.parse(j);if(o.S&&typeof o.S.pdist=='string')o.S.pdist=o.S.pdist!='None';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}
 const mk=src=>{if(!src)return null;const im=new Image();im.__src=src;im.src=src;return im};
@@ -1359,5 +1419,5 @@ function resetSaved(){window.__noSave=true;try{if(DESK){const{f}=stFile();requir
 addEventListener('beforeunload',saveNow);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 $('#rst').onclick=()=>{if(confirm('Reset all saved settings, crew and uploads to defaults?'))resetSaved()};
 loadState();if(!PROC.hasOwnProperty(S.proc))S.proc='None';if(SHK=='Spout'&&!shGpus().includes(S.shGpu))S.shGpu='Automatic';if(procOn()&&!S.ppx&&PROC[S.proc].px)applySpec();
-build();showAll();M.width=S.cw;M.height=S.ch;fit();requestAnimationFrame(loop);addEventListener('resize',()=>{fit();ddClose()});$('#bar').addEventListener('scroll',ddClose,{passive:true});
+build();showAll();M.width=S.cw;M.height=S.ch;fit();unBase();unUI();requestAnimationFrame(loop);addEventListener('resize',()=>{fit();ddClose()});$('#bar').addEventListener('scroll',ddClose,{passive:true});
 </script></body></html>
