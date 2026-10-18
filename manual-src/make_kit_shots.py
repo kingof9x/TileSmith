@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont
 from playwright.async_api import async_playwright
 
 HERE = pathlib.Path(__file__).parent
-PROJ = pathlib.Path(os.environ.get('TILESMITH', '/home/claude/tilesmith-desktop'))
+PROJ = pathlib.Path(os.environ.get('TILESMITH', HERE.parent / 'tilesmith-desktop'))
 OUT = pathlib.Path(os.environ.get('KIT_SHOTS', HERE / 'kit' / 'shots'))
 ASSETS = HERE / 'kit' / 'assets-build'
 subprocess.run(['node', str(PROJ / 'android-aistudio' / 'prepare-assets.js'), str(ASSETS)], check=True, stdout=subprocess.DEVNULL)

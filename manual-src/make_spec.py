@@ -5,7 +5,7 @@
 import asyncio, json, pathlib, datetime, os
 from playwright.async_api import async_playwright
 
-ROOT = pathlib.Path('/home/claude/tilesmith-desktop')
+ROOT = pathlib.Path(__import__('os').environ.get('TILESMITH_ROOT', pathlib.Path(__file__).resolve().parent.parent / 'tilesmith-desktop'))
 APP = 'file://' + str(ROOT / 'app' / 'index.html')
 OUT = pathlib.Path(os.environ.get('SPEC_OUT', ROOT / 'TileSmith-App-Spec.md'))
 VERSION = json.loads((ROOT / 'package.json').read_text())['version'].rsplit('.0', 1)[0]

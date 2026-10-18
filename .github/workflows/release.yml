@@ -6,6 +6,8 @@
 #
 # Linux: .AppImage, .deb, .rpm and .pacman (Arch) come from the "linux" job; .snap and .flatpak have their own jobs
 # that may fail without stopping the release. The downloads live on the Releases page (no container Packages).
+# The "docs" job builds the manuals and the app spec for the typed version. When the release is published, the separate
+# workflow "VirusTotal scan" (virustotal.yml) scans the files and writes the results to VIRUSTOTAL.md in the project root.
 #
 # The builds are UNSIGNED (Windows shows SmartScreen, on a Mac use right-click > Open). They do NOT contain the
 # NDI(R) runtime or ffmpeg (their licences do not allow putting them in the repository); NDI(R) output needs the free
@@ -192,9 +194,58 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
+  docs:
+    # The manuals and the app spec are built here from the version typed in the Run workflow box, so the version on
+    # their cover and footer, in the app and in the file names is always the same one.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Put the release version into the app (the manuals read it from there)
+        working-directory: tilesmith-desktop
+        run: node scripts/set-version.js "${{ inputs.version || github.ref_name }}"
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Tools for the screenshots and the PDFs
+        run: |
+          pip install playwright pillow
+          playwright install --with-deps chromium
+          sudo apt-get install -y poppler-utils
+      - name: Build the manuals and the app spec
+        working-directory: manual-src
+        run: |
+          python make_manual.py
+          python make_kit_shots.py
+          python make_kit_anims.py
+          python make_mobile_manual.py
+          python make_spec.py
+          mkdir -p ../docs-out
+          cp ../tilesmith-desktop/TileSmith-Manual.pdf ../tilesmith-desktop/TileSmith-Mobile-Manual.pdf ../tilesmith-desktop/TileSmith-App-Spec.md ../docs-out/
+      - name: Check that the manuals show the release version
+        env:
+          INPUT_VERSION: ${{ inputs.version || github.ref_name }}
+        run: |
+          V="${INPUT_VERSION#v}"
+          if echo "$V" | grep -Eq '^[0-9]+(\.[0-9]+)+$'; then
+            for f in TileSmith-Manual.pdf TileSmith-Mobile-Manual.pdf; do
+              pdftotext docs-out/$f - | grep -q "v$V" || { echo "::error::$f does not show version $V"; exit 1; }
+            done
+            head -1 docs-out/TileSmith-App-Spec.md | grep -q "TileSmith $V " || { echo "::error::the app spec does not show version $V"; exit 1; }
+            echo "Manuals and spec show version $V"
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: docs
+          path: docs-out/*
+          if-no-files-found: error
+          retention-days: 7
+
   release:
-    needs: [windows, mac, linux, snap, flatpak, android]
-    if: ${{ !cancelled() && needs.windows.result == 'success' && needs.mac.result == 'success' && needs.linux.result == 'success' && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
+    needs: [windows, mac, linux, snap, flatpak, android, docs]
+    if: ${{ !cancelled() && needs.windows.result == 'success' && needs.mac.result == 'success' && needs.linux.result == 'success' && needs.docs.result == 'success' && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -218,7 +269,6 @@ jobs:
           for f in upload/TileSmith-*; do n="$(dirname "$f")/$(basename "$f" | sed -E 's/-[0-9]+(\.[0-9]+)+-/-/')"; [ "$f" = "$n" ] || mv "$f" "$n"; done
           for f in upload/*.snap; do [ "$f" = upload/TileSmith-linux-x64.snap ] || mv "$f" upload/TileSmith-linux-x64.snap; done
           for f in upload/*.flatpak; do [ "$f" = upload/TileSmith-linux-x64.flatpak ] || mv "$f" upload/TileSmith-linux-x64.flatpak; done
-          cp tilesmith-desktop/TileSmith-Manual.pdf tilesmith-desktop/TileSmith-Mobile-Manual.pdf tilesmith-desktop/TileSmith-App-Spec.md upload/
           ls -la upload
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" upload/* --clobber
@@ -232,68 +282,14 @@ jobs:
           name: release-files
           path: upload/*
           retention-days: 7
-
-  virustotal:
-    needs: [release]
-    if: ${{ !cancelled() && needs.release.result == 'success' }}
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: release-files
-          path: upload
-      - name: Scan every release file on VirusTotal and add the report links to the release notes
+      - name: Remember the release tag for the VirusTotal workflow
         env:
-          GH_TOKEN: ${{ github.token }}
-          VT_API_KEY: ${{ secrets.VT_API_KEY }}
           INPUT_VERSION: ${{ inputs.version }}
         run: |
-          if [ -z "$VT_API_KEY" ]; then echo "::warning::No VT_API_KEY secret, so the VirusTotal scan was skipped."; exit 0; fi
           if [ -n "$INPUT_VERSION" ]; then TAG="v${INPUT_VERSION#v}"; else TAG="$GITHUB_REF_NAME"; fi
-          API=https://www.virustotal.com/api/v3
-          ROWS=""
-          cd upload
-          for f in *; do
-            case "$f" in *.pdf|*.md) continue;; esac     # documents are not programs
-            SHA=$(sha256sum "$f" | cut -d' ' -f1)
-            SIZE=$(stat -c %s "$f")
-            if [ "$SIZE" -gt 30000000 ]; then URL=$(curl -sS -H "x-apikey: $VT_API_KEY" "$API/files/upload_url" | jq -r .data); else URL="$API/files"; fi
-            ID=""
-            for try in 1 2 3; do
-              OUT=$(curl -sS -H "x-apikey: $VT_API_KEY" -F "file=@$f" "$URL" || true)
-              ID=$(echo "$OUT" | jq -r '.data.id // empty' 2>/dev/null || true)
-              [ -n "$ID" ] && break
-              echo "Upload of $f failed (try $try): $(echo "$OUT" | head -c 300)"
-              sleep 60
-              if [ "$SIZE" -gt 30000000 ]; then URL=$(curl -sS -H "x-apikey: $VT_API_KEY" "$API/files/upload_url" | jq -r .data); fi
-            done
-            RES="not scanned"
-            if [ -n "$ID" ]; then
-              for i in $(seq 1 60); do
-                sleep 15
-                J=$(curl -sS -H "x-apikey: $VT_API_KEY" "$API/analyses/$ID")
-                if [ "$(echo "$J" | jq -r '.data.attributes.status // empty')" = "completed" ]; then
-                  BAD=$(echo "$J" | jq -r '(.data.attributes.stats.malicious // 0) + (.data.attributes.stats.suspicious // 0)')
-                  TOT=$(echo "$J" | jq -r '.data.attributes.stats | to_entries | map(select(.key != "type-unsupported" and .key != "timeout") | .value) | add // 0')
-                  RES="$BAD / $TOT engines flag it"; break
-                fi
-              done
-              [ "$RES" = "not scanned" ] && RES="scan still running"
-            fi
-            echo "$f: $RES"
-            ROWS="$ROWS| $f | [$RES](https://www.virustotal.com/gui/file/$SHA) | \`$SHA\` |"$'\n'
-            sleep 16        # free VirusTotal keys allow 4 requests a minute
-          done
-          {
-            echo "## VirusTotal scan"
-            echo
-            echo "Every program file in this release was uploaded to [VirusTotal](https://www.virustotal.com/) by the build. TileSmith is unsigned, and a few engines sometimes flag unsigned Electron apps by mistake (false positives); the source code is public so you can check what was built."
-            echo
-            echo "| File | Result | SHA-256 |"
-            echo "|---|---|---|"
-            printf "%s" "$ROWS"
-          } > /tmp/vt.md
-          BODY=$(gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json body -q .body | sed '/^## VirusTotal scan/,$d')
-          printf "%s\n\n%s\n" "$BODY" "$(cat /tmp/vt.md)" > /tmp/notes.md
-          gh release edit "$TAG" --repo "$GITHUB_REPOSITORY" --notes-file /tmp/notes.md
+          echo "$TAG" > release-tag.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-tag
+          path: release-tag.txt
+          retention-days: 7

@@ -9,7 +9,7 @@ import ast, asyncio, base64, datetime, html, json, os, pathlib
 from playwright.async_api import async_playwright
 
 HERE = pathlib.Path(__file__).parent
-ROOT = pathlib.Path('/home/claude/tilesmith-desktop')
+ROOT = pathlib.Path(__import__('os').environ.get('TILESMITH_ROOT', pathlib.Path(__file__).resolve().parent.parent / 'tilesmith-desktop'))
 SHOTS = pathlib.Path(os.environ.get('KIT_SHOTS', HERE / 'kit' / 'shots'))
 OUT = pathlib.Path(os.environ.get('MOBILE_MANUAL_OUT', ROOT / 'TileSmith-Mobile-Manual.pdf'))
 VERSION = json.loads((ROOT / 'package.json').read_text())['version'].rsplit('.0', 1)[0]

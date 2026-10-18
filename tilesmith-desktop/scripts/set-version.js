@@ -21,3 +21,21 @@ sub('package.json', /"version": "[\d.]+"/, `"version": "${full}"`);
 sub('mobile/package.json', /"version": "[\d.]+"/, `"version": "${full}"`);
 sub('mobile/android/app/build.gradle', /versionCode \d+/, `versionCode ${code}`);
 sub('mobile/android/app/build.gradle', /versionName "[^"]*"/, `versionName "${v}"`);
+sub('android-aistudio/android/app/build.gradle.kts', /versionCode = \d+/, `versionCode = ${code}`);
+sub('android-aistudio/android/app/build.gradle.kts', /versionName = "[^"]*"/, `versionName = "${v}"`);
+sub('mobile/ios/App/App.xcodeproj/project.pbxproj', /MARKETING_VERSION = [\d.]+;/g, `MARKETING_VERSION = ${v};`);
+sub('mobile/ios/App/App.xcodeproj/project.pbxproj', /CURRENT_PROJECT_VERSION = \d+;/g, `CURRENT_PROJECT_VERSION = ${code};`);
+for (const f of ['BUILD-WINDOWS.txt', 'BUILD-MAC.txt', 'BUILD-ANDROID.txt', 'BUILD-IOS.txt']) {
+  sub(f, /TILESMITH v[\d.]+/g, `TILESMITH v${v}`);
+  sub(f, /header say "v[\d.]+"/g, `header say "v${v}"`);
+  sub(f, /TileSmith-[\d.]+-mac-universal\.dmg/g, `TileSmith-${full}-mac-universal.dmg`);
+  sub(f, /TileSmith v[\d.]+ \.\.\./g, `TileSmith v${v} ...`);
+}
+
+// Check: the app must now carry the version that was typed. If a pattern above stopped matching (the page text
+// changed), fail the build instead of shipping an app that shows the wrong version.
+const app = fs.readFileSync(path.join(root, 'app', 'index.html'), 'utf8');
+const need = [`<title>TileSmith v${v} - LED Wall Builder</title>`, `color:var(--am)">v${v}</span></h1>`, `>Version ${v} · build `];
+const miss = need.filter(x => !app.includes(x));
+if (miss.length) { console.error('[set-version] ERROR: the app does not show version ' + v + '. Missing: ' + miss.join(' | ')); process.exit(1); }
+console.log('[set-version] OK: the app shows version ' + v);

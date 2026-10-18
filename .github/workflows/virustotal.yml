@@ -1,0 +1,100 @@
+# Scans the files of a release on VirusTotal and writes the results to VIRUSTOTAL.md in the root of the project.
+#
+# It starts by itself when "Build and release" has published a release. To scan a release again (or an older one):
+# Actions tab > VirusTotal scan > Run workflow > type the tag (for example v3.5; empty = the latest release).
+#
+# Needs the repository secret VT_API_KEY (Settings > Secrets and variables > Actions > Secrets > New repository secret).
+# The scan of a release takes several minutes because a free VirusTotal key allows 4 requests a minute.
+name: VirusTotal scan
+
+on:
+  workflow_run:
+    workflows: ['Build and release']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to scan, for example v3.5 (empty = the latest release)'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: virustotal-report
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      # Started by a finished build: the build left the tag and the release files as artifacts.
+      - name: Get the tag from the build
+        id: gettag
+        if: ${{ github.event_name == 'workflow_run' }}
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: release-tag
+          path: from-build
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Get the release files from the build
+        if: ${{ github.event_name == 'workflow_run' && steps.gettag.outcome == 'success' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: release-files
+          path: upload
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Work out which release to scan
+        id: rel
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          GOT_TAG: ${{ steps.gettag.outcome }}
+        run: |
+          if [ "$EVENT" = "workflow_run" ]; then
+            if [ "$GOT_TAG" != "success" ]; then echo "This build did not publish a release (a test build), so there is nothing to scan."; echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+            TAG=$(cat from-build/release-tag.txt)
+          else
+            TAG="$INPUT_TAG"
+            [ -n "$TAG" ] || TAG=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName)
+            mkdir -p upload
+            gh release download "$TAG" --repo "$GITHUB_REPOSITORY" --dir upload
+          fi
+          echo "Scanning release $TAG"
+          ls -la upload
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - name: Scan every program file on VirusTotal
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        env:
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+        run: |
+          if [ -z "$VT_API_KEY" ]; then echo "::error::The repository secret VT_API_KEY is missing. Add it under Settings > Secrets and variables > Actions > Secrets."; exit 1; fi
+          bash .github/scripts/virustotal-scan.sh upload "$RUNNER_TEMP/rows.md"
+
+      - name: Write VIRUSTOTAL.md in the project root
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        env:
+          TAG: ${{ steps.rel.outputs.tag }}
+        run: |
+          python3 .github/scripts/virustotal-report.py "$TAG" "$RUNNER_TEMP/rows.md" VIRUSTOTAL.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add VIRUSTOTAL.md
+          if git diff --cached --quiet; then echo "Nothing changed."; exit 0; fi
+          git commit -m "VirusTotal scan results for $TAG"
+          for i in 1 2 3; do git pull --rebase origin "${{ github.event.repository.default_branch }}" && git push origin "HEAD:${{ github.event.repository.default_branch }}" && exit 0; sleep 5; done
+          exit 1

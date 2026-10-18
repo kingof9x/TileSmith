@@ -5,10 +5,11 @@
 import asyncio, json, html, pathlib, datetime, base64, os
 from playwright.async_api import async_playwright
 
-ROOT = pathlib.Path('/home/claude/tilesmith-desktop')
+HERE = pathlib.Path(__file__).resolve().parent
+ROOT = pathlib.Path(os.environ.get('TILESMITH_ROOT', HERE.parent / 'tilesmith-desktop'))   # the app folder (next to manual-src)
 APP = 'file://' + str(ROOT / 'app' / 'index.html')
 OUT = pathlib.Path(os.environ.get('MANUAL_OUT', ROOT / 'TileSmith-Manual.pdf'))  # MANUAL_OUT: preview somewhere else
-SHOTS = pathlib.Path('/home/claude/manual-src/shots'); SHOTS.mkdir(exist_ok=True)
+SHOTS = pathlib.Path(os.environ.get('MANUAL_SHOTS', HERE / 'shots')); SHOTS.mkdir(exist_ok=True)
 VERSION = json.loads((ROOT / 'package.json').read_text())['version'].rsplit('.0', 1)[0]
 TODAY = datetime.date.today().strftime('%B %-d, %Y')
 E = html.escape
@@ -89,34 +90,6 @@ Permission is hereby granted, free of charge, to any person obtaining a copy of 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE."""),
-]
-HISTORY = [
- ('3.4', 'Undo: the Undo menu in the top bar lists the last 20 changes and goes back to just before any of them; Ctrl/Cmd+Z undoes one step, Ctrl/Cmd+Y redoes. New Project (asks first), Center canvas and Show entire canvas (the old Reset fit) are in the top bar.'),
- ('3.4', 'Half tiles: the controls moved to Size of LED Wall; Convert bottom row / top row to half tiles (press again to restore); a red STOP MARKING HALF TILES button appears over the viewport while marking. A wall with half tiles is as big as its real tiles: patterns scale to that area and the size, position, snapping and spec sheet follow it.'),
- ('3.4', 'Power labels: choose Socapex, L14-30 or L21-30 distribution cables; labels are numbered cable-circuit (1-1 to 1-6 for Socapex, 1-X, 1-Y, 1-Z for the twist-lock cables) with cable labels, circuit labels or both, no phase; data labels are completely green (primary) or red (return); wall marks use the wall\'s Tile-shade colour.'),
- ('3.4', 'Linux: NDI® output (libndi.so.6 from the NDI® runtime) and video export (system ffmpeg) now work in the Linux packages. Releases are built by GitHub Actions for Windows, Mac, Linux (AppImage, deb, rpm, Arch, snap, flatpak) and Android (APK), with VirusTotal scan links in the release notes.'),
- ('3.3', 'Spout output (Windows) and Syphon output (Mac): share the master canvas with programs on the same computer through the graphics card. Start Spout / Start Syphon in the top bar (shown only when the app is built with them) and Spout options / Syphon options under Animation Options (name, frame rate when NDI® is off, Save CPU). SpoutDX and Syphon ship with the project and are built in automatically; credits and licences in ⓘ Info. NDI®, Spout and Syphon share one output timer and one canvas read per frame.'),
- ('3.3', 'Wiring preferences: Port areas is now Data wiring preference and Circuit areas is now Wiring preference, each with two new choices, Horizontal and Vertical (bands of whole rows or whole columns across the wall, whichever way the pattern runs).'),
- ('3.3', 'Android and iOS apps built from the same page (mobile folder, BUILD-ANDROID.txt and BUILD-IOS.txt): files are saved through the share sheet, Export video records H.264 MP4 with the device\'s encoder, NDI®, Spout and Syphon are hidden. Two-finger pinch zooms and pans the viewport (also on Windows touch screens).'),
- ('3.2', 'Left panel reorganised: Canvas (LED walls, Tile model, Size of LED Wall, Wall position), Test pattern (Tile borders & overlays), Engineering (LED processor with Data wiring; Power with Power wiring) and Animation Options (DVD screensaver, Build options with Technician, Video export, NDI® options). Subtitle "LED Wall Pixel Map & Test Pattern Generator". Top bar: Next pattern, Start NDI® (replaces the NDI® pop-out window) and a Resolume XML drop-down.'),
- ('3.2', 'Power planning: tick Power distribution (choose Socapex, L14-30 or L21-30 cables) for tiles per circuit from circuit voltage, breaker size and the 80% rule; Power wiring with Snake, Linear or Manual, circuit areas and a power link limit; circuits 1-1… (or 1-X…), cables needed, spare circuits and load per cable in the engineering panel, spec sheet and CSV. Power runs are marked with a lightning bolt and circuit number; with data paths shown too, data runs left of the tile centres and power right, in white on a black casing.'),
- ('3.2', 'Manual data and power wiring by click or drag: fast drags fill every tile crossed and dragging back takes tiles off.'),
- ('3.2', 'Wall shapes: half tiles for models with a half version (ROE Carbon CB3/CB5/CB8, YES TECH MU 500×1000, YES TECH MT II 1000×500): keep one half, add halves, join halves upright, offset by half a tile, or (ROE) on their side. Remove tiles for walls that are not rectangles. Tile position arrows (↑ row from the bottom, → column from the left) on any pattern.'),
- ('3.2', "Presets: 37 YES TECH models, ROE Carbon CB3 and the Carbon half panels; ROE, Absen and Unilumin presets corrected to the manufacturers' spec sheets (CB5 500 W, CB8 430 W and others); the preset list is grouped by manufacturer."),
- ('3.2', 'Patterns: tileshade-clean (no name, size or position boxes) and tileshade-cycle (red, green and blue sliding from colour to colour, never matching a neighbouring tile). The tileshade footer shows the wall name and position, and the position label sits on the first tile in a see-through box. Tile-shade color shows only for the tileshade patterns.'),
- ('3.2', 'DVD screensaver (was DVD logo bounce) with a Perfect loop mode and Export loop video. Viewport: no labels around the canvas, zoom out far enough to see the whole canvas in any window size, and the top bar scrolls sideways in small windows. The fps counter only counts real animation.'),
- ('3.1', 'Full speed when TileSmith is behind other windows or minimised (no Chromium backgrounding, no macOS App Nap while NDI® output or recording runs). Live frame timings in the NDI® status line and a canvas fps counter in the top bar.'),
- ('3.0', 'NDI® runtime built into the desktop app from the NDI® SDK, with its license notices; no NDI® Tools or Runtime needed where TileSmith runs. Info dialog NDI® section with trademark statement, links and license note; NDI® marked with ® throughout. Fixed the universal Mac build merge step.'),
- ('2.9', 'DVD logo bounce: the corner hit chance slider now tops out at about 45% of bounces.'),
- ('2.8', 'DVD logo bounce with corner-hit chance. Video export formats: H.264 and H.265 (.mp4), ProRes 422 HQ and ProRes 4444 (.mov) alongside HAP. "Array" renamed "Size of LED Wall". This manual.'),
- ('2.7', 'Removed the Barco and Analog Way processors and the scan, safe, crosshatch, checker and grid patterns. "bars" became SMPTEbars with Image fit. Built-in image patterns named by aspect ratio.'),
- ('2.6', 'All audio removed. "Playback & audio" became "Build Animation Options".'),
- ('2.5', 'Branded test patterns with text or a logo in the centre box.'),
- ('2.4', 'Built-in disguise test patterns.'),
- ('2.3', 'Scroll works on every pattern. "Original size" image fit modes. Uploads keep full resolution.'),
- ('2.2', 'NovaLCT-style data wiring: 8 start-corner/direction patterns and port areas.'),
- ('2.1', 'Much lower CPU use. NDI® frame rate and "Save CPU" options. NovaStar H series sending cards.'),
- ('2.0', 'Multiple walls with drag and snap, LED processors, data wiring, power, engineering panel, Resolume export.'),
 ]
 
 # Pretends to be the Windows (or Mac) desktop app with Spout (or Syphon) built in, so the screenshots show the
@@ -245,7 +218,6 @@ def build_html(d):
     wp = lambda kind: '<div class="wp">' + ''.join(f'<div><div class="ico">{x[kind]}</div><span>{E(x["c"])}<br>{E(x["d"].lower())}</span></div>' for x in d['wp']) + '</div>'
     csvcols = ', '.join(f'<code>{E(c)}</code>' for c in d['csv'].split(','))
     halftab = table(['Model', 'Half tile', 'Half'], [[E(x['full']), E(x['half']) + (f" ({x['h'][0]}×{x['h'][1]} mm, {x['h'][2]}×{x['h'][3]} px)" if x['h'] else ''), 'top / bottom' if x['split'] == 'h' else 'left / right'] for x in d['half']], 'small')
-    hist = table(['Version', 'Changes'], [[f'<b>{v}</b>', E(t)] for v, t in HISTORY])
     tx_lic = ''.join(f'<div class="lic"><b>{E(n)}</b><br><span>{E(w)}</span><pre>{E(t)}</pre></div>' for n, w, t in TX_LICENSES)
     return f"""<!doctype html><html><head><meta charset="utf-8"><title>TileSmith {VERSION} User Manual</title><style>
 @page{{size:Letter;margin:18mm 17mm 20mm}}
@@ -269,7 +241,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p style="color:var(--mu);margin-top:30pt;max-width:120mm">Pixel mapping, LED engineering, NDI®, Spout and Syphon output and an animated technician who builds the wall, tile by tile.</p><p style="color:var(--mu);font-size:8.5pt;margin-top:40pt">NDI® is a registered trademark of Vizrt NDI AB. <a href="https://ndi.video/">ndi.video</a></p></div>
 
 <section class="chap toc"><h1>Contents</h1><ol>
-<li>What TileSmith does</li><li>Installing and first launch</li><li>Quick start</li><li>The screen</li><li>Canvas</li><li>LED walls</li><li>Tile model</li><li>Test patterns</li><li>Tile borders and overlays</li><li>LED processor</li><li>Data wiring</li><li>Power and power wiring</li><li>Engineering panel</li><li>Technician and crew</li><li>Animation options</li><li>NDI®, Spout and Syphon output</li><li>Video export</li><li>Other exports</li><li>Saving your work</li><li>Keeping CPU use low</li><li>Mobile app (Android and iOS)</li><li>Troubleshooting</li><li>Version history</li></ol></section>
+<li>What TileSmith does</li><li>Installing and first launch</li><li>Quick start</li><li>The screen</li><li>Canvas</li><li>LED walls</li><li>Tile model</li><li>Test patterns</li><li>Tile borders and overlays</li><li>LED processor</li><li>Data wiring</li><li>Power and power wiring</li><li>Engineering panel</li><li>Technician and crew</li><li>Animation options</li><li>NDI®, Spout and Syphon output</li><li>Video export</li><li>Other exports</li><li>Saving your work</li><li>Keeping CPU use low</li><li>Mobile app (Android and iOS)</li><li>Troubleshooting</li></ol></section>
 
 <section class="chap first"><h1>1. What TileSmith does</h1>
 <p>TileSmith lays out LED walls on a master canvas, fills them with test patterns and pixel maps, works out processor ports, data paths and power, and sends the canvas live over <b>NDI®</b> to your media server or processor. An animated LED technician can build each wall tile by tile, which you can show live or record as a video.</p>
@@ -513,14 +485,13 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['Mobile: a save does nothing', 'Pick an app in the share sheet (Files, Drive …). Closing the sheet cancels the save.'],
  ['Image looks soft or stretched', 'Change Image fit. Use Original size on canvas or on wall for pixel-exact images.'],
  ['Settings are wrong after testing', 'ⓘ Info › Reset saved settings.']])}
-<p>Build problems (npm warnings, vulnerabilities, PowerShell script errors, signing) are covered in the TROUBLESHOOTING sections of BUILD-WINDOWS.txt, BUILD-MAC.txt, BUILD-ANDROID.txt and BUILD-IOS.txt.</p>
-<h1 style="margin-top:20pt">23. Version history</h1>{hist}</section>
+<p>Build problems (npm warnings, vulnerabilities, PowerShell script errors, signing) are covered in the TROUBLESHOOTING sections of BUILD-WINDOWS.txt, BUILD-MAC.txt, BUILD-ANDROID.txt and BUILD-IOS.txt.</p></section>
 </body></html>"""
 
 async def main():
     data = await shots_and_data()
     page_html = build_html(data)
-    (pathlib.Path('/home/claude/manual-src') / 'manual.html').write_text(page_html, encoding='utf-8')
+    (SHOTS.parent / 'manual.html').write_text(page_html, encoding='utf-8')
     async with async_playwright() as p:
         b = await p.chromium.launch(); pg = await b.new_page()
         await pg.set_content(page_html, wait_until='load'); await pg.wait_for_timeout(500)

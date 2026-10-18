@@ -82,3 +82,13 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - 2026-10-17 power labels: Distribution cable setting `pdt` (Socapex 6 / L14-30 2 legs X,Y / L21-30 3 legs X,Y,Z); no phase anywhere
   (labels, reports, CSV column is now PowerCable); `lblPow` = cable+circuit / circuit only / cable only; data labels are fully
   green (primary) or red (return); power labels carry a wall-shade flag. Add to HISTORY at the next package, with Linux NDI/ffmpeg support.
+
+## 2026-10-18 - version, manuals and VirusTotal
+- The version typed in Actions > Build and release is the only version: scripts/set-version.js stamps the app, the
+  window title, package.json, the Android/iOS versions and the BUILD-*.txt files, and fails the build if the app does
+  not show it. The "docs" job then builds TileSmith-Manual.pdf, TileSmith-Mobile-Manual.pdf and TileSmith-App-Spec.md
+  from that stamped app (manual-src scripts find the app folder next to manual-src; TILESMITH_ROOT overrides it).
+  The PDFs/spec in tilesmith-desktop are only my local copies; the release always gets freshly built ones.
+- The manual no longer has a Version history chapter.
+- VirusTotal is its own workflow (.github/workflows/virustotal.yml, scripts in .github/scripts) that runs after a
+  release and writes VIRUSTOTAL.md in the project root. The release workflow no longer scans.
