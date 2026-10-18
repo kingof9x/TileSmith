@@ -267,7 +267,7 @@ jobs:
                 J=$(curl -sS -H "x-apikey: $VT_API_KEY" "$API/analyses/$ID")
                 if [ "$(echo "$J" | jq -r '.data.attributes.status // empty')" = "completed" ]; then
                   BAD=$(echo "$J" | jq -r '(.data.attributes.stats.malicious // 0) + (.data.attributes.stats.suspicious // 0)')
-                  TOT=$(echo "$J" | jq -r '[.data.attributes.stats[]] | add - (.data.attributes.stats["type-unsupported"] // 0) - (.data.attributes.stats.timeout // 0)')
+                  TOT=$(echo "$J" | jq -r '.data.attributes.stats | to_entries | map(select(.key != "type-unsupported" and .key != "timeout") | .value) | add // 0')
                   RES="$BAD / $TOT engines flag it"; break
                 fi
               done
