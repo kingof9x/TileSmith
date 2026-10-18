@@ -205,7 +205,7 @@ Check: a 6 × 4 Unilumin UpadIV 2.6 wall must show 24 tiles, 1152 × 768 px (884
    - Show power runs.
    Usable watts per circuit is circW(), and tiles per circuit is tpcW().
 2. Power wiring: the same patterns, 8 starts and five Wiring preferences (PFILL/PFILLN) as data wiring. Port
-   powChains, powerPlan and powerTotals. Circuits are labelled cable-circuit, 1-1 … 1-6, 2-1 … (cLabel) for Socapex, or 1-X, 1-Y, 2-X … for NEMA L14-30 (2 circuits per cable) and L21-30 (3 per cable), chosen with the Distribution cable setting (PDT, PD, cCab, cLeg). No phase is assigned.
+   powChains, powerPlan and powerTotals. Circuits are labelled cable-circuit, 1-1 … 1-6, 2-1 … (cLabel) for Socapex, or 1-X, 1-Y, 2-X … for NEMA L14-30 (2 circuits per cable) and L21-30 (3 per cable), or just 1, 2, 3 … for powerCON to Edison (one circuit per cable, with optional plugs-per-wall-circuit checks: pwall, pwallA), chosen with the Distribution cable setting (PDT, PD, cCab, cLeg). No phase is assigned.
 3. Manual power wiring: Wire tiles, New circuit, Undo, Clear, with the messages from pmanAdd()/pwMsg().
 4. Drawing (the power part of render()):
    - a dashed line (dash 3w, gap 2w, w = max(2, min(tw, th)/36)) in POWC[circuit mod 6];

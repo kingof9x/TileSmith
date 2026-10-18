@@ -90,7 +90,7 @@ const HALF={'ROE Carbon CB3':['ROE Carbon CB3 Half','h'],'ROE Carbon CB5':['ROE 
 const R={'1080p Full HD':[1920,1080],'4K UHD':[3840,2160],'2K DCI':[2048,1080],'4K DCI':[4096,2160],'720p HD':[1280,720],'32:9 Banner':[3840,1080]};
 const S={cw:1920,ch:1080,ox:0,oy:0,cols:6,rows:4,preset:'Unilumin UpadIV 2.6',tw:192,th:192,wmm:500,hmm:500,dmm:70,kg:6.3,wmax:120,pitch:2.6,
 bc:'#22d3ee',bt:3,pat:'tileshade',tpos:true,half:[],gone:[],lay:{},gx:0,gy:0,ids:true,addr:false,mm:false,speed:1,dvdOn:false,dvdSrc:'TileSmith logo',dvdText:'TILESMITH',dvdArea:'Each LED wall',dvdSize:20,dvdSpeed:1,dvdCorner:10,dvdTint:true,dvdLoop:false,dvdLoopLen:30,dvdLoopCorners:true,vIntro:5,vHold:10,vCodec:'HAP (.mov)',hapFmt:'hap',name:'LED Wall',corner:'Top-left',dir:'Horizontal',wmode:'None',wcorner:'Top-left',wdir:'Horizontal',wfill:'Fewest ports',wman:[],pmode:'None',pcorner:'Top-left',pwdir:'Horizontal',pfill:'Fewest circuits',plink:0,pman:[],proc:'None',fps:60,bpc:8,ull:false,ppx:0,pports:0,ret:true,showData:true,pdist:false,pvolt:120,pamps:20,derate:true,showPow:true,resSl:'One slice per LED wall',pfit:'Stretch to wall',pdir:'none',pspd:1,patImg:null,loop:false,loopHold:3,shadeC:'#3f8080',boxMode:'Nothing',boxText:'',boxCol:'#ffffff',boxImg:null,
-ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblPow:'Cable and circuit labels',pdt:'Socapex (6 circuits per cable)',lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',logo:'TILESMITH',cd:true,play:true};
+ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblPow:'Cable and circuit labels',pdt:'Socapex (6 circuits per cable)',pwall:0,pwallA:20,lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',logo:'TILESMITH',cd:true,play:true};
 const LBL={'Avery 5160 (30 per US Letter sheet)':{pw:215.9,ph:279.4,w:66.675,h:25.4,c:3,r:10,x:4.76,y:12.7,gx:3.175,gy:0},
 'Avery 5163 (10 per US Letter sheet)':{pw:215.9,ph:279.4,w:101.6,h:50.8,c:2,r:5,x:3.97,y:12.7,gx:4.76,gy:0},
 'Avery L7160 (21 per A4 sheet)':{pw:210,ph:297,w:63.5,h:38.1,c:3,r:7,x:7.21,y:15.15,gx:2.54,gy:0},
@@ -214,7 +214,7 @@ ${SUB('Data wiring <span class="wn"></span>',`<div id="wireBox"><div class="g">$
 <div id="wmanBox"><div style="color:var(--mu);font-size:12px">Click Wire tiles, then click tiles or drag across them in the viewport, in data order. Drag back over a tile to take it off. A port stops accepting tiles when it is full.</div><div class="row">${B('wedit','Wire tiles')}${B('wnew','New port')}${B('wundo','Undo')}${B('wclr','Clear')}</div><div id="wmsg" class="bad" style="font-size:12px"></div></div>
 <div id="wstat" style="color:var(--mu);font-size:12px"></div></div>`,1)}</div><div id="pnone" style="color:var(--mu);font-size:12px">Pick a processor to see tiles per port and plan data wiring.</div>`,1)}
 ${SUB('Power',`${F('pdist','Power distribution','check')}
-<div id="pwrBox"><div class="g">${F('pdt','Distribution cable','select',Object.keys(PDT),'w')}</div><div class="g">${F('pvolt','Circuit voltage','select',[100,110,120,208,220,230,240])}${F('pamps','Breaker (A)','number','min=1 max=400')}</div>${F('derate','Load circuits to 80% (continuous load)','check')}<div id="pwnote" style="color:var(--mu);font-size:12px"></div>${F('showPow','Show power runs on the canvas','check')}<div id="socaNote" style="color:var(--mu);font-size:12px"></div>
+<div id="pwrBox"><div class="g">${F('pdt','Distribution cable','select',Object.keys(PDT),'w')}</div><div class="g">${F('pvolt','Circuit voltage','select',[100,110,120,208,220,230,240])}${F('pamps','Breaker (A)','number','min=1 max=400')}</div>${F('derate','Load circuits to 80% (continuous load)','check')}<div id="pwnote" style="color:var(--mu);font-size:12px"></div>${F('showPow','Show power runs on the canvas','check')}<div id="socaNote" style="color:var(--mu);font-size:12px"></div><div id="edW" class="g">${F('pwall','Edison plugs per wall circuit (0 = do not check)','number','min=0 max=100')}${F('pwallA','Wall circuit breaker (A)','number','min=1 max=400')}</div>
 ${SUB('Power wiring <span class="wn"></span>',`<div id="pwireBox"><div class="g">${F('pmode','Pattern','select',['None','Snake','Linear','Manual'],'w')}${F('plink','Power link limit (tiles per circuit, 0 = none)','number','min=0 max=500','w')}</div>
 <div id="pautoBox"><div style="color:var(--mu);font-size:12px">Power flow: pick the start corner and direction. Green is the first tile, red the last.</div><div id="ppat" class="wpat" role="group" aria-label="Power flow pattern"></div><div id="ppatl" style="font-size:12px"></div><div class="g">${F('pfill','Wiring preference','select',PFILL,'w')}</div><div id="pfilln" style="color:var(--mu);font-size:12px"></div></div>
 <div id="pmanBox"><div style="color:var(--mu);font-size:12px">Click Wire tiles, then click tiles or drag across them in the viewport, in power-link order. Drag back over a tile to take it off. A circuit stops accepting tiles when it is full.</div><div class="row">${B('pedit','Wire tiles')}${B('pnew','New circuit')}${B('pundo','Undo')}${B('pclr','Clear')}</div><div id="pmsg" class="bad" style="font-size:12px"></div></div>
@@ -266,7 +266,8 @@ const eb=document.querySelector('[data-a=wedit]');if(eb){eb.textContent=wiring?'
  if(pl)pl.textContent=`${S.pmode=='Linear'?'Linear':'Snake'} from the ${S.pcorner.toLowerCase()} tile: ${vt2?'columns':'rows'} first, ${vt2?(bt2?'bottom to top':'top to bottom'):(rt2?'right to left':'left to right')}${S.pmode=='Linear'?', every line in the same direction':', turning back at the end of each line'}.`;
  if(pf2)pf2.textContent=PFILLN[Math.max(0,PFILL.indexOf(S.pfill))];
  const pe=document.querySelector('[data-a=pedit]');if(pe){pe.textContent=pwiring?'Stop wiring':'Wire tiles';pe.setAttribute('aria-pressed',pwiring)}
- const sn=$('#socaNote');if(sn){const d=PD(),tx=d.n==6?'Power runs on Socapex, 6 circuits per cable. Circuits are numbered 1-1 to 1-6 (cable-circuit), then 2-1 and so on. The distro (not TileSmith) decides which phase each circuit lands on.':`Power runs on ${d.name} cables, ${d.n} circuits per cable (legs ${d.legs.join(', ')}). Circuits are numbered 1-X, 1-Y${d.n>2?', 1-Z':''}, then 2-X and so on (cable-leg). The distro decides which phase each cable lands on.`;if(sn.textContent!==tx)sn.textContent=tx}
+ const ew=$('#edW');if(ew)ew.style.display=PD().one?'':'none';
+ const sn=$('#socaNote');if(sn){const d=PD(),tx=d.one?'Every circuit is its own powerCON cable with a standard Edison plug on the wall end, plugged into wall power. Circuits are numbered 1, 2, 3 and so on. Voltage and breaker above are for each powerCON circuit. Enter how many plugs share one wall circuit, and that wall circuit\'s breaker, to check the room\'s breakers.':d.n==6?'Power runs on Socapex, 6 circuits per cable. Circuits are numbered 1-1 to 1-6 (cable-circuit), then 2-1 and so on. The distro (not TileSmith) decides which phase each circuit lands on.':`Power runs on ${d.name} cables, ${d.n} circuits per cable (legs ${d.legs.join(', ')}). Circuits are numbered 1-X, 1-Y${d.n>2?', 1-Z':''}, then 2-X and so on (cable-leg). The distro decides which phase each cable lands on.`;if(sn.textContent!==tx)sn.textContent=tx}
  const w=walls[cur],pn2=$('#pwnote');if(pn2&&pon){const t=tpcCalc(w),tx=`One ${S.pvolt} V ${S.pamps} A circuit${S.derate?' loaded to 80%':''} supplies ${Math.round(circW()).toLocaleString()} W, enough for ${t} tile${t==1?'':'s'} of ${w.preset} at ${w.wmax} W max each.`;if(pn2.textContent!==tx)pn2.textContent=tx}
  const ps=$('#pstat');if(ps&&pon){const t=tpcW(w),pp2=powerPlan(),mine=pp2[cur]||[],pw=mine.reduce((a,x)=>a+x.tiles.length,0);let h=t<1?'<span class="bad">One tile draws more than a circuit can supply. Check the breaker size and the tile model\'s max watts.</span>':`Each circuit powers up to <b>${t}</b> tiles of this model${w.plink>0&&w.plink<tpcCalc(w)?' (power link limit)':''}.`;
   if(S.pmode!='None')h+='<br>'+(mine.length?mine.map(x=>`${cLabel(x.k)}: ${x.half?Math.round(x.watts).toLocaleString()+'/'+Math.round(circW()).toLocaleString()+' W':x.tiles.length+'/'+t}${x.over?' <span class="bad">over capacity</span>':''}`).join(', '):'No circuits wired yet.')+(pw<tN(w)?`<br><span class="bad">${tN(w)-pw} tile${tN(w)-pw==1?'':'s'} without power.</span>`:'<br>All tiles powered.');
@@ -292,11 +293,11 @@ const allDone=()=>sims.every(x=>x.done);
 function buildSecs(){return Math.max(0,...walls.map((w,i)=>(i*STAG+tN(w)*4.8)/(S.speed*RATES[i%RATES.length])))}
 function setAll(k,v){S[k]=v;}
 function applyPreset(){const p=P[S.preset];if(!p)return;[S.wmm,S.hmm,S.tw,S.th,S.pitch,S.kg,S.wmax,S.dmm]=p}
-const LIM={lblW:[20,300],lblH:[10,300],lblCopies:[1,4],lblSkip:[1,500],cw:[16,8192],ch:[16,8192],ox:[-20000,20000],oy:[-20000,20000],cols:[1,64],rows:[1,64],tw:[8,2048],th:[8,2048],pitch:[.1,50],wmm:[10,3000],hmm:[10,3000],dmm:[1,1000],kg:[.1,500],wmax:[1,5000],bt:[1,8],pspd:[0,3],vIntro:[0,60],vHold:[0,120],speed:[.25,5],ppx:[0,50000000],pports:[1,1000],pamps:[1,400],plink:[0,500],loopHold:[0,600],dvdSize:[5,60],dvdSpeed:[.25,3],dvdCorner:[0,100],dvdLoopLen:[4,600]};
+const LIM={lblW:[20,300],lblH:[10,300],lblCopies:[1,4],lblSkip:[1,500],cw:[16,8192],ch:[16,8192],ox:[-20000,20000],oy:[-20000,20000],cols:[1,64],rows:[1,64],tw:[8,2048],th:[8,2048],pitch:[.1,50],wmm:[10,3000],hmm:[10,3000],dmm:[1,1000],kg:[.1,500],wmax:[1,5000],bt:[1,8],pspd:[0,3],vIntro:[0,60],vHold:[0,120],speed:[.25,5],ppx:[0,50000000],pports:[1,1000],pamps:[1,400],pwall:[0,100],pwallA:[1,400],plink:[0,500],loopHold:[0,600],dvdSize:[5,60],dvdSpeed:[.25,3],dvdCorner:[0,100],dvdLoopLen:[4,600]};
 const HEAVY=['cw','ch','cols','rows','tw','th'];
 function applyKey(t){const k=t.dataset.k;if(!k)return;let v;
 if(t.type=='checkbox')v=t.checked;else if(t.type=='number'||t.type=='range'){v=+t.value;if(t.value===''||!isFinite(v))return;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}else{v=t.value;if(t.tagName=='SELECT'&&typeof S[k]=='number')v=+v}
-S[k]=v;if(k=='pat'&&v=='smptescroll'&&S.pdir=='none')S.pdir='diagonal ↘';if(k=='preset')applyPreset();if(!HALF[S.preset])halfEdit=false;else if(['tw','th','wmm','hmm','pitch','kg','wmax'].includes(k))S.preset='Custom';
+S[k]=v;if(k=='pdt'&&PD().one){S.pvolt=PD().volt;S.pamps=PD().amps}if(k=='pat'&&v=='smptescroll'&&S.pdir=='none')S.pdir='diagonal ↘';if(k=='preset')applyPreset();if(!HALF[S.preset])halfEdit=false;else if(['tw','th','wmm','hmm','pitch','kg','wmax'].includes(k))S.preset='Custom';
 if(['proc','fps','bpc','ull'].includes(k))applySpec();if(k=='wmode'&&v!='Manual')wiring=false;if(k=='showData'&&!v)wiring=false;if(k=='pmode'&&v!='Manual'||k=='showPow'&&!v||k=='pdist'&&!v)pwiring=false;
 storeWall();if(['cols','rows','tw','th','preset','corner','dir'].includes(k))showAll();
 if(k=='loop'&&v&&allDone()&&!REC){reset();S.play=true}
@@ -667,14 +668,19 @@ const circW=()=>S.pvolt*S.pamps*(S.derate?.8:1),tpcCalc=w=>Math.floor(circW()/Ma
 // 2 (legs X, Y) and an L21-30 carries 3 (legs X, Y, Z). Circuit k is leg ((k-1) mod n) of cable ceil(k/n).
 const PDT={'Socapex (6 circuits per cable)':{n:6,name:'Socapex',pre:'',legs:['1','2','3','4','5','6'],leg:'circuit',src:'DISTRO END',end:'FAN-OUT END'},
  'L14-30 (2 circuits per cable)':{n:2,name:'L14-30',pre:'',legs:['X','Y'],leg:'leg',src:'DISTRO END',end:'WALL END'},
- 'L21-30 (3 circuits per cable)':{n:3,name:'L21-30',pre:'',legs:['X','Y','Z'],leg:'leg',src:'DISTRO END',end:'WALL END'}};
+ 'L21-30 (3 circuits per cable)':{n:3,name:'L21-30',pre:'',legs:['X','Y','Z'],leg:'leg',src:'DISTRO END',end:'WALL END'},
+ // powerCON to Edison: every circuit is its own powerCON cable with a standard Edison plug on the wall end, plugged into wall power.
+ // Circuits are numbered 1, 2, 3 ... (no cable-leg pair). Plugs can be grouped per wall circuit (S.pwall) to check the room's breakers.
+ 'powerCON to Edison (1 circuit per cable)':{n:1,name:'Edison',one:true,volt:120,amps:15,pre:'',legs:[''],leg:'circuit',src:'EDISON PLUG END',end:'POWERCON END'}};
 const PD=()=>PDT[S.pdt]||PDT[Object.keys(PDT)[0]],cCab=k=>Math.ceil(k/PD().n),cLeg=k=>PD().legs[(k-1)%PD().n],
- cLabel=k=>{const d=PD();return d.pre+cCab(k)+'-'+cLeg(k)};
+ cLabel=k=>{const d=PD();return d.one?''+k:d.pre+cCab(k)+'-'+cLeg(k)};
 function powChains(w){if(!pdOn()||w.pmode=='None')return[];if(w.pmode=='Manual')return manChains(w,'pman');const t=tpcW(w);if(t<1)return[];
  if(layOn(w))return layChains(w,w.pmode,w.pcorner,w.pwdir,ch=>ch.reduce((a,p)=>a+p.sp.W,0)<=circW()+1e-6&&!(w.plink>0&&ch.length>w.plink));
  return autoChains({cols:w.cols,rows:w.rows,wcorner:w.pcorner,wdir:w.pwdir,wmode:w.pmode,wfill:WFILL[Math.max(0,PFILL.indexOf(w.pfill))]},t)}
 function powerPlan(){let k=0;return walls.map(w=>{const t=tpcW(w),P2=pieces(w),q=P2.lay||P2.nh>0;return keepTiles(w,powChains(w),t,w.pmode=='Manual',w.pfill==PFILL[2]).filter(ch=>ch.length).map(ch=>{const watts=ch.reduce((a,e)=>{const x=pieceOf(w,e);return a+(x?x.sp.W:0)},0);return{k:++k,tiles:ch,watts,half:q,over:q?watts>circW()+1e-6||w.plink>0&&ch.length>w.plink:ch.length>t}})})}
-function powerTotals(plan){const all=plan.flat(),n=all.length,per=PD().n,cab={};all.forEach(x=>{const c=cCab(x.k);cab[c]=(cab[c]||0)+x.watts/S.pvolt});const cables=n?Math.ceil(Math.max(...all.map(x=>x.k))/per):0;return{n,cables,spare:n?cables*per-n:0,cab,over:all.filter(x=>x.over).length}}
+function powerTotals(plan){const all=plan.flat(),n=all.length,per=PD().n,cab={};all.forEach(x=>{const c=cCab(x.k);cab[c]=(cab[c]||0)+x.watts/S.pvolt});const cables=n?Math.ceil(Math.max(...all.map(x=>x.k))/per):0;const o={n,cables,spare:n?cables*per-n:0,cab,over:all.filter(x=>x.over).length};
+ if(PD().one&&S.pwall>0&&n){const wl={};all.forEach(x=>{const g=Math.ceil(x.k/S.pwall);wl[g]=(wl[g]||0)+x.watts/S.pvolt});o.wall=wl;o.wlim=S.pwallA*(S.derate?.8:1);o.wn=Object.keys(wl).length;o.wover=Object.keys(wl).filter(g=>wl[g]>o.wlim+1e-6).length}
+ return o}
 let pwiring=false,halfEdit=false,goneEdit=false;
 // ---------- editing the tiles of the selected wall (S). Plain grids keep removed cells in S.gone; half-tile layouts keep
 // their pieces in S.lay ({s: split, uc/ur: unit grid when last edited, p: [[u, v, units wide, units tall], ...]}).
@@ -878,8 +884,12 @@ const ft=x=>(x*3.28084).toFixed(2),kw=v=>v.toFixed(2)+' kW',amp=(kW,v)=>(kW*1000
 function powRowsCanvas(plan){const T=powerTotals(plan),need=walls.reduce((a,w)=>{const t=tpcW(w);return a+(t>0?Math.ceil(wst(w).pk*1000/w.wmax/t-1e-9):Infinity)},0);
  const r=[['Power distribution',S.pdt],['Circuit',`${S.pvolt} V · ${S.pamps} A${S.derate?' · loaded to 80%':''} = ${Math.round(circW()).toLocaleString()} W usable`],
   ['Circuits used',T.n?T.n:'Not wired'],['Min. circuits if every circuit is full',isFinite(need)?need:'A tile exceeds one circuit']];
- r.push([PD().name+' cables',T.n?`${T.cables}${T.spare?` (${T.spare} spare circuit${T.spare>1?'s':''})`:''}`:'-']);
- if(T.n)r.push(['Peak load per cable',Object.keys(T.cab).map(c=>`cable ${c} ${T.cab[c].toFixed(1)} A`).join(' · ')]);
+ if(PD().one){r.push(['Edison plugs needed',T.n?T.n:'-']);if(T.n)r.push(['Peak load per plug',Object.keys(T.cab).map(c=>`plug ${c} ${T.cab[c].toFixed(1)} A`).join(' · ')]);
+  if(T.wall){r.push(['Wall circuits needed',`${T.wn} (${S.pwall} plug${S.pwall>1?'s':''} each, ${S.pwallA} A${S.derate?' loaded to 80%':''} = ${(+T.wlim.toFixed(1))} A usable)`]);
+   r.push(['Peak load per wall circuit',Object.keys(T.wall).map(g=>`wall circuit ${g} ${T.wall[g].toFixed(1)} A${T.wall[g]>T.wlim+1e-6?' (over)':''}`).join(' · ')]);
+   if(T.wover)r.push(['Wall circuit over capacity',`${T.wover} wall circuit${T.wover>1?'s':''}`])}}
+ else{r.push([PD().name+' cables',T.n?`${T.cables}${T.spare?` (${T.spare} spare circuit${T.spare>1?'s':''})`:''}`:'-']);
+  if(T.n)r.push(['Peak load per cable',Object.keys(T.cab).map(c=>`cable ${c} ${T.cab[c].toFixed(1)} A`).join(' · ')])}
  if(T.over)r.push(['Over capacity',`${T.over} circuit${T.over>1?'s':''}`]);return r}
 function procRowsCanvas(plan){const m=PROC[S.proc],all=plan.flat(),prim=all.length,ret=S.ret?prim:0,phys=prim+ret,px=walls.reduce((a,w)=>a+wst(w).px,0);
  const units=Math.max(1,Math.ceil(phys/Math.max(1,S.pports)),m.max?Math.ceil(px/m.max):1),over=all.filter(x=>x.over).length;
@@ -920,7 +930,7 @@ const LBLLAY=['Two identical panels','Flag fold-over (second panel upside down)'
 function lblHas(){const d=procOn()&&portPlan().flat().length>0,p=pdOn()&&powerPlan().flat().length>0;return{d,p,on:d||p}}
 function lblVis(){const h=lblHas(),b=$('#lblBox');if(!b)return;const dt=b.closest('details');if(dt)dt.style.display=h.on?'':'none';if(!h.on)return;
  const sel=b.querySelector('[data-k=lblWhat]'),lw=sel&&sel.closest('label');if(lw)lw.style.display=h.d&&h.p?'':'none';
- const pw=$('#lblPowW');if(pw)pw.style.display=h.p&&S.lblWhat!='Data only'?'':'none';const g=LBL[S.lblSize]||LBL[Object.keys(LBL)[0]],cu=$('#lblCustom');if(cu)cu.style.display=g.custom?'':'none';const kw=$('#lblKeepW');if(kw)kw.style.display=g.roll?'none':'';
+ const pw=$('#lblPowW');if(pw)pw.style.display=h.p&&S.lblWhat!='Data only'&&!PD().one?'':'none';const g=LBL[S.lblSize]||LBL[Object.keys(LBL)[0]],cu=$('#lblCustom');if(cu)cu.style.display=g.custom?'':'none';const kw=$('#lblKeepW');if(kw)kw.style.display=g.roll?'none':'';
  const sk=b.querySelector('[data-k=lblSkip]'),sl=sk&&sk.closest('label');if(sl)sl.style.display=g.roll?'none':'';
  const L=labelList(),n=L.reduce((a,c)=>a+c.length,0)*S.lblCopies,st=$('#lblStat');if(st){const pg=labelPages(L).length;st.textContent=`${L.length} cable${L.length==1?'':'s'}, ${n} label${n==1?'':'s'}, ${pg} page${pg==1?'':'s'}.`}}
 // one entry per cable: [processor/distro end, tile end]
@@ -939,11 +949,14 @@ function labelList(){const h=lblHas(),W=S.lblWhat,out=[],dOn=h.d&&W!='Power only
  const nCab=flat.length?Math.max(...flat.map(f=>f.ci.k).map(cCab)):0,seen={},PW=S.lblPow,wantCab=PW!='Circuit labels only',wantLeg=PW!='Cable labels only',v=`${S.pvolt} V, ${S.pamps} A breaker`;
  flat.forEach(({w,wi,ci})=>{const ch=ci.tiles,n=ch.length,a=ch[0],lab=cLabel(ci.k),cab=cCab(ci.k),leg=cLeg(ci.k),W2=nm(w,wi),info=`${n} tile${n==1?'':'s'}, ${Math.round(ci.watts)} W`,
   cabTxt=`${D.name} cable ${cab} of ${nCab}`,legTxt=D.leg=='circuit'?`circuit ${leg} of ${D.n}`:`leg ${leg}`;
-  if(wantCab&&!seen[cab]){seen[cab]=1;const mem=flat.filter(f=>cCab(f.ci.k)==cab),used=mem.map(f=>cLeg(f.ci.k)),wn=[...new Set(mem.map(f=>nm(f.w,f.wi)))].join(', '),kw=Math.round(mem.reduce((t,f)=>t+f.ci.watts,0)),id=D.pre+cab,
+  if(wantCab&&!D.one&&!seen[cab]){seen[cab]=1;const mem=flat.filter(f=>cCab(f.ci.k)==cab),used=mem.map(f=>cLeg(f.ci.k)),wn=[...new Set(mem.map(f=>nm(f.w,f.wi)))].join(', '),kw=Math.round(mem.reduce((t,f)=>t+f.ci.watts,0)),id=D.pre+cab,
    ul=D.leg=='circuit'?`circuits ${used.join(', ')} (${used.length} of ${D.n} used)`:`legs ${used.join(', ')} (${used.length} of ${D.n} used)`;
    out.push([{big:id,tag:'1/2 '+D.src,lines:[cabTxt,ul,`${wn}, ${kw.toLocaleString()} W`],kind:'p',wl:[w,wi]},
              {big:id,tag:'2/2 '+D.end,lines:[cabTxt,ul,`${wn}, ${kw.toLocaleString()} W`],kind:'p',wl:[w,wi]}])}
-  if(wantLeg){out.push([{big:lab,tag:'1/2 SOURCE END',lines:[`${cabTxt}, ${legTxt}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,`${info}, ${v}`],kind:'p',wl:[w,wi]},
+  if(D.one){const g=S.pwall>0?Math.ceil(ci.k/S.pwall):0;
+   out.push([{big:lab,tag:'1/2 '+D.src,lines:[`Edison plug ${lab}${g?`, wall circuit ${g}`:''}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,`${info}, ${v}`],kind:'p',wl:[w,wi]},
+             {big:lab,tag:'2/2 '+D.end,lines:[`${W2} ${T(w,a)} POWER IN`,`from Edison plug ${lab}${g?` (wall circuit ${g})`:''}`,info],kind:'p',wl:[w,wi]}])}
+  else if(wantLeg){out.push([{big:lab,tag:'1/2 SOURCE END',lines:[`${cabTxt}, ${legTxt}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,`${info}, ${v}`],kind:'p',wl:[w,wi]},
             {big:lab,tag:'2/2 TILE END',lines:[`${W2} ${T(w,a)} POWER IN`,`from ${lab} (${cabTxt}, ${legTxt})`,info],kind:'p',wl:[w,wi]}])}
   if(S.lblJump)for(let i=0;i<n-1;i++){const x=ch[i],y=ch[i+1],id=`${lab}-${i+1}`;
    out.push([{big:id,tag:'1/2 OUT END',lines:[`${T(w,x)} POWER OUT`,`to ${T(w,y)} POWER IN`,`${W2}, ${D.leg} ${lab}`],kind:'p',wl:[w,wi]},
