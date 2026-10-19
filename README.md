@@ -20,6 +20,16 @@ Pre production software for LED walls. Engineering specs, cable labels, pixel ma
 
 <sub>The screenshots are made from the app itself with `manual-src/make_readme_shots.py`.</sub>
 
+## Virus scan and documentation
+
+**Virus scan:** every program file in each release is scanned on VirusTotal after it is built. See the results, with a link to each full report and the SHA-256 of every file, in **[VIRUSTOTAL.md](VIRUSTOTAL.md)**.
+
+**Documentation** (always the latest release):
+
+- [TileSmith-Manual.pdf](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Manual.pdf): user manual for the desktop app (Windows, Mac, Linux)
+- [TileSmith-Mobile-Manual.pdf](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Mobile-Manual.pdf): manual for the Android and iOS app
+- [TileSmith-App-Spec.md](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-App-Spec.md): full written specification of the app, for developers
+
 ## Disclaimer & Limitation of Liability
 
 **USE AT YOUR OWN RISK.** This software is provided "AS IS", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. 
