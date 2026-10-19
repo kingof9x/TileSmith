@@ -6,16 +6,16 @@ TileSmith is not code-signed, and a few engines now and then flag an unsigned El
 
 ## v3.5
 
-Scanned 2026-10-18 03:13 UTC.
+Scanned 2026-10-19 05:03 UTC.
 
 | File | Result | SHA-256 |
 |---|---|---|
-| TileSmith-android.apk | [0 / 67 engines flag it](https://www.virustotal.com/gui/file/d0d4c303fd78cb2e9f9dc2d9de926a585a0a835d9836c62981a0efcaa4a887d4) | `d0d4c303fd78cb2e9f9dc2d9de926a585a0a835d9836c62981a0efcaa4a887d4` |
-| TileSmith-linux-x64.AppImage | [0 / 63 engines flag it](https://www.virustotal.com/gui/file/a5a764a6d208f4e764126a441802f314e01628fc37d290c22b494a424f86d5db) | `a5a764a6d208f4e764126a441802f314e01628fc37d290c22b494a424f86d5db` |
-| TileSmith-linux-x64.deb | [0 / 61 engines flag it](https://www.virustotal.com/gui/file/755dc3014d4bad98838ef0bc24dfe18e90faac93a788fabf90fc17a6d0e981e5) | `755dc3014d4bad98838ef0bc24dfe18e90faac93a788fabf90fc17a6d0e981e5` |
-| TileSmith-linux-x64.flatpak | [0 / 61 engines flag it](https://www.virustotal.com/gui/file/2a2515523f18308776bc953189e21e5d67aa4e4589ca68700ef2deeb37662943) | `2a2515523f18308776bc953189e21e5d67aa4e4589ca68700ef2deeb37662943` |
-| TileSmith-linux-x64.pacman | [0 / 58 engines flag it](https://www.virustotal.com/gui/file/db32b1aef73564626e21a7991df34109bda33ac4392f29d6b8803c7425e1b656) | `db32b1aef73564626e21a7991df34109bda33ac4392f29d6b8803c7425e1b656` |
-| TileSmith-linux-x64.rpm | [0 / 59 engines flag it](https://www.virustotal.com/gui/file/da43341459a6dfaff9791368cb35ef39967884b1d7f23db7fafcb1ee23bdd31c) | `da43341459a6dfaff9791368cb35ef39967884b1d7f23db7fafcb1ee23bdd31c` |
-| TileSmith-linux-x64.snap | [0 / 61 engines flag it](https://www.virustotal.com/gui/file/9a2bf6ce4c8a16aa73279050af4bf50ccc755acb56a99e887c5c6eb75d8c5c0a) | `9a2bf6ce4c8a16aa73279050af4bf50ccc755acb56a99e887c5c6eb75d8c5c0a` |
-| TileSmith-mac-universal.dmg | [0 / 60 engines flag it](https://www.virustotal.com/gui/file/90170e811dcfdc129edf2dca1f4454ab442f9a765f255abe1e13deb4579040f5) | `90170e811dcfdc129edf2dca1f4454ab442f9a765f255abe1e13deb4579040f5` |
-| TileSmith-windows-portable.exe | [0 / 60 engines flag it](https://www.virustotal.com/gui/file/7e9afd8765f66a2e970ee10ede36bbfb39536188d8f90b88e854fe8d9dae3174) | `7e9afd8765f66a2e970ee10ede36bbfb39536188d8f90b88e854fe8d9dae3174` |
+| TileSmith-android.apk | [0 / 67 engines flag it](https://www.virustotal.com/gui/file/708957efc5c04c131bf117b8bfbe9ac7027b330dc20f8f074e1369724efaf3cb) | `708957efc5c04c131bf117b8bfbe9ac7027b330dc20f8f074e1369724efaf3cb` |
+| TileSmith-linux-x64.AppImage | [0 / 61 engines flag it](https://www.virustotal.com/gui/file/1b3241d6900dc37b2460c34f0b248f681df6931b75d8e745e6d091d3506fb121) | `1b3241d6900dc37b2460c34f0b248f681df6931b75d8e745e6d091d3506fb121` |
+| TileSmith-linux-x64.deb | [0 / 61 engines flag it](https://www.virustotal.com/gui/file/8a3be25aa1134ec20dcdc61af7119d8b7b1c78d4616b512e982cde46c7700e9e) | `8a3be25aa1134ec20dcdc61af7119d8b7b1c78d4616b512e982cde46c7700e9e` |
+| TileSmith-linux-x64.flatpak | [0 / 61 engines flag it](https://www.virustotal.com/gui/file/78884b71e7ea811526ac960ad6ae858d9df0de2c7f95e46957fb7ca244264337) | `78884b71e7ea811526ac960ad6ae858d9df0de2c7f95e46957fb7ca244264337` |
+| TileSmith-linux-x64.pacman | [0 / 60 engines flag it](https://www.virustotal.com/gui/file/673e3a229f369d16aafdceb049f86d4c854d20f9fe0e8517a9a970172ef56ea8) | `673e3a229f369d16aafdceb049f86d4c854d20f9fe0e8517a9a970172ef56ea8` |
+| TileSmith-linux-x64.rpm | [0 / 59 engines flag it](https://www.virustotal.com/gui/file/c98f7b10da4d6c5af5b58a79411339d6af315bcc8c502ec7fa79b31cbc4988fb) | `c98f7b10da4d6c5af5b58a79411339d6af315bcc8c502ec7fa79b31cbc4988fb` |
+| TileSmith-linux-x64.snap | [0 / 61 engines flag it](https://www.virustotal.com/gui/file/7e507782649d2be3147bc019acc23ec2eefb31892ee663ea04198f8e817a5556) | `7e507782649d2be3147bc019acc23ec2eefb31892ee663ea04198f8e817a5556` |
+| TileSmith-mac-universal.dmg | [0 / 62 engines flag it](https://www.virustotal.com/gui/file/5ee99afdda940eb76841c241fac04804850aaa605453cc5b226d049fdcaebbab) | `5ee99afdda940eb76841c241fac04804850aaa605453cc5b226d049fdcaebbab` |
+| TileSmith-windows-portable.exe | [0 / 66 engines flag it](https://www.virustotal.com/gui/file/1e3130b5b80be60417f1821efaa29b483d2041270a2b88210a871b88cb64fc19) | `1e3130b5b80be60417f1821efaa29b483d2041270a2b88210a871b88cb64fc19` |
