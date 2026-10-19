@@ -138,7 +138,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 {img('t02-two-walls-data.png', 'Two walls, a NovaStar VX1000 Pro and Snake data wiring.')}</section>
 
 <section class="chap"><h1>6. Canvas and LED walls</h1>
-<div class="side"><div><p><b>Canvas</b> sets the output raster: Width and Height in pixels, or a preset (1080p Full HD, 4K UHD, 2K DCI, 4K DCI, 720p HD, 32:9 Banner). <b>Fit canvas to walls</b> moves the walls to the top-left and makes the canvas exactly as big as they are.</p>
+<div class="side"><div><p><b>Canvases</b> lists every output raster; <b>Add canvas</b> makes another, each with its own submenu of LED wall options and its own outputs, shown side by side in the viewport (tap one to select it). Each canvas sets its output raster: Width and Height in pixels, or a preset (1080p Full HD, 4K UHD, 2K DCI, 4K DCI, 720p HD, 32:9 Banner). <b>Fit canvas to walls</b> moves the walls to the top-left and makes the canvas exactly as big as they are.</p>
 <p><b>LED walls</b> lists every wall with its size, pixels, position and pattern. Tap a wall to select it; the selected wall has an amber border. <b>Add wall</b> places a new 4 × 3 wall beside the others. <b>Duplicate</b> copies the selected wall, and <b>Remove</b> deletes it (one wall always stays).</p>
 <p>Sections marked with a wall's name (for example <i>Tile model · Main</i>) change the selected wall only. <b>Tech starts at</b> and <b>Tile placement</b> set where the technician begins and whether he builds row by row (Horizontal) or column by column (Vertical).</p></div>
 {img('ui-led-walls.png', 'LED walls')}</div>

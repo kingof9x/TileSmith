@@ -13,7 +13,7 @@ TODAY = datetime.date.today().isoformat()
 
 # every setting the app saves, with what it does. Per-wall keys are marked by the app's WK list.
 KEYDESC = {
- 'cw': 'Canvas width in px (16-8192). The canvas is the raster sent over NDI and recorded to video.',
+ 'cw': 'Canvas width in px (16-8192) of the selected canvas. Each canvas is a raster sent over its own NDI / Spout / Syphon source and recorded to its own video. Projects store every canvas in cvs:[{name,cw,ch,cur,walls}] with ac = the selected canvas (its walls are the top-level walls, cvs[ac].walls is null).',
  'ch': 'Canvas height in px (16-8192).',
  'bc': 'Tile border colour (overlay drawn on every lit tile).', 'bt': 'Tile border thickness in px (1-8).',
  'tpos': 'Show tile position arrows on every lit tile (any pattern).',

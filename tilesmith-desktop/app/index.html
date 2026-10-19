@@ -317,6 +317,43 @@ const esc=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const WK=['half','gone','lay','gx','gy','name','ox','oy','cols','rows','preset','tw','th','wmm','hmm','dmm','kg','wmax','pitch','pat','pfit','pdir','pspd','shadeC','patImg','boxMode','boxText','boxCol','boxImg','corner','dir','wmode','wcorner','wdir','wfill','wman','pmode','pcorner','pwdir','pfill','plink','pman'];
 const wallFromS=()=>{const w={};WK.forEach(k=>w[k]=Array.isArray(S[k])?JSON.parse(JSON.stringify(S[k])):S[k]);return w};
 let walls=[wallFromS()],cur=0;
+// ---------- several canvases. Each canvas is its own output raster with its own walls. The globals (S.cw/S.ch, walls, cur, sims,
+// M/mc, ...) always describe canvas cc; withCv(i,f) swaps another canvas in for f and back again. V is the view of canvas cc in its
+// own pixels; the other canvases are drawn beside it (cvLay), side by side and centred vertically.
+let CVS=[],cc=0,CVID=0,CVX=0;
+function cvFromGlobals(name){return{id:++CVID,name:name||'Canvas 1',cw:S.cw,ch:S.ch,walls,cur,sims,loopW,crewNext,M,mc,gen,grabIm,grabGen,dvdSt:dvdCanvasSt,open:false}}
+function cvMake(name,cw,ch,wl,c0){const m=document.createElement('canvas');m.width=cw;m.height=ch;
+ return{id:++CVID,name,cw,ch,walls:wl,cur:Math.max(0,Math.min(wl.length-1,c0|0)),sims:[],loopW:0,crewNext:0,M:m,mc:m.getContext('2d',{willReadFrequently:true}),gen:0,grabIm:null,grabGen:-1,dvdSt:null,open:false}}
+function cvStore(){const c=CVS[cc];if(!c)return;storeWall();Object.assign(c,{cw:S.cw,ch:S.ch,walls,cur,sims,loopW,crewNext,M,mc,gen,grabIm,grabGen,dvdSt:dvdCanvasSt})}
+function cvLoad(i){cc=i;const c=CVS[i];S.cw=c.cw;S.ch=c.ch;walls=c.walls;sims=c.sims;loopW=c.loopW;crewNext=c.crewNext;M=c.M;mc=c.mc;gen=c.gen;grabIm=c.grabIm;grabGen=c.grabGen;dvdCanvasSt=c.dvdSt;loadWall(c.cur)}
+function withCv(i,f){if(i===cc||!CVS[i])return f(i);const p=cc;cvStore();cvLoad(i);CVX++;try{return f(i)}finally{CVX--;cvStore();cvLoad(p)}}
+function eachCv(f){if(!CVS.length){f(0);return}for(let i=0;i<CVS.length;i++)withCv(i,f)}
+const cvTag=()=>CVS.length>1&&CVS[cc]?'-'+String(CVS[cc].name).replace(/[^\w-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,30):'';
+const cloneWall=w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?w[k]:cl(w[k]));return x};
+function wallDef(){const w={};WK.forEach(k=>w[k]=k=='patImg'||k=='boxImg'?null:cl(S_DEF[k]));return w}
+// where every canvas sits, in pixels: side by side with a gap, centred on the tallest
+function cvLay(){if(!CVS.length)return[{x:0,y:0,w:S.cw,h:S.ch}];const D=CVS.map((c,i)=>i==cc?[S.cw,S.ch]:[c.cw,c.ch]),H=Math.max(...D.map(d=>d[1])),g=Math.max(120,Math.round(H*.12));let x=0;
+ return D.map(d=>{const p={x,y:Math.round((H-d[1])/2),w:d[0],h:d[1]};x+=d[0]+g;return p})}
+// bounds of every canvas in canvas cc's pixels
+function cvBounds(){const L=cvLay(),a=L[Math.min(cc,L.length-1)];let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;L.forEach(p=>{x0=Math.min(x0,p.x-a.x);y0=Math.min(y0,p.y-a.y);x1=Math.max(x1,p.x-a.x+p.w);y1=Math.max(y1,p.y-a.y+p.h)});return[x0,y0,x1,y1]}
+function pickCv(e){const[x,y]=toCv(e);if(x>=0&&y>=0&&x<S.cw&&y<S.ch)return cc;const L=cvLay(),a=L[cc];for(let i=0;i<L.length;i++){const p=L[i],X=p.x-a.x,Y=p.y-a.y;if(x>=X&&y>=Y&&x<X+p.w&&y<Y+p.h)return i}return -1}
+const cvBusy=()=>!!(VQ||REC||LOOPREC);
+function switchTo(i,force){if(i===cc||!CVS[i])return;if(!force&&cvBusy()){toast('Finish or cancel the video export first.',3000);return}
+ stopMarking();goneEdit=false;wiring=false;pwiring=false;drag=null;if(CVS[cc]&&CVS[cc].open)CVS[i].open=true;const L=cvLay(),a=L[cc],b=L[i];cvStore();cvLoad(i);V.x+=(b.x-a.x)*V.z;V.y+=(b.y-a.y)*V.z;forceRen=true;lastAct=performance.now();sync()}
+function cvAdd(dup){if(cvBusy()){toast('Finish or cancel the video export first.',3000);return}cvStore();const src=CVS[cc],used=new Set(CVS.map(c=>c.name));let n=CVS.length+1;while(used.has('Canvas '+n))n++;
+ let nm=dup?src.name+' copy':'Canvas '+n;while(dup&&used.has(nm))nm+=' copy';
+ const c=dup?cvMake(nm,S.cw,S.ch,walls.map(cloneWall),cur):cvMake(nm,1920,1080,[wallDef()],0);c.open=true;CVS.push(c);const i=CVS.length-1;withCv(i,()=>showAll());
+ switchTo(i,true);fit();sync();saveSoon();toast((dup?'Duplicated as ':'Added ')+nm+'. Each canvas is its own output.',3500)}
+function cvDel(){if(CVS.length<2)return;if(cvBusy()){toast('Finish or cancel the video export first.',3000);return}const i=cc,nm=CVS[i].name;stopMarking();goneEdit=false;wiring=false;pwiring=false;
+ CVS.splice(i,1);cvLoad(Math.min(i,CVS.length-1));fit();forceRen=true;sync();saveSoon();toast('Removed '+nm+'.',3000)}
+// the canvas list in the panel: one "Canvas n" submenu each; the canvas and LED wall controls (#cvCtl) live in the selected one
+function cvUI(){if(CVX)return;const L=$('#cvList'),ctl=$('#cvCtl');if(!L||!ctl||!CVS.length)return;const key=CVS.map(c=>c.id).join()+'#'+cc;
+ if(L.__k!==key){ctl.remove();L.innerHTML=CVS.map((c,i)=>`<details class="subd cvd" data-cvd="${i}"${c.open?' open':''}><summary data-cvs="${i}"><span class="cvn"></span> <span class="cvz" style="color:var(--mu);font-weight:400"></span></summary><div class="sec" data-slot="${i}"></div></details>`).join('');
+  L.querySelector(`[data-slot="${cc}"]`).appendChild(ctl);L.__k=key}
+ L.querySelectorAll('[data-cvs]').forEach(sm=>{const i=+sm.dataset.cvs,c=CVS[i];if(!c)return;const n=sm.querySelector('.cvn'),z=sm.querySelector('.cvz'),zt=`${i==cc?S.cw:c.cw}×${i==cc?S.ch:c.ch}${i==cc&&CVS.length>1?' · selected':''}`;
+  if(n.textContent!==c.name)n.textContent=c.name;if(z.textContent!==zt)z.textContent=zt});
+ const n=$('#cvName');if(n&&n!==document.activeElement&&n.value!==CVS[cc].name)n.value=CVS[cc].name;const d=document.querySelector('[data-a=cvdel]');if(d)d.disabled=CVS.length<2}
+document.addEventListener('toggle',e=>{const t=e.target,i=t&&t.dataset&&t.dataset.cvd;if(i!=null&&CVS[+i])CVS[+i].open=t.open},true);
 function storeWall(){if(walls[cur])WK.forEach(k=>walls[cur][k]=S[k])}
 function loadWall(i){cur=Math.max(0,Math.min(walls.length-1,i|0));WK.forEach(k=>S[k]=walls[cur][k])}
 // Wall size. A wall on a half-tile layout is only as big as its real tiles: converting the bottom row to half tiles makes it
@@ -380,9 +417,9 @@ function fitCanvas(){storeWall();const mx=Math.min(0,...walls.map(w=>w.ox)),my=M
 S.cw=Math.max(16,Math.min(8192,Math.max(...walls.map(w=>w.ox+wW(w)))));S.ch=Math.max(16,Math.min(8192,Math.max(...walls.map(w=>w.oy+wH(w)))));loadWall(cur)}
 function wallsUI(){const e=$('#wlist');if(e){const h=walls.map((w,i)=>`<button class="wl" data-wsel="${i}" aria-pressed="${i==cur}"><b>${esc(w.name||'Wall '+(i+1))}</b><span>${pieces(w).lay||pieces(w).ng?`${w.cols}×${w.rows} grid, ${tN(w)} tiles`:`${w.cols}×${w.rows} tiles`}${[pieces(w).nh?pieces(w).nh+' half':'',pieces(w).ng?pieces(w).ng+' removed':''].filter(Boolean).map((t,i,a)=>(i?'':' (')+t+(i==a.length-1?')':', ')).join('')}, ${wW(w)}×${wH(w)} px at ${w.ox}, ${w.oy}. Pattern: ${esc(w.pat)}. Starts ${esc(w.corner.toLowerCase())}, ${esc(w.dir.toLowerCase())}.</span></button>`).join('');if(e.__h!==h){e.innerHTML=h;e.__h=h}}
 document.querySelectorAll('.wn').forEach(x=>x.textContent=walls.length>1?(S.name||'Wall '+(cur+1)):'');const d=document.querySelector('[data-a=wdel]');if(d)d.disabled=walls.length<2}
-const $=s=>document.querySelector(s),M=document.createElement('canvas'),mc=M.getContext('2d',{willReadFrequently:true});
+const $=s=>document.querySelector(s);let M=document.createElement('canvas'),mc=M.getContext('2d',{willReadFrequently:true});
 // gen counts how many times the master canvas has been redrawn; forceRen asks for one redraw on the next frame
-let gen=0,forceRen=true;
+let gen=0,RG=0,forceRen=true;
 const n=()=>S.cols*S.rows,WW=()=>wW(S),WH=()=>wH(S);
 const F=(k,l,t='number',o,cls='')=>t=='select'?`<label class="${cls}">${l}<select data-k="${k}">${o.map(x=>`<option>${x}</option>`).join('')}</select></label>`:
  t=='check'?`<label class="chk w"><input type="checkbox" data-k="${k}">${l}</label>`:
@@ -390,11 +427,13 @@ const F=(k,l,t='number',o,cls='')=>t=='select'?`<label class="${cls}">${l}<selec
 const B=(a,l,v='')=>`<button data-a="${a}" data-v="${v}">${l}</button>`;
 const SW=(k,cs)=>`<div class="row w">${cs.map(c=>`<button class="sw" title="${c}" data-sw="${k}" data-v="${c}" style="background:${c}"></button>`).join('')}</div>`;
 // a collapsible submenu inside a section
-const SUB=(t,h,open,cls)=>`<details class="subd${cls?' '+cls:''}"${open?' open':''}><summary>${t}</summary><div class="sec">${h}</div></details>`;
-function sect(h){const q=h.split('<h2>');return q[0]+q.slice(1).map(p=>{const i=p.indexOf('</h2>');return `<details open><summary>${p.slice(0,i)}</summary><div class="sec">${p.slice(i+5)}</div></details>`}).join('')}
+const SUB=(t,h,open,cls)=>`<details class="subd${cls?' '+cls:''}"><summary>${t}</summary><div class="sec">${h}</div></details>`;
+function sect(h){const q=h.split('<h2>');return q[0]+q.slice(1).map(p=>{const i=p.indexOf('</h2>');return `<details><summary>${p.slice(0,i)}</summary><div class="sec">${p.slice(i+5)}</div></details>`}).join('')}
 function build(){
 $('#left').innerHTML=sect(`<h1>TileSmith <span style="font-size:11px;font-weight:600;color:var(--am)">v3.5</span></h1><div style="color:var(--mu)">LED Wall Pixel Map &amp; Test Pattern Generator</div>
-<h2>Canvas</h2><div class="g">${F('cw','Width px')}${F('ch','Height px')}</div>
+<h2>Canvases</h2><div id="cvList"></div><div class="row">${B('cvadd','Add canvas')}</div>
+<div id="cvCtl"><div class="g"><label class="w">Canvas name<input type="text" id="cvName" maxlength="40"></label></div><div class="row">${B('cvdup','Duplicate canvas')}${B('cvdel','Remove canvas')}</div><div style="color:var(--mu);font-size:12px">Each canvas is its own output (its own NDI®, Spout / Syphon source, PNG, PDF raster page and video). Click a canvas in the viewport or its name here to select it.</div>
+<div class="g">${F('cw','Width px')}${F('ch','Height px')}</div>
 <div class="row">${Object.keys(R).map(k=>B('res',k,k)).join('')}${B('match','Fit canvas to walls')}</div>
 ${SUB('LED walls',`<div id="wlist"></div>
 <div class="row">${B('wadd','Add wall')}${B('wdup','Duplicate')}${B('wdel','Remove')}</div>
@@ -409,12 +448,12 @@ ${SUB('Size of LED Wall <span class="wn"></span>',`<div class="g">${F('cols','Co
 ${SUB('Wall position <span class="wn"></span>',`<div class="g">${F('ox','Offset X')}${F('oy','Offset Y')}</div>
 <div class="row">${B('al','Top-Left (0, 0)','tl')}${B('al','Center Both','c')}${B('al','Top-Center','tc')}${B('al','Bottom-Left','bl')}${B('al','Bottom-Center','bc')}</div>
 <div id="cov"></div><div style="color:var(--mu)">Drag a wall in the viewport to place it. It snaps to the canvas edges and to other walls, keeping a 2 px gap between walls. Hold Alt while dragging to place it freely. Drag empty space to pan.</div>`)}
-<h2>Test pattern <span class="wn"></span></h2><div class="g">${F('pat','Test pattern','select',PAT_LIST,'w')}${F('shadeC','Tile-shade color','color','','w')}${F('tpos','Tile position arrows (↑ rows counted from the bottom, → columns from the left)','check')}
+${SUB('Test pattern <span class="wn"></span>',`<div class="g">${F('pat','Test pattern','select',PAT_LIST,'w')}${F('shadeC','Tile-shade color','color','','w')}${F('tpos','Tile position arrows (↑ rows counted from the bottom, → columns from the left)','check')}
 ${F('pdir','Scroll','select',['none','diagonal ↘','diagonal ↗','horizontal →','vertical ↓'])}${F('pfit','Image fit','select',PFIT,'w')}${F('pspd','Scroll speed','range','min=0 max=3 step=0.25')}<label class="w">Upload test pattern (PNG/SVG/JPG)<input type="file" id="pf" accept="image/*"></label></div>
-<div id="boxBox" class="g">${F('boxMode','Center box','select',['Nothing','Text','Logo'],'w')}${F('boxText','Box text','text','','w')}${F('boxCol','Text color','color')}<label class="w" id="bxl">Upload logo (PNG/SVG/JPG)<input type="file" id="bxf" accept="image/*"></label></div>
+<div id="boxBox" class="g">${F('boxMode','Center box','select',['Nothing','Text','Logo'],'w')}${F('boxText','Box text','text','','w')}${F('boxCol','Text color','color')}<label class="w" id="bxl">Upload logo (PNG/SVG/JPG)<input type="file" id="bxf" accept="image/*"></label></div>`)}
 ${SUB('Tile borders &amp; overlays',`<div class="g">${F('bc','Border color','color')}${F('bt','Thickness','range','min=1 max=8')}</div>
 ${SW('bc',['#00e5ff','#00e676','#ffe600','#ffffff','#ff2bd6','#ff7a00'])}
-${F('ids','Tile IDs','check')}${F('addr','Pixel address ranges','check')}${F('mm','Millimeter marks','check')}`)}
+${F('ids','Tile IDs','check')}${F('addr','Pixel address ranges','check')}${F('mm','Millimeter marks','check')}`)}</div>
 <h2>Engineering</h2>${SUB('LED processor',`<label class="w" style="display:flex;flex-direction:column;gap:3px;color:var(--mu);font-size:12px">Processor<select data-k="proc">${procOpts()}</select></label>
 <label class="w" style="display:flex;flex-direction:column;gap:3px;color:var(--mu);font-size:12px">Receiving card in the tile<select data-k="rcard" id="rcardSel"></select></label>${F('procAll','Show all processors','check')}
 <div id="procInfo" style="color:var(--mu);font-size:12px"></div><div id="procWarn" style="color:#e5a000;font-size:12px"></div>
@@ -455,7 +494,7 @@ ${F('lblLayout','Wrap layout','select',['Two identical panels','Flag fold-over (
 $('#bar').innerHTML=B('newc','New Project')+B('psave','Save')+B('popen','Open')+B('about','ⓘ Info')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('fit','Show entire canvas')+B('ctr','Center canvas')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('pdf','Export PDF')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>';
 if(!$('#opf')){const i=document.createElement('input');i.type='file';i.id='opf';i.accept='.tilesmith,.json,application/json';i.hidden=true;document.body.appendChild(i)}
 sync();crewUI();}
-function sync(){storeWall();procRefresh();tileRefresh();document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
+function sync(){storeWall();procRefresh();tileRefresh();cvUI();document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
 $('#crew').style.display=S.cd?'':'none';$('#den').textContent=Math.round(1e6/S.pitch**2).toLocaleString()+' px/m²';{const b=buildSecs(),t=S.vIntro+b+S.vHold,m=Math.floor(t/60),q=Math.round(t%60);const tx=m+':'+String(q).padStart(2,'0')+'  (build '+Math.round(b)+' s)';['#vest','#vestm'].forEach(k=>{const e=$(k);if(e)e.textContent=tx})}
 $('#typ').textContent=Math.round(S.wmax*.4)+' W';wallsUI();uiVis();info()}
 function uiVis(){const on=procOn(),m=PROC[S.proc],hide=(id,h)=>{const e=$('#'+id);if(e)e.style.display=h?'none':''},plan=portPlan();lblVis();
@@ -518,6 +557,7 @@ storeWall();if(['cols','rows','tw','th','preset','corner','dir'].includes(k))sho
 if(k=='loop'&&v&&allDone()&&!REC){reset();S.play=true}
 if(k=='shGpu'&&shOut){shStop();toggleShare()}}
 document.addEventListener('input',e=>{const t=e.target;
+if(t.id=='cvName'){if(CVS[cc])CVS[cc].name=t.value.replace(/\s+/g,' ').slice(0,40)||'Canvas';cvUI();forceRen=true;return}
 if(t.dataset&&t.dataset.brand){brandPick(t.value);return}
 if(t.id=='opf'){const f=t.files[0];t.value='';if(f)openProjectAsk(f);return}
 if(t.id=='dvdf'){const f=t.files[0];if(f)loadImgFile(f,1024,'image/png',im=>{im.__id=++imgId;dvdImg=im;S.dvdSrc='Uploaded image';sync();saveSoon()});return}
@@ -528,7 +568,7 @@ if(t.dataset.c){crew[t.dataset.c][t.dataset.f]=t.value;return}
 if(t.id=='lf'){const f=t.files[0];if(f)loadImgFile(f,512,'image/png',im=>{logoImg=im;saveSoon()});return}
 if(t.type=='number'&&HEAVY.includes(t.dataset.k))return;applyKey(t);sync();});
 document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.brand){brandPick(t.value);return}const k=t.dataset&&t.dataset.k;if(!k||t.type!='number')return;applyKey(t);t.value=S[k];sync();});
-document.addEventListener('click',e=>{const t=e.target;const wsb=t.closest&&t.closest('[data-wsel]');if(wsb){selWall(+wsb.dataset.wsel);return}
+document.addEventListener('click',e=>{const t=e.target;const cvs=t.closest&&t.closest('[data-cvs]');if(cvs){const i=+cvs.dataset.cvs;if(i!==cc&&CVS[i]){e.preventDefault();CVS[i].open=true;switchTo(i)}return}const wsb=t.closest&&t.closest('[data-wsel]');if(wsb){selWall(+wsb.dataset.wsel);return}
 const wpb=t.closest&&t.closest('[data-wp]');if(wpb){const q=WPAT[+wpb.dataset.wp];if(q){S.wcorner=q[0];S.wdir=q[1];storeWall();sync()}return}
 const ppb=t.closest&&t.closest('[data-pp]');if(ppb){const q=WPAT[+ppb.dataset.pp];if(q){S.pcorner=q[0];S.pwdir=q[1];storeWall();sync()}return}
 if(t.dataset.rmface){crew[+t.dataset.rmface][2]=null;crewUI();return}
@@ -539,21 +579,21 @@ const a=t.dataset.a;if(!a)return;const v=t.dataset.v,cw=S.cw,ch=S.ch;
 ({undom(){const t=e.target.closest('button'),m=$('#undom'),o=m.hidden;ddClose();if(o){unUI();const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-260))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');const f=m.querySelector('button:not([disabled])');if(f)f.focus()}},undo(){ddClose();if(v)unUndo(+v)},redo(){ddClose();unRedo()},ctr(){const r=vp.getBoundingClientRect();V.x=(r.width-S.cw*V.z)/2;V.y=(r.height-S.ch*V.z)/2},newc(){newCanvasAsk()},res(){[S.cw,S.ch]=R[v]},match(){fitCanvas()},wadd(){addWall(false)},pspec(){applySpec()},npat(){nextPattern()},hrowb(){halfRow('bottom')},hrowt(){halfRow('top')},hedit(){halfEdit=!halfEdit&&!!halfOf(S);if(halfEdit){wiring=false;pwiring=false;goneEdit=false}},gedit(){goneEdit=!goneEdit;if(goneEdit){wiring=false;pwiring=false;halfEdit=false}},gclr(){restoreAll()},hclr(){S.half=[];S.lay={};storeWall();showAll();sync()},dvdexp(){dvdExportLoop()},rxml(){if(v)S.resSl=v;ddClose();exportRes()},rxmlm(){const m=$('#rxmlm'),o=m.hidden;ddClose();if(o){const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-200))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');m.querySelector('button').focus()}},wedit(){wiring=!wiring;if(wiring){S.showData=true;pwiring=false;halfEdit=false;goneEdit=false}wireMsg(wiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},wnew(){if(!Array.isArray(S.wman))S.wman=[];const l=S.wman[S.wman.length-1];if(!l||l.length)S.wman.push([]);wireMsg('')},wundo(){const m=S.wman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();wireMsg('')},wclr(){S.wman=[];wireMsg('')},pedit(){pwiring=!pwiring;if(pwiring){S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg(pwiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},pnew(){if(!Array.isArray(S.pman))S.pman=[];const l=S.pman[S.pman.length-1];if(!l||l.length)S.pman.push([]);pwMsg('')},pundo(){const m=S.pman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();pwMsg('')},pclr(){S.pman=[];pwMsg('')},wdup(){addWall(true)},wdel(){delWall()},
 al(){S.ox=v[0]=='c'||v=='tc'||v=='bc'?Math.round((cw-WW())/2):0;S.oy=v=='c'?Math.round((ch-WH())/2):v[0]=='b'?ch-WH():0;if(v=='tl'||v=='bl')S.ox=0},
 arr(){[S.cols,S.rows]=v.split('x').map(Number);showAll()},
-pp(){S.play=!S.play},rs(){reset();S.play=true},bstop(){S.play=false;showAll()},brst(){reset();S.play=false},psave(){saveProject()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
-about(){showAbout(1)},ndi(){toggleNdi()},share(){toggleShare()},png(){M.toBlob(b=>dl(b,'tilesmith-canvas.png'))},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
+pp(){S.play=!S.play},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
+about(){showAbout(1)},ndi(){toggleNdi()},share(){toggleShare()},png(){eachCv(()=>{const m=M,n=`tilesmith-canvas${cvTag()}.png`;m.toBlob(b=>dl(b,n))})},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
 add(){crew.push(['Tech '+(crew.length+1),'#e0ac69',null,HAIR[crew.length%HAIR.length]]);crewUI()},rcrew(){crew=defCrew();crewUI()}}[a])();
 sync();fit_if();});
-function fit_if(){if(M.width!=S.cw||M.height!=S.ch){if(REC)endRec(false);M.width=S.cw;M.height=S.ch;fit();forceRen=true}}
+function fit_if(){if(M.width!=S.cw||M.height!=S.ch){if(REC&&!CVX)endRec(false);M.width=S.cw;M.height=S.ch;if(!CVX)fit();forceRen=true}}
 function dl(b,n){if(MOBILE){mobSave(b,n);return}const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click()}
 // mobile app: write the file and open the share sheet (Save to Files / Photos / Drive, AirDrop, e-mail ...)
 function mobSave(b,n,done){TSM.saveFile(b,n,b&&b.type).then(ok=>toast(ok?(done||'Saved '+n+'.'):'Not saved: '+n,4000),e=>toast('Could not save '+n+': '+(e&&e.message||e)))}
 const vp=$('#vp'),vc=vp.getContext('2d');
 // zoom that shows the whole canvas; the margin shrinks with the viewport so tiny windows still fit everything
-function fitZ(){const r=vp.getBoundingClientRect(),p=Math.min(60,r.width*.1,r.height*.1);return Math.max(1e-3,Math.min((r.width-p)/S.cw,(r.height-p)/S.ch))}
+function fitZ(){const r=vp.getBoundingClientRect(),p=Math.min(60,r.width*.1,r.height*.1),[x0,y0,x1,y1]=cvBounds();return Math.max(1e-3,Math.min((r.width-p)/(x1-x0),(r.height-p)/(y1-y0)))}
 // furthest the wheel can zoom out: 25%, or further when needed to see the whole canvas and every wall
-function viewBounds(){let x0=0,y0=0,x1=S.cw,y1=S.ch;walls.forEach(w=>{x0=Math.min(x0,w.ox);y0=Math.min(y0,w.oy);x1=Math.max(x1,w.ox+wW(w));y1=Math.max(y1,w.oy+wH(w))});return[x0,y0,x1,y1]}
+function viewBounds(){let[x0,y0,x1,y1]=cvBounds();walls.forEach(w=>{x0=Math.min(x0,w.ox);y0=Math.min(y0,w.oy);x1=Math.max(x1,w.ox+wW(w));y1=Math.max(y1,w.oy+wH(w))});return[x0,y0,x1,y1]}
 function zMin(){const r=vp.getBoundingClientRect(),[x0,y0,x1,y1]=viewBounds();return Math.max(1e-3,Math.min(.25,.8*Math.min(r.width/(x1-x0),r.height/(y1-y0))))}
-function fit(){const r=vp.getBoundingClientRect();V.z=fitZ();V.x=(r.width-S.cw*V.z)/2;V.y=(r.height-S.ch*V.z)/2}
+function fit(){const r=vp.getBoundingClientRect(),[x0,y0,x1,y1]=cvBounds();V.z=fitZ();V.x=(r.width-(x1-x0)*V.z)/2-x0*V.z;V.y=(r.height-(y1-y0)*V.z)/2-y0*V.z}
 let drag=null;
 const toCv=e=>{const r=vp.getBoundingClientRect();return[(e.clientX-r.left-V.x)/V.z,(e.clientY-r.top-V.y)/V.z]};
 function hitWall(e){const[x,y]=toCv(e);for(let i=walls.length-1;i>=0;i--){const w=walls[i];if(x>=w.ox&&y>=w.oy&&x<w.ox+wW(w)&&y<w.oy+wH(w))return i}return -1}
@@ -591,7 +631,8 @@ vp.addEventListener('pointermove',e=>{if(PTR.has(e.pointerId))PTR.set(e.pointerI
 const ptrEnd=e=>{PTR.delete(e.pointerId);if(pinch){if(PTR.size<2)pinch=null;drag=null;e.stopImmediatePropagation()}};
 vp.addEventListener('pointerup',ptrEnd,true);vp.addEventListener('pointercancel',e=>{ptrEnd(e);if(drag&&drag.mode=='wall'&&drag.moved){keepGap(cur);sync();saveSoon()}drag=null;vp.style.cursor=''},true);
 const hitEdit=e=>{if(!(halfEdit||goneEdit)||!layOn(S))return -1;const[x,y]=toCv(e),o=wOff(S),g=unitG(S),gx=x-S.ox+o.x,gy=y-S.oy+o.y;return g&&gx>=0&&gy>=0&&gx<g.uc*g.uw&&gy<g.ur*g.uh?cur:-1};
-vp.onpointerdown=e=>{if(pinch||PTR.size>1)return;try{vp.setPointerCapture(e.pointerId)}catch(x){}const he=hitEdit(e),i=he>=0?he:hitWall(e),[cx,cy]=toCv(e);
+vp.onpointerdown=e=>{if(pinch||PTR.size>1)return;try{vp.setPointerCapture(e.pointerId)}catch(x){}
+ if(CVS.length>1&&hitWall(e)<0){const j=pickCv(e);if(j>=0&&j!==cc)switchTo(j)}const he=hitEdit(e),i=he>=0?he:hitWall(e),[cx,cy]=toCv(e);
  drag={x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY,cx,cy,moved:false,mode:'pan',sel:i>=0&&i!=cur,guides:[]};
  if(goneEdit&&i==cur){drag.mode='gone';goneDrag(e,'down');return}
  if(halfEdit&&halfOf(S)&&i==cur){drag.mode='half';halfDrag(e,'down');return}
@@ -1112,6 +1153,9 @@ drawTech(c,x,yy,sz,{th:ang,mv,g:x/(sz*.2),u,m,carry,lock:sm.ph=='lock',shake:Mat
 c.restore()}
 function vpDraw(){const r=vp.getBoundingClientRect(),d=devicePixelRatio||1;if(vp.width!=r.width*d||vp.height!=r.height*d){vp.width=r.width*d;vp.height=r.height*d}
 const c=vc,z=V.z;c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,r.width,r.height);
+const CL=CVS.length>1?cvLay():null,CA=CL&&CL[cc];
+if(CL)CVS.forEach((cv,i)=>{if(i==cc)return;const p=CL[i];c.save();c.translate(V.x+(p.x-CA.x)*z,V.y+(p.y-CA.y)*z);c.scale(z,z);c.shadowColor='rgba(0,0,0,.6)';c.shadowBlur=Math.min(80,30/z);c.fillStyle='#000';c.fillRect(0,0,p.w,p.h);c.shadowBlur=0;
+ c.drawImage(cv.M,0,0);c.lineWidth=2/z;c.strokeStyle='rgba(34,211,238,.45)';c.setLineDash([8/z,6/z]);c.strokeRect(0,0,p.w,p.h);c.strokeStyle='rgba(255,179,0,.35)';cv.walls.forEach(w=>c.strokeRect(w.ox,w.oy,wW(w),wH(w)));c.setLineDash([]);c.restore()});
 c.save();c.translate(V.x,V.y);c.scale(z,z);c.shadowColor='rgba(0,0,0,.6)';c.shadowBlur=Math.min(80,30/z);c.fillStyle='#000';c.fillRect(0,0,S.cw,S.ch);c.shadowBlur=0;
 c.drawImage(M,0,0);c.lineWidth=2/z;c.strokeStyle='#22d3ee';c.strokeRect(0,0,S.cw,S.ch);
 walls.forEach((w,i)=>{const sel=i==cur&&walls.length>1;c.strokeStyle=sel?'#ffb300':'rgba(255,179,0,.6)';c.lineWidth=(sel?3:2)/z;c.setLineDash(sel?[]:[6/z,4/z]);c.strokeRect(w.ox,w.oy,wW(w),wH(w));c.setLineDash([]);
@@ -1121,6 +1165,7 @@ walls.forEach((w,i)=>{const sel=i==cur&&walls.length>1;c.strokeStyle=sel?'#ffb30
   else if(goneEdit)goneSet(w).forEach(j=>X(w.ox+(j%w.cols)*w.tw,w.oy+Math.floor(j/w.cols)*w.th,w.tw,w.th));c.restore()}});
 if(drag&&drag.mode=='wall'&&drag.guides.length){c.strokeStyle='#ff2bd6';c.lineWidth=1.5/z;c.setLineDash([6/z,4/z]);drag.guides.forEach(g=>{c.beginPath();if(g.v!=null){c.moveTo(g.v,-30/z);c.lineTo(g.v,S.ch+30/z)}else{c.moveTo(-30/z,g.h);c.lineTo(S.cw+30/z,g.h)}c.stroke()});c.setLineDash([])}
 c.restore();
+if(CL){c.font='600 12px Barlow,"Segoe UI",Arial,sans-serif';c.textBaseline='bottom';CVS.forEach((cv,i)=>{const p=CL[i],x=V.x+(p.x-CA.x)*z,y=V.y+(p.y-CA.y)*z-6;c.fillStyle=i==cc?'#0aa5c0':'#7a8a94';c.fillText(cv.name+(i==cc?' (selected)':'')+'  '+p.w+'×'+p.h,x,y)})}
 const zt=Math.round(z*100)+'%',ze=$('#zl');if(ze&&ze.textContent!==zt)ze.textContent=zt}
 function wst(w){const P2=pieces(w),N=P2.list.length,pw=wW(w),ph=wH(w),mw=pw/w.tw*w.wmm/1000,mh=ph/w.th*w.hmm/1000;let px=0,A=0,kg=0,W=0;
  P2.list.forEach(p=>{px+=p.w*p.h;A+=p.sp.m2;kg+=p.sp.kg;W+=p.sp.W});
@@ -1161,7 +1206,7 @@ function info(){storeWall();const w=walls[cur],s=wst(w),fits=w.ox>=0&&w.oy>=0&&w
 const ov=walls.filter((o,i)=>i!=cur&&o.ox<w.ox+s.pw&&w.ox<o.ox+wW(o)&&o.oy<w.oy+s.ph&&w.oy<o.oy+wH(o)).map(o=>o.name);
 $('#cov').innerHTML=(fits?'<span class="ok">✔ Wall fits inside canvas</span>':'<span class="bad">✖ Wall extends beyond raster: '+[w.ox<0&&'left',w.oy<0&&'top',w.ox+s.pw>S.cw&&'right by '+(w.ox+s.pw-S.cw)+'px',w.oy+s.ph>S.ch&&'bottom by '+(w.oy+s.ph-S.ch)+'px'].filter(Boolean).join(', ')+'</span>')+(ov.length?'<br><span class="bad">✖ Overlaps '+esc(ov.join(', '))+'</span>':'');
 const sec=(k,title,rows)=>`<details data-eng="${k}"${engOpen[k]===false?'':' open'}><summary>${esc(title)}</summary><table>${trs(rows)}</table></details>`;
-const h='<h1>Engineering</h1>'+sec('canvas','Entire canvas',canvasRows().concat(procOn()?procRowsCanvas(plan):[],pdOn()?powRowsCanvas(pplan):[]))+walls.map((x,i)=>sec('w'+i,x.name||'Wall '+(i+1),wallRows(x,plan[i]||[],pplan[i]||[]))).join('');
+const h='<h1>Engineering</h1>'+sec('canvas',CVS.length>1?'Entire canvas: '+CVS[cc].name:'Entire canvas',canvasRows().concat(procOn()?procRowsCanvas(plan):[],pdOn()?powRowsCanvas(pplan):[]))+walls.map((x,i)=>sec('w'+i,x.name||'Wall '+(i+1),wallRows(x,plan[i]||[],pplan[i]||[]))).join('');
 const R=$('#right');if(R.__h!==h){R.innerHTML=h;R.__h=h}}
 const gcd=(a,b)=>b?gcd(b,a%b):a;
 
@@ -1307,18 +1352,19 @@ function lblPanelPdf(pg,x,pw,h,o,tr,ink){const st=Math.max(0,LBLFLG.indexOf(S.lb
 async function exportPDF(){storeWall();toast('Building the PDF…',2500);await new Promise(r=>setTimeout(r,30));
  try{const pages=[],lt=pdfLetter(),PW=lt?612:595.28,PH=lt?792:841.89,mg=36,dt=new Date(),stamp=dt.toLocaleString();
   // 1. the full raster
-  {const pg=new PdfPage(PH,PW),W=PH-2*mg,Hh=PW-2*mg-34,sc=Math.min(W/M.width,Hh/M.height),iw=M.width*sc,ih=M.height*sc,x0=(PH-iw)/2,y0=mg+22;
-   pg.text('TileSmith - full raster',mg,mg+10,14,1,'#000');pg.text(`${S.cw} x ${S.ch} px, ${walls.length} wall${walls.length==1?'':'s'}, ${stamp}`,mg,mg+22,8.5,0,'#555');
+  eachCv(ci=>{const pg=new PdfPage(PH,PW),W=PH-2*mg,Hh=PW-2*mg-34,sc=Math.min(W/M.width,Hh/M.height),iw=M.width*sc,ih=M.height*sc,x0=(PH-iw)/2,y0=mg+22;
+   pg.text('TileSmith - full raster'+(CVS.length>1?' - '+CVS[ci].name:''),mg,mg+10,14,1,'#000');pg.text(`${S.cw} x ${S.ch} px, ${walls.length} wall${walls.length==1?'':'s'}, ${stamp}`,mg,mg+22,8.5,0,'#555');
    const u=M.toDataURL('image/jpeg',.92),bin=atob(u.slice(u.indexOf(',')+1)),b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
-   pg.img={w:M.width,h:M.height,b};pg.o.push(`q ${pdfN(iw)} 0 0 ${pdfN(ih)} ${pdfN(x0)} ${pdfN(PW-(y0+14)-ih)} cm /Im1 Do Q`);pg.rect(x0,y0+14,iw,ih,null,'#888',.5);pages.push(pg)}
+   pg.img={w:M.width,h:M.height,b};pg.o.push(`q ${pdfN(iw)} 0 0 ${pdfN(ih)} ${pdfN(x0)} ${pdfN(PW-(y0+14)-ih)} cm /Im1 Do Q`);pg.rect(x0,y0+14,iw,ih,null,'#888',.5);pages.push(pg)});const NR=pages.length;
   // 2. the spec sheet
-  {const lw=190,vw=PW-2*mg-lw-10,fs=8.5,lh=11;let pg=null,y=0;const np=()=>{pg=new PdfPage(PW,PH);pages.push(pg);y=mg;if(pages.length==2){pg.text('TileSmith - LED Wall Spec',mg,y+12,16,1,'#000');pg.text(stamp,mg,y+25,8.5,0,'#555');y+=38}};np();
-   specSections().forEach(([title,rows])=>{if(y+40>PH-mg)np();pg.rect(mg,y,PW-2*mg,17,'#dfe8ea');pg.text(title,mg+5,y+12,11,1,'#000');y+=21;
+  {const lw=190,vw=PW-2*mg-lw-10,fs=8.5,lh=11;let pg=null,y=0;const np=()=>{pg=new PdfPage(PW,PH);pages.push(pg);y=mg;if(pages.length==NR+1){pg.text('TileSmith - LED Wall Spec',mg,y+12,16,1,'#000');pg.text(stamp,mg,y+25,8.5,0,'#555');y+=38}};np();
+   const SEC=[];eachCv(ci=>specSections().forEach(([t,r])=>SEC.push([(CVS.length>1?CVS[ci].name+': ':'')+t,r])));SEC.forEach(([title,rows])=>{if(y+40>PH-mg)np();pg.rect(mg,y,PW-2*mg,17,'#dfe8ea');pg.text(title,mg+5,y+12,11,1,'#000');y+=21;
     rows.forEach(r=>{const wn=r[2]=='warn',A=pdfWrap(r[0],fs,wn,lw-8),V=pdfWrap(r[1],fs,wn,vw),n=Math.max(A.length,V.length),hh=n*lh+5;if(y+hh>PH-mg){np()}
      if(wn)pg.rect(mg,y,PW-2*mg,hh-1,'#ffd400');
      A.forEach((t,i)=>pg.text(t,mg+4,y+lh*(i+1)-1+1,fs,wn,'#000'));V.forEach((t,i)=>pg.text(t,mg+lw+6,y+lh*(i+1),fs,wn,'#000'));pg.line(mg,y+hh-1,PW-mg,y+hh-1,'#cccccc',.4);y+=hh});y+=8})}
   // 3. the cable labels, one PDF page per label sheet, sized like the label sheet itself
-  if(lblHas().on){const L=labelList(),g=lblGeom(),lay=Math.max(0,LBLLAY.indexOf(S.lblLayout)),K=72/25.4;
+  let LL=[];eachCv(()=>{if(lblHas().on)LL=LL.concat(labelList())});
+  if(LL.length){const L=LL,g=lblGeom(),lay=Math.max(0,LBLLAY.indexOf(S.lblLayout)),K=72/25.4;
    labelPages(L).forEach(cells=>{const pg=new PdfPage(g.pw,g.ph,K);pages.push(pg);
     cells.forEach((x,i)=>{if(!x)return;const c=i%g.c,r=Math.floor(i/g.c),left=g.x+c*(g.w+g.gx),top=g.y+r*(g.h+g.gy),W=g.w,H=g.h,fill=x.fill&&S.lblColor,ink=fill?lblInk(x.col):'#000';
      pg.clip(left,top,W,H);if(fill)pg.rect(left,top,W,H,x.col);else if(x.tint)pg.rect(left,top,W,H,lblTint(x.wall.col));
@@ -1334,9 +1380,10 @@ function resolumeXML(){storeWall();const P=(n,t,v)=>`<Param name="${n}" T="${t}"
 const rects=[];walls.forEach((w,i)=>{const nm=w.name||'Wall '+(i+1);if(/per tile/.test(S.resSl))[...pieces(w).list].sort((a,b)=>a.id-b.id).forEach(R=>rects.push([`${nm} T${pad(R.id-1)}${R.half?' half':''}`,w.ox+R.x,w.oy+R.y,R.w,R.h]));else rects.push([nm,w.ox,w.oy,wW(w),wH(w)])});
 const sl=rects.map(([n,x,y,w,h])=>{let mesh='';for(let j=0;j<4;j++)for(let i=0;i<4;i++)mesh+=`<v x="${+(x+w*i/3).toFixed(4)}" y="${+(y+h*j/3).toFixed(4)}"/>`;const r=V(x,y,w,h);
  return `<Slice uniqueId="${id++}"><Params name="Common">${P('Name','STRING',n)}${P('Enabled','BOOL',1)}</Params><Params name="Input"><ParamChoice name="Input Source" default="0:1" value="0:1" storeChoices="0"/></Params><Params name="Output">${P('Flip','UINT8',0)}</Params><InputRect orientation="0">${r}</InputRect><OutputRect orientation="0">${r}</OutputRect><Warper><Params name="Warper"><ParamChoice name="Point Mode" default="PM_LINEAR" value="PM_LINEAR" storeChoices="0"/>${P('Flip','UINT8',0)}</Params><BezierWarper controlWidth="4" controlHeight="4"><vertices>${mesh}</vertices></BezierWarper><Homography><src>${r}</src><dst>${r}</dst></Homography></Warper></Slice>`}).join('\n');
-const nm=`TileSmith ${S.cw}x${S.ch}`,scr=S.ndiName||'TileSmith';
+const nm=`TileSmith${cvTag()} ${S.cw}x${S.ch}`,scr=outName(S.ndiName||'TileSmith',cc);
 return `<?xml version="1.0" encoding="UTF-8"?>\n<XmlState name="${esc(nm)}">\n<versionInfo name="Resolume Arena" majorVersion="7" minorVersion="27" microVersion="0" revision="14395"/>\n<ScreenSetup name="ScreenSetup"><Params name="ScreenSetupParams"/><CurrentCompositionTextureSize width="${S.cw}" height="${S.ch}"/><screens>\n<Screen name="${esc(scr)}" uniqueId="${id++}"><Params name="Params">${P('Name','STRING',scr)}${P('Enabled','BOOL',1)}${P('Hidden','BOOL',0)}</Params><layers>\n${sl}\n</layers><OutputDevice><OutputDeviceVirtual name="${esc(nm)}" deviceId="VirtualTileSmith" width="${S.cw}" height="${S.ch}"/></OutputDevice></Screen>\n</screens></ScreenSetup></XmlState>\n`}
-function exportRes(){const xml=resolumeXML(),fn=`tilesmith-${S.cw}x${S.ch}.xml`,msg=t=>toast(t);
+function exportRes(){eachCv(()=>exportRes1())}
+function exportRes1(){const xml=resolumeXML(),fn=`tilesmith${cvTag()}-${S.cw}x${S.ch}.xml`,msg=t=>toast(t);
 if(DESK){try{const fs=require('fs'),path=require('path'),os=require('os'),dir=path.join(os.homedir(),'Documents','Resolume Arena','Presets','Advanced Output');
  if(fs.existsSync(dir)){const f=path.join(dir,fn);fs.writeFileSync(f,xml);msg('Saved to your Resolume presets: '+f+'. In Arena open Output > Advanced Output and pick it from the preset list, then assign the screen to your real output.');try{require('electron').shell.showItemInFolder(f)}catch(e){}return}}catch(e){}}
 if(MOBILE){mobSave(new Blob([xml],{type:'application/xml'}),fn,`Saved ${fn}. Copy it to Documents/Resolume Arena/Presets/Advanced Output on the computer that runs Resolume, then pick it in Arena's Advanced Output preset list.`);return}
@@ -1377,11 +1424,11 @@ koffi.struct('NDIlib_video_frame_v2_t',{xres:'int',yres:'int',FourCC:'int',frame
 if(!lib.func('bool NDIlib_initialize()')())throw Error('NDI® initialize failed (CPU not supported?)');
 return NL={create:lib.func('void *NDIlib_send_create(const NDIlib_send_create_t *p)'),send:lib.func('void NDIlib_send_send_video_v2(void *i, const NDIlib_video_frame_v2_t *f)'),destroy:lib.func('void NDIlib_send_destroy(void *i)')}}
 function ndiLabel(){document.querySelectorAll('[data-a=ndi]').forEach(b=>{b.textContent=nd?'Stop NDI®':'Start NDI®';b.classList.toggle('live',!!nd);b.setAttribute('aria-pressed',!!nd)})}
-function ndiStop(){if(!nd)return;clearInterval(nd.st);const i=nd.inst;nd=null;try{NL.destroy(i)}catch(e){}ndiLabel();outSync()}
+function ndiStop(){if(!nd)return;clearInterval(nd.st);const per=nd.per;nd=null;per.forEach(s=>{try{NL.destroy(s.inst)}catch(e){}});ndiLabel();outSync()}
 function toggleNdi(){if(!DESK){ndiMsg('Real NDI® output is only available in the desktop app (Windows or Mac).',1);return}
 if(nd){ndiStop();ndiMsg('NDI® stopped');toast('NDI® stopped.',3000);return}
 try{const L=ndiLoad(),inst=L.create({p_ndi_name:S.ndiName||'TileSmith-LED-Out',p_groups:null,clock_video:false,clock_audio:false});if(!inst)throw Error('Could not create NDI® sender');
-ndiBegin(inst,L.send);ndiMsg('● Broadcasting NDI® source: '+S.ndiName+' ('+NDI_FROM+')');toast('● NDI® source '+(S.ndiName||'TileSmith-LED-Out')+' is live.',4000)}catch(e){nd=null;ndiLabel();ndiMsg(String(e.message||e),1)}}
+ndiBegin(L,inst);ndiMsg('● Broadcasting NDI® source: '+S.ndiName+' ('+NDI_FROM+')');toast('● NDI® source '+(S.ndiName||'TileSmith-LED-Out')+' is live.',4000)}catch(e){nd=null;ndiLabel();ndiMsg(String(e.message||e),1)}}
 // NDI frame rates as NDI expects them (numerator/denominator)
 const NFR={60:[60000,1000],59.94:[60000,1001],50:[50000,1000],30:[30000,1000],29.97:[30000,1001],25:[25000,1000]};
 const ndiRate=()=>NFR[S.ndiFps]?+S.ndiFps:60;
@@ -1394,15 +1441,19 @@ function ocRun(){if(OC.on||!(nd||shOut))return;OC.on=true;OC.next=performance.no
 function ocTick(){if(!(nd||shOut)){OC.on=false;return}const now=performance.now(),F=1000/outRate();
 try{if(!REC)tick(now)}catch(e){console.error(e)}ndiFrame();shFrame();if(!(nd||shOut)){OC.on=false;return}
 OC.next+=F;const t=performance.now();if(OC.next<t-F)OC.next=t;OC.tm=setTimeout(ocTick,Math.max(0,OC.next-t))}
-function ndiBegin(inst,send){nd={inst,send,n:0,sent:-1};outSync();ocRun();
-nd.st=setInterval(()=>{if(nd){const f=v=>v.toFixed(1);ndiMsg('● NDI® '+S.ndiName+' · '+nd.n+' fps · '+M.width+'×'+M.height+' · per frame: render '+f(PERF.render)+' ms, read '+f(PERF.read)+' ms, send '+f(PERF.send)+' ms'+(S.ndiIdle&&!animNow()?' · still picture, saving CPU':'')+(document.hidden?' · window hidden':'')+(NDI_FROM?' · '+NDI_FROM:''));nd.n=0}},1000);ndiLabel()}
+function ndiBegin(L,inst){nd={L,send:L.send,per:new Map([[CVS[0],{inst,sent:-1}]]),n:0};outSync();ocRun();
+nd.st=setInterval(()=>{if(nd){const f=v=>v.toFixed(1);ndiMsg('● NDI® '+S.ndiName+(nd.per.size>1?' + '+(nd.per.size-1)+' more (one per canvas)':'')+' · '+nd.n+' fps · '+M.width+'×'+M.height+' · per frame: render '+f(PERF.render)+' ms, read '+f(PERF.read)+' ms, send '+f(PERF.send)+' ms'+(S.ndiIdle&&!animNow()?' · still picture, saving CPU':'')+(document.hidden?' · window hidden':'')+(NDI_FROM?' · '+NDI_FROM:''));nd.n=0}},1000);ndiLabel()}
 // One read of the master canvas per redraw, shared by NDI and the video recorder (a still picture is never re-read).
 let grabIm=null,grabGen=-1;
 function grabFrame(){const W=M.width,H=M.height;if(!grabIm||grabGen!==gen||grabIm.width!==W||grabIm.height!==H){const a=performance.now();grabIm=mc.getImageData(0,0,W,H);ema('read',performance.now()-a);grabGen=gen}return grabIm}
-function ndiFrame(){if(!nd)return;try{const W=M.width,H=M.height;if(W<16||H<16)return;if(S.ndiIdle&&nd.sent===gen)return;
+const outName=(base,i)=>i>0&&CVS[i]?base+' - '+CVS[i].name:base;
+function ndiFrame(){if(!nd)return;try{for(const[cv,s]of nd.per)if(!CVS.includes(cv)){try{NL.destroy(s.inst)}catch(e){}nd.per.delete(cv)}let any=false;
+for(let i=0;i<CVS.length&&nd;i++)withCv(i,()=>{const W=M.width,H=M.height;if(W<16||H<16)return;const cv=CVS[i];let s=nd.per.get(cv);
+ if(!s){const inst=nd.L.create({p_ndi_name:outName(S.ndiName||'TileSmith-LED-Out',i),p_groups:null,clock_video:false,clock_audio:false});if(!inst)throw Error('Could not create the NDI® source for '+cv.name);s={inst,sent:-1};nd.per.set(cv,s)}
+ if(S.ndiIdle&&s.sent===gen)return;
 const im=grabFrame(),fr=NFR[ndiRate()];
 // RGBX: the canvas is always opaque, so NDI skips compressing and sending an alpha channel
-const t0=performance.now();nd.send(nd.inst,{xres:W,yres:H,FourCC:0x58424752,frame_rate_N:fr[0],frame_rate_D:fr[1],picture_aspect_ratio:W/H,frame_format_type:1,timecode:9223372036854775807n,p_data:Buffer.from(im.data.buffer,im.data.byteOffset,im.data.length),line_stride_in_bytes:W*4,p_metadata:null,timestamp:0n});ema('send',performance.now()-t0);nd.n++;nd.sent=gen}
+const t0=performance.now();nd.send(s.inst,{xres:W,yres:H,FourCC:0x58424752,frame_rate_N:fr[0],frame_rate_D:fr[1],picture_aspect_ratio:W/H,frame_format_type:1,timecode:9223372036854775807n,p_data:Buffer.from(im.data.buffer,im.data.byteOffset,im.data.length),line_stride_in_bytes:W*4,p_metadata:null,timestamp:0n});ema('send',performance.now()-t0);s.sent=gen;any=true});if(any&&nd)nd.n++}
 catch(e){ndiStop();ndiMsg('NDI® error: '+(e.message||e),1)}}
 addEventListener('beforeunload',ndiStop);
 // ---------- Spout (Windows) and Syphon (Mac) output (desktop app): shares the master canvas with other programs on
@@ -1441,6 +1492,7 @@ if(SHK=='Spout'){const koffi=require('koffi');let lib;try{lib=koffi.load(f)}catc
  // the object lives in zeroed memory from the process heap (far larger than the class needs) for the whole session
  const k32=koffi.load('kernel32.dll'),heap=k32.func('void *GetProcessHeap()')(),alloc=k32.func('void *HeapAlloc(void *h, uint32_t flags, size_t n)');
  L.obj=alloc(heap,8,1<<20);if(!L.obj)throw Error('Not enough memory for the Spout sender');L.ctor(L.obj);
+ L.alloc=()=>{const o=alloc(heap,8,1<<20);if(!o)throw Error('Not enough memory for another Spout sender');L.ctor(o);return o};
  // Spout writes what it does (graphics card, device, sender) to a log next to TileSmith's settings, for troubleshooting
  try{const path=require('path'),d=path.join(process.env.APPDATA||require('os').homedir(),'TileSmith');require('fs').mkdirSync(d,{recursive:true});L.log=path.join(d,'spout-log.txt');L.logFile(L.obj,L.log,false)}catch(e){L.log=''}
  return SHL=L}
@@ -1464,25 +1516,30 @@ function shUseGpu(L){const want=shGpus().includes(S.shGpu)?S.shGpu:'Automatic',G
  L.want=want;L.gpu=shGpuName(L)||'default graphics card'}
 function shLabel(){document.querySelectorAll('[data-a=share]').forEach(b=>{b.textContent=(shOut?'Stop ':'Start ')+SHN;b.classList.toggle('live',!!shOut);b.setAttribute('aria-pressed',!!shOut)})}
 function shName(){try{return shOut.kind=='Spout'?SHL.getName(SHL.obj)||shOut.name:(shOut.srv&&shOut.srv.name)||shOut.name}catch(e){return shOut.name}}
-function shStop(){if(!shOut)return;const s=shOut;shOut=null;clearInterval(s.st);try{if(s.kind=='Spout')SHL.release(SHL.obj);else if(s.srv)s.srv.dispose()}catch(e){}shLabel();outSync()}
+function shRel(s,r){try{if(s.kind=='Spout')r.L.release(r.L.obj);else if(r.srv)r.srv.dispose()}catch(e){}}
+function shMk(i){const s=shOut,name=outName(s.name,i),r={sent:-1,fail:0,tot:0};
+ if(s.kind=='Spout'){const L2=Object.create(SHL);L2.obj=SHL.alloc();L2.want=null;shUseGpu(L2);L2.setFormat(L2.obj,28);L2.setName(L2.obj,name);r.L=L2}else r.srv=new SHL.A.MetalServer(name);return r}
+function shStop(){if(!shOut)return;const s=shOut;shOut=null;clearInterval(s.st);s.per.forEach(r=>shRel(s,r));shLabel();outSync()}
 function toggleShare(){if(!SHK){shMsg('Spout (Windows) and Syphon (Mac) output is only available in the desktop app.',1);return}
 if(shOut){shStop();shMsg(SHN+' stopped');toast(SHN+' stopped.',3000);return}
 if(!SH_OK){shMsg(SH_TXT.state,1);return}
-try{const L=shLoad(),name=String(S.shName||'').trim()||'TileSmith',s={kind:SHK,name,n:0,tot:0,sent:-1,fail:0};
- if(SHK=='Spout'){shUseGpu(L);L.setFormat(L.obj,28);L.setName(L.obj,name)}else s.srv=new L.A.MetalServer(name);// 28 = DXGI_FORMAT_R8G8B8A8_UNORM, the canvas byte order
+try{const L=shLoad(),name=String(S.shName||'').trim()||'TileSmith',s={kind:SHK,name,n:0,tot:0,per:new Map()},r={sent:-1,fail:0,tot:0};
+ if(SHK=='Spout'){shUseGpu(L);L.setFormat(L.obj,28);L.setName(L.obj,name);r.L=L}else r.srv=new L.A.MetalServer(name);s.per.set(CVS[0],r);// 28 = DXGI_FORMAT_R8G8B8A8_UNORM, the canvas byte order
  shOut=s;s.st=setInterval(shStatus,1000);shLabel();outSync();ocRun();shMsg('● Starting '+SHN+' '+name+'…');toast('● '+SHN+' '+(SHK=='Spout'?'sender':'server')+' '+name+' is live.',4000)}
 catch(e){shOut=null;shLabel();outSync();shMsg(String(e.message||e),1)}}
 function shStatus(){if(!shOut)return;const f=v=>v.toFixed(1),y=shOut.kind=='Syphon';
-shMsg('● '+shOut.kind+' '+(y?'server':'sender')+' "'+shName()+'" · '+shOut.n+' fps · '+M.width+'×'+M.height+' · per frame: send '+f(PERF.shsend||0)+' ms'+(y&&!shOut.hc?' · no app receiving yet':'')+(S.shIdle&&!animNow()?' · still picture, saving CPU':'')+(!y&&SHL&&SHL.gpu?' · '+SHL.gpu:'')+(document.hidden?' · window hidden':''));shOut.n=0}
+shMsg('● '+shOut.kind+' '+(y?'server':'sender')+' "'+shName()+'"'+(shOut.per.size>1?' + '+(shOut.per.size-1)+' more (one per canvas)':'')+' · '+shOut.n+' fps · '+M.width+'×'+M.height+' · per frame: send '+f(PERF.shsend||0)+' ms'+(y&&!shOut.hc?' · no app receiving yet':'')+(S.shIdle&&!animNow()?' · still picture, saving CPU':'')+(!y&&SHL&&SHL.gpu?' · '+SHL.gpu:'')+(document.hidden?' · window hidden':''));shOut.n=0}
 // Sends the frame NDI® and video export also use (one canvas read per redraw).
-function shFrame(){if(!shOut)return;const s=shOut;try{const W=M.width,H=M.height;if(W<16||H<16)return;
-if(s.kind=='Syphon'){s.hc=!!s.srv.hasClients;if(!s.hc&&s.tot>0){s.sent=-1;return}}// Syphon: no app receiving, nothing to send (sent at once when one connects)
-if(S.shIdle&&s.sent===gen)return;
-const im=grabFrame(),t0=performance.now();
-if(s.kind=='Spout'){const ok=SHL.send(SHL.obj,Buffer.from(im.data.buffer,im.data.byteOffset,im.data.length),W,H,0);
- if(!ok){if(++s.fail>=(s.tot?120:3))throw Error('Spout could not send frames on '+(SHL.gpu||'the graphics card')+'. Pick another card under Spout options › Graphics card, or update the graphics driver.'+(SHL.log?' Details: '+SHL.log:''));return}s.fail=0}
-else s.srv.publishImageData(im.data,{x:0,y:0,width:W,height:H},{width:W,height:H},false);
-ema('shsend',performance.now()-t0);s.n++;s.tot++;s.sent=gen}
+function shFrame(){if(!shOut)return;const s=shOut;try{for(const[cv,r]of s.per)if(!CVS.includes(cv)){shRel(s,r);s.per.delete(cv)}let any=false;
+for(let i=0;i<CVS.length&&shOut;i++)withCv(i,()=>{const W=M.width,H=M.height;if(W<16||H<16)return;const cv=CVS[i];let r=s.per.get(cv);if(!r){r=shMk(i);s.per.set(cv,r)}
+ if(s.kind=='Syphon'){r.hc=!!r.srv.hasClients;if(i==0)s.hc=r.hc;if(!r.hc&&r.tot>0){r.sent=-1;return}}// Syphon: no app receiving, nothing to send (sent at once when one connects)
+ if(S.shIdle&&r.sent===gen)return;
+ const im=grabFrame(),t0=performance.now();
+ if(s.kind=='Spout'){const ok=r.L.send(r.L.obj,Buffer.from(im.data.buffer,im.data.byteOffset,im.data.length),W,H,0);
+  if(!ok){if(++r.fail>=(r.tot?120:3))throw Error('Spout could not send frames on '+(r.L.gpu||'the graphics card')+'. Pick another card under Spout options › Graphics card, or update the graphics driver.'+(SHL.log?' Details: '+SHL.log:''));return}r.fail=0}
+ else r.srv.publishImageData(im.data,{x:0,y:0,width:W,height:H},{width:W,height:H},false);
+ ema('shsend',performance.now()-t0);r.tot++;r.sent=gen;any=true});
+if(any&&shOut){s.n++;s.tot++}}
 catch(e){shStop();shMsg(SHN+' error: '+(e.message||e),1)}}
 addEventListener('beforeunload',shStop);
 function showAbout(on){const o=$('#about');o.classList.toggle('on',!!on);if(on)$('#cls').focus();else{const b=document.querySelector('[data-a=about]');b&&b.focus()}}
@@ -1516,9 +1573,11 @@ async function exportVideos(){if(VQ||REC||LOOPREC){if(VQ)VQ.cancel=true;if(REC)e
  const dvd=S.vDvd&&DESK;if(!S.vLed&&!dvd){recUI(S.vDvd?'DVD logo video export is only available in the desktop app. Tick LED build.':'Tick LED build or DVD logo first.');return}
  if(dvd&&!(S.dvdOn&&S.dvdLoop)&&!S.vLed){recUI('Turn on "Bounce a logo around the screen" and "Perfect loop" (DVD screensaver) first.');return}
  const Q=VQ={cancel:false},wait=f=>new Promise(r=>{const t=setInterval(()=>{if(f()){clearInterval(t);r()}},250)});recUI('');
- try{if(S.vLed){recToggle();if(!REC)Q.cancel=true;else await wait(()=>!REC&&!RECBUSY)}
-  if(dvd&&!Q.cancel){if(!(S.dvdOn&&S.dvdLoop))recUI((S.vLed?'The LED build video is done. ':'')+'The DVD logo needs "Bounce a logo around the screen" and "Perfect loop" turned on (DVD screensaver).');else{await dvdExportLoop()}}}
- finally{VQ=null;recUI()}}
+ const start=cc,idx=CVS.length>1?CVS.map((c,i)=>i):[cc];
+ try{for(const ci of idx){if(Q.cancel)break;if(ci!==cc){switchTo(ci,true);fit()}
+  if(S.vLed){recToggle();if(!REC)Q.cancel=true;else await wait(()=>!REC&&!RECBUSY)}
+  if(dvd&&!Q.cancel){if(!(S.dvdOn&&S.dvdLoop))recUI((S.vLed?'The LED build video is done. ':'')+'The DVD logo needs "Bounce a logo around the screen" and "Perfect loop" turned on (DVD screensaver).');else{await dvdExportLoop()}}}}
+ finally{VQ=null;if(cc!==start&&CVS[start])switchTo(start,true);recUI()}}
 // Video export formats. Everything is padded to the size the codec needs (HAP: multiple of 4, others: even) and
 // converted with the BT.709 matrix and tagged, so colours match the canvas in Resolume, QuickTime, VLC and browsers.
 const C709=['-colorspace','bt709','-color_primaries','bt709','-color_trc','bt709'],VF=(m,f)=>`pad=ceil(iw/${m})*${m}:ceil(ih/${m})*${m}:0:0:black`+(f?`,scale=out_color_matrix=bt709:out_range=tv,format=${f}`:'');
@@ -1540,7 +1599,7 @@ for(const f of c){try{if(!fs.existsSync(f))continue;const o=cp.spawnSync(f,['-hi
 throw Error(`No ffmpeg with the ${vc.enc} encoder (${S.vCodec}) found. `+(MAC?'Install one (see BUILD-MAC.txt step 5), then try again.':LIN?'Install ffmpeg with your package manager (for example: sudo apt install ffmpeg), then try again.':'Put a "full" ffmpeg.exe (gyan.dev) next to the app and try again.'))}
 function recStartFF(r,ff){const fs=require('fs'),os=require('os'),path=require('path'),cp=require('child_process'),W=M.width,H=M.height,z=n=>String(n).padStart(2,'0'),d=new Date();
 const dir=path.join(os.homedir(),MAC?'Movies':'Videos','TileSmith');fs.mkdirSync(dir,{recursive:true});
-const out=path.join(dir,`tilesmith-build-${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}.${vcodec().ext}`);
+const out=path.join(dir,`tilesmith-build-${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}${cvTag()}.${vcodec().ext}`);
 const pr=cp.spawn(ff,['-y','-hide_banner','-loglevel','error','-f','rawvideo','-pix_fmt','rgba','-s',W+'x'+H,'-framerate','60','-i','pipe:0',...vcodec().args(),'-an',out],{windowsHide:true,stdio:['pipe','ignore','pipe']});
 Object.assign(r,{pr,out,err:'',W,H,written:0,closed:false});recBeg(r);pr.stderr.on('data',x=>r.err+=x);pr.stdin.on('error',()=>{});
 pr.on('error',e=>{r.closed=true;recEnd(r);if(REC===r){endRec(false);recUI('ffmpeg error: '+e.message)}});
@@ -1564,7 +1623,7 @@ try{const r={ph:'blank',t0:performance.now(),save:false};S.play=true;reset();REC
 function mrType(){if(typeof MediaRecorder=='undefined'||!M.captureStream)return '';for(const t of ['video/mp4;codecs=avc1.640033','video/mp4;codecs=avc1.4d0033','video/mp4;codecs=avc1','video/mp4'])try{if(MediaRecorder.isTypeSupported(t))return t}catch(e){}return ''}
 function recStartMR(r){const type=mrType();if(!type)throw Error('this device cannot record MP4 video.');
  const W=M.width,H=M.height,st=M.captureStream(60),z=n=>String(n).padStart(2,'0'),d=new Date(),
-  name=`tilesmith-build-${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}.mp4`,
+  name=`tilesmith-build-${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}${cvTag()}.mp4`,
   mr=new MediaRecorder(st,{mimeType:type,videoBitsPerSecond:Math.round(Math.min(40e6,Math.max(4e6,W*H*60*.12)))}),out=TSM.openStream(name);
  Object.assign(r,{kind:'mr',mr,st,out,name,W,H});recBeg(r);
  r.done=save=>{if(r.fin)return;r.fin=true;recEnd(r);try{st.getTracks().forEach(t=>t.stop())}catch(e){}TSM.keepAwake(false);
@@ -1662,7 +1721,7 @@ async function dvdExportLoop(){if(LOOPREC){LOOPREC.cancel=true;return}const say=
  const spr=dvdSpr(null);if(!spr){say('The logo is still loading. Try again in a moment.');return}
  const fs=require('fs'),os=require('os'),path=require('path'),cp=require('child_process'),W=M.width,H=M.height,vc=vcodec(),z=n=>String(n).padStart(2,'0'),d=new Date(),Tl=Math.max(4,Math.round(S.dvdLoopLen)),N=Tl*60;
  const dir=path.join(os.homedir(),MAC?'Movies':'Videos','TileSmith');fs.mkdirSync(dir,{recursive:true});
- const out=path.join(dir,`tilesmith-dvd-loop-${Tl}s-${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}.${vc.ext}`);
+ const out=path.join(dir,`tilesmith-dvd-loop-${Tl}s-${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}${z(d.getSeconds())}${cvTag()}.${vc.ext}`);
  const pr=cp.spawn(ff,['-y','-hide_banner','-loglevel','error','-f','rawvideo','-pix_fmt','rgba','-s',W+'x'+H,'-framerate','60','-i','pipe:0',...vc.args(),'-an',out],{windowsHide:true,stdio:['pipe','ignore','pipe']});
  let err='';pr.stderr.on('data',x=>err+=x);pr.stdin.on('error',()=>{});const closed=new Promise(r=>{pr.on('close',c=>r(c));pr.on('error',e=>{err+=e.message;r(-1)})});
  const R=LOOPREC={cancel:false},btn=null,keepT=T,ar=spr.width/spr.height;outSync();if(btn)btn.textContent='■ Cancel loop export';
@@ -1687,20 +1746,23 @@ const MOVE_PAT=['sweep'];let stepK=-1,stepK2=-1;
 function animNow(){if(S.dvdOn||REC||S.play&&!allDone())return true;if(sims.some(x=>x.sp&&x.sp.length))return true;return walls.some(w=>MOVE_PAT.includes(w.pat)||scrolls(w))}
 function busyNow(now){return !!drag||now-lastAct<1200||animNow()}
 function tick(now){if(LOOPREC)return;const dt=Math.min(.1,Math.max(0,(now-lastStep)/1000));lastStep=now;
- T=REC&&REC.ph=='hold'?REC.tf:now/1000;if(REC)recTick();fit_if();step(dt);dvdStep(dt);
- if(walls.some(w=>w.pat=='cycle')){const k=Math.floor(T/STEP_S);if(k!==stepK){stepK=k;forceRen=true}}
- if(walls.some(w=>w.pat=='tileshade-cycle')){const k=Math.floor(T/TC_STEP);if(k!==stepK2){stepK2=k;forceRen=true}if(T-k*TC_STEP>TC_STEP-TC_SLIDE-.02)forceRen=true}
- if(forceRen||busyNow(now)||now-lastRen>=250){forceRen=false;const a=performance.now();render();ema('render',performance.now()-a);PERF.frames++;gen++;lastRen=now}}
+ T=REC&&REC.ph=='hold'?REC.tf:now/1000;if(REC)recTick();
+ const k1=Math.floor(T/STEP_S),c1=k1!==stepK;stepK=k1;const k2=Math.floor(T/TC_STEP),c2=k2!==stepK2||T-k2*TC_STEP>TC_STEP-TC_SLIDE-.02;stepK2=k2;
+ const per=now-lastRen>=250,fr=forceRen;forceRen=false;let did=false;
+ eachCv(()=>{fit_if();step(dt);dvdStep(dt);const need=fr||forceRen||per||busyNow(now)||c1&&walls.some(w=>w.pat=='cycle')||c2&&walls.some(w=>w.pat=='tileshade-cycle');forceRen=false;
+  if(need){const a=performance.now();render();ema('render',performance.now()-a);PERF.frames++;gen++;did=true}});
+ if(did){RG++;lastRen=now}}
 function loop(){requestAnimationFrame(loop);try{const now=performance.now();
  if(!OC.on||REC){const F=1000/60;if(now>=nextT-F*.25){tick(now);nextT+=F;if(nextT<now)nextT=now+F}}
- if(gen!==vpGen||now-lastAct<1200){vpDraw();vpGen=gen}}catch(e){console.error(e)}}
+ if(RG!==vpGen||now-lastAct<1200){vpDraw();vpGen=RG}}catch(e){console.error(e)}}
 const SKEY='tilesmith-state-v1',SKIP=['patImg','boxImg','play'];let saveT=null;
 function stFile(){const path=require('path');const d=MAC?path.join(require('os').homedir(),'Library','Application Support','TileSmith'):LIN?path.join(process.env.XDG_CONFIG_HOME||path.join(require('os').homedir(),'.config'),'TileSmith'):path.join(process.env.APPDATA||require('os').homedir(),'TileSmith');return{d,f:path.join(d,'state.json')}}
 // Everything that makes up the project (settings, every wall, wiring, half tiles, the selected wall, uploaded images, the crew and the vest logo); images are stored as data URLs.
-function stateObj(){storeWall();const o={sv:23,S:{},walls:walls.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?(w[k]&&w[k].__src||null):w[k]);return x}),cur,crew:crew.map(c=>[c[0],c[1],c[2]&&c[2].__src||null,c[3]]),logo:logoImg&&logoImg.__src||null,dvd:dvdImg&&dvdImg.__src||null,ut:(()=>{const u={};utInit();walls.forEach(w=>{if(UT[w.preset])u[w.preset]=UT[w.preset]});if(UT[S.preset])u[S.preset]=UT[S.preset];return u})()};for(const k in S)if(!SKIP.includes(k))o.S[k]=S[k];return o}
+const serW=ws=>ws.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?(w[k]&&w[k].__src||null):w[k]);return x});
+function stateObj(){storeWall();cvStore();const o={sv:23,S:{},walls:serW(walls),cur,ac:cc,cvs:CVS.map((c,i)=>({name:c.name,cw:i==cc?S.cw:c.cw,ch:i==cc?S.ch:c.ch,cur:i==cc?cur:c.cur,walls:i==cc?null:serW(c.walls)})),crew:crew.map(c=>[c[0],c[1],c[2]&&c[2].__src||null,c[3]]),logo:logoImg&&logoImg.__src||null,dvd:dvdImg&&dvdImg.__src||null,ut:(()=>{const u={};utInit();(CVS.length?CVS.flatMap((c,i)=>i==cc?walls:c.walls):walls).forEach(w=>{if(UT[w.preset])u[w.preset]=UT[w.preset]});if(UT[S.preset])u[S.preset]=UT[S.preset];return u})()};for(const k in S)if(!SKIP.includes(k))o.S[k]=S[k];return o}
 function saveNow(){if(window.__noSave)return;let o;try{o=stateObj()}catch(e){return}
 const w=obj=>{const j=JSON.stringify(obj);if(DESK){const{d,f}=stFile(),fs=require('fs');fs.mkdirSync(d,{recursive:true});fs.writeFileSync(f,j)}else localStorage.setItem(SKEY,j)};
-try{w(o)}catch(e){try{o.walls.forEach(x=>{x.patImg=null;x.boxImg=null});o.logo=null;o.dvd=null;o.crew.forEach(c=>c[2]=null);w(o)}catch(e2){}}}
+try{w(o)}catch(e){try{o.walls.forEach(x=>{x.patImg=null;x.boxImg=null});(o.cvs||[]).forEach(c=>(c.walls||[]).forEach(x=>{x.patImg=null;x.boxImg=null}));o.logo=null;o.dvd=null;o.crew.forEach(c=>c[2]=null);w(o)}catch(e2){}}}
 function saveSoon(){clearTimeout(saveT);saveT=setTimeout(saveNow,400)}
 // ---------- undo / redo: the last 20 changes. A snapshot holds the whole design (settings, every wall, the selected wall, crew, logos).
 // Changes are noticed after every edit (typing, buttons, the end of a drag) by comparing the new snapshot with the previous one.
@@ -1708,10 +1770,13 @@ const S_DEF=JSON.parse(JSON.stringify(S));
 const UN={st:[],rd:[],last:null,key:'',lbl:'',t:0,MAX:20,busy:false,dm:''},UNIMG=new WeakMap;let UNN=0;
 const unImg=o=>{if(!UNIMG.has(o))UNIMG.set(o,++UNN);return UNIMG.get(o)},cl=v=>{try{return structuredClone(v)}catch(e){return JSON.parse(JSON.stringify(v))}};
 function unSnap(){storeWall();const s={};for(const k in S)if(!SKIP.includes(k))s[k]=cl(S[k]);
- return{S:s,walls:walls.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?w[k]:cl(w[k]));return x}),cur,crew:crew.map(c=>c.slice()),logo:logoImg,dvd:dvdImg}}
-const unKey=sn=>{const o=Object.assign({},sn);delete o.cur;return JSON.stringify(o,(k,v)=>v&&typeof Node!='undefined'&&v instanceof Node?'img'+unImg(v):v)};
+ return{S:s,walls:walls.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?w[k]:cl(w[k]));return x}),cur,crew:crew.map(c=>c.slice()),logo:logoImg,dvd:dvdImg,
+  cv:{ac:cc,list:CVS.map((c,i)=>({o:c,name:c.name,cw:i==cc?S.cw:c.cw,ch:i==cc?S.ch:c.ch,cur:i==cc?cur:c.cur,walls:i==cc?null:c.walls.map(cloneWall)}))}}}
+const unKey=sn=>{const o=Object.assign({},sn);delete o.cur;return JSON.stringify(o,(k,v)=>k=='o'?undefined:v&&typeof Node!='undefined'&&v instanceof Node?'img'+unImg(v):v)};
 function unRestore(sn){UN.busy=true;try{for(const k in sn.S)if(!SKIP.includes(k))S[k]=cl(sn.S[k]);
  walls=sn.walls.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?w[k]:cl(w[k]));return x});crew=sn.crew.map(c=>c.slice());logoImg=sn.logo;dvdImg=sn.dvd;
+ if(sn.cv&&sn.cv.list.length){CVS=sn.cv.list.map((e,i)=>{const c=e.o;c.name=e.name;if(i!==sn.cv.ac){c.cw=e.cw;c.ch=e.ch;c.cur=e.cur;c.walls=e.walls.map(cloneWall)}return c});cc=sn.cv.ac;const a=CVS[cc];
+  M=a.M;mc=a.mc;gen=a.gen;grabIm=a.grabIm;grabGen=a.grabGen;dvdCanvasSt=a.dvdSt;sims=a.sims;loopW=a.loopW;crewNext=a.crewNext;a.walls=walls;CVS.forEach((c,i)=>{if(i!=cc)withCv(i,()=>showAll())})}
  loadWall(sn.cur);halfEdit=false;goneEdit=false;wiring=false;pwiring=false;drag=null;showAll();crewUI();sync();fit_if();saveSoon()}finally{UN.busy=false}}
 function unBase(){UN.last=unSnap();UN.key=unKey(UN.last);UN.lbl='';UN.t=0}
 // called after an edit: record it as one undo step (typing in the same box within 1.5 s counts as one step)
@@ -1739,7 +1804,7 @@ addEventListener('keydown',e=>{const t=e.target,tx=t&&(t.tagName=='TEXTAREA'||t.
 function newCanvasAsk(){let o=$('#newc');if(o)o.remove();o=document.createElement('div');o.id='newc';o.style.cssText='position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center';
  o.innerHTML='<div role="dialog" aria-modal="true" aria-label="New Project" style="background:var(--pn,#1c1c1c);color:var(--tx,#eee);border:1px solid #555;border-radius:10px;padding:18px;max-width:420px;margin:16px"><h3 style="margin:0 0 8px">Start a new project?</h3><p style="margin:0 0 14px;font-size:14px">This erases every wall, wiring, half tile, pattern and setting (including output, label and video options) and starts from a blank canvas. You can bring it back with Undo.</p><div class="row" style="justify-content:flex-end"><button data-n="0">Cancel</button><button data-n="1" style="border-color:#e5484d;color:#e5484d">Erase everything</button></div></div>';
  document.body.appendChild(o);o.addEventListener('click',e=>{const b=e.target.closest('button[data-n]');if(!b&&e.target!==o)return;o.remove();if(b&&b.dataset.n=='1')newCanvas()});o.querySelector('button').focus()}
-function newCanvas(){stopMarking();for(const k in S)if(!SKIP.includes(k))S[k]=cl(S_DEF[k]);S.patImg=null;S.boxImg=null;walls=[wallFromS()];cur=0;crew=defCrew();logoImg=null;dvdImg=null;wiring=false;pwiring=false;halfEdit=false;goneEdit=false;
+function newCanvas(){stopMarking();document.querySelectorAll('#left details').forEach(d=>d.open=false);for(const k in S)if(!SKIP.includes(k))S[k]=cl(S_DEF[k]);S.patImg=null;S.boxImg=null;walls=[wallFromS()];cur=0;crew=defCrew();logoImg=null;dvdImg=null;wiring=false;pwiring=false;halfEdit=false;goneEdit=false;CVS=[cvFromGlobals('Canvas 1')];cc=0;
  showAll();crewUI();sync();fit_if();fit();saveSoon();setTimeout(()=>unCheck('New Project'),0)}
 function stopMarking(){halfEdit=false}
 // ---------- Save / Open project: one .tilesmith file (JSON) with everything, including uploaded logos, patterns, DVD image and the crew
@@ -1757,7 +1822,13 @@ function openProject(o,name){stopMarking();for(const k in S)if(!SKIP.includes(k)
  showAll();crewUI();sync();fit_if();fit();forceRen=true;saveSoon();setTimeout(()=>unCheck('Open project'),0);toast('Opened '+name,4000)}
 function loadState(){let j=null;try{if(DESK){const{f}=stFile(),fs=require('fs');j=fs.existsSync(f)?fs.readFileSync(f,'utf8'):null}else j=localStorage.getItem(SKEY)}catch(e){}
 if(!j)return;try{applyState(JSON.parse(j))}catch(e){console.warn('state load failed',e)}}
-function applyState(o){{utFromProject(o);if(o.S&&typeof o.S.pdist=='string')o.S.pdist=o.S.pdist!='None';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}
+function applyState(o){const nm0='Canvas 1';applyCore(o);const LIMc=(k,v)=>Math.max(LIM[k][0],Math.min(LIM[k][1],isFinite(+v)?Math.round(+v):1920));
+ if(Array.isArray(o.cvs)&&o.cvs.length){const ac=Math.max(0,Math.min(o.cvs.length-1,o.ac|0)),A={walls,cur},sk={};WK.forEach(k=>sk[k]=S[k]);const list=[];
+  o.cvs.forEach((x,i)=>{x=x||{};const nm=String(x.name||'Canvas '+(i+1)).slice(0,40);if(i==ac){list.push(null);return}let ws=[wallDef()],c0=0;
+   if(Array.isArray(x.walls)&&x.walls.length){applyCore({sv:o.sv,S:{},walls:x.walls,cur:x.cur});ws=walls;c0=cur}list.push(cvMake(nm,LIMc('cw',x.cw),LIMc('ch',x.ch),ws,c0))});
+  walls=A.walls;cur=A.cur;WK.forEach(k=>S[k]=sk[k]);list[ac]=cvFromGlobals(String(o.cvs[ac]&&o.cvs[ac].name||'Canvas '+(ac+1)).slice(0,40));CVS=list;cc=ac;CVS.forEach((c,i)=>{if(i!=cc)withCv(i,()=>showAll())})}
+ else{CVS=[cvFromGlobals(nm0)];cc=0}}
+function applyCore(o){{utFromProject(o);if(o.S&&typeof o.S.pdist=='string')o.S.pdist=o.S.pdist!='None';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}
 const mk=src=>{if(!src)return null;const im=new Image();im.__src=src;im.onload=()=>{forceRen=true};im.src=src;return im};
 if(Array.isArray(o.crew)&&o.crew.length)crew=o.crew.map((c,i)=>[String(c[0]||''),c[1]||'#e0ac69',mk(c[2]),c[3]||HAIR[i%HAIR.length]]);
 if(o.logo)logoImg=mk(o.logo);if(o.dvd){dvdImg=mk(o.dvd);dvdImg.__id=++imgId}
@@ -1774,6 +1845,6 @@ function resetSaved(){window.__noSave=true;try{if(DESK){const{f}=stFile();requir
 ['input','change','click','pointerup'].forEach(ev=>document.addEventListener(ev,saveSoon));
 addEventListener('beforeunload',saveNow);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 $('#rst').onclick=()=>{if(confirm('Reset all saved settings, crew and uploads to defaults?'))resetSaved()};
-loadState();if(!PROC.hasOwnProperty(S.proc))S.proc='None';if(SHK=='Spout'&&!shGpus().includes(S.shGpu))S.shGpu='Automatic';if(procOn()&&!S.ppx&&PROC[S.proc].px)applySpec();
-build();showAll();M.width=S.cw;M.height=S.ch;fit();unBase();unUI();requestAnimationFrame(loop);addEventListener('resize',()=>{fit();ddClose()});$('#bar').addEventListener('scroll',ddClose,{passive:true});
+CVS=[cvFromGlobals('Canvas 1')];cc=0;loadState();if(!PROC.hasOwnProperty(S.proc))S.proc='None';if(SHK=='Spout'&&!shGpus().includes(S.shGpu))S.shGpu='Automatic';if(procOn()&&!S.ppx&&PROC[S.proc].px)applySpec();
+build();showAll();CVS.forEach((c,i)=>{if(i!=cc){c.M.width=c.cw;c.M.height=c.ch}});M.width=S.cw;M.height=S.ch;fit();unBase();unUI();requestAnimationFrame(loop);addEventListener('resize',()=>{fit();ddClose()});$('#bar').addEventListener('scroll',ddClose,{passive:true});
 </script></body></html>
