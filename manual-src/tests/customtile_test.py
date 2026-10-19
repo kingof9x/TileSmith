@@ -9,8 +9,15 @@ async def main():
         ev=pg.evaluate
         # editing a built-in model turns it into Custom, brand menu says Custom, save box shows
         await ev("()=>{brandPick('Absen');const e=document.querySelector('[data-k=kg]');e.value='9.9';e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))}")
-        r=await ev("()=>[S.preset,document.querySelector('[data-brand]').value,getComputedStyle(document.querySelector('#utBox')).display]"); print(r); assert r[0]=='Custom' and r[1]=='Custom' and r[2]!='none',r
+        r=await ev("()=>[S.preset,document.querySelector('[data-brand]').value,getComputedStyle(document.querySelector('#utBox')).display,!!UT[S.preset],JSON.parse(localStorage.getItem('tilesmith-tiles-v1'))[S.preset]]"); print(r)
+        assert r[0]=='Polaris PL2.5 Pro (custom)' and r[1]=='Custom' and r[2]!='none' and r[3] and r[4][5]==9.9,r
+        # a second change updates the same tile instead of making another
+        await ev("()=>{const e=document.querySelector('[data-k=wmax]');e.value='150';e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))}")
+        assert await ev("()=>Object.keys(UT).length==1&&UT[S.preset][6]==150")
+        # rename it
         await ev("()=>{const e=document.querySelector('#utName');e.value='Venue Panel 2.9';document.querySelector('[data-a=utsave]').click()}"); await pg.wait_for_timeout(200)
+        assert await ev("()=>!UT['Polaris PL2.5 Pro (custom)']&&walls[cur].preset=='Venue Panel 2.9'")
+        await ev("()=>{const e=document.querySelector('[data-k=wmax]');e.value='128';e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))}")
         r=await ev("()=>[S.preset,P['Venue Panel 2.9'],JSON.parse(localStorage.getItem('tilesmith-tiles-v1'))['Venue Panel 2.9'][5],[...document.querySelectorAll('[data-k=preset] option')].map(o=>o.value)]"); print(r)
         assert r[0]=='Venue Panel 2.9' and r[2]==9.9 and 'Venue Panel 2.9' in r[3]
         # built-in name refused / brand prefix gets My

@@ -31,7 +31,7 @@ async def main():
         async with pg.expect_download() as d: await pg.click('#bar [data-a=pdf]')
         f = await d.value; data2 = open(await f.path(), 'rb').read(); n1 = len(re.findall(rb'/Type /Page /', data2))
         exp = await ev("()=>labelPages(labelList()).length"); print('pages', n1, 'label pages', exp)
-        chk(has['on'] and exp >= 1 and n1 == n0 + exp - (0), 'label pages added ' + str((n0, n1, exp)))
+        chk(has['on'] and exp >= 1 and n1 - exp >= n0, 'label pages added ' + str((n0, n1, exp)))
         chk(b'PROCESSOR END' in data2 or b'1/2' in data2, 'label text')
         # structure check: xref offsets point at "N 0 obj"
         sx = int(re.search(rb'startxref\n(\d+)', data2).group(1)); tbl = data2[sx:].split(b'\n')

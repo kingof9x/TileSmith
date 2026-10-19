@@ -35,7 +35,7 @@ main{position:relative;min-width:0;min-height:0;overflow:hidden;display:flex;fle
 .mob-only{display:none}.mobile .mob-only{display:block}.mobile .desk-only{display:none!important}
 .mobile #vp{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.mobile button,.mobile select{min-height:34px}
 table{width:100%;border-collapse:collapse}td{padding:5px 0;border-bottom:1px solid var(--ln)}td:last-child{text-align:right;font-variant-numeric:tabular-nums}
-.ok{color:#18a05a}.bad{color:#e5484d}tr.warn td{background:#ffd400;color:#000;font-weight:700}
+.ok{color:#18a05a}.bad{color:#e5484d}tr.warn td{background:#ffd400;color:#000;font-weight:700}tr.thd th{text-align:left;padding-top:10px;color:var(--ac)}
 .wn{font-size:11px;font-weight:600;color:var(--mu);margin-left:6px}#wlist{display:flex;flex-direction:column;gap:6px}.wl{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left}.wl span{color:var(--mu);font-size:12px}.wl[aria-pressed=true]{border-color:var(--am);box-shadow:inset 3px 0 0 var(--am)}button:disabled{opacity:.45;cursor:default}#right th{text-align:left;padding:14px 0 4px;color:var(--ac);font-size:12px;border-bottom:1px solid var(--ln)}
 .mem{border-bottom:1px solid var(--ln);padding-bottom:8px;margin-bottom:8px}.crew{display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;gap:8px;margin:3px 0 6px}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.ov.on{display:flex}
@@ -270,8 +270,14 @@ const utBad=n=>!n||n=='Custom'||PBR.some(b=>n.startsWith(b+' '));
 function utSaveCur(){utInit();let n=($('#utName')||{}).value;n=(n||'').trim().replace(/\s+/g,' ').slice(0,40);if(!n){toast('Type a name for your tile preset first.',4000);return}
  if(n=='Custom'||PBR.some(b=>n.startsWith(b+' ')))n='My '+n;if(P[n]&&!UT[n]){toast('"'+n+'" is a built-in model. Pick another name.',5000);return}
  const a=[S.wmm,S.hmm,S.tw,S.th,S.pitch,S.kg,S.wmax,S.dmm];if(!utOk(a)){toast('Fill in every tile field (all must be above zero).',5000);return}
+ const old=S.preset;if(UT[old]&&old!==n){if(UT[n]){toast('You already have a tile called "'+n+'".',4000);return}delete UT[old];delete P[old];storeWall();allWalls().forEach(w=>{if(w.preset==old)w.preset=n})}
  const had=!!UT[n];UT[n]=a;P[n]=a.slice();utSave();S.preset=n;storeWall();sync();toast((had?'Updated ':'Saved ')+'"'+n+'" in your tiles. It is stored in this app and in every project that uses it.',5000)}
-function utDelCur(){const n=S.preset;if(!UT[n])return;delete UT[n];delete P[n];utSave();walls.forEach(w=>{if(w.preset==n)w.preset='Custom'});if(S.preset==n)S.preset='Custom';storeWall();sync();toast('Deleted "'+n+'". Walls using it keep their values as Custom.',5000)}
+const allWalls=()=>CVS.length?CVS.flatMap((c,i)=>i==cc?walls:c.walls):walls;
+function utAuto(){utInit();const a=[S.wmm,S.hmm,S.tw,S.th,S.pitch,S.kg,S.wmax,S.dmm];if(!utOk(a))return;let n=S.preset;
+ if(!UT[n]){const base=n&&n!='Custom'?n.replace(new RegExp('^('+PBR.join('|')+') '),''):'Custom tile';let m=base+' (custom)',i=2;while(Object.hasOwn(P,m))m=base+' (custom '+(i++)+')';n=m;
+  toast('Saved as your own tile "'+n+'" under Custom.',4000)}
+ UT[n]=a;P[n]=a.slice();utSave();S.preset=n}
+function utDelCur(){const n=S.preset;if(!UT[n])return;delete UT[n];delete P[n];utSave();storeWall();allWalls().forEach(w=>{if(w.preset==n)w.preset='Custom'});if(S.preset==n)S.preset='Custom';sync();toast('Deleted "'+n+'". Walls using it keep their values as Custom.',5000)}
 function utFromProject(o){utInit();if(!o||!o.ut||typeof o.ut!='object')return;const map={};
  for(const n in o.ut){const a=o.ut[n];if(!utOk(a)||n=='Custom'||PBR.some(b=>n.startsWith(b+' ')))continue;let m=n;
   if(Object.hasOwn(P,n)&&!utSame(P[n],a)){m=n+' (from project)';let i=2;while(Object.hasOwn(P,m)&&!utSame(P[m],a))m=n+' (from project '+(i++)+')';map[n]=m}
@@ -285,10 +291,16 @@ const BO39={card:'NovaStar A10S Pro',bright:'5000 nits (4000 with Black LED)',re
 const PINFO={'Owl Vision Black Owl 3.9':BO39,'Owl Vision Black Owl 3.9 500×1000':BO39,
  'Owl Vision Pilot 2.6':{card:'NovaStar A5S Plus',bright:'900-1200 nits',refresh:'3840 Hz (50 / 60 / 144 Hz frame rate)',ip:'IP30 (indoor)',view:'160° / 140°',
   curve:'Arc lock ±3° / 0° / +6° (optional ±2.5° / 0° / -5°), 90° corner splicing',power:'Max 200 W/m², average 150 W/m²',service:'Front (magnetic)'}};
-function infoRows(w,s){const q=PINFO[w.preset];if(!q)return[];const r=[];
+function hangRows(w,s){const q=PINFO[w.preset];return q&&q.hang&&s.mh>q.hang+1e-9?[['OVER HANGING LIMIT',`This wall is ${s.mh.toFixed(2)} m tall; the sheet allows ${q.hangNote||q.hang+' m'}. Ground-stack it or split the hang.`,'warn']]:[]}
+// LED Tiles (Engineering and PDF): every tile model used on any wall of any canvas, with its figures and spec-sheet facts
+function tileRows(){storeWall();const G=new Map();allWalls().forEach(w=>{const k=w.preset+'|'+[w.tw,w.th,w.wmm,w.hmm,w.dmm,w.pitch,w.kg,w.wmax].join();let g=G.get(k);if(!g)G.set(k,g={w,n:0,wl:0});g.n+=wst(w).N;g.wl++});
+ const r=[];G.forEach(({w,n,wl})=>{r.push([w.preset+(UT[w.preset]?' (your tile)':''),'','head']);if(PEST[w.preset])r.push(['MISSING DATA','Not published by the manufacturer, so ESTIMATED from similar panels: '+PEST[w.preset].join(', ')+'. Check with the manufacturer.','warn']);
+  r.push(['Pixels',`${w.tw} × ${w.th}`],['Size',`${w.wmm} × ${w.hmm} mm, ${w.dmm} mm deep`],['Pixel pitch',w.pitch+' mm'],['Density',Math.round(1e6/(w.pitch*w.pitch)).toLocaleString()+' px/m²'],['Weight',w.kg+' kg'],['Max power',w.wmax+' W (typical '+Math.round(w.wmax*.4)+' W)'],['Used',`${n} tile${n==1?'':'s'} on ${wl} wall${wl==1?'':'s'}`]);
+  infoRows(w).forEach(x=>r.push(x))});return r}
+function infoRows(w){const q=PINFO[w.preset];if(!q)return[];const r=[];
  if(q.card)r.push(['Receiving card',q.card]);if(q.bright)r.push(['Brightness',q.bright]);if(q.refresh)r.push(['Refresh rate',q.refresh]);if(q.view)r.push(['Viewing angle (H/V)',q.view]);
  if(q.ip)r.push(['IP rating',q.ip]);if(q.power)r.push(['Power (sheet)',q.power]);if(q.service)r.push(['Serviceability',q.service]);if(q.curve)r.push(['Curving',q.curve]);
- if(q.hang){r.push(['Max hanging height',q.hangNote||q.hang+' m']);if(s.mh>q.hang+1e-9)r.push(['OVER HANGING LIMIT',`This wall is ${s.mh.toFixed(2)} m tall; the sheet allows ${q.hangNote||q.hang+' m'}. Ground-stack it or split the hang.`,'warn'])}
+ if(q.hang)r.push(['Max hanging height',q.hangNote||q.hang+' m']);
  if(q.frame)r.push(['Frame weight',q.frame]);return r}
 const PEST={};
 ['1.56 M4','1.9 Lite','1.9 Pro','2.3 Lite','2.6 Lite','2.6 Pro','2.8 Lite','3.4 Lite','3.4 Pro'].forEach(k=>PEST['INFiLED Deep Black DB'+k]=['resolution','weight','max power','depth']);
@@ -439,8 +451,8 @@ ${SUB('LED walls',`<div id="wlist"></div>
 <div class="row">${B('wadd','Add wall')}${B('wdup','Duplicate')}${B('wdel','Remove')}</div>
 <div class="g">${F('name','Wall name','text','','w')}${F('corner','Tech starts at','select',['Top-left','Top-right','Bottom-left','Bottom-right'])}${F('dir','Tile placement','select',['Horizontal','Vertical'])}</div>
 <div style="color:var(--mu)">Horizontal places a row at a time, vertical a column at a time. Settings marked with the wall's name edit the selected wall. Click a wall here, or click or drag it in the viewport, to select it.</div>`,1)}
-${SUB('Tile model <span class="wn"></span>',`<div class="g">${presetSel()}${F('tw','Tile px W')}${F('th','Tile px H')}${F('pitch','Pitch mm','number','step=0.01')}
-<label>Density<span id="den" style="padding:5px 0"></span></label>${F('wmm','Width mm')}${F('hmm','Height mm')}${F('dmm','Depth mm')}${F('kg','Weight kg','number','step=0.1')}${F('wmax','Max watts')}<label>Typical (40%)<span id="typ" style="padding:5px 0"></span></label></div>
+${SUB('Tile model <span class="wn"></span>',`<div class="g">${presetSel()}</div>${SUB('Tile details',`<div class="g">${F('tw','Tile px W')}${F('th','Tile px H')}${F('pitch','Pitch mm','number','step=0.01')}
+<label>Density<span id="den" style="padding:5px 0"></span></label>${F('wmm','Width mm')}${F('hmm','Height mm')}${F('dmm','Depth mm')}${F('kg','Weight kg','number','step=0.1')}${F('wmax','Max watts')}<label>Typical (40%)<span id="typ" style="padding:5px 0"></span></label></div><div style="color:var(--mu);font-size:12px">Changing any detail saves the tile as your own model under <b>Custom</b>, kept in this app and in every project that uses it.</div>`)}
 `)}
 ${SUB('Size of LED Wall <span class="wn"></span>',`<div class="g">${F('cols','Columns')}${F('rows','Rows')}</div>
 <div class="row">${['4x3','6x4','8x5','10x6','16x9'].map(k=>B('arr',k.replace('x','×'),k)).join('')}</div>
@@ -551,7 +563,7 @@ const LIM={lblW:[20,300],lblH:[10,300],lblCopies:[1,4],lblSkip:[1,500],cw:[16,81
 const HEAVY=['cw','ch','cols','rows','tw','th'];
 function applyKey(t){const k=t.dataset.k;if(!k)return;let v;
 if(t.type=='checkbox')v=t.checked;else if(t.type=='number'||t.type=='range'){v=+t.value;if(t.value===''||!isFinite(v))return;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}else{v=t.value;if(t.tagName=='SELECT'&&typeof S[k]=='number')v=+v}
-S[k]=v;if(k=='pdt'&&PD().one){S.pvolt=PD().volt;S.pamps=PD().amps}if(k=='preset')applyPreset();if(['tw','th','wmm','hmm','pitch','kg','wmax','dmm'].includes(k)&&S.preset!='Custom')S.preset='Custom';if(!HALF[S.preset])halfEdit=false;
+S[k]=v;if(k=='pdt'&&PD().one){S.pvolt=PD().volt;S.pamps=PD().amps}if(k=='preset')applyPreset();if(['tw','th','wmm','hmm','pitch','kg','wmax','dmm'].includes(k))utAuto();if(!HALF[S.preset])halfEdit=false;
 if(['proc','fps','bpc','ull'].includes(k))applySpec();if(k=='wmode'&&v!='Manual')wiring=false;if(k=='showData'&&!v)wiring=false;if(k=='pmode'&&v!='Manual'||k=='showPow'&&!v||k=='pdist'&&!v)pwiring=false;
 storeWall();if(['cols','rows','tw','th','preset','corner','dir'].includes(k))showAll();
 if(k=='loop'&&v&&allDone()&&!REC){reset();S.play=true}
@@ -885,6 +897,15 @@ function blockGrid(L,NL,t,fill,sn){const key=L+'|'+NL+'|'+t+'|'+fill+'|'+sn;let 
   let lt=false;for(let i=0;g&&i<s.length;i++){if(s[i]!=g.s[i]){lt=s[i]<g.s[i];break}}
   if(!g||lt)g={nx,ny,s}}
  if(BLK.size>300)BLK.clear();BLK.set(key,g);return g}
+// Power, Fewest circuits: rectangular blocks (whole lines in the pattern direction where they fit), each wired as a short snake,
+// chosen for the fewest circuits with the tiles shared as evenly as possible: cost = circuits + (largest - smallest) / largest,
+// so one more circuit is only used when it evens the load out completely. A line that fits one circuit is only split into blocks
+// that still run at least as far along the pattern as across it, so circuits follow the pattern (rows for Horizontal, columns for Vertical).
+const PGR=new Map();
+function powGrid(L,NL,t){const key=L+'|'+NL+'|'+t;let g=PGR.get(key);if(g)return g;
+ for(let nx=1;nx<=L;nx++){const bl=Math.ceil(L/nx);if(bl>t)continue;for(let ny=1;ny<=NL;ny++){const bn=Math.ceil(NL/ny);if(bl*bn>t||nx>1&&L<=t&&bl<bn)continue;
+  const mx=bl*bn,mn=Math.floor(L/nx)*Math.floor(NL/ny),s=[nx*ny+(mx-mn)/mx,nx>1?1:0,nx];let lt=!g;for(let i=0;g&&i<s.length;i++)if(Math.abs(s[i]-g.s[i])>1e-9){lt=s[i]<g.s[i];break}if(lt)g={nx,ny,s}}}
+ if(PGR.size>300)PGR.clear();PGR.set(key,g);return g}
 function autoChains(w,t){const C=w.cols,R=w.rows,V=w.wdir=='Vertical',RT=/right/i.test(w.wcorner),BT=/^bottom/i.test(w.wcorner),sn=w.wmode=='Snake',L=V?R:C,NL=V?C:R,
  fill=WFILL.includes(w.wfill)?w.wfill:WFILL[0],at=(a,b)=>{let c=V?b:a,r=V?a:b;if(RT)c=C-1-c;if(BT)r=R-1-r;return[c,r]},out=[];
  if(fill==WFILL[2]){const all=blockPath(L,NL,sn).map(([a,b])=>at(a,b));for(let i=0;i<all.length;i+=t)out.push(all.slice(i,i+t));return out}
@@ -894,7 +915,7 @@ function autoChains(w,t){const C=w.cols,R=w.rows,V=w.wdir=='Vertical',RT=/right/
  // bands follow one another from the start corner (segments of a split line stay together)
  if(band&&(band=='h')==V){const ny=Math.ceil(NL/Math.min(NL,t)),ba=Math.ceil(NL/ny),nx=Math.ceil(L/Math.min(L,Math.max(1,Math.floor(t/ba))));
   for(const[a0,na]of splitN(L,nx))for(const[b0,nb]of splitN(NL,ny))out.push(blockPath(na,nb,sn).map(([a,b])=>at(a0+a,b0+b)));return out}
- const g=blockGrid(L,NL,t,band?WFILL[1]:fill,sn);
+ const g=w.pw&&fill==WFILL[0]&&!band&&powGrid(L,NL,t)||blockGrid(L,NL,t,band?WFILL[1]:fill,sn);
  for(const[b0,nb]of splitN(NL,g.ny))for(const[a0,na]of splitN(L,g.nx))out.push(blockPath(na,nb,sn).map(([a,b])=>at(a0+a,b0+b)));
  return out}
 // small picture of one pattern for the picker (4 × 3 tiles)
@@ -954,7 +975,7 @@ const PD=()=>PDT[S.pdt]||PDT[Object.keys(PDT)[0]],cCab=k=>Math.ceil(k/PD().n),cL
  cLabel=k=>{const d=PD();return d.one?''+k:d.pre+cCab(k)+'-'+cLeg(k)};
 function powChains(w){if(!pdOn()||w.pmode=='None')return[];if(w.pmode=='Manual')return manChains(w,'pman');const t=tpcW(w);if(t<1)return[];
  if(layOn(w))return layChains(w,w.pmode,w.pcorner,w.pwdir,ch=>ch.reduce((a,p)=>a+p.sp.W,0)<=circW()+1e-6&&!(w.plink>0&&ch.length>w.plink));
- return autoChains({cols:w.cols,rows:w.rows,wcorner:w.pcorner,wdir:w.pwdir,wmode:w.pmode,wfill:WFILL[Math.max(0,PFILL.indexOf(w.pfill))]},t)}
+ return autoChains({cols:w.cols,rows:w.rows,wcorner:w.pcorner,wdir:w.pwdir,wmode:w.pmode,wfill:WFILL[Math.max(0,PFILL.indexOf(w.pfill))],pw:1},t)}
 function powerPlan(){let k=0;return walls.map(w=>{const t=tpcW(w),P2=pieces(w),q=P2.lay||P2.nh>0;return keepTiles(w,powChains(w),t,w.pmode=='Manual',w.pfill==PFILL[2]).filter(ch=>ch.length).map(ch=>{const watts=ch.reduce((a,e)=>{const x=pieceOf(w,e);return a+(x?x.sp.W:0)},0);return{k:++k,tiles:ch,watts,half:q,over:q?watts>circW()+1e-6||w.plink>0&&ch.length>w.plink:ch.length>t}})})}
 function powerTotals(plan){const all=plan.flat(),n=all.length,per=PD().n,cab={};all.forEach(x=>{const c=cCab(x.k);cab[c]=(cab[c]||0)+x.watts/S.pvolt});const cables=n?Math.ceil(Math.max(...all.map(x=>x.k))/per):0;const o={n,cables,spare:n?cables*per-n:0,cab,over:all.filter(x=>x.over).length};
  if(PD().one&&S.pwall>0&&n){const wl={};all.forEach(x=>{const g=Math.ceil(x.k/S.pwall);wl[g]=(wl[g]||0)+x.watts/S.pvolt});o.wall=wl;o.wlim=S.pwallA*(S.derate?.8:1);o.wn=Object.keys(wl).length;o.wover=Object.keys(wl).filter(g=>wl[g]>o.wlim+1e-6).length}
@@ -1062,8 +1083,8 @@ function modelOpts(br,cur){utInit();const keys=Object.keys(P).filter(k=>brandOf(
  if(br=='Custom')return opt('Custom')+Object.keys(UT).sort((x,y)=>x.localeCompare(y)).map(opt).join('');if(br!='ROE')return keys.map(opt).join('');keys.forEach(k=>{const b=B.filter(x=>k.startsWith(x+' ')).sort((x,y)=>y.length-x.length)[0]||'';(g[b]=g[b]||[]).push(k)});
  return B.filter(b=>g[b]).map(b=>`<optgroup label="${b}">${g[b].map(opt).join('')}</optgroup>`).join('')+(g['']||[]).map(opt).join('')}
 function presetSel(){utInit();const br=brandOf(S.preset||''),all=PBR.concat(['Custom']);
- return `<label class="w">Brand<select data-brand="1">${all.map(b=>`<option${b==br?' selected':''}>${b}</option>`).join('')}</select></label><label class="w">Model<select data-k="preset" data-b="${br}">${modelOpts(br)}</select></label><div id="utBox" style="display:none;grid-column:1/-1"><label class="w">My preset name<input type="text" id="utName" maxlength="40" placeholder="e.g. Venue panel 2.9"></label><div style="display:flex;gap:6px;margin-top:6px"><button data-a="utsave">Save as my preset</button><button data-a="utdel" id="utDel">Delete</button></div><div style="font-size:11px;opacity:.7;margin-top:4px">Fill in the tile fields below, name it and save. It stays in this app for future use and is stored inside any project you save.</div></div>`}
-function tileRefresh(){const bs=document.querySelector('[data-brand]'),ms=document.querySelector('[data-k=preset]');if(!bs||!ms)return;const br=brandOf(S.preset||'');if(ms.dataset.b!=br||br=='Custom'&&ms.options.length!=Object.keys(UT).length+1){ms.innerHTML=modelOpts(br);ms.dataset.b=br}bs.value=br;ms.value=S.preset;
+ return `<label class="w">Brand<select data-brand="1">${all.map(b=>`<option${b==br?' selected':''}>${b}</option>`).join('')}</select></label><label class="w">Model<select data-k="preset" data-b="${br}">${modelOpts(br)}</select></label><div id="utBox" style="display:none;grid-column:1/-1"><label class="w">Tile name<input type="text" id="utName" maxlength="40" placeholder="e.g. Venue panel 2.9"></label><div style="display:flex;gap:6px;margin-top:6px"><button data-a="utsave">Save name</button><button data-a="utdel" id="utDel">Delete</button></div><div style="font-size:11px;opacity:.7;margin-top:4px">Your own tiles. Open Tile details to change one; every change is saved to it. It stays in this app for future use and is stored inside any project you save.</div></div>`}
+function tileRefresh(){const bs=document.querySelector('[data-brand]'),ms=document.querySelector('[data-k=preset]');if(!bs||!ms)return;const br=brandOf(S.preset||'');const uk=br=='Custom'?Object.keys(UT).join('|'):'';if(ms.dataset.b!=br||ms.dataset.u!==uk){ms.innerHTML=modelOpts(br);ms.dataset.b=br;ms.dataset.u=uk}bs.value=br;ms.value=S.preset;
  const bx=$('#utBox');if(bx){bx.style.display=br=='Custom'?'':'none';const d=$('#utDel');if(d)d.style.display=UT[S.preset]?'':'none';const nm=$('#utName');if(nm&&nm!==document.activeElement&&bx.dataset.p!=S.preset){if(UT[S.preset])nm.value=S.preset;bx.dataset.p=S.preset}}}
 function brandPick(b){const k=Object.keys(P).find(x=>brandOf(x)==b);if(!k)return;S.preset=k;applyPreset();storeWall();showAll();sync()}
 function render(){const c=mc,W=S.cw,H=S.ch,multi=walls.length>1,PLAN=S.showData&&procOn()?portPlan():[],PPL=S.showPow&&pdOn()?powerPlan():[];
@@ -1188,7 +1209,7 @@ function canvasRows(){const q=gcd(S.cw,S.ch),T=walls.map(wst).reduce((a,s)=>{for
  return[['Canvas',`${S.cw} × ${S.ch}`],['Aspect',`${S.cw/q}:${S.ch/q} (${(S.cw/S.ch).toFixed(2)})`],['Canvas pixels',(S.cw*S.ch).toLocaleString()+` (${(S.cw*S.ch/1e6).toFixed(2)} MP)`],['LED walls',walls.length],['Tiles',T.nh||T.ng?`${T.N} (${[T.nh?`${T.N-T.nh} full + ${T.nh} half`:'',T.ng?`${T.ng} removed`:''].filter(Boolean).join(', ')})`:T.N],['LED pixels',`${T.px.toLocaleString()} (${(T.px/1e6).toFixed(2)} MP)`],
  ['Area',`${T.A.toFixed(2)} m² / ${(T.A*10.7639).toFixed(1)} sq ft`],['Weight',`${T.kg.toFixed(1)} kg / ${(T.kg*2.20462).toFixed(0)} lbs`],['Peak power',kw(T.pk)],['Typical (40%)',kw(T.pk*.4)]]
  .concat(pdOn()?[[`Current peak @${S.pvolt} V`,amp(T.pk,S.pvolt)]]:[])}
-function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',w.preset]].concat(PEST[w.preset]?[['MISSING DATA','Not published by the manufacturer, so ESTIMATED from similar panels: '+PEST[w.preset].join(', ')+'. Check with the manufacturer before relying on weight, power or circuit counts.','warn']]:[]).concat(infoRows(w,s)).concat([['Wall pixels',`${s.pw} × ${s.ph} (${(s.px/1e6).toFixed(2)} MP)`],['Position',`${w.ox}, ${w.oy}`],['Tiles',`${s.N} (${[s.nh?`${s.N-s.nh} full + ${s.nh} half`:'',s.ng?`${s.ng} removed`:'',`${w.cols} × ${w.rows}`].filter(Boolean).join(', ')})`],['Wall size',`${s.mw.toFixed(2)} × ${s.mh.toFixed(2)} m`],['Wall size',`${ft(s.mw)} × ${ft(s.mh)} ft`],['Area',`${s.A.toFixed(2)} m² / ${(s.A*10.7639).toFixed(1)} sq ft`],
+function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',w.preset]].concat(PEST[w.preset]?[['MISSING DATA','Not published by the manufacturer, so ESTIMATED from similar panels: '+PEST[w.preset].join(', ')+'. Check with the manufacturer before relying on weight, power or circuit counts.','warn']]:[]).concat(hangRows(w,s)).concat([['Wall pixels',`${s.pw} × ${s.ph} (${(s.px/1e6).toFixed(2)} MP)`],['Position',`${w.ox}, ${w.oy}`],['Tiles',`${s.N} (${[s.nh?`${s.N-s.nh} full + ${s.nh} half`:'',s.ng?`${s.ng} removed`:'',`${w.cols} × ${w.rows}`].filter(Boolean).join(', ')})`],['Wall size',`${s.mw.toFixed(2)} × ${s.mh.toFixed(2)} m`],['Wall size',`${ft(s.mw)} × ${ft(s.mh)} ft`],['Area',`${s.A.toFixed(2)} m² / ${(s.A*10.7639).toFixed(1)} sq ft`],
  ['Weight',`${s.kg.toFixed(1)} kg / ${(s.kg*2.20462).toFixed(0)} lbs`],['Peak power',kw(s.pk)],['Typical (40%)',kw(s.pk*.4)]]);
  if(pdOn()){const t=tpcW(w),pw=pmine.reduce((a,c)=>a+c.tiles.length,0),po=pmine.filter(x=>x.over).length;
   r.push([`Current peak @${S.pvolt} V`,amp(s.pk,S.pvolt)],['Tiles per circuit',t>0?t+(w.plink>0&&w.plink<tpcCalc(w)?' (power link limit)':''):'One tile exceeds a circuit'],['Min. circuits if every circuit is full',t>0?Math.ceil(s.pk*1000/w.wmax/t-1e-9):'-'],
@@ -1200,13 +1221,13 @@ function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',
   if(mine.length)r.push(['Data paths',mine.length>1?`P${mine[0].p} to R${mine[0].p} … P${mine[mine.length-1].p} to R${mine[mine.length-1].p}`:`P${mine[0].p} to R${mine[0].p}`],['Ports used',`${mine.length}${S.ret?` + ${mine.length} return`:''}`]);
   if(w.wmode!='None'&&wired<s.N)r.push(['Unwired tiles',s.N-wired]);if(ov)r.push(['Over capacity',`${ov} port${ov>1?'s':''}`])}
  return r.concat([['Test pattern',w.pat],['Build start',`${w.corner}, ${w.dir.toLowerCase()}`]])}
-const trs=rows=>rows.map(r=>`<tr${r[2]=='warn'?' class="warn"':''}><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join(''),thr=t=>`<tr><th colspan="2">${esc(t)}</th></tr>`;
+const trs=rows=>rows.map(r=>r[2]=='head'?`<tr class="thd"><th colspan="2">${esc(r[0])}</th></tr>`:`<tr${r[2]=='warn'?' class="warn"':''}><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join(''),thr=t=>`<tr><th colspan="2">${esc(t)}</th></tr>`;
 const engOpen={};document.addEventListener('toggle',e=>{const k=e.target&&e.target.dataset&&e.target.dataset.eng;if(k)engOpen[k]=e.target.open},true);
 function info(){storeWall();const w=walls[cur],s=wst(w),fits=w.ox>=0&&w.oy>=0&&w.ox+s.pw<=S.cw&&w.oy+s.ph<=S.ch,plan=procOn()?portPlan():walls.map(()=>[]),pplan=pdOn()?powerPlan():walls.map(()=>[]);
 const ov=walls.filter((o,i)=>i!=cur&&o.ox<w.ox+s.pw&&w.ox<o.ox+wW(o)&&o.oy<w.oy+s.ph&&w.oy<o.oy+wH(o)).map(o=>o.name);
 $('#cov').innerHTML=(fits?'<span class="ok">✔ Wall fits inside canvas</span>':'<span class="bad">✖ Wall extends beyond raster: '+[w.ox<0&&'left',w.oy<0&&'top',w.ox+s.pw>S.cw&&'right by '+(w.ox+s.pw-S.cw)+'px',w.oy+s.ph>S.ch&&'bottom by '+(w.oy+s.ph-S.ch)+'px'].filter(Boolean).join(', ')+'</span>')+(ov.length?'<br><span class="bad">✖ Overlaps '+esc(ov.join(', '))+'</span>':'');
 const sec=(k,title,rows)=>`<details data-eng="${k}"${engOpen[k]===false?'':' open'}><summary>${esc(title)}</summary><table>${trs(rows)}</table></details>`;
-const h='<h1>Engineering</h1>'+sec('canvas',CVS.length>1?'Entire canvas: '+CVS[cc].name:'Entire canvas',canvasRows().concat(procOn()?procRowsCanvas(plan):[],pdOn()?powRowsCanvas(pplan):[]))+walls.map((x,i)=>sec('w'+i,x.name||'Wall '+(i+1),wallRows(x,plan[i]||[],pplan[i]||[]))).join('');
+const h='<h1>Engineering</h1>'+sec('canvas',CVS.length>1?'Entire canvas: '+CVS[cc].name:'Entire canvas',canvasRows().concat(procOn()?procRowsCanvas(plan):[],pdOn()?powRowsCanvas(pplan):[]))+sec('tiles','LED Tiles',tileRows())+walls.map((x,i)=>sec('w'+i,x.name||'Wall '+(i+1),wallRows(x,plan[i]||[],pplan[i]||[]))).join('');
 const R=$('#right');if(R.__h!==h){R.innerHTML=h;R.__h=h}}
 const gcd=(a,b)=>b?gcd(b,a%b):a;
 
@@ -1358,8 +1379,8 @@ async function exportPDF(){storeWall();toast('Building the PDF…',2500);await n
    pg.img={w:M.width,h:M.height,b};pg.o.push(`q ${pdfN(iw)} 0 0 ${pdfN(ih)} ${pdfN(x0)} ${pdfN(PW-(y0+14)-ih)} cm /Im1 Do Q`);pg.rect(x0,y0+14,iw,ih,null,'#888',.5);pages.push(pg)});const NR=pages.length;
   // 2. the spec sheet
   {const lw=190,vw=PW-2*mg-lw-10,fs=8.5,lh=11;let pg=null,y=0;const np=()=>{pg=new PdfPage(PW,PH);pages.push(pg);y=mg;if(pages.length==NR+1){pg.text('TileSmith - LED Wall Spec',mg,y+12,16,1,'#000');pg.text(stamp,mg,y+25,8.5,0,'#555');y+=38}};np();
-   const SEC=[];eachCv(ci=>specSections().forEach(([t,r])=>SEC.push([(CVS.length>1?CVS[ci].name+': ':'')+t,r])));SEC.forEach(([title,rows])=>{if(y+40>PH-mg)np();pg.rect(mg,y,PW-2*mg,17,'#dfe8ea');pg.text(title,mg+5,y+12,11,1,'#000');y+=21;
-    rows.forEach(r=>{const wn=r[2]=='warn',A=pdfWrap(r[0],fs,wn,lw-8),V=pdfWrap(r[1],fs,wn,vw),n=Math.max(A.length,V.length),hh=n*lh+5;if(y+hh>PH-mg){np()}
+   const SEC=[['LED Tiles',tileRows()]];eachCv(ci=>specSections().forEach(([t,r])=>SEC.push([(CVS.length>1?CVS[ci].name+': ':'')+t,r])));SEC.forEach(([title,rows])=>{if(y+40>PH-mg)np();pg.rect(mg,y,PW-2*mg,17,'#dfe8ea');pg.text(title,mg+5,y+12,11,1,'#000');y+=21;
+    rows.forEach(r=>{if(r[2]=='head'){if(y+30>PH-mg)np();pg.text(r[0],mg+4,y+12,9.5,1,'#0a6f80');y+=17;return}const wn=r[2]=='warn',A=pdfWrap(r[0],fs,wn,lw-8),V=pdfWrap(r[1],fs,wn,vw),n=Math.max(A.length,V.length),hh=n*lh+5;if(y+hh>PH-mg){np()}
      if(wn)pg.rect(mg,y,PW-2*mg,hh-1,'#ffd400');
      A.forEach((t,i)=>pg.text(t,mg+4,y+lh*(i+1)-1+1,fs,wn,'#000'));V.forEach((t,i)=>pg.text(t,mg+lw+6,y+lh*(i+1),fs,wn,'#000'));pg.line(mg,y+hh-1,PW-mg,y+hh-1,'#cccccc',.4);y+=hh});y+=8})}
   // 3. the cable labels, one PDF page per label sheet, sized like the label sheet itself
