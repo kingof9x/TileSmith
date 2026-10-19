@@ -260,6 +260,22 @@ const P={ // wmm,hmm,pxw,pxh,pitch,kg,wmax,depth
 'Owl Vision Black Owl 3.9':[500,500,128,128,3.906,8.7,180,74],
 'Owl Vision Pilot 2.6':[500,500,192,192,2.604,7.4,50,71],
 'Custom':null};
+// Your own tile presets: kept on this computer (browser/app storage) and copied into every saved project that uses them
+const UKEY='tilesmith-tiles-v1';let UT={},utReady=false;
+const utOk=a=>Array.isArray(a)&&a.length==8&&a.every(x=>typeof x=='number'&&isFinite(x)&&x>0),utSame=(a,b)=>!!a&&!!b&&a.length==b.length&&a.every((x,i)=>Math.abs(x-b[i])<1e-9);
+function utInit(){if(utReady)return;utReady=true;try{const o=JSON.parse(localStorage.getItem(UKEY)||'{}');for(const n in o)if(utOk(o[n])&&!utBad(n)){UT[n]=o[n];P[n]=o[n]}}catch(e){}}
+function utSave(){try{localStorage.setItem(UKEY,JSON.stringify(UT))}catch(e){}}
+const utBad=n=>!n||n=='Custom'||PBR.some(b=>n.startsWith(b+' '));
+function utSaveCur(){utInit();let n=($('#utName')||{}).value;n=(n||'').trim().replace(/\s+/g,' ').slice(0,40);if(!n){toast('Type a name for your tile preset first.',4000);return}
+ if(n=='Custom'||PBR.some(b=>n.startsWith(b+' ')))n='My '+n;if(P[n]&&!UT[n]){toast('"'+n+'" is a built-in model. Pick another name.',5000);return}
+ const a=[S.wmm,S.hmm,S.tw,S.th,S.pitch,S.kg,S.wmax,S.dmm];if(!utOk(a)){toast('Fill in every tile field (all must be above zero).',5000);return}
+ const had=!!UT[n];UT[n]=a;P[n]=a.slice();utSave();S.preset=n;storeWall();sync();toast((had?'Updated ':'Saved ')+'"'+n+'" in your tiles. It is stored in this app and in every project that uses it.',5000)}
+function utDelCur(){const n=S.preset;if(!UT[n])return;delete UT[n];delete P[n];utSave();walls.forEach(w=>{if(w.preset==n)w.preset='Custom'});if(S.preset==n)S.preset='Custom';storeWall();sync();toast('Deleted "'+n+'". Walls using it keep their values as Custom.',5000)}
+function utFromProject(o){utInit();if(!o||!o.ut||typeof o.ut!='object')return;const map={};
+ for(const n in o.ut){const a=o.ut[n];if(!utOk(a)||n=='Custom'||PBR.some(b=>n.startsWith(b+' ')))continue;let m=n;
+  if(Object.hasOwn(P,n)&&!utSame(P[n],a)){m=n+' (from project)';let i=2;while(Object.hasOwn(P,m)&&!utSame(P[m],a))m=n+' (from project '+(i++)+')';map[n]=m}
+  if(!UT[m]){UT[m]=a.slice();P[m]=a.slice()}}
+ if(Object.keys(map).length){if(o.S&&map[o.S.preset])o.S.preset=map[o.S.preset];(o.walls||[]).forEach(w=>{if(w&&map[w.preset])w.preset=map[w.preset]})}utSave()}
 const PEST={};
 ['1.56 M4','1.9 Lite','1.9 Pro','2.3 Lite','2.6 Lite','2.6 Pro','2.8 Lite','3.4 Lite','3.4 Pro'].forEach(k=>PEST['INFiLED Deep Black DB'+k]=['resolution','weight','max power','depth']);
 // Models that also come as a half tile: full preset -> [half preset, 'h' = half height (top/bottom) | 'w' = half width (left/right)]
@@ -482,7 +498,7 @@ const LIM={lblW:[20,300],lblH:[10,300],lblCopies:[1,4],lblSkip:[1,500],cw:[16,81
 const HEAVY=['cw','ch','cols','rows','tw','th'];
 function applyKey(t){const k=t.dataset.k;if(!k)return;let v;
 if(t.type=='checkbox')v=t.checked;else if(t.type=='number'||t.type=='range'){v=+t.value;if(t.value===''||!isFinite(v))return;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}else{v=t.value;if(t.tagName=='SELECT'&&typeof S[k]=='number')v=+v}
-S[k]=v;if(k=='pdt'&&PD().one){S.pvolt=PD().volt;S.pamps=PD().amps}if(k=='preset')applyPreset();if(!HALF[S.preset])halfEdit=false;else if(['tw','th','wmm','hmm','pitch','kg','wmax'].includes(k))S.preset='Custom';
+S[k]=v;if(k=='pdt'&&PD().one){S.pvolt=PD().volt;S.pamps=PD().amps}if(k=='preset')applyPreset();if(['tw','th','wmm','hmm','pitch','kg','wmax','dmm'].includes(k)&&S.preset!='Custom')S.preset='Custom';if(!HALF[S.preset])halfEdit=false;
 if(['proc','fps','bpc','ull'].includes(k))applySpec();if(k=='wmode'&&v!='Manual')wiring=false;if(k=='showData'&&!v)wiring=false;if(k=='pmode'&&v!='Manual'||k=='showPow'&&!v||k=='pdist'&&!v)pwiring=false;
 storeWall();if(['cols','rows','tw','th','preset','corner','dir'].includes(k))showAll();
 if(k=='loop'&&v&&allDone()&&!REC){reset();S.play=true}
@@ -508,7 +524,7 @@ const a=t.dataset.a;if(!a)return;const v=t.dataset.v,cw=S.cw,ch=S.ch;
 ({undom(){const t=e.target.closest('button'),m=$('#undom'),o=m.hidden;ddClose();if(o){unUI();const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-260))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');const f=m.querySelector('button:not([disabled])');if(f)f.focus()}},undo(){ddClose();if(v)unUndo(+v)},redo(){ddClose();unRedo()},ctr(){const r=vp.getBoundingClientRect();V.x=(r.width-S.cw*V.z)/2;V.y=(r.height-S.ch*V.z)/2},newc(){newCanvasAsk()},res(){[S.cw,S.ch]=R[v]},match(){fitCanvas()},wadd(){addWall(false)},pspec(){applySpec()},npat(){nextPattern()},hrowb(){halfRow('bottom')},hrowt(){halfRow('top')},hedit(){halfEdit=!halfEdit&&!!halfOf(S);if(halfEdit){wiring=false;pwiring=false;goneEdit=false}},gedit(){goneEdit=!goneEdit;if(goneEdit){wiring=false;pwiring=false;halfEdit=false}},gclr(){restoreAll()},hclr(){S.half=[];S.lay={};storeWall();showAll();sync()},dvdexp(){dvdExportLoop()},rxml(){if(v)S.resSl=v;ddClose();exportRes()},rxmlm(){const m=$('#rxmlm'),o=m.hidden;ddClose();if(o){const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-200))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');m.querySelector('button').focus()}},wedit(){wiring=!wiring;if(wiring){S.showData=true;pwiring=false;halfEdit=false;goneEdit=false}wireMsg(wiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},wnew(){if(!Array.isArray(S.wman))S.wman=[];const l=S.wman[S.wman.length-1];if(!l||l.length)S.wman.push([]);wireMsg('')},wundo(){const m=S.wman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();wireMsg('')},wclr(){S.wman=[];wireMsg('')},pedit(){pwiring=!pwiring;if(pwiring){S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg(pwiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},pnew(){if(!Array.isArray(S.pman))S.pman=[];const l=S.pman[S.pman.length-1];if(!l||l.length)S.pman.push([]);pwMsg('')},pundo(){const m=S.pman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();pwMsg('')},pclr(){S.pman=[];pwMsg('')},wdup(){addWall(true)},wdel(){delWall()},
 al(){S.ox=v[0]=='c'||v=='tc'||v=='bc'?Math.round((cw-WW())/2):0;S.oy=v=='c'?Math.round((ch-WH())/2):v[0]=='b'?ch-WH():0;if(v=='tl'||v=='bl')S.ox=0},
 arr(){[S.cols,S.rows]=v.split('x').map(Number);showAll()},
-pp(){S.play=!S.play},rs(){reset();S.play=true},bstop(){S.play=false;showAll()},brst(){reset();S.play=false},psave(){saveProject()},popen(){$('#opf').click()},fit,
+pp(){S.play=!S.play},rs(){reset();S.play=true},bstop(){S.play=false;showAll()},brst(){reset();S.play=false},psave(){saveProject()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
 about(){showAbout(1)},ndi(){toggleNdi()},share(){toggleShare()},png(){M.toBlob(b=>dl(b,'tilesmith-canvas.png'))},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
 add(){crew.push(['Tech '+(crew.length+1),'#e0ac69',null,HAIR[crew.length%HAIR.length]]);crewUI()},rcrew(){crew=defCrew();crewUI()}}[a])();
 sync();fit_if();});
@@ -985,13 +1001,14 @@ function tposDraw(c,x,y,tw,th,row,col,top){const z=tposSize(c,tw,th,row,col),f=z
  cx+=aw+g;c.fillText(t2,cx,cy+f*.05)}
 // Tile model preset list, grouped by manufacturer
 const ROES=['Amber','Black Marble','Black Pearl','Black Quartz','Carbon','Carbon MkII','Carbon Full Spectrum','Coral','Denali','Diamond','Graphite','Jasper','Jet','Meru','Obsidian','Ruby','Sierra','Topaz','Vanish','Vanish ST','Vanish Air','Vanish Acoustics'];
-const PBR=['ROE','Absen','Unilumin','INFiLED','YES TECH','Owl Vision'],brandOf=k=>PBR.find(b=>k.startsWith(b+' '))||'Other';
-function modelOpts(br,cur){const keys=Object.keys(P).filter(k=>brandOf(k)==br),B=ROES.map(x=>'ROE '+x),g={},opt=k=>`<option>${esc(k)}</option>`;
- if(br!='ROE')return keys.map(opt).join('');keys.forEach(k=>{const b=B.filter(x=>k.startsWith(x+' ')).sort((x,y)=>y.length-x.length)[0]||'';(g[b]=g[b]||[]).push(k)});
+const PBR=['ROE','Absen','Unilumin','INFiLED','YES TECH','Owl Vision'],brandOf=k=>PBR.find(b=>k.startsWith(b+' '))||'Custom';
+function modelOpts(br,cur){utInit();const keys=Object.keys(P).filter(k=>brandOf(k)==br),B=ROES.map(x=>'ROE '+x),g={},opt=k=>`<option>${esc(k)}</option>`;
+ if(br=='Custom')return opt('Custom')+Object.keys(UT).sort((x,y)=>x.localeCompare(y)).map(opt).join('');if(br!='ROE')return keys.map(opt).join('');keys.forEach(k=>{const b=B.filter(x=>k.startsWith(x+' ')).sort((x,y)=>y.length-x.length)[0]||'';(g[b]=g[b]||[]).push(k)});
  return B.filter(b=>g[b]).map(b=>`<optgroup label="${b}">${g[b].map(opt).join('')}</optgroup>`).join('')+(g['']||[]).map(opt).join('')}
-function presetSel(){const br=brandOf(S.preset||''),all=PBR.concat(Object.keys(P).some(k=>brandOf(k)=='Other')?['Other']:[]);
- return `<label class="w">Brand<select data-brand="1">${all.map(b=>`<option${b==br?' selected':''}>${b}</option>`).join('')}</select></label><label class="w">Model<select data-k="preset" data-b="${br}">${modelOpts(br)}</select></label>`}
-function tileRefresh(){const bs=document.querySelector('[data-brand]'),ms=document.querySelector('[data-k=preset]');if(!bs||!ms)return;const br=brandOf(S.preset||'');if(ms.dataset.b!=br){ms.innerHTML=modelOpts(br);ms.dataset.b=br}bs.value=br}
+function presetSel(){utInit();const br=brandOf(S.preset||''),all=PBR.concat(['Custom']);
+ return `<label class="w">Brand<select data-brand="1">${all.map(b=>`<option${b==br?' selected':''}>${b}</option>`).join('')}</select></label><label class="w">Model<select data-k="preset" data-b="${br}">${modelOpts(br)}</select></label><div id="utBox" style="display:none;grid-column:1/-1"><label class="w">My preset name<input type="text" id="utName" maxlength="40" placeholder="e.g. Venue panel 2.9"></label><div style="display:flex;gap:6px;margin-top:6px"><button data-a="utsave">Save as my preset</button><button data-a="utdel" id="utDel">Delete</button></div><div style="font-size:11px;opacity:.7;margin-top:4px">Fill in the tile fields below, name it and save. It stays in this app for future use and is stored inside any project you save.</div></div>`}
+function tileRefresh(){const bs=document.querySelector('[data-brand]'),ms=document.querySelector('[data-k=preset]');if(!bs||!ms)return;const br=brandOf(S.preset||'');if(ms.dataset.b!=br||br=='Custom'&&ms.options.length!=Object.keys(UT).length+1){ms.innerHTML=modelOpts(br);ms.dataset.b=br}bs.value=br;ms.value=S.preset;
+ const bx=$('#utBox');if(bx){bx.style.display=br=='Custom'?'':'none';const d=$('#utDel');if(d)d.style.display=UT[S.preset]?'':'none';const nm=$('#utName');if(nm&&nm!==document.activeElement&&bx.dataset.p!=S.preset){if(UT[S.preset])nm.value=S.preset;bx.dataset.p=S.preset}}}
 function brandPick(b){const k=Object.keys(P).find(x=>brandOf(x)==b);if(!k)return;S.preset=k;applyPreset();storeWall();showAll();sync()}
 function render(){const c=mc,W=S.cw,H=S.ch,multi=walls.length>1,PLAN=S.showData&&procOn()?portPlan():[],PPL=S.showPow&&pdOn()?powerPlan():[];
 c.fillStyle='#050608';c.fillRect(0,0,W,H);if(REC&&REC.ph=='blank')return;
@@ -1665,7 +1682,7 @@ function loop(){requestAnimationFrame(loop);try{const now=performance.now();
 const SKEY='tilesmith-state-v1',SKIP=['patImg','boxImg','play'];let saveT=null;
 function stFile(){const path=require('path');const d=MAC?path.join(require('os').homedir(),'Library','Application Support','TileSmith'):LIN?path.join(process.env.XDG_CONFIG_HOME||path.join(require('os').homedir(),'.config'),'TileSmith'):path.join(process.env.APPDATA||require('os').homedir(),'TileSmith');return{d,f:path.join(d,'state.json')}}
 // Everything that makes up the project (settings, every wall, wiring, half tiles, the selected wall, uploaded images, the crew and the vest logo); images are stored as data URLs.
-function stateObj(){storeWall();const o={sv:23,S:{},walls:walls.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?(w[k]&&w[k].__src||null):w[k]);return x}),cur,crew:crew.map(c=>[c[0],c[1],c[2]&&c[2].__src||null,c[3]]),logo:logoImg&&logoImg.__src||null,dvd:dvdImg&&dvdImg.__src||null};for(const k in S)if(!SKIP.includes(k))o.S[k]=S[k];return o}
+function stateObj(){storeWall();const o={sv:23,S:{},walls:walls.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?(w[k]&&w[k].__src||null):w[k]);return x}),cur,crew:crew.map(c=>[c[0],c[1],c[2]&&c[2].__src||null,c[3]]),logo:logoImg&&logoImg.__src||null,dvd:dvdImg&&dvdImg.__src||null,ut:(()=>{const u={};utInit();walls.forEach(w=>{if(UT[w.preset])u[w.preset]=UT[w.preset]});if(UT[S.preset])u[S.preset]=UT[S.preset];return u})()};for(const k in S)if(!SKIP.includes(k))o.S[k]=S[k];return o}
 function saveNow(){if(window.__noSave)return;let o;try{o=stateObj()}catch(e){return}
 const w=obj=>{const j=JSON.stringify(obj);if(DESK){const{d,f}=stFile(),fs=require('fs');fs.mkdirSync(d,{recursive:true});fs.writeFileSync(f,j)}else localStorage.setItem(SKEY,j)};
 try{w(o)}catch(e){try{o.walls.forEach(x=>{x.patImg=null;x.boxImg=null});o.logo=null;o.dvd=null;o.crew.forEach(c=>c[2]=null);w(o)}catch(e2){}}}
@@ -1725,7 +1742,7 @@ function openProject(o,name){stopMarking();for(const k in S)if(!SKIP.includes(k)
  showAll();crewUI();sync();fit_if();fit();forceRen=true;saveSoon();setTimeout(()=>unCheck('Open project'),0);toast('Opened '+name,4000)}
 function loadState(){let j=null;try{if(DESK){const{f}=stFile(),fs=require('fs');j=fs.existsSync(f)?fs.readFileSync(f,'utf8'):null}else j=localStorage.getItem(SKEY)}catch(e){}
 if(!j)return;try{applyState(JSON.parse(j))}catch(e){console.warn('state load failed',e)}}
-function applyState(o){{if(o.S&&typeof o.S.pdist=='string')o.S.pdist=o.S.pdist!='None';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}
+function applyState(o){{utFromProject(o);if(o.S&&typeof o.S.pdist=='string')o.S.pdist=o.S.pdist!='None';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}
 const mk=src=>{if(!src)return null;const im=new Image();im.__src=src;im.onload=()=>{forceRen=true};im.src=src;return im};
 if(Array.isArray(o.crew)&&o.crew.length)crew=o.crew.map((c,i)=>[String(c[0]||''),c[1]||'#e0ac69',mk(c[2]),c[3]||HAIR[i%HAIR.length]]);
 if(o.logo)logoImg=mk(o.logo);if(o.dvd){dvdImg=mk(o.dvd);dvdImg.__id=++imgId}
