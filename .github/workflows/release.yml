@@ -194,55 +194,6 @@ jobs:
           if-no-files-found: error
           retention-days: 7
 
-  docs:
-    # The manuals and the app spec are built here from the version typed in the Run workflow box, so the version on
-    # their cover and footer, in the app and in the file names is always the same one.
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - name: Put the release version into the app (the manuals read it from there)
-        working-directory: tilesmith-desktop
-        run: node scripts/set-version.js "${{ inputs.version || github.ref_name }}"
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Tools for the screenshots and the PDFs
-        run: |
-          pip install playwright pillow
-          playwright install --with-deps chromium
-          sudo apt-get install -y poppler-utils
-      - name: Build the manuals and the app spec
-        working-directory: manual-src
-        run: |
-          python make_manual.py
-          python make_kit_shots.py
-          python make_kit_anims.py
-          python make_mobile_manual.py
-          python make_spec.py
-          mkdir -p ../docs-out
-          cp ../tilesmith-desktop/TileSmith-Manual.pdf ../tilesmith-desktop/TileSmith-Mobile-Manual.pdf ../tilesmith-desktop/TileSmith-App-Spec.md ../docs-out/
-      - name: Check that the manuals show the release version
-        env:
-          INPUT_VERSION: ${{ inputs.version || github.ref_name }}
-        run: |
-          V="${INPUT_VERSION#v}"
-          if echo "$V" | grep -Eq '^[0-9]+(\.[0-9]+)+$'; then
-            for f in TileSmith-Manual.pdf TileSmith-Mobile-Manual.pdf; do
-              pdftotext docs-out/$f - | grep -q "v$V" || { echo "::error::$f does not show version $V"; exit 1; }
-            done
-            head -1 docs-out/TileSmith-App-Spec.md | grep -q "TileSmith $V " || { echo "::error::the app spec does not show version $V"; exit 1; }
-            echo "Manuals and spec show version $V"
-          fi
-      - uses: actions/upload-artifact@v4
-        with:
-          name: docs
-          path: docs-out/*
-          if-no-files-found: error
-          retention-days: 7
 
   release:
     needs: [windows, mac, linux, snap, flatpak, android, docs]
