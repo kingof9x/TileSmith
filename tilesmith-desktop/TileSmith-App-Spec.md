@@ -17,7 +17,7 @@ TileSmith is a pixel-mapping and test-pattern tool for LED video walls, used by 
   planned automatically or by hand and are drawn on the canvas.
 - An animated **technician** builds each wall tile by tile, for live display or video.
 - The canvas is sent live as an **NDI®** video source, shared with other programs on the same computer through
-  **Spout** (Windows) or **Syphon** (Mac), and can be recorded to video, exported as PNG, CSV, a printable spec sheet or
+  **Spout** (Windows) or **Syphon** (Mac), and can be recorded to video, exported as PNG, a PDF (full raster, spec sheet and cable labels) or
   a Resolume Arena Advanced Output preset.
 
 Everything runs offline in one HTML page (vanilla JS + Canvas 2D). The desktop build wraps it in Electron and adds
@@ -78,7 +78,7 @@ Visibility rules:
 
 ### 3.2 Top bar
 
-Buttons: **New Project**, **Save**, **Open**, **ⓘ Info**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export CSV**, **Spec sheet**, **Resolume XML ▾**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
+Buttons: **New Project**, **Save**, **Open**, **ⓘ Info**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
 moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Start NDI®" toggles NDI; while
 live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout" (Windows) or "Start Syphon" (Mac)
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
@@ -250,7 +250,7 @@ dialog) deletes the state and reloads.
 | `pman` | [] | Manual power chains (same format as wman). |
 
 New wall ("Add wall"): copy of the selected wall's settings but 4x3, build from top-left horizontal, pattern = first of
-['tileshade', 'SMPTEbars', 'smptescroll', 'sweep', 'circles', 'rgbramp', 'ramp'] not used yet, tile-shade colour from ['#3f8080', '#448040', '#7a4a9e', '#9e5a3a', '#3a5a9e', '#8a7a2a'] by index, name "Wall N". It is placed to the right of the
+['tileshade', 'SMPTEbars', 'sweep', 'circles', 'rgbramp', 'ramp'] not used yet, tile-shade colour from ['#3f8080', '#448040', '#7a4a9e', '#9e5a3a', '#3a5a9e', '#8a7a2a'] by index, name "Wall N". It is placed to the right of the
 rightmost wall (2 px gap) if it fits on the canvas, else below the lowest wall, else offset 40 px. "Duplicate" copies
 the wall (including manual wiring) and names it "... copy". "Remove" deletes the selected wall (at least one remains).
 Canvas presets: 1080p Full HD (1920x1080), 4K UHD (3840x2160), 2K DCI (2048x1080), 4K DCI (4096x2160), 720p HD (1280x720), 32:9 Banner (3840x1080). "Fit canvas to walls" moves walls so none is left/above 0 and sets the canvas to their bounding
@@ -558,7 +558,6 @@ Original size on wall draws it 1:1 at the wall's origin. Large walls render at a
 | `blue` | Full field #00f. |
 | `black` | Full field #000. |
 | `gray50` | Full field #808080. |
-| `smptescroll` | SMPTE bars image; choosing it turns Scroll on (diagonal ↘) if Scroll was none. |
 | `disguise test pattern 16:9` | Built-in 1920x1080 image (grid, circles, grey steps, colour references), embedded as base64 PNG. |
 | `disguise test pattern 4:3` | Built-in 1024x768 version of the same image. |
 | `branded test pattern 16:9` | Built-in 1920x1080 colour bars with a black centre box at (549,249) size 823x115 (image px). Centre box can hold text (BOXFONT, colour boxCol, never stretched) or an uploaded logo (aspect kept). |
@@ -589,7 +588,7 @@ Entire canvas: Canvas, Aspect (reduced ratio and decimal), Canvas pixels, LED wa
 Peak power, Typical, Current peak; processor rows (Processor, Pixels per port with Hz/bit/ULL, Data ports used (primary
 + return = physical), Ports per processor or card, Processors or Sending cards needed = max(ceil(physical ports / ports
 per unit), ceil(LED px / processor max px)), Over capacity); power rows (section 11).
-"Spec sheet" opens a printable page with the same tables (Entire canvas + each wall) and calls print().
+"Export PDF" writes one PDF itself (a minimal PDF 1.4 writer: Helvetica/Helvetica-Bold with WinAnsi text, the master canvas as a DCT/JPEG image, vector rectangles and text for the labels). Page 1 (landscape, Letter in US/CA/MX and similar locales, otherwise A4): title, canvas size and date, then the master canvas (JPEG 92%) scaled to fit. Then portrait pages with the same tables as the engineering panel (Entire canvas, then each wall; 8.5 pt, label column 190 pt). Then, when data or power cables are wired, one page per label sheet at the label sheet size in mm, drawn exactly like the Print labels layout (flags, wall marks, fold line, rotated second panel). Saved as TileSmith-WxH-YYYYMMDD.pdf through dl(). There is no Export CSV button and no separate Spec sheet button.
 
 ## 10. LED processors and data wiring
 
@@ -677,7 +676,7 @@ path), capacity t, plus the power link limit; on half-tile layouts by each piece
 usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "This circuit is full (12 tiles)."
 
 Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
-Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "cable 1 24.0 A · cable 2 12.0 A" (sum of circuit watts / V per cable), Over capacity. CSV adds Circuit, CircuitPos, PowerCable.
+Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "cable 1 24.0 A · cable 2 12.0 A" (sum of circuit watts / V per cable), Over capacity.
 
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 ['#ff9f1c', '#ffd166', '#06d6a0', '#4cc9f0', '#ef476f', '#c77dff'] by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
@@ -805,7 +804,7 @@ the wall's shadeC colour with the wall name (or W1, W2 in corner squares), shown
 or as a background tint). Flag styles: full-height end blocks (flag 20% + wall 14% of a half), top/bottom bars (17% of the
 height each), corner squares (36% of height). Black or white text is chosen by colour luminance. Extra preset: wrap-around
 strip roll 100x30 mm; the default sheet is Avery 5163. With "keep together" the two ends never straddle a row on a sheet.
-**PNG**: the full canvas as tilesmith-canvas.png. **CSV** (patching.csv), one row per tile (piece), columns: `Wall`, `TileID`, `Col`, `Row`, `BuildStep`, `StartX`, `StartY`, `EndX`, `EndY`, `W_px`, `H_px`, `Port`, `PortPos`, `Circuit`, `CircuitPos`, `PowerCable`, `MaxW`, `TypW`, `Tile`.
+**PNG**: the full canvas as tilesmith-canvas.png. **PDF**: see the Export PDF paragraph in the top bar section.
 Port = "P1" or "P1 / R1" for the last tile; Tile = full | half top/bottom/left/right | full on its side; coordinates
 are canvas px; MaxW/TypW per piece. **Resolume XML**: an Arena Advanced Output preset (XmlState > ScreenSetup >
 screens > Screen > layers > Slice) whose composition size is the canvas, one virtual output screen the size of the
@@ -815,7 +814,7 @@ saved as tilesmith-WxH.xml into Documents/Resolume Arena/Presets/Advanced Output
 ## 15. Building it for Android (notes for the clone)
 
 Note: the project already has a mobile build of this exact page (folder mobile/, Capacitor 8 for Android and iOS; see
-BUILD-ANDROID.txt and BUILD-IOS.txt). In it, MOBILE = window.Capacitor.isNativePlatform(): files (PNG, CSV, XML, the spec
+BUILD-ANDROID.txt and BUILD-IOS.txt). In it, MOBILE = window.Capacitor.isNativePlatform(): files (PNG, PDF, XML, the label
 sheet as HTML) go through a share sheet, Export video records H.264 MP4 in real time with MediaRecorder on the master
 canvas (captureStream 60 fps, about 0.12 bits per pixel per frame, 4-40 Mbps) streamed to a file in 3 MB pieces, the
 screen is kept awake while recording, NDI®/Spout/Syphon and the loop-video export are hidden, and two-finger pinch zooms
@@ -837,7 +836,7 @@ webview-bridge.js turns into the same window.TSM. A native Android clone, as des
   run output in a foreground service with a notification, and keep the screen on while sending.
 - Video export on Android: H.264 / H.265 MP4 with `MediaCodec` + `MediaMuxer` (feed frames via an input `Surface` or
   YUV conversion), 60 fps, BT.709 tags. HAP and ProRes need an FFmpeg build; treat them as optional.
-- Save PNG/CSV/XML/MP4 with the Storage Access Framework or MediaStore (Pictures, Movies, Documents). Persist state as
+- Save PNG/PDF/XML/MP4 with the Storage Access Framework or MediaStore (Pictures, Movies, Documents). Persist state as
   the same JSON (section 4) in app storage, so files can move between desktop and Android.
 - Keep all formulas, labels, colours, defaults and limits from this document so plans match the desktop app.
 - Keep the credits and NDI® notices from the Info dialog: "Concept & development: Callum Davenport-Lambton", the contact

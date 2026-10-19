@@ -59,7 +59,7 @@ bitmap.
 | Build animation | `mkSim` {{L:mkSim}}, `reset` {{L:reset}}, `showAll` {{L:showAll}}, `stepSim` {{L:stepSim}}, `step` {{L:step}}, `pickCrew` {{L:pickCrew}}, `techBox` {{L:techBox}}, `drawWallTech` {{L:drawWallTech}}, `worker` {{L:worker}}, `cab` {{L:cab}} |
 | DVD screensaver | `dvdStep` {{L:dvdStep}}, `dvdRun` {{L:dvdRun}}, `dvdNewState` {{L:dvdNewState}}, `dvdDecide` {{L:dvdDecide}}, `dvdAim` {{L:dvdAim}}, `dvdAvoid` {{L:dvdAvoid}}, `dvdBounce` {{L:dvdBounce}}, `dvdLoopPlan` {{L:dvdLoopPlan}}, `dvdLoopAt` {{L:dvdLoopAt}}, `dvdSpr` {{L:dvdSpr}}, `dvdDraw` {{L:dvdDraw}} |
 | Engineering | `wst` {{L:wst}}, `specPx` {{L:specPx}}, `applySpec` {{L:applySpec}}, `tpp` {{L:tpp}}, `powRowsCanvas` {{L:powRowsCanvas}}, `info` {{L:info}} |
-| Exports | `csv` {{L:csv}}, `spec` {{L:spec}}, `resolumeXML` {{L:resolumeXML}}, `recStartMR` {{L:recStartMR}} |
+| Exports | `exportPDF` {{L:exportPDF}}, `resolumeXML` {{L:resolumeXML}}, `recStartMR` {{L:recStartMR}} |
 | Settings | `saveNow` {{L:saveNow}}, `loadState` {{L:loadState}}, `storeWall` {{L:storeWall}}, `loadWall` {{L:loadWall}}, `addWall` {{L:addWall}}, `fitCanvas` {{L:fitCanvas}} |
 
 
@@ -85,7 +85,7 @@ screenshots and ask AI Studio to fix any difference before going on.
 > limits from the pasted settings tables, stored in data classes Settings and Wall with these exact field names.
 > Save all settings as JSON in filesDir/state.json, 400 ms after any change, and load them at start. The viewport and
 > engineering panel can be placeholders for now. Top bar buttons: New Project, Save, Open, ⓘ Info,
-> Reset fit, Next pattern, Export PNG, Export CSV, Spec sheet, Resolume XML ▾.
+> Reset fit, Next pattern, Export PNG, Export PDF, Resolume XML ▾.
 
 **Attach:** `tablet/t01-first-launch.png`, `phone/p01…p0n-phone-portrait.png`, `panels/ui-header.png`,
 `panels/ui-canvas.png`, `panels/ui-led-walls.png`, `panels/ui-tile-model.png`, `panels/ui-size.png`,
@@ -114,7 +114,7 @@ screenshots and ask AI Studio to fix any difference before going on.
 
 **Attach:** `patterns/cv-patterns-all.png`, every `patterns/cv-pattern-NN-*.png`, the four files in
 `source/readable/images/`.
-**Paste:** spec sections 7.1 and 8; code: `pat`, `patImg`, `scrollOff`, `blitWrap`, `tcycTile`, `tcycFill`, `drawBars`.
+**Paste:** spec sections 7.1 and 8; code: `pat`, `patImg`, `scrollOff`, `blitWrap`, `tcycTile`, `tcycFill`, `SMPTE`.
 
 ### Prompt 4: tile models, canvas presets, walls, dragging and snapping
 > Add the tile model presets (grouped by manufacturer; editing any tile field switches to Custom), the canvas presets
@@ -192,8 +192,7 @@ and the data-path drawing part of `render`.
 **Paste:** `04-ANIMATIONS.md` sections 5 to 7 and spec section 13; code: the `dvd…` functions.
 
 ### Prompt 11: exports and sharing
-> Add Export PNG (the master bitmap as tilesmith-canvas.png), Export CSV (patching.csv, columns as pasted), Spec sheet
-> (tilesmith-spec.html with the same tables as the engineering panel), Resolume XML (One slice per LED wall / One slice
+> Add Export PNG (the master bitmap as tilesmith-canvas.png), Export PDF (full raster page, spec sheet pages with the same tables as the engineering panel, then the cable label pages), Resolume XML (One slice per LED wall / One slice
 > per tile, tilesmith-WxH.xml). Write the file to cacheDir/exports and open the Android share sheet through a
 > FileProvider; show the toast "Saved <name>." or "Not saved: <name>". Export video (Video export menu, LED build ticked): record the master canvas at
 > 60 fps into an H.264 MP4 (MediaCodec input Surface + MediaMuxer, bitrate min(40 Mbps, max(4 Mbps, W × H × 60 ×
@@ -202,7 +201,7 @@ and the data-path drawing part of `render`.
 
 **Attach:** `tablet/t14-recording.png`, `tablet/t15-recording-saved.png`, `tablet/t17-resolume-menu.png`,
 `tablet/t19-saved-toast.png`, `tablet/t20-spec-sheet.png`, `panels/ui-video-export.png`.
-**Paste:** spec section 14 (PNG, CSV, Resolume XML parts) and the mobile notes in section 15; code: `csv`, `spec`,
+**Paste:** spec section 14 (PNG, PDF, Resolume XML parts) and the mobile notes in section 15; code: `exportPDF`,
 `resolumeXML`.
 
 ### Prompt 12: info dialog and finishing

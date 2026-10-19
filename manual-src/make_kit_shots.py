@@ -187,13 +187,6 @@ async def main():
         await pg.click('#bar [data-a=png]'); await pg.wait_for_timeout(900)
         await full('t19-saved-toast.png', 'After Export PNG', 'The file goes to the Android share sheet; when an app was picked the toast says "Saved tilesmith-canvas.png."')
 
-        # spec sheet (the HTML file the app shares)
-        await pg.click('#bar [data-a=spec]'); await pg.wait_for_timeout(800)
-        spec = await ev("()=>window.__files['tilesmith-spec.html']")
-        (OUT / 'spec-sheet.html').write_text(base64.b64decode(''.join(spec)).decode())
-        sp = await ctx.new_page(); await sp.set_viewport_size({'width': 900, 'height': 1200}); await sp.goto((OUT / 'spec-sheet.html').as_uri()); await sp.wait_for_timeout(300)
-        await sp.screenshot(path=str(OUT / 't20-spec-sheet.png'), full_page=True); add('t20-spec-sheet.png', 'tablet', 'Spec sheet (shared as tilesmith-spec.html)', 'Entire canvas and per-wall tables, the same rows as the engineering panel.')
-        await sp.close(); (OUT / 'spec-sheet.html').unlink()
         await ctx.close()
 
         # light theme

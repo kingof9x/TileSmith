@@ -31,17 +31,16 @@ async def main():
             ndi:getComputedStyle(document.querySelector('#bar [data-a=ndi]')).display,sh:getComputedStyle(document.querySelector('#shBtn')).display})""")
         print('VIS', vis); ok &= vis['MOBILE'] and 'mobile-android' in vis['cls'] and vis['ndi'] == 'none' and vis['sh'] == 'none'
         await pg.click('#bar [data-a=png]'); await pg.wait_for_timeout(1200)
-        await pg.click('#bar [data-a=csv]'); await pg.wait_for_timeout(500)
-        await pg.click('#bar [data-a=spec]'); await pg.wait_for_timeout(700)
+        await pg.click('#bar [data-a=pdf]'); await pg.wait_for_timeout(1500)
         await pg.evaluate("document.querySelector('#bar [data-a=rxmlm]').scrollIntoView({inline:'center'})"); await pg.wait_for_timeout(300); await pg.click('#bar [data-a=rxmlm]'); await pg.click('#rxmlm [data-v="One slice per tile"]'); await pg.wait_for_timeout(700)
         r = await pg.evaluate("()=>({calls:__calls.filter(c=>c[0]=='share'),toast:document.querySelector('#toast').textContent})")
         print('SHARES', r)
         files = await pg.evaluate('__files')
         png = base64.b64decode(''.join(files['tilesmith-canvas.png']))
-        spec = base64.b64decode(''.join(files['tilesmith-spec.html'])).decode()
+        pk = [k for k in files if k.endswith('.pdf')]; pdfb = base64.b64decode(''.join(files[pk[0]])) if pk else b''
         mimes = {c[1]: c[2] for c in r['calls']}
         print('png', len(png), png[:4], 'mimes', mimes)
-        ok &= png.startswith(b'\x89PNG') and 'print()' not in spec and mimes.get('tilesmith-canvas.png') == 'image/png' and len(r['calls']) == 4 and r['toast'].startswith('Saved')
+        ok &= png.startswith(b'\x89PNG') and pdfb.startswith(b'%PDF-1.4') and mimes.get(pk[0]) == 'application/pdf' and mimes.get('tilesmith-canvas.png') == 'image/png' and len(r['calls']) == 3 and r['toast'].startswith('Saved')
         # a big file crosses in pieces (chunking)
         await pg.evaluate("__calls.length=0")
         r = await pg.evaluate("""async()=>{const n=2500000,a=new Uint8Array(n);for(let i=0;i<n;i++)a[i]=(i*7)&255;
@@ -51,11 +50,11 @@ async def main():
         print('BIG', r['ok'], len(r['writes']), r['writes'][:4], 'bytes ok', good)
         ok &= r['ok'] is True and len(r['writes']) == 4 and r['writes'][0][1] is False and all(w[1] for w in r['writes'][1:]) and good
         # share sheet closed without picking an app
-        await pg.evaluate("window.__cancel=true;__calls.length=0"); await pg.click('#bar [data-a=csv]'); await pg.wait_for_timeout(400)
+        await pg.evaluate("window.__cancel=true;__calls.length=0"); await pg.click('#bar [data-a=pdf]'); await pg.wait_for_timeout(400)
         t = await pg.evaluate("document.querySelector('#toast').textContent"); print('CANCEL toast', t); ok &= t.startswith('Not saved')
         await pg.evaluate("window.__cancel=false")
         # write failure
-        await pg.evaluate("window.__failWrite=true"); await pg.click('#bar [data-a=csv]'); await pg.wait_for_timeout(400)
+        await pg.evaluate("window.__failWrite=true"); await pg.click('#bar [data-a=pdf]'); await pg.wait_for_timeout(400)
         t = await pg.evaluate("document.querySelector('#toast').textContent"); print('FAIL toast', t); ok &= 'disk full' in t
         await pg.evaluate("window.__failWrite=false")
         # links: Ko-fi, the ndi.video links are hidden on mobile, mail link

@@ -76,7 +76,7 @@ open: every number, formula and colour the rewrite needs is in them. When a prom
 - **Phones.** On a phone the panels stack under each other (see `screenshots/phone/`). A dedicated phone layout is
   planned and will reach this app automatically, through a newer `index.html`.
 - **What I could check here.** `webview-bridge.js` was tested in Chromium with a stand-in for the Kotlin side: saving
-  PNG, CSV, the spec sheet and XML; a 2.5 MB file in pieces; a cancelled share; a failed write; links; recording and
+  PNG, PDF and XML; a 2.5 MB file in pieces; a cancelled share; a failed write; links; recording and
   cancelling a video; and the plain web page without Kotlin. The Kotlin files were type-checked against the Android
   APIs they use. Building an APK, AI Studio itself and a real device could not be tried from here. Test on a device
   before you rely on it.

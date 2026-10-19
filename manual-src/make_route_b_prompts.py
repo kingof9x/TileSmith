@@ -71,8 +71,8 @@ viewport and the engineering panel are placeholders for now.
    - Canvas presets come from R.
 5. Saving. Save as the same JSON as saveNow() ({sv:23,S,walls,cur,crew,logo,dvd}) in filesDir/state.json, 400 ms
    after any change. Load and validate it at start-up as loadState() does.
-6. Top bar buttons: ⓘ Info, New Project, Save, Open, Undo menu, Center canvas, Show entire canvas, Next pattern, Export PNG, Export CSV,
-   Spec sheet, Resolume XML ▾ (menu: One slice per LED wall / One slice per tile). Save writes the whole project (the saveNow() JSON incl. images, crew, logo) to a .tilesmith file; Open reads one after a confirmation and replaces the current project. After them, a red
+6. Top bar buttons: ⓘ Info, New Project, Save, Open, Undo menu, Center canvas, Show entire canvas, Next pattern, Export PNG, Export PDF,
+   Resolume XML ▾ (menu: One slice per LED wall / One slice per tile). Save writes the whole project (the saveNow() JSON incl. images, crew, logo) to a .tilesmith file; Open reads one after a confirmation and replaces the current project. After them, a red
    recording status, the zoom % and the fps label. They can do nothing yet.
 7. LED walls list (wallsUI) with Add wall / Duplicate / Remove working on the list (positions come in step 4).""",
   spec=['1', '2', '3', '4'], code=[('R', 'R'), ('S', 'loadWall'), ('LIM', 'HEAVY'), ('wallsUI', 'wallsUI'), ('F', 'build'), ('sync', 'uiVis'), ('stFile', 'resetSaved')], css=True),
@@ -116,10 +116,10 @@ drawn by patRaw() and the image helpers below.
 
 1. Built-in images. The four built-in pictures are attached. Add them as res/drawable-nodpi/disguise_16_9.png,
    disguise_4_3.png, branded_16_9.png and branded_4_3.png, and use them where PATIMG_SRC names them. SMPTEbars is
-   drawn once at 1920 × 1080 by drawBars() (GEN_PAT) and then treated like an image.
+   the built-in SMPTE bars image (SMPTE), treated like the other image patterns.
 2. Image fit (PFIT, five modes) for every image pattern, exactly as drawImgPat() does, including the 25 MP cache limit.
 3. Scroll. Port scrollOff() and blitWrap(): four directions, speed = Scroll speed × 0.2 × the wall's shorter side in
-   px per second, wrapping around. Choosing smptescroll switches Scroll to diagonal ↘ when it was none.
+   px per second, wrapping around. (The old smptescroll pattern is gone: saved walls using it load as SMPTEbars.)
 4. Centre box of the branded patterns (PATIMG_BOX, drawPatBox): text in BOXFONT with boxCol and never stretched, or
    an uploaded logo with its aspect kept.
 5. Uploads. "Upload test pattern", "Upload logo" (centre box) and "Upload logo" (DVD) open the Android photo picker.
@@ -305,8 +305,8 @@ sheet returns OK or the app went to the background while it was open. Toast "Sav
 "Not saved: <name>".
 
 1. Export PNG: the master bitmap as tilesmith-canvas.png at full size.
-2. Export CSV: patching.csv, exactly as csv() builds it (same columns, order and number formats).
-3. Spec sheet: tilesmith-spec.html, the HTML from spec(), without the print script (the mobile app shares the file).
+2. Export PDF (one PDF: page 1 the full raster, then the spec sheet with the same tables as the engineering panel, then the cable labels as vector pages at the label size, built by exportPDF()). Saved as TileSmith-WxH-YYYYMMDD.pdf.
+3. (no separate CSV or spec sheet export)
 4. Resolume XML: tilesmith-WxH.xml from resolumeXML(), with One slice per LED wall or One slice per tile from the
    menu, and the toast text from exportRes().
 5. Export video (Video export submenu, button Export video, with the LED build box ticked), the same behaviour as recToggle/recStartMR/recTick/endRec, in Kotlin:
@@ -319,7 +319,7 @@ sheet returns OK or the app went to the background while it was open. Toast "Sav
    - share tilesmith-build-YYYYMMDD-HHMMSS.mp4 when it finishes;
    - pressing Export video again cancels ("Recording cancelled") and deletes the file.
    HAP, ProRes and the loop video are desktop only.""",
-  spec=['14', '15'], code=[('csv', 'exportRes'), ('dl', 'mobSave'), ('REC', 'recUI'), ('endRec', 'recTick')]),
+  spec=['14', '15'], code=[('exportPDF', 'exportRes'), ('dl', 'mobSave'), ('REC', 'recUI'), ('endRec', 'recTick')]),
 
  dict(n=12, slug='info-dialog-and-finishing', title='Info dialog, toasts and the final comparison',
   attach=['tablet/t16-info-dialog.png', 'panels/ui-info-dialog.png', 'tablet/t01-first-launch.png', 'tablet/t02-two-walls-data.png', 'phone/p01-phone-portrait.png'],

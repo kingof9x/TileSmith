@@ -1,5 +1,5 @@
 # Builds TileSmith-App-Spec.md: a detailed description of the app for another AI model (or developer) to build a clone,
-# e.g. an Android app. Lists (settings, presets, processors, patterns, video formats, CSV columns, half tiles...) are
+# e.g. an Android app. Lists (settings, presets, processors, patterns, video formats, half tiles...) are
 # read from the running app/index.html, so the spec always matches the build it ships with.
 # Run: python3 make_spec.py   (fails if a setting or pattern has no description here, so new features get documented)
 import asyncio, json, pathlib, datetime, os
@@ -72,7 +72,6 @@ PATSPEC = {
  'ramp': '16 vertical grey steps from 0 to 255, left to right.',
  'sweep': 'Animated rainbow: horizontal gradient of 7 hues offset by 60° x t, with a white (top) to clear to dark (bottom) vertical overlay. Redraws every frame.',
  'white': 'Full field #fff.', 'red': 'Full field #f00.', 'green': 'Full field #0f0.', 'blue': 'Full field #00f.', 'black': 'Full field #000.', 'gray50': 'Full field #808080.',
- 'smptescroll': 'SMPTE bars image; choosing it turns Scroll on (diagonal ↘) if Scroll was none.',
  'disguise test pattern 16:9': 'Built-in 1920x1080 image (grid, circles, grey steps, colour references), embedded as base64 PNG.',
  'disguise test pattern 4:3': 'Built-in 1024x768 version of the same image.',
  'branded test pattern 16:9': 'Built-in 1920x1080 colour bars with a black centre box at (549,249) size 823x115 (image px). Centre box can hold text (BOXFONT, colour boxCol, never stretched) or an uploaded logo (aspect kept).',
@@ -93,7 +92,7 @@ async def collect():
         d = await pg.evaluate("""()=>{const o={};for(const k in S){const v=S[k];o[k]=v&&typeof v=='object'&&!Array.isArray(v)&&v.constructor!==Object?null:v}
           return {S:o,WK,P:Object.entries(P).filter(([k,v])=>v),HALF:Object.entries(HALF),PROC:Object.entries(PROC).filter(([k,v])=>v),PATS:PAT_LIST,PFIT,SCRV:Object.keys(SCRV),
            WFILL,WFILLN,PFILL,PFILLN,WPAT,R:Object.entries(R),NFR:Object.entries(NFR),codecs:Object.entries(VCODEC).map(([k,v])=>({name:k,ext:v.ext,enc:v.enc,note:v.note,args:v.args().join(' ')})),
-           csv:csv().split('\\n')[0],crew:defCrew().map(c=>c[0]),D,RATES,STAG,GAP,DVD_MAX,TCYC,TC_STEP,TC_SLIDE,STEP_S,PC,POWC,SHADES,NEWPATS:PATS,PATIMG_BOX:Object.entries(PATIMG_BOX),
+           crew:defCrew().map(c=>c[0]),D,RATES,STAG,GAP,DVD_MAX,TCYC,TC_STEP,TC_SLIDE,STEP_S,PC,POWC,SHADES,NEWPATS:PATS,PATIMG_BOX:Object.entries(PATIMG_BOX),
            top:[...document.querySelectorAll('#bar > button, #bar .dd > button')].map(x=>x.textContent),
            panel:[...document.querySelectorAll('#left > details')].map(dd=>[dd.querySelector(':scope>summary').textContent.trim(),[...dd.querySelectorAll('details.subd')].map(x=>{let n=0,e=x.parentElement;while(e&&e!==dd){if(e.matches('details.subd'))n++;e=e.parentElement}return [n,x.querySelector(':scope>summary').textContent.trim()]})])}}""")
         await b.close()
@@ -123,7 +122,6 @@ def build(d):
     nfr = ', '.join(f'{k} ({v[0]}/{v[1]})' for k, v in d['NFR'])
     panel = '\n'.join(f'- **{t}**' + ''.join(f"\n{'  ' * (n + 1)}- {s}" for n, s in subs) for t, subs in d['panel'])
     top = ', '.join(f'**{t}**' for t in d['top'])
-    csvcols = ', '.join(f'`{c}`' for c in d['csv'].split(','))
     sim = ', '.join(f'{k} {v} s' for k, v in d['D'].items())
 
     return f"""# TileSmith {VERSION} - app specification for building a clone
@@ -145,7 +143,7 @@ TileSmith is a pixel-mapping and test-pattern tool for LED video walls, used by 
   planned automatically or by hand and are drawn on the canvas.
 - An animated **technician** builds each wall tile by tile, for live display or video.
 - The canvas is sent live as an **NDI®** video source, shared with other programs on the same computer through
-  **Spout** (Windows) or **Syphon** (Mac), and can be recorded to video, exported as PNG, CSV, a printable spec sheet or
+  **Spout** (Windows) or **Syphon** (Mac), and can be recorded to video, exported as PNG, a PDF (full raster, spec sheet and cable labels) or
   a Resolume Arena Advanced Output preset.
 
 Everything runs offline in one HTML page (vanilla JS + Canvas 2D). The desktop build wraps it in Electron and adds
@@ -354,7 +352,7 @@ Entire canvas: Canvas, Aspect (reduced ratio and decimal), Canvas pixels, LED wa
 Peak power, Typical, Current peak; processor rows (Processor, Pixels per port with Hz/bit/ULL, Data ports used (primary
 + return = physical), Ports per processor or card, Processors or Sending cards needed = max(ceil(physical ports / ports
 per unit), ceil(LED px / processor max px)), Over capacity); power rows (section 11).
-"Spec sheet" opens a printable page with the same tables (Entire canvas + each wall) and calls print().
+"Export PDF" writes one PDF itself (a minimal PDF 1.4 writer: Helvetica/Helvetica-Bold with WinAnsi text, the master canvas as a DCT/JPEG image, vector rectangles and text for the labels). Page 1 (landscape, Letter in US/CA/MX and similar locales, otherwise A4): title, canvas size and date, then the master canvas (JPEG 92%) scaled to fit. Then portrait pages with the same tables as the engineering panel (Entire canvas, then each wall; 8.5 pt, label column 190 pt). Then, when data or power cables are wired, one page per label sheet at the label sheet size in mm, drawn exactly like the Print labels layout (flags, wall marks, fold line, rotated second panel). Saved as TileSmith-WxH-YYYYMMDD.pdf through dl(). There is no Export CSV button and no separate Spec sheet button.
 
 ## 10. LED processors and data wiring
 
@@ -419,7 +417,7 @@ path), capacity t, plus the power link limit; on half-tile layouts by each piece
 usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "This circuit is full (12 tiles)."
 
 Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
-Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "cable 1 24.0 A · cable 2 12.0 A" (sum of circuit watts / V per cable), Over capacity. CSV adds Circuit, CircuitPos, PowerCable.
+Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "cable 1 24.0 A · cable 2 12.0 A" (sum of circuit watts / V per cable), Over capacity.
 
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 {d['POWC']} by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
@@ -540,7 +538,7 @@ the wall's shadeC colour with the wall name (or W1, W2 in corner squares), shown
 or as a background tint). Flag styles: full-height end blocks (flag 20% + wall 14% of a half), top/bottom bars (17% of the
 height each), corner squares (36% of height). Black or white text is chosen by colour luminance. Extra preset: wrap-around
 strip roll 100x30 mm; the default sheet is Avery 5163. With "keep together" the two ends never straddle a row on a sheet.
-**PNG**: the full canvas as tilesmith-canvas.png. **CSV** (patching.csv), one row per tile (piece), columns: {csvcols}.
+**PNG**: the full canvas as tilesmith-canvas.png. **PDF**: see the Export PDF paragraph in the top bar section.
 Port = "P1" or "P1 / R1" for the last tile; Tile = full | half top/bottom/left/right | full on its side; coordinates
 are canvas px; MaxW/TypW per piece. **Resolume XML**: an Arena Advanced Output preset (XmlState > ScreenSetup >
 screens > Screen > layers > Slice) whose composition size is the canvas, one virtual output screen the size of the
@@ -550,7 +548,7 @@ saved as tilesmith-WxH.xml into Documents/Resolume Arena/Presets/Advanced Output
 ## 15. Building it for Android (notes for the clone)
 
 Note: the project already has a mobile build of this exact page (folder mobile/, Capacitor 8 for Android and iOS; see
-BUILD-ANDROID.txt and BUILD-IOS.txt). In it, MOBILE = window.Capacitor.isNativePlatform(): files (PNG, CSV, XML, the spec
+BUILD-ANDROID.txt and BUILD-IOS.txt). In it, MOBILE = window.Capacitor.isNativePlatform(): files (PNG, PDF, XML, the label
 sheet as HTML) go through a share sheet, Export video records H.264 MP4 in real time with MediaRecorder on the master
 canvas (captureStream 60 fps, about 0.12 bits per pixel per frame, 4-40 Mbps) streamed to a file in 3 MB pieces, the
 screen is kept awake while recording, NDI®/Spout/Syphon and the loop-video export are hidden, and two-finger pinch zooms
@@ -572,7 +570,7 @@ webview-bridge.js turns into the same window.TSM. A native Android clone, as des
   run output in a foreground service with a notification, and keep the screen on while sending.
 - Video export on Android: H.264 / H.265 MP4 with `MediaCodec` + `MediaMuxer` (feed frames via an input `Surface` or
   YUV conversion), 60 fps, BT.709 tags. HAP and ProRes need an FFmpeg build; treat them as optional.
-- Save PNG/CSV/XML/MP4 with the Storage Access Framework or MediaStore (Pictures, Movies, Documents). Persist state as
+- Save PNG/PDF/XML/MP4 with the Storage Access Framework or MediaStore (Pictures, Movies, Documents). Persist state as
   the same JSON (section 4) in app storage, so files can move between desktop and Android.
 - Keep all formulas, labels, colours, defaults and limits from this document so plans match the desktop app.
 - Keep the credits and NDI® notices from the Info dialog: "Concept & development: Callum Davenport-Lambton", the contact

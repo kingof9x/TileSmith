@@ -73,7 +73,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p>TileSmith Mobile is the TileSmith LED wall tool on Android and iOS tablets and phones. It runs the <b>same TileSmith page</b> as the desktop and web versions, so the canvas, walls, tile models, test patterns, engineering, wiring, power and the build animation are identical: the same layout gives the same picture and the same numbers on a tablet as on the desktop. Everything works offline and is saved on the device automatically.</p>
 {table(['', 'Mobile app', 'Desktop app (Windows, Mac)'], [
  ['Canvas, walls, presets, patterns, engineering, wiring, power, build animation, DVD screensaver', 'Yes', 'Yes'],
- ['Export PNG, CSV, Spec sheet, Resolume XML', 'Yes: through the share sheet (Files, Drive, AirDrop, e-mail …)', 'Yes: saved to folders'],
+ ['Export PNG, PDF, Resolume XML', 'Yes: through the share sheet (Files, Drive, AirDrop, e-mail …)', 'Yes: saved to folders'],
  ['Export video', 'H.264 MP4, recorded in real time with the device\'s encoder', 'HAP, H.264, H.265, ProRes 422 HQ, ProRes 4444 (ffmpeg)'],
  ['Video export: DVD logo (perfect loop video)', 'No', 'Yes'],
  ['NDI® output, Spout (Windows), Syphon (Mac)', 'No (buttons and menus hidden)', 'Yes'],
@@ -111,7 +111,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['<b>New Project</b>', 'Asks first, then wipes everything and starts a blank canvas. Undo brings it back.'],
  ['<b>Undo</b>', 'Opens a list of the last 20 changes; tap one to go back to just before it. The first item can be <i>Redo</i>.'],
  ['<b>Next pattern</b>', 'Moves the selected wall to the next test pattern; a message at the bottom names it.'],
- ['<b>Export PNG / Export CSV / Spec sheet</b>', 'Save the canvas picture, the patching list or the spec sheet (chapter 14).'],
+ ['<b>Export PNG / Export PDF</b>', 'Save the canvas picture, or one PDF with the full raster, the spec sheet and the cable labels (chapter 14).'],
  ['<b>Resolume XML ▾</b>', 'Saves a Resolume Arena Advanced Output preset: One slice per LED wall or One slice per tile.'],
 ])}
 <p>Next to the buttons: a red recording status, the zoom level and how many frames per second the canvas draws (<i>still</i> when nothing moves).</p></section>
@@ -134,7 +134,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <li><span class="key">Engineering › LED processor</span>: choose your processor, then a pattern under <span class="key">Data wiring</span>.</li>
 <li><span class="key">Engineering › Power</span>: tick <b>Power distribution</b>, then a pattern under <span class="key">Power wiring</span>.</li>
 <li>Open <b>Animation Options › LED build</b> and tap <b>Start</b> to watch the technician build the wall, or open <b>Video export</b> and tap <b>Export video</b> to record it.</li>
-<li>Tap <b>Export PNG</b>, <b>Export CSV</b> or <b>Spec sheet</b> and pick where the file goes.</li></ol>
+<li>Tap <b>Export PNG</b> or <b>Export PDF</b> and pick where the file goes.</li></ol>
 {img('t02-two-walls-data.png', 'Two walls, a NovaStar VX1000 Pro and Snake data wiring.')}</section>
 
 <section class="chap"><h1>6. Canvas and LED walls</h1>
@@ -180,7 +180,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 
 <section class="chap"><h1>11. Engineering panel</h1>
 <div class="side"><div><p>The engineering panel (on the right on a tablet, at the bottom on a phone) shows totals for the <b>Entire canvas</b> and for each wall. The canvas section covers canvas and LED pixels, area, weight, peak and typical power, processor ports and processors needed, and with power on, circuits, Socapex cables and peak load per phase. Each wall section covers its tile model, wall pixels, position, tiles, size in metres and feet, area, weight, power, tiles per port or circuit, minimum ports and circuits, and its data and power paths.</p>
-<p>Tap a section heading to fold it. The same tables go into the <b>Spec sheet</b>.</p></div>{img('ui-engineering-panel.png', 'Engineering', maxh='150mm')}</div></section>
+<p>Tap a section heading to fold it. The same tables go into the spec sheet pages of the exported PDF.</p></div>{img('ui-engineering-panel.png', 'Engineering', maxh='150mm')}</div></section>
 
 <section class="chap"><h1>12. Build animation and technician</h1>
 <p>Under <b>LED build</b> tap <b>Start</b> and a technician builds each wall tile by tile. He walks in carrying the tile, lifts it into its slot and locks it with a flash, then walks off while the next crew member brings the next tile. Each tile takes about 4.8 seconds at Speed 1. Several walls are built at the same time, each starting 0.6 s after the one before.</p>
@@ -194,15 +194,14 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 {img('anim-dvd-strip.png', 'The logo changing colour at each bounce')}</section>
 
 <section class="chap"><h1>14. Saving and sharing files</h1>
-<p>Export PNG, Export CSV, Spec sheet and Resolume XML open the device's <b>share sheet</b>, where you pick where the file goes: Files, Google Drive, iCloud Drive, AirDrop, Quick Share, e-mail, a messaging app and so on.</p>
+<p>Export PNG, Export PDF and Resolume XML open the device's <b>share sheet</b>, where you pick where the file goes: Files, Google Drive, iCloud Drive, AirDrop, Quick Share, e-mail, a messaging app and so on.</p>
 <ul><li>When you pick an app, TileSmith says <i>Saved …</i>. If you close the sheet, it says <i>Not saved: …</i> and nothing is kept.</li>
 <li><b>Export PNG</b>: <code>tilesmith-canvas.png</code>, the full canvas at its real size.</li>
-<li><b>Export CSV</b>: <code>patching.csv</code>, one row per tile, with its position, pixels, port, circuit, power cable and watts.</li>
-<li><b>Spec sheet</b>: <code>tilesmith-spec.html</code>. Open it in a browser to read, print or save it as a PDF.</li>
+<li><b>Export PDF</b>: <code>TileSmith-WxH-date.pdf</code>. Page 1 is the full raster, then the spec sheet with every engineering figure, then the cable labels (one page per label sheet, at your label size). It opens in any PDF viewer.</li>
 <li><b>Save label sheet</b> (Label printing options, shown once data or power wiring is defined): <code>tilesmith-cable-labels.html</code>, a sheet of labels for both ends of every data and power cable. Open it in a browser and print it at 100% scale on Avery 5160, 5163, L7160 or roll labels.</li>
 <li><b>Resolume XML</b>: <code>tilesmith-WxH.xml</code>. Copy it to <i>Documents/Resolume Arena/Presets/Advanced Output</i> on the computer that runs Resolume, then pick it in Arena's Advanced Output.</li></ul>
 {row(img('t19-saved-toast.png', 'After Export PNG'), img('t17-resolume-menu.png', 'Resolume XML menu'))}
-{img('t20-spec-sheet.png', 'The spec sheet', maxh='120mm')}</section>
+</section>
 
 <section class="chap"><h1>15. Recording a video</h1>
 <div class="side"><div><p><b>Export video</b> (with <b>LED build</b> ticked) records the master canvas as an <b>H.264 MP4</b> at 60 frames per second, using the device's own video encoder. The recording has three parts: the <b>Blank intro</b>, then the live build, then the <b>Final hold</b> of the finished walls. The estimated length is shown under the settings.</p>

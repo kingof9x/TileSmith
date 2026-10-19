@@ -1,5 +1,5 @@
 # Builds TileSmith-Manual.pdf from the current app.
-# Lists (patterns, processors, video formats, wiring patterns, presets, CSV columns) are read from app/index.html,
+# Lists (patterns, processors, video formats, wiring patterns, presets) are read from app/index.html,
 # and screenshots are taken from the running app, so the manual always matches the build it ships with.
 # Run: python3 make_manual.py   (fails if a pattern, fit mode or video format has no description here)
 import asyncio, json, html, pathlib, datetime, base64, os
@@ -18,12 +18,11 @@ PATTERN_DESC = {
  'tileshade': 'Pixel map. Every tile is a light or dark shade of one colour (set it with <b>Tile-shade color</b>), with corner-to-corner diagonals, a centre circle, the wall name and resolution in the middle, the canvas position of the first tile\'s top-left corner in a see-through dark box, and a footer with the wall name, position, columns, rows, cabinet count, resolution and aspect ratio. This is the default pattern.',
  'tileshade-clean': 'The same pixel map without the name, size and position boxes on the wall; that information is only in the footer.',
  'tileshade-cycle': 'The tileshade layout with every tile stepping through red, green and blue. Each colour holds for a second, then the next one slides in from the left over 1.5 seconds. Each tile starts at a different point in the sequence, so a tile never shows the same colour as the tiles above, below, left or right of it. Good for spotting dead pixels, colour mismatches and swapped tiles. Tile-shade color is not used.',
- 'SMPTEbars': 'Classic SMPTE colour bars, drawn by TileSmith at 1920 × 1080. Image fit and Scroll apply.',
+ 'SMPTEbars': 'SMPTE colour bars image. Image fit and Scroll apply.',
  'ramp': '16-step greyscale from black to white, left to right.',
  'sweep': 'Moving rainbow with a light-to-dark vertical fade (animated).',
  'white': 'Full-field white.', 'red': 'Full-field red.', 'green': 'Full-field green.', 'blue': 'Full-field blue.',
  'black': 'Full-field black.', 'gray50': 'Full-field 50% grey.',
- 'smptescroll': 'SMPTE bars image. Picking it switches Scroll to diagonal if Scroll was off.',
  'disguise test pattern 16:9': 'Built-in 1920 × 1080 image with grid, circles, greyscale steps and colour references.',
  'disguise test pattern 4:3': 'Built-in 1024 × 768 version of the same image.',
  'branded test pattern 16:9': 'Built-in 1920 × 1080 colour bars with a black centre box. Put your own text or logo in the box with <b>Center box</b>.',
@@ -118,7 +117,6 @@ async def shots_and_data():
           procs:Object.entries(PROC).filter(([k,m])=>m).map(([k,m])=>({name:k,brand:m.brand,ports:m.ports,px:m.px,hz:m.hz,bpc:m.bpc,note:m.note})),
           codecs:Object.entries(VCODEC).map(([k,v])=>({name:k,ext:v.ext,enc:v.enc,note:v.note})),
           res:Object.entries(R),presets:Object.entries(P).filter(([k,v])=>v),
-          csv:csv().split('\\n')[0],
           wp:WPAT.map(([c,d])=>({c,d,snake:wpatSvg(c,d,true),linear:wpatSvg(c,d,false)})),
           fps:[...document.querySelectorAll('select[data-k=ndiFps] option')].map(o=>o.value),shfps:[...document.querySelectorAll('select[data-k=shFps] option')].map(o=>o.value),
           dvdSrc:[...document.querySelectorAll('select[data-k=dvdSrc] option')].map(o=>o.value)})""")
@@ -216,7 +214,6 @@ def build_html(d):
     presets = table(['Preset', 'Tile (px)', 'Size (mm)', 'Pitch', 'Weight', 'Max W'],
                     [[E(k), f'{v[2]} × {v[3]}', f'{v[0]} × {v[1]}', f'{v[4]} mm', f'{v[5]} kg', v[6]] for k, v in d['presets']], 'small')
     wp = lambda kind: '<div class="wp">' + ''.join(f'<div><div class="ico">{x[kind]}</div><span>{E(x["c"])}<br>{E(x["d"].lower())}</span></div>' for x in d['wp']) + '</div>'
-    csvcols = ', '.join(f'<code>{E(c)}</code>' for c in d['csv'].split(','))
     halftab = table(['Model', 'Half tile', 'Half'], [[E(x['full']), E(x['half']) + (f" ({x['h'][0]}×{x['h'][1]} mm, {x['h'][2]}×{x['h'][3]} px)" if x['h'] else ''), 'top / bottom' if x['split'] == 'h' else 'left / right'] for x in d['half']], 'small')
     tx_lic = ''.join(f'<div class="lic"><b>{E(n)}</b><br><span>{E(w)}</span><pre>{E(t)}</pre></div>' for n, w, t in TX_LICENSES)
     return f"""<!doctype html><html><head><meta charset="utf-8"><title>TileSmith {VERSION} User Manual</title><style>
@@ -247,7 +244,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p>TileSmith lays out LED walls on a master canvas, fills them with test patterns and pixel maps, works out processor ports, data paths and power, and sends the canvas live over <b>NDI®</b> to your media server or processor. An animated LED technician can build each wall tile by tile, which you can show live or record as a video.</p>
 <ul><li>Several LED walls on one canvas, each with its own tile model, size, position and test pattern.</li>
 <li>Processor-aware engineering: tiles per port and data paths (P# to R#), plus tiles per circuit and power runs on Socapex.</li>
-<li>Live NDI® output, plus Spout (Windows) or Syphon (Mac) to other apps on the same computer (desktop app); HAP, MP4 and ProRes video export, PNG, CSV, spec sheet and Resolume Advanced Output XML.</li>
+<li>Live NDI® output, plus Spout (Windows) or Syphon (Mac) to other apps on the same computer (desktop app); HAP, MP4 and ProRes video export, PNG, PDF and Resolume Advanced Output XML.</li>
 <li>Runs fully offline. Everything you set up is saved automatically.</li></ul>
 <div class="note">The desktop app (Windows or Mac) is needed for NDI®, Spout and Syphon output and video export. The web version does everything else.</div>
 
@@ -285,8 +282,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['Start NDI®', 'Starts sending the canvas as an NDI® source (desktop app). While it runs the button is green and reads <b>Stop NDI®</b>; click it again to stop. Settings are in Animation Options › NDI® options.'],
  ['Start Spout / Start Syphon', '<b>Start Spout</b> on Windows, <b>Start Syphon</b> on Mac: shares the canvas with other apps on the same computer, straight from the graphics card. Green and <b>Stop …</b> while live. Shown only in a desktop app built with Spout or Syphon. Settings are in Animation Options › Spout options or Syphon options.'],
  ['Export PNG', 'Saves the canvas as a PNG image at full resolution.'],
- ['Export CSV', 'Saves a patching sheet with one row per tile.'],
- ['Spec sheet', 'Opens a printable spec sheet with every engineering figure.'],
+ ['Export PDF', 'Saves one PDF: the full raster on the first page, the spec sheet with every engineering figure, and the cable labels (chapter 18).'],
  ['Resolume XML ▾', 'Drop-down: pick <b>One slice per LED wall</b> or <b>One slice per tile</b> to save an Advanced Output preset for Resolume Arena.'],
  ])}
 <h3>Moving around the viewport</h3><ul><li>Next to the zoom level, the top bar shows how many frames per second the canvas is drawing, or <i>still</i> when nothing is moving.</li>
@@ -307,7 +303,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <h3>Positioning walls</h3><p>Under <b>Wall position</b>, type <b>Offset X</b> and <b>Offset Y</b> in canvas pixels, or use the alignment buttons. In the viewport you can <b>drag a wall</b>: it snaps to the canvas edges and to other walls, keeping a <b>2 px gap</b> between walls. Hold <b>Alt</b> while dragging to place it freely. Pink guide lines show what it is snapping to.</p>
 <div class="side"><div><h3>Size of LED Wall</h3><p>Set <b>Columns</b> and <b>Rows</b> of tiles (up to 64 each), or click a quick size such as 6×4 or 16×9. The wall's pixel size is columns × tile width by rows × tile height.</p></div>{img('sec_size')}</div>
 <h3>Removing tiles</h3><div class="side"><div><p>For a wall that is not a rectangle, click <b>Remove tiles</b> in the Size of LED Wall submenu, then click tiles in the viewport to take them out. Click a removed tile to put it back, or press and drag to do the same to every tile you cross. <b>Restore all tiles</b> puts every tile back. While you are removing tiles, the viewport marks removed tiles with a red ✕ (this never appears in the output).</p>
-<p>A removed tile is black in the output and left out everywhere else: the build animation skips it, and the engineering panel, spec sheet, CSV and Resolume per-tile slices leave it out. Tile IDs keep their grid numbers, so the remaining tiles keep their names. Data and power wiring skip removed tiles, and Snake and Linear join neighbouring ports or circuits that now fit on one. Removing tiles works with any model. On a wall with half tiles, Remove tiles takes out whole tiles, and clicking an empty space puts a tile back (a full tile if its whole cell is empty, otherwise a half tile).</p></div>{img('gone', 'A ROE Carbon CB5 wall with the top corners stepped in.')}</div></section>
+<p>A removed tile is black in the output and left out everywhere else: the build animation skips it, and the engineering panel, PDF and Resolume per-tile slices leave it out. Tile IDs keep their grid numbers, so the remaining tiles keep their names. Data and power wiring skip removed tiles, and Snake and Linear join neighbouring ports or circuits that now fit on one. Removing tiles works with any model. On a wall with half tiles, Remove tiles takes out whole tiles, and clicking an empty space puts a tile back (a full tile if its whole cell is empty, otherwise a half tile).</p></div>{img('gone', 'A ROE Carbon CB5 wall with the top corners stepped in.')}</div></section>
 
 <section class="chap"><h1>7. Tile model</h1>
 <div class="side"><div><p>Presets are grouped by manufacturer. Pick a <b>Preset</b> to fill in the tile's pixels, size, pitch, depth, weight and maximum watts, or edit any field (the preset then shows <i>Custom</i>). <b>Density</b> and <b>Typical (40%)</b> power are worked out for you. These figures drive the engineering panel, port capacity and power circuits.</p>
@@ -327,7 +323,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <section class="chap"><h1>8. Test patterns</h1>
 <p>Each wall has its own pattern. Choose it from <b>Test pattern</b>, or click <b>Next pattern</b> in the top bar to step the selected wall through the list in this order. <b>Tile-shade color</b> appears right under the pattern list when tileshade or tileshade-clean is chosen. <b>Tile position arrows</b> (an option for every pattern, on by default) labels every tile with its row counted up from the bottom (↑) and its column counted from the left (→), so ↑1 →1 is the bottom-left tile. The marker sits low on the left of each tile and moves up or down on any tile where it would cover the tile labels, the wall's name and size boxes or the footer. Only lit tiles show the pattern, so during a build it appears tile by tile.</p>{pats}
 <h3>Scroll</h3><p><b>Scroll</b> moves any pattern across the wall ({', '.join(E(s) for s in d['scroll'])}); <b>Scroll speed</b> sets how fast. Tile borders and labels stay still while the pattern moves underneath.</p>
-<h3>Image fit</h3><p>For image patterns (SMPTEbars, smptescroll, the built-in images and your own upload), <b>Image fit</b> decides how the image meets the wall:</p>{fits}
+<h3>Image fit</h3><p>For image patterns (SMPTEbars, the built-in images and your own upload), <b>Image fit</b> decides how the image meets the wall:</p>{fits}
 {img('fit_canvas', '<b>Original size on canvas</b>: two walls each show their own part of one 1920 × 1080 image, with nothing scaled.')}
 <h3>Centre box on the branded patterns</h3><p>With a <b>branded test pattern</b> selected, <b>Center box</b> puts your <b>Text</b> (with a colour) or a <b>Logo</b> (upload PNG, SVG or JPG) in the black box. Text shrinks to fit; logos keep their shape, even when the pattern is stretched.</p>
 <div class="cols">{img('branded', 'Branded test pattern with text in the centre box.')}{img('sec_pattern', 'Test pattern settings.')}</div>
@@ -378,7 +374,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <li>Peak and typical power, and the peak current at the circuit voltage once Power distribution is ticked.</li>
 <li>With Power distribution ticked: circuit size, tiles per circuit, circuits used, the fewest circuits possible, cables and spare circuits, peak load per cable, circuits over capacity and tiles without power.</li>
 <li>With a processor: pixels per port, tiles per port, ports used (with returns), processors or cards needed, and any ports over capacity.</li></ul>
-<p><b>Spec sheet</b> in the top bar opens the same figures as a printable page.</p></div>{img('engineering')}</div></section>
+<p><b>Export PDF</b> in the top bar puts the same figures in the spec sheet part of its PDF.</p></div>{img('engineering')}</div></section>
 
 <section class="chap"><h1>14. Technician and crew</h1><div class="side"><div>
 <p>These settings are the <b>Technician</b> submenu inside <b>Animation Options › LED build</b>.</p>
@@ -435,8 +431,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 
 <section class="chap"><h1>18. Other exports</h1>
 <ul><li><b>Export PNG</b>: the full master canvas as an image.</li>
-<li><b>Export CSV</b>: one row per tile with these columns: {csvcols}. Tile says full, half (with its side) or full on its side; removed tiles have no row. Port and PortPos come from the data wiring; Circuit, CircuitPos and PowerCable from the power wiring.</li>
-<li><b>Spec sheet</b>: printable engineering summary for the canvas and each wall. In the mobile app it is saved as an HTML file; open it in a browser to print it or save it as a PDF.</li>
+<li><b>Export PDF</b>: one PDF with three parts. Page 1 is the full raster, the whole canvas as it looks now. Then the spec sheet: every engineering figure for the canvas and each wall (the same tables as the engineering panel). Last come the cable labels, one PDF page per label sheet at your label size, with the Label printing options applied (it is left out when no data or power cables are wired). The PDF is made by TileSmith itself, so it works the same on the desktop, in the browser and on a phone. The page is Letter in North America and A4 elsewhere.</li>
 <li><b>Print labels</b>: cable labels for both ends of every data and power cable; see <b>Cable labels</b> below.</li>
 <li><b>Resolume XML</b>: an Advanced Output preset whose composition matches the canvas, with one slice per wall or per tile (pick one from the <b>Resolume XML ▾</b> drop-down). On the desktop app it saves straight into <code>Documents/Resolume Arena/Presets/Advanced Output</code> when that folder exists. In Arena, open Output › Advanced Output, choose the preset, then assign the screen to your real output.</li></ul>
 
@@ -461,8 +456,8 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 
 <h1 style="margin-top:20pt">21. Mobile app (Android and iOS)</h1>
 <p>The Android and iOS apps run the same TileSmith page as the desktop app, so canvas, walls, tile models, patterns, engineering, wiring, power and the build animation all work the same way, and everything is saved automatically on the device. They are built from the <code>mobile</code> folder (see <b>BUILD-ANDROID.txt</b> and <b>BUILD-IOS.txt</b>); a Kotlin version of the Android app for Google AI Studio is in the <code>android-aistudio</code> folder. Tablets give the most room; on a phone the panels stack under each other. The mobile app has its own manual, <b>TileSmith-Mobile-Manual.pdf</b>.</p>
-<ul><li><b>Saving files</b>: Export PNG, Export CSV, Spec sheet and Resolume XML open the share sheet, where you pick where the file goes: Files, Google Drive, iCloud, AirDrop, Quick Share, e-mail and so on. Closing the sheet cancels the save (TileSmith says <i>Not saved</i>).</li>
-<li><b>Spec sheet</b> is saved as an HTML file; open it in a browser to print it or save it as a PDF.</li>
+<ul><li><b>Saving files</b>: Export PNG, Export PDF and Resolume XML open the share sheet, where you pick where the file goes: Files, Google Drive, iCloud, AirDrop, Quick Share, e-mail and so on. Closing the sheet cancels the save (TileSmith says <i>Not saved</i>).</li>
+<li><b>Export PDF</b> is saved as a PDF file.</li>
 <li><b>Export video</b> (with <b>LED build</b> ticked) records an H.264 MP4 with the device's own encoder, in real time: the Blank intro, the live build and the Final hold, the same as on the desktop. The screen stays on while it records; keep TileSmith open until it says <i>Saved</i>, then pick where the video goes ("Save Video" puts it in Photos on iPhone and iPad). HAP, ProRes and the <b>DVD logo</b> video are desktop only.</li>
 <li><b>NDI®, Spout and Syphon</b> are not in the mobile app yet, so their buttons and submenus are hidden, along with their notices in ⓘ Info.</li>
 <li><b>Touch</b>: two fingers pinch to zoom and drag to pan the viewport. One finger drags a wall, wires tiles, marks half tiles and removes tiles, just like the mouse. Links (Ko-fi, ndi.video …) open in the system browser.</li></ul></section>

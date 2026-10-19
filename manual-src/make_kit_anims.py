@@ -237,13 +237,13 @@ async def main():
             await at(100 + k / 10); sw.append(await cv()); swl.append(f'T = {k / 10:.1f} s')
         gif(sw, 'anim-sweep.gif', 10, 576); add('anim-sweep.gif', 'animation', 'sweep (6 s)', 'Rainbow gradient whose hues move with time; redrawn every frame.')
         K.save(grid(sw[::10][:6], swl[::10][:6], 3, 360, 'sweep every 1 s'), 'anim-sweep-strip.png'); add('anim-sweep-strip.png', 'animation', 'sweep frame strip', '')
-        await setup(pbase + ";S.pat='smptescroll';S.pdir='diagonal ↘';S.pspd=1")
+        await setup(pbase + ";S.pat='SMPTEbars';S.pdir='diagonal ↘';S.pspd=1")
         sc = []; scl = []
         await ev("()=>{window.__now=100000;lastStep=window.__now}")
         for k in range(0, 61):
             if k: await ev("()=>__step(6)")
             sc.append(await cv()); scl.append(f'{k / 10:.1f} s')
-        gif(sc, 'anim-scroll.gif', 10, 576); add('anim-scroll.gif', 'animation', 'Scroll: smptescroll, diagonal ↘, speed 1 (6 s)', 'Speed = Scroll speed x 0.2 x the wall\'s shorter side in px per second; the image wraps around.')
+        gif(sc, 'anim-scroll.gif', 10, 576); add('anim-scroll.gif', 'animation', 'Scroll: SMPTEbars, diagonal ↘, speed 1 (6 s)', 'Speed = Scroll speed x 0.2 x the wall\'s shorter side in px per second; the image wraps around.')
         K.save(grid(sc[::12][:6], scl[::12][:6], 3, 360, 'Scroll diagonal ↘ every 1.2 s'), 'anim-scroll-strip.png'); add('anim-scroll-strip.png', 'animation', 'Scroll frame strip', '')
         await b.close()
     assert not errs, errs
