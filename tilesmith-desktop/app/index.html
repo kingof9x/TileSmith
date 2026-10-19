@@ -773,8 +773,9 @@ function splitN(n,parts){const o=[];let a=0;for(let i=0;i<parts;i++){const s=Mat
 const BLK=new Map();
 function blockGrid(L,NL,t,fill,sn){const key=L+'|'+NL+'|'+t+'|'+fill+'|'+sn;let g=BLK.get(key);if(g)return g;
  for(let nx=1;nx<=L;nx++){const bl=Math.ceil(L/nx);if(bl>t)continue;if(fill==WFILL[1]&&nx!=Math.ceil(L/Math.min(L,t)))continue;
-  const ny=Math.ceil(NL/Math.min(NL,Math.floor(t/bl))),s=[nx*ny,sn&&Math.ceil(NL/ny)<2?1:0,nx];
-  if(!g||s[0]<g.s[0]||s[0]==g.s[0]&&(s[1]<g.s[1]||s[1]==g.s[1]&&s[2]<g.s[2]))g={nx,ny,s}}
+  const ny=Math.ceil(NL/Math.min(NL,Math.floor(t/bl))),s=[nx>1&&L<=t?1:0,nx*ny,sn&&Math.ceil(NL/ny)<2?1:0,nx];
+  let lt=false;for(let i=0;g&&i<s.length;i++){if(s[i]!=g.s[i]){lt=s[i]<g.s[i];break}}
+  if(!g||lt)g={nx,ny,s}}
  if(BLK.size>300)BLK.clear();BLK.set(key,g);return g}
 function autoChains(w,t){const C=w.cols,R=w.rows,V=w.wdir=='Vertical',RT=/right/i.test(w.wcorner),BT=/^bottom/i.test(w.wcorner),sn=w.wmode=='Snake',L=V?R:C,NL=V?C:R,
  fill=WFILL.includes(w.wfill)?w.wfill:WFILL[0],at=(a,b)=>{let c=V?b:a,r=V?a:b;if(RT)c=C-1-c;if(BT)r=R-1-r;return[c,r]},out=[];

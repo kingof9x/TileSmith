@@ -50,7 +50,7 @@ FILL_DESC = {
  'Vertical': 'Each port takes a vertical band: complete columns down the whole wall, as many as it can drive, whichever way the pattern runs. With a horizontal pattern the path snakes back and forth inside each band. If a port cannot drive a whole column, each column is split evenly between ports.',
 }
 PFILL_DESC = {
- 'Fewest circuits': 'Each circuit gets a rectangle of tiles, sized to use as few circuits as possible. The pattern repeats inside every rectangle.',
+ 'Fewest circuits': 'Each circuit gets a rectangle of tiles, made of whole lines in the pattern direction (rows for Horizontal, columns for Vertical) where a line fits one circuit, otherwise sized to use as few circuits as possible. The pattern repeats inside every rectangle.',
  'Whole rows or columns': 'Each circuit takes complete rows (complete columns when vertical). If a circuit cannot power a whole line, the line is split evenly between circuits.',
  'One continuous path': 'One path runs through the whole wall and is cut wherever a circuit is full, so a circuit can start partway along a line.',
  'Horizontal': 'Each circuit takes a horizontal band: complete rows across the whole wall, as many as it can power, whichever way the pattern runs. If a circuit cannot power a whole row, each row is split evenly between circuits.',
