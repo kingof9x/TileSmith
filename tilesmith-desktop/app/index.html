@@ -257,6 +257,7 @@ const P={ // wmm,hmm,pxw,pxh,pitch,kg,wmax,depth
 'YES TECH MG6S 4.8':[500,500,104,104,4.807,5.6,105,73],
 'YES TECH MG6S 5.2':[500,500,96,96,5.208,5.5,105,73],
 // Owl Vision: from the supplied spec sheets (Black Owl 3.9 = Shine Pro 3.9 outdoor, max 720 W/m2; Pilot 2.6 indoor, max 200 W/m2); W = W/m2 x panel area
+'Owl Vision Black Owl 3.9 500×1000':[500,1000,128,256,3.906,14,360,74],
 'Owl Vision Black Owl 3.9':[500,500,128,128,3.906,8.7,180,74],
 'Owl Vision Pilot 2.6':[500,500,192,192,2.604,7.4,50,71],
 'Custom':null};
@@ -276,11 +277,24 @@ function utFromProject(o){utInit();if(!o||!o.ut||typeof o.ut!='object')return;co
   if(Object.hasOwn(P,n)&&!utSame(P[n],a)){m=n+' (from project)';let i=2;while(Object.hasOwn(P,m)&&!utSame(P[m],a))m=n+' (from project '+(i++)+')';map[n]=m}
   if(!UT[m]){UT[m]=a.slice();P[m]=a.slice()}}
  if(Object.keys(map).length){if(o.S&&map[o.S.preset])o.S.preset=map[o.S.preset];(o.walls||[]).forEach(w=>{if(w&&map[w.preset])w.preset=map[w.preset]})}utSave()}
+// Extra facts from a model's spec sheet, shown under the tile model in Engineering and the PDF spec sheet.
+// hang = maximum hanging height in metres (panels only); Engineering warns when the wall is taller.
+const BO39={card:'NovaStar A10S Pro',bright:'5000 nits (4000 with Black LED)',refresh:'3840 / 7680 Hz',ip:'IP65 (outdoor)',view:'160° / 120°',
+ hang:15,hangNote:'15 m panels only, 10 m with the wind-resistant frame',frame:'With wind-resistant frame: 11.1 kg (500×500), 17.5 kg (500×1000)',curve:'Arc lock ±2.5° / 0° / ±5°',
+ power:'Max 720 W/m², average 180 W/m²',service:'Modules front and rear, power supply rear'};
+const PINFO={'Owl Vision Black Owl 3.9':BO39,'Owl Vision Black Owl 3.9 500×1000':BO39,
+ 'Owl Vision Pilot 2.6':{card:'NovaStar A5S Plus',bright:'900-1200 nits',refresh:'3840 Hz (50 / 60 / 144 Hz frame rate)',ip:'IP30 (indoor)',view:'160° / 140°',
+  curve:'Arc lock ±3° / 0° / +6° (optional ±2.5° / 0° / -5°), 90° corner splicing',power:'Max 200 W/m², average 150 W/m²',service:'Front (magnetic)'}};
+function infoRows(w,s){const q=PINFO[w.preset];if(!q)return[];const r=[];
+ if(q.card)r.push(['Receiving card',q.card]);if(q.bright)r.push(['Brightness',q.bright]);if(q.refresh)r.push(['Refresh rate',q.refresh]);if(q.view)r.push(['Viewing angle (H/V)',q.view]);
+ if(q.ip)r.push(['IP rating',q.ip]);if(q.power)r.push(['Power (sheet)',q.power]);if(q.service)r.push(['Serviceability',q.service]);if(q.curve)r.push(['Curving',q.curve]);
+ if(q.hang){r.push(['Max hanging height',q.hangNote||q.hang+' m']);if(s.mh>q.hang+1e-9)r.push(['OVER HANGING LIMIT',`This wall is ${s.mh.toFixed(2)} m tall; the sheet allows ${q.hangNote||q.hang+' m'}. Ground-stack it or split the hang.`,'warn'])}
+ if(q.frame)r.push(['Frame weight',q.frame]);return r}
 const PEST={};
 ['1.56 M4','1.9 Lite','1.9 Pro','2.3 Lite','2.6 Lite','2.6 Pro','2.8 Lite','3.4 Lite','3.4 Pro'].forEach(k=>PEST['INFiLED Deep Black DB'+k]=['resolution','weight','max power','depth']);
 // Models that also come as a half tile: full preset -> [half preset, 'h' = half height (top/bottom) | 'w' = half width (left/right)]
 // ROE: every model that has a half panel (500×500 or 600×600) in its series
-const HALF={'ROE Carbon CB3':['ROE Carbon CB3 Half','h'],'ROE Carbon CB5':['ROE Carbon CB5 Half','h'],'ROE Carbon CB8':['ROE Carbon CB8 Half','h'],'ROE Black Quartz BQ3.9':['ROE Black Quartz BQ3.9 Half','h'],'ROE Black Quartz BQ4.6':['ROE Black Quartz BQ4.6 Half','h'],'ROE Black Quartz BQ6.2':['ROE Black Quartz BQ6.2 Half','h'],'ROE Carbon MkII CB3':['ROE Carbon MkII CB3 Half','h'],'ROE Carbon MkII CB5':['ROE Carbon MkII CB5 Half','h'],'ROE Carbon MkII CB8':['ROE Carbon MkII CB8 Half','h'],'ROE Graphite GP1.9 (4 in 1)':['ROE Graphite GP1.9 (4 in 1) Half','h'],'ROE Graphite GP2.6 (4 in 1)':['ROE Graphite GP2.6 (4 in 1) Half','h'],'ROE Graphite GP2.6':['ROE Graphite GP2.6 Half','h'],'ROE Graphite GP3.1':['ROE Graphite GP3.1 Half','h'],'ROE Graphite GP3.9':['ROE Graphite GP3.9 Half','h'],'ROE Jasper JA2.6':['ROE Jasper JA2.6 Half','h'],'ROE Jasper JA3.9':['ROE Jasper JA3.9 Half','h'],'ROE Jet JT2.2':['ROE Jet JT2.2 Half','h'],'ROE Jet JT2.6':['ROE Jet JT2.6 Half','h'],'ROE Jet JT3.1':['ROE Jet JT3.1 Half','h'],'ROE Jet JT3.9':['ROE Jet JT3.9 Half','h'],'ROE Meru MR1.9':['ROE Meru MR1.9 Half','h'],'ROE Meru MR2.6':['ROE Meru MR2.6 Half','h'],'ROE Carbon CB8-Transparent':['ROE Carbon CB8-Transparent Half','h'],
+const HALF={'Owl Vision Black Owl 3.9 500×1000':['Owl Vision Black Owl 3.9','h'],'ROE Carbon CB3':['ROE Carbon CB3 Half','h'],'ROE Carbon CB5':['ROE Carbon CB5 Half','h'],'ROE Carbon CB8':['ROE Carbon CB8 Half','h'],'ROE Black Quartz BQ3.9':['ROE Black Quartz BQ3.9 Half','h'],'ROE Black Quartz BQ4.6':['ROE Black Quartz BQ4.6 Half','h'],'ROE Black Quartz BQ6.2':['ROE Black Quartz BQ6.2 Half','h'],'ROE Carbon MkII CB3':['ROE Carbon MkII CB3 Half','h'],'ROE Carbon MkII CB5':['ROE Carbon MkII CB5 Half','h'],'ROE Carbon MkII CB8':['ROE Carbon MkII CB8 Half','h'],'ROE Graphite GP1.9 (4 in 1)':['ROE Graphite GP1.9 (4 in 1) Half','h'],'ROE Graphite GP2.6 (4 in 1)':['ROE Graphite GP2.6 (4 in 1) Half','h'],'ROE Graphite GP2.6':['ROE Graphite GP2.6 Half','h'],'ROE Graphite GP3.1':['ROE Graphite GP3.1 Half','h'],'ROE Graphite GP3.9':['ROE Graphite GP3.9 Half','h'],'ROE Jasper JA2.6':['ROE Jasper JA2.6 Half','h'],'ROE Jasper JA3.9':['ROE Jasper JA3.9 Half','h'],'ROE Jet JT2.2':['ROE Jet JT2.2 Half','h'],'ROE Jet JT2.6':['ROE Jet JT2.6 Half','h'],'ROE Jet JT3.1':['ROE Jet JT3.1 Half','h'],'ROE Jet JT3.9':['ROE Jet JT3.9 Half','h'],'ROE Meru MR1.9':['ROE Meru MR1.9 Half','h'],'ROE Meru MR2.6':['ROE Meru MR2.6 Half','h'],'ROE Carbon CB8-Transparent':['ROE Carbon CB8-Transparent Half','h'],
  'YES TECH MU 2.6 500×1000':['YES TECH MU 2.6','h'],'YES TECH MU 3.9 500×1000':['YES TECH MU 3.9','h'],'YES TECH MU 4.8 500×1000':['YES TECH MU 4.8','h'],
  'YES TECH MU 2.9 outdoor 500×1000':['YES TECH MU 2.9 outdoor','h'],'YES TECH MU 3.9 outdoor 500×1000':['YES TECH MU 3.9 outdoor','h'],
  'YES TECH MT II 3.9-7.8 1000×500':['YES TECH MT II 3.9-7.8 500×500','w']};
@@ -787,7 +801,7 @@ function applySpec(){const m=PROC[S.proc];if(m){S.ppx=specPx(m);S.pports=m.ports
 const FAM={'Brompton':'brompton','NovaStar':'novastar','Megapixel HELIOS':'helios','Evision':'evision'},
  FAMN={brompton:'Brompton Tessera (R2 / R2+ card)',novastar:'NovaStar (MRV / A-series card)',helios:'Megapixel HELIOS (PX1 card)',evision:'ROE Evision (i6 / i9 card)'},
  FAMS={brompton:'Brompton',novastar:'NovaStar',helios:'Megapixel HELIOS',evision:'ROE Evision'},
- CMP=[[/^ROE Carbon MkII CB/,['brompton','novastar','evision']],[/^ROE Carbon CB8( Half)?$/,['brompton','evision']],[/^ROE Carbon CB[35]( Half)?$/,['brompton','helios','evision']],
+ CMP=[[/^Owl Vision (Black Owl|Pilot) /,['novastar']],[/^ROE Carbon MkII CB/,['brompton','novastar','evision']],[/^ROE Carbon CB8( Half)?$/,['brompton','evision']],[/^ROE Carbon CB[35]( Half)?$/,['brompton','helios','evision']],
  [/^ROE Graphite GP(2\.6|3\.1|3\.9)( Half)?$/,['brompton','novastar','evision']],[/^ROE Black Pearl BP2V2/,['brompton','helios']],[/^ROE Ruby RB(-[CB])?2\.[26]/,['brompton','helios']],
  [/^ROE Vanish V[58]S MkII/,['brompton','helios','evision','novastar']],[/^ROE Vanish V8T/,['brompton','helios','evision']],[/^ROE Vanish ST V[46]ST/,['brompton','helios','evision']],
  [/^ROE Black Quartz/,['brompton','helios','evision']],[/^ROE Jet /,['brompton','helios','evision','novastar']],[/^ROE Topaz /,['brompton','helios','evision']],[/^ROE Meru /,['brompton','helios']],
@@ -1129,7 +1143,7 @@ function canvasRows(){const q=gcd(S.cw,S.ch),T=walls.map(wst).reduce((a,s)=>{for
  return[['Canvas',`${S.cw} × ${S.ch}`],['Aspect',`${S.cw/q}:${S.ch/q} (${(S.cw/S.ch).toFixed(2)})`],['Canvas pixels',(S.cw*S.ch).toLocaleString()+` (${(S.cw*S.ch/1e6).toFixed(2)} MP)`],['LED walls',walls.length],['Tiles',T.nh||T.ng?`${T.N} (${[T.nh?`${T.N-T.nh} full + ${T.nh} half`:'',T.ng?`${T.ng} removed`:''].filter(Boolean).join(', ')})`:T.N],['LED pixels',`${T.px.toLocaleString()} (${(T.px/1e6).toFixed(2)} MP)`],
  ['Area',`${T.A.toFixed(2)} m² / ${(T.A*10.7639).toFixed(1)} sq ft`],['Weight',`${T.kg.toFixed(1)} kg / ${(T.kg*2.20462).toFixed(0)} lbs`],['Peak power',kw(T.pk)],['Typical (40%)',kw(T.pk*.4)]]
  .concat(pdOn()?[[`Current peak @${S.pvolt} V`,amp(T.pk,S.pvolt)]]:[])}
-function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',w.preset]].concat(PEST[w.preset]?[['MISSING DATA','Not published by the manufacturer, so ESTIMATED from similar panels: '+PEST[w.preset].join(', ')+'. Check with the manufacturer before relying on weight, power or circuit counts.','warn']]:[]).concat([['Wall pixels',`${s.pw} × ${s.ph} (${(s.px/1e6).toFixed(2)} MP)`],['Position',`${w.ox}, ${w.oy}`],['Tiles',`${s.N} (${[s.nh?`${s.N-s.nh} full + ${s.nh} half`:'',s.ng?`${s.ng} removed`:'',`${w.cols} × ${w.rows}`].filter(Boolean).join(', ')})`],['Wall size',`${s.mw.toFixed(2)} × ${s.mh.toFixed(2)} m`],['Wall size',`${ft(s.mw)} × ${ft(s.mh)} ft`],['Area',`${s.A.toFixed(2)} m² / ${(s.A*10.7639).toFixed(1)} sq ft`],
+function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',w.preset]].concat(PEST[w.preset]?[['MISSING DATA','Not published by the manufacturer, so ESTIMATED from similar panels: '+PEST[w.preset].join(', ')+'. Check with the manufacturer before relying on weight, power or circuit counts.','warn']]:[]).concat(infoRows(w,s)).concat([['Wall pixels',`${s.pw} × ${s.ph} (${(s.px/1e6).toFixed(2)} MP)`],['Position',`${w.ox}, ${w.oy}`],['Tiles',`${s.N} (${[s.nh?`${s.N-s.nh} full + ${s.nh} half`:'',s.ng?`${s.ng} removed`:'',`${w.cols} × ${w.rows}`].filter(Boolean).join(', ')})`],['Wall size',`${s.mw.toFixed(2)} × ${s.mh.toFixed(2)} m`],['Wall size',`${ft(s.mw)} × ${ft(s.mh)} ft`],['Area',`${s.A.toFixed(2)} m² / ${(s.A*10.7639).toFixed(1)} sq ft`],
  ['Weight',`${s.kg.toFixed(1)} kg / ${(s.kg*2.20462).toFixed(0)} lbs`],['Peak power',kw(s.pk)],['Typical (40%)',kw(s.pk*.4)]]);
  if(pdOn()){const t=tpcW(w),pw=pmine.reduce((a,c)=>a+c.tiles.length,0),po=pmine.filter(x=>x.over).length;
   r.push([`Current peak @${S.pvolt} V`,amp(s.pk,S.pvolt)],['Tiles per circuit',t>0?t+(w.plink>0&&w.plink<tpcCalc(w)?' (power link limit)':''):'One tile exceeds a circuit'],['Min. circuits if every circuit is full',t>0?Math.ceil(s.pk*1000/w.wmax/t-1e-9):'-'],
