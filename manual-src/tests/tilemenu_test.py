@@ -7,8 +7,8 @@ async def main():
         await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html'); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(800)
         async def setm(v): await pg.evaluate('(b)=>{const e=document.querySelector("[data-k=preset]");e.value=b;e.dispatchEvent(new Event("input",{bubbles:true}));e.dispatchEvent(new Event("change",{bubbles:true}))}',v)
         r=await pg.evaluate("()=>[...document.querySelector('[data-brand]').options].map(o=>o.text)"); print(r)
-        assert r[:5]==['ROE','Absen','Unilumin','INFiLED','YES TECH'],r
-        for br,n in [('Absen',7),('Unilumin',4),('INFiLED',17),('YES TECH',17)]:
+        assert r[:6]==['ROE','Absen','Unilumin','INFiLED','YES TECH','Owl Vision'],r
+        for br,n in [('Absen',7),('Unilumin',4),('INFiLED',17),('YES TECH',17),('Owl Vision',2)]:
             await pg.evaluate('(b)=>{const e=document.querySelector("[data-brand]");e.value=b;e.dispatchEvent(new Event("change",{bubbles:true}))}',br); await pg.wait_for_timeout(200)
             m=await pg.evaluate("()=>[document.querySelector('[data-brand]').value,S.preset,document.querySelectorAll('[data-k=preset] option').length]")
             print(m); assert m[0]==br and m[1].startswith(br) and m[2]>=n,(br,m)

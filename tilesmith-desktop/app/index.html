@@ -256,6 +256,9 @@ const P={ // wmm,hmm,pxw,pxh,pitch,kg,wmax,depth
 'YES TECH MG6S Pro 2.6':[500,500,192,192,2.604,6,113,73],
 'YES TECH MG6S 4.8':[500,500,104,104,4.807,5.6,105,73],
 'YES TECH MG6S 5.2':[500,500,96,96,5.208,5.5,105,73],
+// Owl Vision: from the supplied spec sheets (Black Owl 3.9 = Shine Pro 3.9 outdoor, max 720 W/m2; Pilot 2.6 indoor, max 200 W/m2); W = W/m2 x panel area
+'Owl Vision Black Owl 3.9':[500,500,128,128,3.906,8.7,180,74],
+'Owl Vision Pilot 2.6':[500,500,192,192,2.604,7.4,50,71],
 'Custom':null};
 const PEST={};
 ['1.56 M4','1.9 Lite','1.9 Pro','2.3 Lite','2.6 Lite','2.6 Pro','2.8 Lite','3.4 Lite','3.4 Pro'].forEach(k=>PEST['INFiLED Deep Black DB'+k]=['resolution','weight','max power','depth']);
@@ -982,7 +985,7 @@ function tposDraw(c,x,y,tw,th,row,col,top){const z=tposSize(c,tw,th,row,col),f=z
  cx+=aw+g;c.fillText(t2,cx,cy+f*.05)}
 // Tile model preset list, grouped by manufacturer
 const ROES=['Amber','Black Marble','Black Pearl','Black Quartz','Carbon','Carbon MkII','Carbon Full Spectrum','Coral','Denali','Diamond','Graphite','Jasper','Jet','Meru','Obsidian','Ruby','Sierra','Topaz','Vanish','Vanish ST','Vanish Air','Vanish Acoustics'];
-const PBR=['ROE','Absen','Unilumin','INFiLED','YES TECH'],brandOf=k=>PBR.find(b=>k.startsWith(b+' '))||'Other';
+const PBR=['ROE','Absen','Unilumin','INFiLED','YES TECH','Owl Vision'],brandOf=k=>PBR.find(b=>k.startsWith(b+' '))||'Other';
 function modelOpts(br,cur){const keys=Object.keys(P).filter(k=>brandOf(k)==br),B=ROES.map(x=>'ROE '+x),g={},opt=k=>`<option>${esc(k)}</option>`;
  if(br!='ROE')return keys.map(opt).join('');keys.forEach(k=>{const b=B.filter(x=>k.startsWith(x+' ')).sort((x,y)=>y.length-x.length)[0]||'';(g[b]=g[b]||[]).push(k)});
  return B.filter(b=>g[b]).map(b=>`<optgroup label="${b}">${g[b].map(opt).join('')}</optgroup>`).join('')+(g['']||[]).map(opt).join('')}
