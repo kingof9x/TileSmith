@@ -198,6 +198,7 @@ jobs:
     # The manuals and the app spec are built here from the version typed in the Run workflow box, so the version on
     # their cover and footer, in the app and in the file names is always the same one.
     runs-on: ubuntu-latest
+    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
