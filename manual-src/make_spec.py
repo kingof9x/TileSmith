@@ -581,7 +581,7 @@ webview-bridge.js turns into the same window.TSM. A native Android clone, as des
 
 - tileshade-cycle: for every wall up to 40x40 and every step, no tile shares a colour with the tile left, right, above
   or below it.
-- Auto data and power wiring (all 8 patterns x 3 areas x Snake/Linear, any size, with removed tiles or half tiles):
+- Auto data and power wiring (all 16 signal-flow choices = 8 start corner/direction x Snake/Linear, picked from a 2 x 8 icon grid styled like Brompton's mapping picker; x 3 areas, any size, with removed tiles or half tiles):
   every tile appears in exactly one chain, no chain is over capacity, and One continuous path uses ceil(tiles / t)
   chains.
 - Engineering for a 6x4 Unilumin UpadIV 2.6 wall: 24 tiles, 1152 x 768 px (884,736 LED px), 6.00 m^2, 151.2 kg,
