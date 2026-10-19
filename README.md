@@ -4,6 +4,22 @@
 
 Pre production software for LED walls. Engineering specs, cable labels, pixel maps and test patterns with some fun animation for vidiots. Yes it is vibe coded.
 
+## Screenshots
+
+**Data and power wiring.** Two walls on a Brompton Tessera S8, with data paths (P# to R#) and power circuits drawn on the tiles, and the engineering figures on the right.
+
+![TileSmith showing data and power wiring on two LED walls](docs/screenshots/wiring.png)
+
+**DVD screensaver over SMPTE bars.** The TileSmith logo bounces around each wall on top of the SMPTEbars test pattern.
+
+![TileSmith DVD screensaver bouncing over the SMPTEbars test pattern](docs/screenshots/dvd-smpte.png)
+
+**LED build animation.** The wall is half built and a tech is carrying the next tile into place on the third row.
+
+![TileSmith LED build animation, half built, with a tech placing a row](docs/screenshots/build.gif)
+
+<sub>The screenshots are made from the app itself with `manual-src/make_readme_shots.py`.</sub>
+
 ## Disclaimer & Limitation of Liability
 
 **USE AT YOUR OWN RISK.** This software is provided "AS IS", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. 
