@@ -504,6 +504,7 @@ storeWall();if(['cols','rows','tw','th','preset','corner','dir'].includes(k))sho
 if(k=='loop'&&v&&allDone()&&!REC){reset();S.play=true}
 if(k=='shGpu'&&shOut){shStop();toggleShare()}}
 document.addEventListener('input',e=>{const t=e.target;
+if(t.dataset&&t.dataset.brand){brandPick(t.value);return}
 if(t.id=='opf'){const f=t.files[0];t.value='';if(f)openProjectAsk(f);return}
 if(t.id=='dvdf'){const f=t.files[0];if(f)loadImgFile(f,1024,'image/png',im=>{im.__id=++imgId;dvdImg=im;S.dvdSrc='Uploaded image';sync();saveSoon()});return}
 if(t.id=='bxf'){const f=t.files[0];if(f)loadImgFile(f,2048,'image/png',im=>{im.__id=++imgId;S.boxImg=im;S.boxMode='Logo';storeWall();sync();saveSoon()});return}
