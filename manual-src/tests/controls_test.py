@@ -36,7 +36,7 @@ async def main():
             bt=pg.locator('button:visible').nth(i)
             try:
                 lab=((await bt.inner_text()) or await bt.get_attribute('data-a') or '')[:24]
-                if any(x in lab for x in ('Export','PNG','Save','Open','Share','NDI','New Project','Reset','Clear')): continue
+                if any(x in lab for x in ('Export','PNG','Save','Open','Share','NDI','New Project','Reset','Clear','Download')): continue
                 await bt.click(timeout=800,force=True); n+=1
             except Exception: pass
         await pg.wait_for_timeout(300)

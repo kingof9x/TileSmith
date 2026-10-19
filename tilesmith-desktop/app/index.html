@@ -35,7 +35,7 @@ main{position:relative;min-width:0;min-height:0;overflow:hidden;display:flex;fle
 .mob-only{display:none}.mobile .mob-only{display:block}.mobile .desk-only{display:none!important}
 .mobile #vp{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.mobile button,.mobile select{min-height:34px}
 table{width:100%;border-collapse:collapse}td{padding:5px 0;border-bottom:1px solid var(--ln)}td:last-child{text-align:right;font-variant-numeric:tabular-nums}
-.ok{color:#18a05a}.bad{color:#e5484d}tr.warn td{background:#ffd400;color:#000;font-weight:700}tr.thd th{text-align:left;padding-top:10px;color:var(--ac)}
+.ok{color:#18a05a}.bad{color:#e5484d}tr.warn td{background:#ffd400;color:#000;font-weight:700}.cfgx{margin-top:10px;padding:8px;border:2px dashed #e5a000;border-radius:6px}.cfgw{font-weight:700;color:#b36b00;font-size:12px;margin-bottom:4px}tr.thd th{text-align:left;padding-top:10px;color:var(--ac)}
 .wn{font-size:11px;font-weight:600;color:var(--mu);margin-left:6px}#wlist{display:flex;flex-direction:column;gap:6px}.wl{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left}.wl span{color:var(--mu);font-size:12px}.wl[aria-pressed=true]{border-color:var(--am);box-shadow:inset 3px 0 0 var(--am)}button:disabled{opacity:.45;cursor:default}#right th{text-align:left;padding:14px 0 4px;color:var(--ac);font-size:12px;border-bottom:1px solid var(--ln)}
 .mem{border-bottom:1px solid var(--ln);padding-bottom:8px;margin-bottom:8px}.crew{display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;gap:8px;margin:3px 0 6px}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.ov.on{display:flex}
@@ -357,14 +357,18 @@ function cvAdd(dup){if(cvBusy()){toast('Finish or cancel the video export first.
  const c=dup?cvMake(nm,S.cw,S.ch,walls.map(cloneWall),cur):cvMake(nm,1920,1080,[wallDef()],0);c.open=true;CVS.push(c);const i=CVS.length-1;withCv(i,()=>showAll());
  switchTo(i,true);fit();sync();saveSoon();toast((dup?'Duplicated as ':'Added ')+nm+'. Each canvas is its own output.',3500)}
 function cvDel(){if(CVS.length<2)return;if(cvBusy()){toast('Finish or cancel the video export first.',3000);return}const i=cc,nm=CVS[i].name;stopMarking();goneEdit=false;wiring=false;pwiring=false;
- CVS.splice(i,1);cvLoad(Math.min(i,CVS.length-1));fit();forceRen=true;sync();saveSoon();toast('Removed '+nm+'.',3000)}
+ outClose(CVS[i]);CVS.splice(i,1);cvLoad(Math.min(i,CVS.length-1));fit();forceRen=true;sync();saveSoon();toast('Removed '+nm+'.',3000)}
 // the canvas list in the panel: one "Canvas n" submenu each; the canvas and LED wall controls (#cvCtl) live in the selected one
 function cvUI(){if(CVX)return;const L=$('#cvList'),ctl=$('#cvCtl');if(!L||!ctl||!CVS.length)return;const key=CVS.map(c=>c.id).join()+'#'+cc;
  if(L.__k!==key){ctl.remove();L.innerHTML=CVS.map((c,i)=>`<details class="subd cvd" data-cvd="${i}"${c.open?' open':''}><summary data-cvs="${i}"><span class="cvn"></span> <span class="cvz" style="color:var(--mu);font-weight:400"></span></summary><div class="sec" data-slot="${i}"></div></details>`).join('');
   L.querySelector(`[data-slot="${cc}"]`).appendChild(ctl);L.__k=key}
  L.querySelectorAll('[data-cvs]').forEach(sm=>{const i=+sm.dataset.cvs,c=CVS[i];if(!c)return;const n=sm.querySelector('.cvn'),z=sm.querySelector('.cvz'),zt=`${i==cc?S.cw:c.cw}×${i==cc?S.ch:c.ch}${i==cc&&CVS.length>1?' · selected':''}`;
   if(n.textContent!==c.name)n.textContent=c.name;if(z.textContent!==zt)z.textContent=zt});
- const n=$('#cvName');if(n&&n!==document.activeElement&&n.value!==CVS[cc].name)n.value=CVS[cc].name;const d=document.querySelector('[data-a=cvdel]');if(d)d.disabled=CVS.length<2}
+ outUI();const n=$('#cvName');if(n&&n!==document.activeElement&&n.value!==CVS[cc].name)n.value=CVS[cc].name;const d=document.querySelector('[data-a=cvdel]');if(d)d.disabled=CVS.length<2}
+// the Test pattern controls appear in the canvas menu and under Animation Options: one set of controls, moved into whichever is opened
+function tpPlace(){const c=$('#tpCtl');if(!c)return;const sl=[...document.querySelectorAll('.tpSlot')],open=sl.filter(x=>x.closest('details').open),want=open.find(x=>x.dataset.tp===tpPlace.last)||open[0]||sl.find(x=>x.contains(c))||sl[0];
+ if(want&&!want.contains(c))want.appendChild(c);sl.forEach(x=>{const a=x.parentNode.querySelector('.tpAway');if(a)a.style.display=x.contains(c)?'none':''})}
+document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.open&&d.querySelector&&d.querySelector(':scope>.sec>.tpSlot')){tpPlace.last=d.querySelector(':scope>.sec>.tpSlot').dataset.tp;tpPlace()}else if(d&&d.querySelector&&d.querySelector('.tpSlot'))tpPlace()},true);
 document.addEventListener('toggle',e=>{const t=e.target,i=t&&t.dataset&&t.dataset.cvd;if(i!=null&&CVS[+i])CVS[+i].open=t.open},true);
 function storeWall(){if(walls[cur])WK.forEach(k=>walls[cur][k]=S[k])}
 function loadWall(i){cur=Math.max(0,Math.min(walls.length-1,i|0));WK.forEach(k=>S[k]=walls[cur][k])}
@@ -446,6 +450,7 @@ $('#left').innerHTML=sect(`<h1>TileSmith <span style="font-size:11px;font-weight
 <h2>Canvases</h2><div id="cvList"></div><div class="row">${B('cvadd','Add canvas')}</div>
 <div id="cvCtl"><div class="g"><label class="w">Canvas name<input type="text" id="cvName" maxlength="40"></label></div><div class="row">${B('cvdup','Duplicate canvas')}${B('cvdel','Remove canvas')}</div><div style="color:var(--mu);font-size:12px">Each canvas is its own output (its own NDI®, Spout / Syphon source, PNG, PDF raster page and video). Click a canvas in the viewport or its name here to select it.</div>
 <div class="g">${F('cw','Width px')}${F('ch','Height px')}</div>
+<div id="outBox" class="desk-only"><div class="g"><label class="w">Send this canvas to a display<select id="outSel"></select></label></div><div id="outNote" style="font-size:12px;color:var(--mu)"></div></div>
 <div class="row">${Object.keys(R).map(k=>B('res',k,k)).join('')}${B('match','Fit canvas to walls')}</div>
 ${SUB('LED walls',`<div id="wlist"></div>
 <div class="row">${B('wadd','Add wall')}${B('wdup','Duplicate')}${B('wdel','Remove')}</div>
@@ -460,19 +465,20 @@ ${SUB('Size of LED Wall <span class="wn"></span>',`<div class="g">${F('cols','Co
 ${SUB('Wall position <span class="wn"></span>',`<div class="g">${F('ox','Offset X')}${F('oy','Offset Y')}</div>
 <div class="row">${B('al','Top-Left (0, 0)','tl')}${B('al','Center Both','c')}${B('al','Top-Center','tc')}${B('al','Bottom-Left','bl')}${B('al','Bottom-Center','bc')}</div>
 <div id="cov"></div><div style="color:var(--mu)">Drag a wall in the viewport to place it. It snaps to the canvas edges and to other walls, keeping a 2 px gap between walls. Hold Alt while dragging to place it freely. Drag empty space to pan.</div>`)}
-${SUB('Test pattern <span class="wn"></span>',`<div class="g">${F('pat','Test pattern','select',PAT_LIST,'w')}${F('shadeC','Tile-shade color','color','','w')}${F('tpos','Tile position arrows (↑ rows counted from the bottom, → columns from the left)','check')}
+${SUB('Test pattern <span class="wn"></span>',`<div class="tpSlot" data-tp="cv"><div id="tpCtl"><div class="g">${F('pat','Test pattern','select',PAT_LIST,'w')}${F('shadeC','Tile-shade color','color','','w')}${F('tpos','Tile position arrows (↑ rows counted from the bottom, → columns from the left)','check')}
 ${F('pdir','Scroll','select',['none','diagonal ↘','diagonal ↗','horizontal →','vertical ↓'])}${F('pfit','Image fit','select',PFIT,'w')}${F('pspd','Scroll speed','range','min=0 max=3 step=0.25')}<label class="w">Upload test pattern (PNG/SVG/JPG)<input type="file" id="pf" accept="image/*"></label></div>
-<div id="boxBox" class="g">${F('boxMode','Center box','select',['Nothing','Text','Logo'],'w')}${F('boxText','Box text','text','','w')}${F('boxCol','Text color','color')}<label class="w" id="bxl">Upload logo (PNG/SVG/JPG)<input type="file" id="bxf" accept="image/*"></label></div>`)}
+<div id="boxBox" class="g">${F('boxMode','Center box','select',['Nothing','Text','Logo'],'w')}${F('boxText','Box text','text','','w')}${F('boxCol','Text color','color')}<label class="w" id="bxl">Upload logo (PNG/SVG/JPG)<input type="file" id="bxf" accept="image/*"></label></div></div></div><div class="tpAway" style="font-size:12px;color:var(--mu)">Open under Animation Options › Test pattern.</div>`)}
 ${SUB('Tile borders &amp; overlays',`<div class="g">${F('bc','Border color','color')}${F('bt','Thickness','range','min=1 max=8')}</div>
 ${SW('bc',['#00e5ff','#00e676','#ffe600','#ffffff','#ff2bd6','#ff7a00'])}
 ${F('ids','Tile IDs','check')}${F('addr','Pixel address ranges','check')}${F('mm','Millimeter marks','check')}`)}</div>
 <h2>Engineering</h2>${SUB('LED processor',`<label class="w" style="display:flex;flex-direction:column;gap:3px;color:var(--mu);font-size:12px">Processor<select data-k="proc">${procOpts()}</select></label>
-<label class="w" style="display:flex;flex-direction:column;gap:3px;color:var(--mu);font-size:12px">Receiving card in the tile<select data-k="rcard" id="rcardSel"></select></label>${F('procAll','Show all processors','check')}
+<label class="w" style="display:flex;flex-direction:column;gap:3px;color:var(--mu);font-size:12px">Receiving card in the tile<select data-k="rcard" id="rcardSel"></select></label>${F('procAll','Show incompatible processors','check')}
 <div id="procInfo" style="color:var(--mu);font-size:12px"></div><div id="procWarn" style="color:#e5a000;font-size:12px"></div>
 <div id="procBox"><div class="g">${F('fps','Frame rate (Hz)','select',[24,25,30,48,50,60,100,120,144,240])}${F('bpc','Bit depth','select',[8,10,12])}${F('ppx','Pixels per port','number','min=0 step=1000')}${F('pports','Ports per processor / card','number','min=1')}</div>
 <div id="ullRow">${F('ull','Ultra Low Latency (halves port capacity)','check')}</div>
 <div class="row">${B('pspec','Reset to spec')}</div>${F('ret','Return lines (R#) use their own ports','check')}<div id="sdRow">${F('showData','Show data paths (P# to R#)','check')}</div>
 <div id="pnote" style="color:var(--mu);font-size:12px"></div>
+<div id="cfgBox" class="cfgx"><div class="cfgw">⚠ EXPERIMENTAL. Check every setting on the processor before the show.</div><div id="cfgNote" style="font-size:12px;color:var(--mu)"></div><div class="row">${B('pcfg','Download config file')}</div></div>
 ${SUB('Data wiring <span class="wn"></span>',`<div id="wireBox"><div class="g">${F('wmode','Pattern','select',['None','Snake','Linear','Manual'],'w')}</div>
 <div id="wautoBox"><div style="color:var(--mu);font-size:12px">Data flow: pick the start corner and direction (the same 8 choices as NovaLCT). Green is the first tile, red the last.</div><div id="wpat" class="wpat" role="group" aria-label="Data flow pattern"></div><div id="wpatl" style="font-size:12px"></div><div class="g">${F('wfill','Data wiring preference','select',WFILL,'w')}</div><div id="wfilln" style="color:var(--mu);font-size:12px"></div></div>
 <div id="wmanBox"><div style="color:var(--mu);font-size:12px">Click Wire tiles, then click tiles or drag across them in the viewport, in data order. Drag back over a tile to take it off. A port stops accepting tiles when it is full.</div><div class="row">${B('wedit','Wire tiles')}${B('wnew','New port')}${B('wundo','Undo')}${B('wclr','Clear')}</div><div id="wmsg" class="bad" style="font-size:12px"></div></div>
@@ -483,7 +489,7 @@ ${SUB('Power wiring <span class="wn"></span>',`<div id="pwireBox"><div class="g"
 <div id="pautoBox"><div style="color:var(--mu);font-size:12px">Power flow: pick the start corner and direction. Green is the first tile, red the last.</div><div id="ppat" class="wpat" role="group" aria-label="Power flow pattern"></div><div id="ppatl" style="font-size:12px"></div><div class="g">${F('pfill','Wiring preference','select',PFILL,'w')}</div><div id="pfilln" style="color:var(--mu);font-size:12px"></div></div>
 <div id="pmanBox"><div style="color:var(--mu);font-size:12px">Click Wire tiles, then click tiles or drag across them in the viewport, in power-link order. Drag back over a tile to take it off. A circuit stops accepting tiles when it is full.</div><div class="row">${B('pedit','Wire tiles')}${B('pnew','New circuit')}${B('pundo','Undo')}${B('pclr','Clear')}</div><div id="pmsg" class="bad" style="font-size:12px"></div></div>
 <div id="pstat" style="color:var(--mu);font-size:12px"></div></div>`,1)}</div>`,1)}
-<h2>Animation Options</h2>
+<h2>Animation Options</h2>${SUB('Test pattern <span class="wn"></span>','<div class="tpSlot" data-tp="anim"></div><div class="tpAway" style="font-size:12px;color:var(--mu)">Open in the canvas menu › Test pattern.</div>')}
 ${SUB('DVD screensaver',`${F('dvdOn','Bounce a logo around the screen','check')}
 <div id="dvdBox" class="g">${F('dvdSrc','Logo','select',['TileSmith logo','Text','Uploaded image'],'w')}${F('dvdText','Logo text','text','','w')}<label class="w" id="dvdUp">Upload logo (PNG/SVG/JPG)<input type="file" id="dvdf" accept="image/*"></label>
 ${F('dvdArea','Bounce inside','select',['Each LED wall','Whole canvas'],'w')}${F('dvdSize','Logo size <b id="dvdSv"></b>','range','min=5 max=60 step=1','w')}${F('dvdSpeed','Bounce speed <b id="dvdPv"></b>','range','min=0.25 max=3 step=0.25','w')}
@@ -518,7 +524,7 @@ function uiVis(){const on=procOn(),m=PROC[S.proc],hide=(id,h)=>{const e=$('#'+id
   for(const[a,sd]of[['hrowb','bottom'],['hrowt','top']]){const q=document.querySelector('[data-a='+a+']'),st=halfRowState(sd);if(q&&st){const t=st.half?`Restore ${sd} row to full tiles`:`Convert ${sd} row to half tiles`;if(q.textContent!==t)q.textContent=t}}
   const sb=$('#halfStop');if(sb){sb.hidden=!halfEdit;if(halfEdit)sb.style.top=($('#bar').offsetHeight+10)+'px'}
   const P2=pieces(S),nr=P2.list.filter(x=>x.rot).length,ms=P2.lay?`${P2.list.length} tiles: ${P2.list.length-P2.nh} full${nr?` (${nr} on ${nr>1?'their':'its'} side)`:''}, ${P2.nh} half.`:'No half tiles yet.',he=$('#hmsg');if(he&&he.textContent!==ms)he.textContent=ms}}
-hide('procBox',!on);hide('pnone',on);hide('ullRow',!(on&&m.sc=='brompton'));hide('wautoBox',!['Snake','Linear'].includes(S.wmode));hide('wmanBox',S.wmode!='Manual');{const hl=document.querySelector('[data-k=hapFmt]');if(hl)hl.closest('label').style.display=S.vCodec=='HAP (.mov)'?'':'none';const vn=$('#vcn');if(vn&&vn.textContent!==vcodec().note)vn.textContent=vcodec().note}{hide('dvdBox',!S.dvdOn);const lb=k=>{const e=document.querySelector(`[data-k=${k}]`);return e&&e.closest('label')},tl=lb('dvdText');if(tl)tl.style.display=S.dvdSrc=='Text'?'':'none';hide('dvdUp',S.dvdSrc!='Uploaded image');hide('dvdLoopBox',!S.dvdLoop);hide('dvdCornerNote',!!S.dvdLoop);{const cl=lb('dvdCorner');if(cl)cl.style.display=S.dvdLoop?'none':''}
+hide('procBox',!on);hide('cfgBox',!on);{const ns=on&&cfgNova(),b=document.querySelector('[data-a=pcfg]'),n=$('#cfgNote'),bt=ns?'Download config file (NovaStar .scr + wiring sheet)':'Download wiring sheet';if(b&&b.textContent!==bt)b.textContent=bt;const nt=!on?'':ns?'Makes a NovaLCT screen connection file (.scr) for each canvas: every tile\'s position, size, sending card, port and order on the cable. Load it in NovaLCT: Screen Configuration › Screen Connection › Load from File, check it against the cables, then Send to HW and Save. VX Pro and MX series managed in VMP use their own project files and may not accept it. Also includes a wiring sheet (CSV and JSON).':(PROC[S.proc]&&PROC[S.proc].brand||'This processor')+' has no published file format that can be loaded, so this downloads a wiring sheet (CSV and JSON) with every tile\'s port, cable order and position to enter by hand.';if(n&&n.textContent!==nt)n.textContent=nt}hide('pnone',on);hide('ullRow',!(on&&m.sc=='brompton'));hide('wautoBox',!['Snake','Linear'].includes(S.wmode));hide('wmanBox',S.wmode!='Manual');{const hl=document.querySelector('[data-k=hapFmt]');if(hl)hl.closest('label').style.display=S.vCodec=='HAP (.mov)'?'':'none';const vn=$('#vcn');if(vn&&vn.textContent!==vcodec().note)vn.textContent=vcodec().note}{hide('dvdBox',!S.dvdOn);const lb=k=>{const e=document.querySelector(`[data-k=${k}]`);return e&&e.closest('label')},tl=lb('dvdText');if(tl)tl.style.display=S.dvdSrc=='Text'?'':'none';hide('dvdUp',S.dvdSrc!='Uploaded image');hide('dvdLoopBox',!S.dvdLoop);hide('dvdCornerNote',!!S.dvdLoop);{const cl=lb('dvdCorner');if(cl)cl.style.display=S.dvdLoop?'none':''}
  const st=(id,t)=>{const e=$('#'+id);if(e&&e.textContent!==t)e.textContent=t};st('dvdSv',S.dvdSize+'%');st('dvdPv',S.dvdSpeed+'×');st('dvdCv',S.dvdCorner+'% (about '+Math.round(S.dvdCorner*DVD_MAX)+'% of bounces)')}{const pf=document.querySelector('select[data-k=pfit]');if(pf)pf.closest('label').style.display=isImgPat(S.pat)?'':'none';{const sc=document.querySelector('[data-k=shadeC]');if(sc)sc.closest('label').style.display=shadeColorPat(S.pat)?'':'none'}const hasBox=Object.hasOwn(PATIMG_BOX,S.pat),lab=k=>{const e=document.querySelector(`[data-k=${k}]`);return e&&e.closest('label')};
  hide('boxBox',!hasBox);[lab('boxText'),lab('boxCol')].forEach(l=>{if(l)l.style.display=S.boxMode=='Text'?'':'none'});const bl=$('#bxl');if(bl)bl.style.display=S.boxMode=='Logo'?'':'none'}
 {const wp=$('#wpat');if(wp){const sn=S.wmode!='Linear',h=WPAT.map(([c,d],i)=>{const on=S.wcorner==c&&S.wdir==d;return `<button class="wpb${on?' on':''}" data-wp="${i}" title="${c} start, ${d.toLowerCase()}" aria-label="${c} start, ${d.toLowerCase()} ${sn?'snake':'linear'}" aria-pressed="${on}">${wpatSvg(c,d,sn)}</button>`}).join('');if(wp.__h!==h){wp.innerHTML=h;wp.__h=h}}
@@ -569,6 +575,7 @@ storeWall();if(['cols','rows','tw','th','preset','corner','dir'].includes(k))sho
 if(k=='loop'&&v&&allDone()&&!REC){reset();S.play=true}
 if(k=='shGpu'&&shOut){shStop();toggleShare()}}
 document.addEventListener('input',e=>{const t=e.target;
+if(t.id=='outSel'){const c=CVS[cc];if(t.value)outOpen(c,t.value);else outClose(c);cvUI();return}
 if(t.id=='cvName'){if(CVS[cc])CVS[cc].name=t.value.replace(/\s+/g,' ').slice(0,40)||'Canvas';cvUI();forceRen=true;return}
 if(t.dataset&&t.dataset.brand){brandPick(t.value);return}
 if(t.id=='opf'){const f=t.files[0];t.value='';if(f)openProjectAsk(f);return}
@@ -591,7 +598,7 @@ const a=t.dataset.a;if(!a)return;const v=t.dataset.v,cw=S.cw,ch=S.ch;
 ({undom(){const t=e.target.closest('button'),m=$('#undom'),o=m.hidden;ddClose();if(o){unUI();const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-260))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');const f=m.querySelector('button:not([disabled])');if(f)f.focus()}},undo(){ddClose();if(v)unUndo(+v)},redo(){ddClose();unRedo()},ctr(){const r=vp.getBoundingClientRect();V.x=(r.width-S.cw*V.z)/2;V.y=(r.height-S.ch*V.z)/2},newc(){newCanvasAsk()},res(){[S.cw,S.ch]=R[v]},match(){fitCanvas()},wadd(){addWall(false)},pspec(){applySpec()},npat(){nextPattern()},hrowb(){halfRow('bottom')},hrowt(){halfRow('top')},hedit(){halfEdit=!halfEdit&&!!halfOf(S);if(halfEdit){wiring=false;pwiring=false;goneEdit=false}},gedit(){goneEdit=!goneEdit;if(goneEdit){wiring=false;pwiring=false;halfEdit=false}},gclr(){restoreAll()},hclr(){S.half=[];S.lay={};storeWall();showAll();sync()},dvdexp(){dvdExportLoop()},rxml(){if(v)S.resSl=v;ddClose();exportRes()},rxmlm(){const m=$('#rxmlm'),o=m.hidden;ddClose();if(o){const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-200))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');m.querySelector('button').focus()}},wedit(){wiring=!wiring;if(wiring){S.showData=true;pwiring=false;halfEdit=false;goneEdit=false}wireMsg(wiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},wnew(){if(!Array.isArray(S.wman))S.wman=[];const l=S.wman[S.wman.length-1];if(!l||l.length)S.wman.push([]);wireMsg('')},wundo(){const m=S.wman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();wireMsg('')},wclr(){S.wman=[];wireMsg('')},pedit(){pwiring=!pwiring;if(pwiring){S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg(pwiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},pnew(){if(!Array.isArray(S.pman))S.pman=[];const l=S.pman[S.pman.length-1];if(!l||l.length)S.pman.push([]);pwMsg('')},pundo(){const m=S.pman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();pwMsg('')},pclr(){S.pman=[];pwMsg('')},wdup(){addWall(true)},wdel(){delWall()},
 al(){S.ox=v[0]=='c'||v=='tc'||v=='bc'?Math.round((cw-WW())/2):0;S.oy=v=='c'?Math.round((ch-WH())/2):v[0]=='b'?ch-WH():0;if(v=='tl'||v=='bl')S.ox=0},
 arr(){[S.cols,S.rows]=v.split('x').map(Number);showAll()},
-pp(){S.play=!S.play},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
+pp(){S.play=!S.play},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},pcfg(){exportConfig()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
 about(){showAbout(1)},ndi(){toggleNdi()},share(){toggleShare()},png(){eachCv(()=>{const m=M,n=`tilesmith-canvas${cvTag()}.png`;m.toBlob(b=>dl(b,n))})},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
 add(){crew.push(['Tech '+(crew.length+1),'#e0ac69',null,HAIR[crew.length%HAIR.length]]);crewUI()},rcrew(){crew=defCrew();crewUI()}}[a])();
 sync();fit_if();});
@@ -861,14 +868,18 @@ const FAM={'Brompton':'brompton','NovaStar':'novastar','Megapixel HELIOS':'helio
  [/^ROE Sierra SR1\.[25]/,['helios','novastar']],[/^ROE Diamond DM2\.6/,['brompton','evision','novastar']],[/^ROE Diamond DM3\.9/,['brompton','evision']]];
 const tileFam=n=>{const r=CMP.find(c=>c[0].test(n||''));return r?r[1]:null},procFam=k=>{const m=PROC[k];return m&&FAM[m.brand]||null};
 // Families every wall's tile can use (null = no published limit); a wall with an unlisted tile does not restrict.
-function tileLimit(){let a=null;walls.forEach((w,i)=>{const f=tileFam(i==cur?S.preset:w.preset);if(f)a=a?a.filter(x=>f.includes(x)):f.slice()});return a}
+// the processor families the selected wall's tile works with (null = no published limit); other walls are checked in the warning
+function tileLimit(){const f=tileFam(S.preset);return f?f.slice():null}
 const procOk=(k,a)=>{const f=procFam(k);return !f||(!a||a.includes(f))&&(S.rcard=='any'||S.rcard==f)};
 const procOpts=()=>{const a=tileLimit();let h='<option>None</option>',g='';Object.keys(PROC).forEach(k=>{const m=PROC[k];if(!m)return;if(!(S.procAll||k==S.proc||procOk(k,a)))return;if(m.brand!=g){if(g)h+='</optgroup>';g=m.brand;h+=`<optgroup label="${esc(g)}">`}h+=`<option>${esc(k)}</option>`});return h+(g?'</optgroup>':'')};
 let PRK='';
 function procRefresh(){const a=tileLimit();if(S.rcard!='any'&&a&&!a.includes(S.rcard))S.rcard='any';const key=[a&&a.join(),S.rcard,S.procAll,S.proc,walls.length].join('|'),sel=document.querySelector('[data-k=proc]'),rc=$('#rcardSel');
  if(sel&&key!=PRK){PRK=key;sel.innerHTML=procOpts();sel.value=S.proc;if(rc){rc.innerHTML='<option value="any">Any / not specified</option>'+(a||Object.keys(FAMN)).map(f=>`<option value="${f}">${esc(FAMN[f])}</option>`).join('');rc.value=S.rcard}}
- const nm=walls.map((w,i)=>i==cur?S.preset:w.preset),f=procFam(S.proc),bad=procOn()&&f&&a&&!a.includes(f),inf=$('#procInfo'),wn=$('#procWarn');
- const t=a?`Processors ROE lists for ${walls.length>1?'these tiles':'this tile'}: ${a.map(x=>FAMS[x]).join(', ')}.${S.procAll?'':' Tick Show all processors to see the rest.'}`:'No processor limit is published for this tile, so every processor is listed.',w=bad?`⚠ ${S.proc} is not listed by ROE for ${walls.length>1?'these tiles':nm[cur]}. Check with the manufacturer before relying on it.`:'';
+ const f=procFam(S.proc),inf=$('#procInfo'),wn=$('#procWarn');storeWall();
+ // every wall on every canvas whose tile is not listed for the chosen processor
+ const odd=f&&procOn()?(CVS.length?CVS.flatMap((c,i)=>(i==cc?walls:c.walls).map(w=>[w,CVS.length>1?c.name+': ':''])):walls.map(w=>[w,''])).filter(([w])=>{const q=tileFam(w.preset);return q&&!q.includes(f)}):[];
+ const t=a?`Processors listed for ${S.preset}: ${a.map(x=>FAMS[x]).join(', ')}.${S.procAll?'':' Tick Show incompatible processors to see the rest.'}`:'No processor limit is published for this tile, so every processor is listed.',
+  w=odd.length?`⚠ ${S.proc} is not listed for ${odd.slice(0,4).map(([w,c])=>`${c}${w.name||'a wall'} (${w.preset})`).join(', ')}${odd.length>4?' and '+(odd.length-4)+' more':''}. Check with the manufacturer before relying on it.`:'';
  if(inf&&inf.textContent!==t)inf.textContent=t;if(wn&&wn.textContent!==w)wn.textContent=w}
 // ---------- data wiring: each port's chain is a list of [col,row]; ports numbered P1.. across walls in list order
 const tpp=w=>procOn()&&S.ppx>0?Math.floor(S.ppx/(w.tw*w.th)):0;
@@ -1396,6 +1407,71 @@ async function exportPDF(){storeWall();toast('Building the PDF…',2500);await n
   const name=`TileSmith-${S.cw}x${S.ch}-${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,'0')}${String(dt.getDate()).padStart(2,'0')}.pdf`;
   dl(new Blob([pdfBuild(pages)],{type:'application/pdf'}),name);if(!MOBILE)toast(`Saved ${name} (${pages.length} page${pages.length==1?'':'s'}).`,4000)
  }catch(e){console.error(e);toast('Could not build the PDF: '+(e&&e.message||e),7000)}}
+// ---------- send a canvas to a display (desktop app): a borderless full-screen window on that display, opened from this page so the
+// canvas is drawn straight into it every frame (no copying between processes). The canvas element is sized in device pixels, so one
+// canvas pixel is one pixel on the output even when the system scales the display (125 %, Retina...). Esc on the output closes it.
+const OUTW=new Map();let DISP=[];
+async function dispList(){if(!DESK)return DISP=[];try{DISP=await require('electron').ipcRenderer.invoke('ts-displays')||[]}catch(e){DISP=[]}outUI();return DISP}
+function outInit(){if(!DESK)return;setTimeout(dispList,300);try{const ir=require('electron').ipcRenderer;ir.on('ts-displays-changed',()=>dispList().then(()=>{for(const[c,o]of OUTW)if(!DISP.some(d=>String(d.id)===String(o.d.id)))outClose(c);outUI()}))}catch(e){}}
+const dispName=(d,i)=>`Display ${i+1}: ${d.px[0]}×${d.px[1]}${d.label?' ('+d.label+')':''}${d.main?' (TileSmith is here)':''}`;
+function outOpen(c,id){outClose(c);const d=DISP.find(x=>String(x.id)===String(id));if(!d||!c)return;
+ const win=window.open('about:blank','tsout:'+d.id+':'+c.id,`left=${d.bounds.x},top=${d.bounds.y},width=${d.bounds.width},height=${d.bounds.height}`);if(!win){toast('Could not open the output window.',5000);return}
+ const doc=win.document;doc.title='TileSmith output: '+c.name;doc.body.style.cssText='margin:0;background:#000;overflow:hidden;cursor:none';const cv=doc.createElement('canvas');cv.style.cssText='position:fixed;left:0;top:0;image-rendering:pixelated';doc.body.appendChild(cv);
+ const o={win,cv,x:cv.getContext('2d',{alpha:false}),d,g:-1,dpr:0};win.addEventListener('keydown',e=>{if(e.key=='Escape'){outClose(c);cvUI()}});
+ win.addEventListener('beforeunload',()=>{if(OUTW.get(c)===o){OUTW.delete(c);c.out='';setTimeout(cvUI)}});OUTW.set(c,o);c.out=String(d.id);
+ [0,200,800].forEach(t=>setTimeout(()=>outDraw(c,true),t));toast(`${c.name} is on ${dispName(d,DISP.indexOf(d))}. Press Esc on that display to close it.`,5000)}
+function outClose(c){const o=OUTW.get(c);if(!o)return;OUTW.delete(c);if(c)c.out='';try{o.win.close()}catch(e){}}
+function outDraw(c,force){const o=OUTW.get(c);if(!o)return;if(o.win.closed){OUTW.delete(c);c.out='';return}const cur=c===CVS[cc],m=cur?M:c.M,g=cur?gen:c.gen;if(!force&&o.g===g)return;
+ const dpr=o.win.devicePixelRatio||1,W=m.width,H=m.height;if(o.cv.width!==W||o.cv.height!==H||o.dpr!==dpr){o.cv.width=W;o.cv.height=H;o.cv.style.width=W/dpr+'px';o.cv.style.height=H/dpr+'px';o.dpr=dpr}
+ o.x.imageSmoothingEnabled=false;o.x.drawImage(m,0,0);o.g=g}
+function outUI(){const bx=$('#outBox');if(bx)bx.style.display=DESK||window.__outTest?'':'none';const sel=$('#outSel'),n=$('#outNote');if(!sel||!CVS[cc])return;const c=CVS[cc],k=DISP.map(d=>d.id+':'+d.px+':'+d.main).join()+'#'+c.id;
+ if(sel.__k!==k){sel.innerHTML='<option value="">Off</option>'+DISP.map((d,i)=>`<option value="${d.id}">${esc(dispName(d,i))}</option>`).join('');sel.__k=k}
+ const v=OUTW.has(c)?String(OUTW.get(c).d.id):'';if(sel.value!==v)sel.value=v;let t='';
+ if(!DISP.length)t='No displays found.';else if(v){const d=OUTW.get(c).d,[W,H]=d.px;
+  t=(W<S.cw||H<S.ch?`⚠ This display is ${W}×${H}, smaller than the ${S.cw}×${S.ch} canvas, so the right or bottom is cut off. `:W>S.cw||H>S.ch?`The canvas sits at the top-left; the rest of the ${W}×${H} output is black. `:'The canvas fills this display exactly. ')+
+   (d.scale!=1?`The system scales this display to ${Math.round(d.scale*100)}%; TileSmith draws in device pixels so every canvas pixel is still one output pixel. `:'')+(d.main?'This is the display TileSmith is on: the output covers it. ':'')+'Esc on the output closes it.'}
+ else t='Pick the display (HDMI / DisplayPort) that feeds the processor. Each canvas can go to its own display, drawn pixel for pixel from the top-left.';if(n.textContent!==t)n.textContent=t}
+// ---------- processor config (experimental). NovaStar: NovaLCT screen connection file (.scr). The layout follows the open-source
+// decoder in sarakusha/novastar (MIT, read from NovaLCT): "DSCI" header, DVI info, screen info (Standard screens of cabinet regions:
+// sending card, port, order on the cable, position, size) and screen adjust info, each with a 16-bit byte-sum checksum.
+const cfgNova=()=>{const m=PROC[S.proc];return !!m&&m.brand=='NovaStar'};
+function SB(n){const b=new Uint8Array(n),v=new DataView(b.buffer);return{b,u8:(o,x)=>b[o]=x&255,u16:(o,x)=>v.setUint16(o,x&65535,true),u32:(o,x)=>v.setUint32(o,x>>>0,true),
+ str:(o,t,n)=>{for(let i=0;i<n&&i<t.length;i++)b[o+i]=t.charCodeAt(i)&127},sum:(a,e)=>{let x=0;for(let i=a;i<(e==null?n:e);i++)x=(x+b[i])&65535;return x}}}
+// screens: [{x,y,cols,rows,name,regions:[{s,p,ci,x,y,xi,yi,w,h}]}]
+function scrBytes(cw,ch,screens){const D=SB(128);D.u16(0,1001);D.u8(4,1);D.u8(5,1);D.u16(6,cw);D.u16(8,ch);D.u16(2,D.sum(4));
+ const ext=new TextEncoder().encode(JSON.stringify(screens.map((s,i)=>({si:i,x1:0,y1:0,x2:0,y2:0,x3:0,y3:0,x4:0,y4:0})))),lens=screens.map(s=>10+17*s.regions.length),
+  hd=133+4*screens.length,extPos=hd+lens.reduce((a,b)=>a+b,0),SI=SB(extPos+2+ext.length);
+ SI.u16(0,1006);SI.u32(28,extPos);SI.u8(132,screens.length);lens.forEach((l,i)=>SI.u32(133+4*i,l));let o=hd;
+ screens.forEach(s=>{SI.u8(o,1);SI.u8(o+1,0);SI.u16(o+2,s.x);SI.u16(o+4,s.y);SI.u16(o+6,s.cols);SI.u16(o+8,s.rows);o+=10;
+  s.regions.forEach(r=>{SI.u8(o,r.s);SI.u8(o+1,r.p);SI.u16(o+2,r.ci);SI.u16(o+4,r.x);SI.u16(o+6,r.y);SI.u16(o+8,r.xi);SI.u16(o+10,r.yi);SI.u16(o+12,r.w);SI.u16(o+14,r.h);SI.u8(o+16,255);o+=17})});
+ SI.u16(o,ext.length);SI.b.set(ext,o+2);SI.u16(2,SI.sum(4));
+ const A=SB(133+40*screens.length);A.u16(0,1002);A.u8(132,screens.length);screens.forEach((s,i)=>{const q=133+40*i;A.u8(q,0);A.u8(q+1,1);A.u8(q+2,0);A.u8(q+3,1);A.u8(q+4,0xe4);A.str(q+5,String(s.name||'').replace(/[^\x20-\x7e]/g,''),19)});A.u16(2,A.sum(4));
+ const H=SB(54+128+SI.b.length+A.b.length);H.str(0,'DSCI',4);H.u32(6,128);H.u32(10,SI.b.length);H.u16(14,A.b.length);H.b.set(D.b,54);H.b.set(SI.b,54+128);H.b.set(A.b,54+128+SI.b.length);
+ H.u16(4,H.sum(6,54+128+SI.b.length));return H.b}
+// every wired tile of the canvas in the globals: port, sending card, place on the cable, position
+function cfgRows(){const plan=portPlan(),pp=Math.max(1,S.pports|0),rows=[];
+ walls.forEach((w,wi)=>{const Q=pieces(w);(plan[wi]||[]).forEach(port=>port.tiles.forEach((e,ci)=>{const q=pieceOf(w,e);if(!q)return;
+  rows.push({port:port.p,sender:Math.floor((port.p-1)/pp)+1,portOnSender:(port.p-1)%pp+1,order:ci+1,wall:w.name||'Wall '+(wi+1),wi,tile:q.id,col:Q.lay?q.u:q.c,row:Q.lay?q.v:q.r,x:w.ox+q.x,y:w.oy+q.y,w:q.w,h:q.h,half:!!q.half,model:w.preset})}))});return rows}
+function cfgScreens(rows){return walls.map((w,wi)=>{const R=rows.filter(r=>r.wi==wi).sort((a,b)=>a.col-b.col||a.row-b.row),Q=pieces(w);
+ return{name:w.name||'Wall '+(wi+1),x:Math.max(0,w.ox),y:Math.max(0,w.oy),cols:Q.lay?Q.g.uc:w.cols,rows:Q.lay?Q.g.ur:w.rows,
+  regions:R.map(r=>({s:r.sender-1,p:r.portOnSender-1,ci:r.order-1,x:Math.max(0,r.x),y:Math.max(0,r.y),xi:r.col,yi:r.row,w:r.w,h:r.h}))}}).filter(s=>s.regions.length)}
+// a .zip without compression (stored), so the files open anywhere
+const CRCT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xedb88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+const crc32=b=>{let c=0xffffffff;for(let i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return(c^0xffffffff)>>>0};
+function zipStore(files){const enc=new TextEncoder(),parts=[],cen=[];let off=0;const d=new Date(),dt=((d.getFullYear()-1980)<<9|(d.getMonth()+1)<<5|d.getDate()),tm=(d.getHours()<<11|d.getMinutes()<<5|d.getSeconds()>>1);
+ files.forEach(f=>{const nm=enc.encode(f.name),data=typeof f.data=='string'?enc.encode(f.data):f.data,c=crc32(data),L=SB(30+nm.length);
+  L.u32(0,0x04034b50);L.u16(4,20);L.u16(10,tm);L.u16(12,dt);L.u32(14,c);L.u32(18,data.length);L.u32(22,data.length);L.u16(26,nm.length);L.b.set(nm,30);parts.push(L.b,data);
+  const C=SB(46+nm.length);C.u32(0,0x02014b50);C.u16(4,20);C.u16(6,20);C.u16(12,tm);C.u16(14,dt);C.u32(16,c);C.u32(20,data.length);C.u32(24,data.length);C.u16(28,nm.length);C.u32(42,off);C.b.set(nm,46);cen.push(C.b);off+=L.b.length+data.length});
+ const cs=cen.reduce((a,b)=>a+b.length,0),E=SB(22);E.u32(0,0x06054b50);E.u16(8,files.length);E.u16(10,files.length);E.u32(12,cs);E.u32(16,off);return new Blob([...parts,...cen,E.b],{type:'application/zip'})}
+function exportConfig(){storeWall();if(!procOn()){toast('Pick an LED processor first.');return}const nova=cfgNova(),files=[],sum=[];let none=true;
+ eachCv(()=>{const rows=cfgRows(),tag=cvTag()||'',cvn=CVS[cc]?CVS[cc].name:'Canvas';if(!rows.length)return;none=false;
+  const csv=['Port,Sending card,Port on card,Order on cable,Wall,Tile,Column,Row,X px,Y px,Width px,Height px,Half tile,Tile model'].concat(rows.map(r=>[r.port,r.sender,r.portOnSender,r.order,r.wall,r.tile,r.col+1,r.row+1,r.x,r.y,r.w,r.h,r.half?'yes':'no',r.model].map(v=>/[",\n]/.test(String(v))?'"'+String(v).replace(/"/g,'""')+'"':v).join(','))).join('\r\n');
+  files.push({name:`wiring${tag}.csv`,data:csv},{name:`wiring${tag}.json`,data:JSON.stringify({app:'TileSmith',experimental:true,canvas:{name:cvn,width:S.cw,height:S.ch},processor:S.proc,pixelsPerPort:S.ppx,portsPerCard:S.pports,returnPorts:!!S.ret,
+   walls:walls.map(w=>({name:w.name,x:w.ox,y:w.oy,cols:w.cols,rows:w.rows,tile:{model:w.preset,px:[w.tw,w.th],mm:[w.wmm,w.hmm,w.dmm],pitch:w.pitch}})),tiles:rows},null,1)});
+  if(nova){const sc=cfgScreens(rows),big=sc.some(s=>s.regions.some(r=>r.s>255||r.p>255));if(!big&&sc.length<=255){files.push({name:`novastar-screen${tag}.scr`,data:scrBytes(S.cw,S.ch,sc)});sum.push(`${cvn}: ${sc.length} screen${sc.length==1?'':'s'}, ${rows.length} cabinets`)}}});
+ if(none){toast('Wire some data first (Data wiring), then download the config file.',5000);return}
+ files.push({name:'README.txt',data:['TileSmith processor config (EXPERIMENTAL)','',`Processor: ${S.proc}`,'',nova?'novastar-screen*.scr: NovaLCT screen connection file. In NovaLCT open Screen Configuration > Screen Connection, load the file (Load from File), compare the cabinet map with your cables, then Send to HW and Save. Each wall is one screen; each tile is a cabinet with its sending card, port and order on the cable. Return / backup ports are not included (set redundancy in NovaLCT). NovaStar COEX units managed in VMP (VX Pro, MX series) use VMP project files and may not accept .scr files.':'No loadable configuration file format is published for this processor, so only the wiring sheet is included.','','wiring*.csv / wiring*.json: every wired tile with its port, sending card, order on the cable and pixel position on the canvas.','','Made by TileSmith. Verify everything on the processor before use.'].join('\r\n')});
+ const fn=`tilesmith-${nova?'novastar-config':'wiring'}${CVS.length>1?'':cvTag()}.zip`;dl(zipStore(files),fn);if(!MOBILE)toast(`Saved ${fn}${sum.length?' ('+sum.join('; ')+')':''}. Experimental: check everything on the processor.`,7000)}
 // ---------- Resolume Arena Advanced Output preset (XmlState > ScreenSetup > Screen > Slice), composition = canvas, one virtual output the size of the canvas
 function resolumeXML(){storeWall();const P=(n,t,v)=>`<Param name="${n}" T="${t}" value="${esc(v)}"/>`,V=(x,y,w,h)=>[[x,y],[x+w,y],[x+w,y+h],[x,y+h]].map(([a,b])=>`<v x="${a}" y="${b}"/>`).join('');let id=Date.now();
 const rects=[];walls.forEach((w,i)=>{const nm=w.name||'Wall '+(i+1);if(/per tile/.test(S.resSl))[...pieces(w).list].sort((a,b)=>a.id-b.id).forEach(R=>rects.push([`${nm} T${pad(R.id-1)}${R.half?' half':''}`,w.ox+R.x,w.oy+R.y,R.w,R.h]));else rects.push([nm,w.ox,w.oy,wW(w),wH(w)])});
@@ -1771,7 +1847,8 @@ function tick(now){if(LOOPREC)return;const dt=Math.min(.1,Math.max(0,(now-lastSt
  const k1=Math.floor(T/STEP_S),c1=k1!==stepK;stepK=k1;const k2=Math.floor(T/TC_STEP),c2=k2!==stepK2||T-k2*TC_STEP>TC_STEP-TC_SLIDE-.02;stepK2=k2;
  const per=now-lastRen>=250,fr=forceRen;forceRen=false;let did=false;
  eachCv(()=>{fit_if();step(dt);dvdStep(dt);const need=fr||forceRen||per||busyNow(now)||c1&&walls.some(w=>w.pat=='cycle')||c2&&walls.some(w=>w.pat=='tileshade-cycle');forceRen=false;
-  if(need){const a=performance.now();render();ema('render',performance.now()-a);PERF.frames++;gen++;did=true}});
+  if(need){const a=performance.now();render();ema('render',performance.now()-a);PERF.frames++;gen++;did=true}if(OUTW.size)outDraw(CVS[cc])});
+ if(OUTW.size)for(const c of OUTW.keys())if(!CVS.includes(c))outClose(c);
  if(did){RG++;lastRen=now}}
 function loop(){requestAnimationFrame(loop);try{const now=performance.now();
  if(!OC.on||REC){const F=1000/60;if(now>=nextT-F*.25){tick(now);nextT+=F;if(nextT<now)nextT=now+F}}
@@ -1825,7 +1902,7 @@ addEventListener('keydown',e=>{const t=e.target,tx=t&&(t.tagName=='TEXTAREA'||t.
 function newCanvasAsk(){let o=$('#newc');if(o)o.remove();o=document.createElement('div');o.id='newc';o.style.cssText='position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center';
  o.innerHTML='<div role="dialog" aria-modal="true" aria-label="New Project" style="background:var(--pn,#1c1c1c);color:var(--tx,#eee);border:1px solid #555;border-radius:10px;padding:18px;max-width:420px;margin:16px"><h3 style="margin:0 0 8px">Start a new project?</h3><p style="margin:0 0 14px;font-size:14px">This erases every wall, wiring, half tile, pattern and setting (including output, label and video options) and starts from a blank canvas. You can bring it back with Undo.</p><div class="row" style="justify-content:flex-end"><button data-n="0">Cancel</button><button data-n="1" style="border-color:#e5484d;color:#e5484d">Erase everything</button></div></div>';
  document.body.appendChild(o);o.addEventListener('click',e=>{const b=e.target.closest('button[data-n]');if(!b&&e.target!==o)return;o.remove();if(b&&b.dataset.n=='1')newCanvas()});o.querySelector('button').focus()}
-function newCanvas(){stopMarking();document.querySelectorAll('#left details').forEach(d=>d.open=false);for(const k in S)if(!SKIP.includes(k))S[k]=cl(S_DEF[k]);S.patImg=null;S.boxImg=null;walls=[wallFromS()];cur=0;crew=defCrew();logoImg=null;dvdImg=null;wiring=false;pwiring=false;halfEdit=false;goneEdit=false;CVS=[cvFromGlobals('Canvas 1')];cc=0;
+function newCanvas(){stopMarking();document.querySelectorAll('#left details').forEach(d=>d.open=false);for(const k in S)if(!SKIP.includes(k))S[k]=cl(S_DEF[k]);S.patImg=null;S.boxImg=null;walls=[wallFromS()];cur=0;crew=defCrew();logoImg=null;dvdImg=null;wiring=false;pwiring=false;halfEdit=false;goneEdit=false;for(const c of [...OUTW.keys()])outClose(c);CVS=[cvFromGlobals('Canvas 1')];cc=0;
  showAll();crewUI();sync();fit_if();fit();saveSoon();setTimeout(()=>unCheck('New Project'),0)}
 function stopMarking(){halfEdit=false}
 // ---------- Save / Open project: one .tilesmith file (JSON) with everything, including uploaded logos, patterns, DVD image and the crew
@@ -1867,5 +1944,5 @@ function resetSaved(){window.__noSave=true;try{if(DESK){const{f}=stFile();requir
 addEventListener('beforeunload',saveNow);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 $('#rst').onclick=()=>{if(confirm('Reset all saved settings, crew and uploads to defaults?'))resetSaved()};
 CVS=[cvFromGlobals('Canvas 1')];cc=0;loadState();if(!PROC.hasOwnProperty(S.proc))S.proc='None';if(SHK=='Spout'&&!shGpus().includes(S.shGpu))S.shGpu='Automatic';if(procOn()&&!S.ppx&&PROC[S.proc].px)applySpec();
-build();showAll();CVS.forEach((c,i)=>{if(i!=cc){c.M.width=c.cw;c.M.height=c.ch}});M.width=S.cw;M.height=S.ch;fit();unBase();unUI();requestAnimationFrame(loop);addEventListener('resize',()=>{fit();ddClose()});$('#bar').addEventListener('scroll',ddClose,{passive:true});
+build();outInit();tpPlace();showAll();CVS.forEach((c,i)=>{if(i!=cc){c.M.width=c.cw;c.M.height=c.ch}});M.width=S.cw;M.height=S.ch;fit();unBase();unUI();requestAnimationFrame(loop);addEventListener('resize',()=>{fit();ddClose()});$('#bar').addEventListener('scroll',ddClose,{passive:true});
 </script></body></html>

@@ -33,7 +33,7 @@ async def main():
         # tile changes to one without NovaStar: card resets, selected incompatible processor is kept with a warning
         await setk('rcard', 'any'); await setk('proc', 'NovaStar VX1000 Pro'); await setk('preset', 'ROE Meru MR2.6')
         chk(await ev("()=>S.proc")== 'NovaStar VX1000 Pro' and 'NovaStar VX1000 Pro' in await ev(opts), 'kept selected')
-        w = await ev("()=>document.querySelector('#procWarn').textContent"); chk('not listed by ROE' in w, 'warning ' + w)
+        w = await ev("()=>document.querySelector('#procWarn').textContent"); chk('not listed for' in w, 'warning ' + w)
         # show all
         await setk('procAll', True); o = await ev(opts); chk(len(o) == len(await ev("()=>Object.keys(PROC)")), 'show all')
         await setk('procAll', False)
@@ -43,7 +43,9 @@ async def main():
         n = await ev("()=>walls.length"); print('walls', n)
         if n > 1:
             await setk('preset', 'ROE Sierra SR1.5'); o = await ev(opts)
-            chk(not any('Tessera' in x for x in o) and any('HELIOS' in x for x in o), 'two walls intersect ' + str(o))
+            chk(not any('Tessera' in x for x in o) and any('HELIOS' in x for x in o) and any('NovaStar' in x for x in o), 'list follows the selected tile ' + str(o))
+            await setk('proc', 'NovaStar VX1000 Pro'); w = await ev("()=>document.querySelector('#procWarn').textContent")
+            chk('Meru' in w, 'warning names the other wall ' + w)
         # persistence
         await setk('procAll', True); await setk('rcard', 'any'); await ev("()=>saveNow()"); await pg.reload(); await pg.wait_for_timeout(800)
         chk(await ev("()=>S.procAll===true"), 'persisted')
