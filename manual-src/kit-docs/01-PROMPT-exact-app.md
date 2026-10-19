@@ -86,13 +86,13 @@ The kit's `TileSmith-Mobile-Manual.pdf` explains each of these. Compare with `sc
 | Check | Expected |
 |---|---|
 | App opens | Dark (or light) TileSmith screen with "TileSmith v{{VERSION}}" at the top left, the canvas with a 6 × 4 wall in the middle, Engineering on the right (tablet) or below (phone). No white flash. |
-| Top bar | Info, Play / Pause, Start build, Instant skip, Reset fit, Next pattern, Export PNG, Export CSV, Spec sheet, Resolume XML ▾, Export video. **No** Start NDI® or Spout/Syphon button. |
+| Top bar | New Project, Save, Open, Info, Undo, Reset fit, Next pattern, Export PNG, Export CSV, Spec sheet, Resolume XML ▾. **No** Start NDI® or Spout/Syphon button. |
 | Turn the device | The page stays as it was (no reload), and a running build animation keeps going. |
 | Pinch on the canvas | Zooms the canvas, not the whole page. Two fingers pan; one finger drags a wall. |
-| Start build | The technician walks in, carries tiles and builds the wall. |
+| LED build > Start | The technician walks in, carries tiles and builds the wall. |
 | Export PNG | Android share sheet "Save or send tilesmith-canvas.png". Pick Drive or Files, and a toast says "Saved tilesmith-canvas.png.". Close the sheet instead, and it says "Not saved: tilesmith-canvas.png". |
 | Export CSV, Spec sheet, Resolume XML | The same, with patching.csv, tilesmith-spec.html and tilesmith-1920x1080.xml. |
-| Export video | The status shows ● REC blank, then building, then hold. The screen stays on. Then the share sheet opens for tilesmith-build-YYYYMMDD-HHMMSS.mp4. Pressing Export video again while recording cancels it ("Recording cancelled"). |
+| Video export > Export video (LED build ticked) | The status shows ● REC blank, then building, then hold. The screen stays on. Then the share sheet opens for tilesmith-build-YYYYMMDD-HHMMSS.mp4. Pressing Export video again while recording cancels it ("Recording cancelled"). |
 | Upload test pattern (Test pattern section, pattern "custom") | The system picker opens; the picture appears on the wall. |
 | ⓘ Info › Ko-fi link / e-mail | Opens the browser or e-mail app. |
 | Close and reopen the app | Every setting is still there (it is saved in the WebView's storage). |

@@ -153,9 +153,9 @@ async def main():
         await ui('DVD screensaver', 'ui-dvd.png', 'DVD screensaver submenu', 'Logo source, text, upload, bounce area, size, speed, corner hit chance, colour change, perfect loop, loop length, export loop video (desktop only, hidden).')
         await full('t12-dvd.png', 'Animation Options > DVD screensaver', '')
         await ev(f"""()=>{{S.dvdOn=false;S.pat='tileshade';S.ids=true;S.tpos=true;{PREP}}}""")
-        await ui('Animation Options', 'ui-animation-section.png', 'Animation Options section', 'In the mobile app: DVD screensaver, Build options (with Technician) and Video export. NDI® and Spout/Syphon options are hidden.')
+        await ui('Animation Options', 'ui-animation-section.png', 'Animation Options section', 'In the mobile app: DVD screensaver, LED build (with Technician) and Video export. NDI® and Spout/Syphon options are hidden.')
         await ev("()=>{reset();S.play=true;__step(60*27.5)}")
-        await ui('Build options', 'ui-build-options.png', 'Build options submenu', 'Speed, loop build, pause before restart, Start build / Instant skip hints.')
+        await ui('LED build', 'ui-build-options.png', 'LED build submenu', 'Start, Stop, Reset, Play / Pause, speed, loop build, pause before restart.')
         await ui('Technician', 'ui-technician.png', 'Technician submenu', 'Hard hat and vest colours, vest logo text or image, crew details: name, skin tone, hair colour, face photo per crew member.')
         await full('t13-build-in-progress.png', 'Build in progress', 'The technician carries a tile to its slot; placed tiles show the pattern, empty slots are dashed outlines.')
         await ui('Video export', 'ui-video-export.png', 'Video export submenu (mobile)', 'Blank intro and final hold seconds, estimated length, the mobile note (records MP4 with the device encoder). Format/HAP choices are desktop only.')
@@ -165,7 +165,7 @@ async def main():
         # recording
         await ev(f"""()=>{{S.vIntro=1;S.vHold=1;S.speed=2;{PREP};if(!MediaRecorder.isTypeSupported('video/mp4'))window.mrType=()=>'video/webm'}}""")
         await pg.click('#bar [data-a=rec]'); await pg.wait_for_timeout(2600)
-        await opensub('Video export'); await full('t14-recording.png', 'Recording a video', 'The top bar shows the red recording status (blank, building, hold); press Export video again to cancel.')
+        await opensub('Video export'); await full('t14-recording.png', 'Recording a video', 'The status under Export video shows blank, building, hold; press Export video again to cancel.')
         for _ in range(60):
             await pg.wait_for_timeout(500)
             st = await ev("document.querySelector('#recs').textContent")

@@ -1,6 +1,6 @@
-# TileSmith 3.3 - app specification for building a clone
+# TileSmith 3.5 - app specification for building a clone
 
-Generated 2026-10-17 from TileSmith v3.3 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-10-19 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -39,7 +39,7 @@ Mac (Syphon.framework via node-syphon) and video export (via ffmpeg). All settin
 
 Desktop: three columns. Left panel (settings, 350 px), centre (top bar + viewport), right panel (engineering, 310 px).
 Below 900 px wide the columns stack. Colours: dark UI (`--bg`, `--pn` panel, `--ac` teal accent #22a0ac-ish, `--am`
-amber for the version). Header: "TileSmith v3.3" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
+amber for the version). Header: "TileSmith v3.5" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
 
 ### 3.1 Left panel sections and submenus (in order)
 
@@ -60,7 +60,7 @@ the selected wall.
     - Power wiring
 - **Animation Options**
   - DVD screensaver
-  - Build options
+  - LED build
     - Technician
   - Video export
   - NDI® options
@@ -78,7 +78,7 @@ Visibility rules:
 
 ### 3.2 Top bar
 
-Buttons: **ⓘ Info**, **Play / Pause**, **Start build**, **Instant skip**, **Reset fit**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export CSV**, **Spec sheet**, **Resolume XML ▾**, **Export video**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
+Buttons: **New Project**, **Save**, **Open**, **ⓘ Info**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export CSV**, **Spec sheet**, **Resolume XML ▾**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
 moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Start NDI®" toggles NDI; while
 live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout" (Windows) or "Start Syphon" (Mac)
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
@@ -98,8 +98,15 @@ goes to the output.
 - Drag empty space to pan. Drag a wall to move it (unless an editing mode is on).
 - Walls snap to canvas edges and other walls' edges within 10 screen px (magenta dashed guides while dragging); after
   dropping, overlapping walls are pushed apart to keep a 2 px gap. Hold Alt to place freely.
-- Click a wall to select it. Reset fit fits the canvas (margin min(60 px, 10% of the viewport)); the canvas also
-  refits when the window resizes.
+- Click a wall to select it. Show entire canvas (the old Reset fit) fits the canvas (margin min(60 px, 10% of the viewport)); Center canvas keeps the
+  zoom and centres the canvas; New Project asks, then resets every setting, wall, crew and logo to the start-up defaults
+  (S_DEF); the canvas also refits when the window resizes. Undo menu (top bar, "Undo (n) v"): a snapshot of the whole design (all
+  settings except images and play state, every wall's keys, the selected wall, crew and logos) is compared after every
+  input/change/click and at the end of a wall/marking/wiring drag; if it differs the previous snapshot is pushed as a step
+  named after the control ("Columns -> 9", "Add wall", "Moved LED Wall", "Marked half tiles"). Typing in one box within 1.5 s
+  is one step. Up to 20 steps; the menu lists them newest first and picking step n restores the state before it (n undos);
+  a Redo item appears on top after an undo. Ctrl/Cmd+Z undoes, Ctrl/Cmd+Y or Ctrl/Cmd+Shift+Z redoes (not while typing in a
+  text or number box). Selecting a wall, panning/zooming, playing and exporting are not steps. New Project is one step.
 - Editing modes (one at a time): manual data wiring, manual power wiring, Mark half tiles, Remove tiles. In these modes
   the cursor is a crosshair over the selected wall and drags edit instead of moving the wall. While Remove tiles or
   Mark half tiles is on, empty spots of the selected wall show a red dashed outline with an X (viewport only).
@@ -144,6 +151,8 @@ dialog) deletes the state and reloads.
 | `dvdLoopCorners` | true | Perfect loop includes exactly two corner hits per loop (else none). |
 | `vIntro` | 5 | Video export: seconds of blank canvas before the build (0-60). |
 | `vHold` | 10 | Video export: seconds holding the finished wall (0-120). |
+| `vLed` | true | Video export: tick to include the LED build video (blank intro, live build, final hold). |
+| `vDvd` | false | Video export: tick to include the DVD logo perfect-loop video (desktop only; needs Bounce a logo and Perfect loop). With both ticked, one Export video click makes two files, LED build first. |
 | `vCodec` | HAP (.mov) | Video export format (see Video formats). |
 | `hapFmt` | hap | HAP flavour: hap \| hap_alpha \| hap_q. |
 | `proc` | None | LED processor model (or None). Gates all data/port features. |
@@ -154,7 +163,7 @@ dialog) deletes the state and reloads.
 | `pports` | 1 | Ports per processor / sending card (editable). |
 | `ret` | true | Count a return port (R#) for every primary port. |
 | `showData` | true | Draw data paths on the canvas. |
-| `pdist` | false | Power distribution ticked (Socapex, 6 circuits per cable). Gates all power features. |
+| `pdist` | false | Power distribution ticked. Gates all power features. |
 | `pvolt` | 120 | Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V. |
 | `pamps` | 20 | Breaker size in amps (1-400). |
 | `derate` | true | Load circuits to 80% (continuous load rule). |
@@ -170,6 +179,10 @@ dialog) deletes the state and reloads.
 | `shIdle` | true | Spout/Syphon Save CPU (default on): a still picture is sent about 4 times a second instead of the full rate. |
 | `shGpu` | Automatic | Spout graphics card (Windows): Automatic (the high-performance card) or a card name from the list. The receiver must be on the same card. |
 | `lblWhat` | Data and power | Label printing: which cables to label: Data and power (default), Data only, Power only. |
+| `lblPow` | Cable and circuit labels | Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only". |
+| `pdt` | Socapex (6 circuits per cable) | Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)". Choosing Edison sets pvolt 120 and pamps 15. |
+| `pwall` | 0 | Edison only: plugs per wall circuit (0-100, default 0 = no wall-circuit check). |
+| `pwallA` | 20 | Edison only: wall circuit breaker in amps (1-400, default 20). |
 | `lblSize` | Avery 5163 (10 per US Letter sheet) | Label sheet preset: Avery 5160 (30 per US Letter), Avery 5163 (10 per US Letter), Avery L7160 (21 per A4), Label roll 62 x 29 mm, or Custom label roll. |
 | `lblLayout` | Two identical panels | Wrap layout: Two identical panels (default), Flag fold-over (second panel rotated 180 degrees), Text in the middle, colour on the ends. |
 | `lblFlag` | Big end blocks | Colour flag style: Big end blocks (default), Top and bottom bars, Big corner squares. |
@@ -177,7 +190,7 @@ dialog) deletes the state and reloads.
 | `lblW` | 62 | Custom roll label width in mm (20-300). |
 | `lblH` | 29 | Custom roll label height in mm (10-300). |
 | `lblCopies` | 1 | Copies printed of each cable end (1-4). |
-| `lblColor` | true | Colour flags on each label (green primary, red return, power phase A black / B orange / C blue, wall shade); off = no flags or wall marks. |
+| `lblColor` | true | Colour the labels: data labels are completely green (primary) or red (return); power labels carry a flag in the wall's Tile-shade colour; off = plain labels, no flags or wall marks. |
 | `lblJump` | false | Also print labels for the tile-to-tile links (data and power jumpers). |
 | `lblKeep` | true | Sheets: keep the two ends of one cable in the same row (pad with a blank cell). |
 | `lblSkip` | 1 | First label position to use on a sheet (skips used labels). |
@@ -194,6 +207,8 @@ dialog) deletes the state and reloads.
 | `half` | [] | Legacy half-tile marks from v3.2 previews ([col,row,side]); converted to "lay" on load. |
 | `gone` | [] | Removed tiles on a plain grid: list of [col,row]. |
 | `lay` | {} | Half-tile layout: {} for a plain grid, or {s: split "h"\|"w", uc/ur: unit grid size when last edited, p: [[u,v,unitsWide,unitsTall],...]}. |
+| `gx` | 0 | Wall key: how far (px) the top-left of the wall's real tiles sits right of the full tile grid. Set by the app, not the user; ox/oy are the canvas position of those tiles. |
+| `gy` | 0 | Wall key: like gx, downwards (a converted top row makes it half a tile). |
 | `name` | LED Wall | Wall name. |
 | `ox` | 0 | Wall X offset on the canvas in px (-20000..20000). |
 | `oy` | 0 | Wall Y offset on the canvas in px. |
@@ -243,20 +258,138 @@ Quick sizes: 4x3, 6x4, 8x5, 10x6, 16x9.
 ## 5. Tile models (presets)
 
 Picking a preset fills tw, th, wmm, hmm, pitch, kg, wmax, dmm. Editing any of those switches the preset to "Custom".
-Density = 1e6 / (pitch^2) px/m^2; Typical power = 40% of max. The list is grouped by manufacturer (ROE, Absen, Unilumin,
-INFiLED, YES TECH; Custom last). YES TECH max watts = the higher W/m^2 figure on the spec sheet x cabinet area, rounded
-up. ROE CB5/CB8 Half figures are estimates (half the pixels and watts, CB3 Half weight).
+Density = 1e6 / (pitch^2) px/m^2; Typical power = 40% of max. The list is grouped by manufacturer (Absen, Unilumin,
+INFiLED, YES TECH; Custom last); ROE is split into one group per series (ROE Amber, ROE Black Marble, ... ROE Vanish Acoustics) in the order of the ROES array. YES TECH max watts = the higher W/m^2 figure on the spec sheet x cabinet area, rounded
+up. ROE figures come from the cabinet pages on roevisual.com (per panel, as printed). 23 ROE models have a half panel (HALF table, 'h' = two halves stacked make the full tile).
 
 | Preset | W mm | H mm | px W | px H | Pitch mm | kg | Max W | Depth mm |
 |---|---|---|---|---|---|---|---|---|
+| ROE Amber AB1.5 | 600 | 337.5 | 384 | 216 | 1.5625 | 8.5 | 180 | 55 |
+| ROE Amber AB1.8 | 600 | 337.5 | 320 | 180 | 1.875 | 8.5 | 170 | 55 |
+| ROE Black Marble BM2 Matte | 609.6 | 609.6 | 216 | 216 | 2.82 | 18.6 | 310 | 133 |
+| ROE Black Marble BM2V2-PC Matte (Black LED) | 609.6 | 609.6 | 216 | 216 | 2.82 | 18.6 | 310 | 133 |
+| ROE Black Marble BM2V2-PC Matte (White LED) | 609.6 | 609.6 | 216 | 216 | 2.82 | 18.6 | 310 | 133 |
+| ROE Black Marble BM4 Glass | 609.6 | 609.6 | 128 | 128 | 4.76 | 23.4 | 290 | 142 |
+| ROE Black Marble BM4 Matte | 609.6 | 609.6 | 128 | 128 | 4.76 | 17.5 | 290 | 135 |
+| ROE Black Marble BM4 Mirror | 609.6 | 609.6 | 128 | 128 | 4.76 | 23.4 | 290 | 142 |
+| ROE Black Marble BM5 PC Matte | 600 | 600 | 104 | 104 | 5.7692 | 13.5 | 270 | 103 |
+| ROE Black Marble BM5 Glass | 600 | 600 | 104 | 104 | 5.7692 | 18.3 | 270 | 110 |
+| ROE Black Marble BM2i Matte (interactive floor) | 609.6 | 609.6 | 216 | 216 | 2.82 | 18.6 | 310 | 133 |
+| ROE Black Marble BM4i (interactive floor) | 609.6 | 609.6 | 128 | 128 | 4.76 | 17.5 | 290 | 135 |
+| ROE Black Pearl BP2V2 | 500 | 500 | 176 | 176 | 2.84 | 9.35 | 190 | 90 |
+| ROE Black Quartz BQ3.9 | 500 | 1000 | 128 | 256 | 3.9 | 22 | 360 | 82.62 |
+| ROE Black Quartz BQ3.9 Half | 500 | 500 | 128 | 128 | 3.9 | 9.8 | 190 | 82.62 |
+| ROE Black Quartz BQ4.6 | 500 | 1000 | 108 | 216 | 4.6 | 22 | 370 | 82.62 |
+| ROE Black Quartz BQ4.6 Half | 500 | 500 | 108 | 108 | 4.6 | 9.8 | 190 | 82.62 |
+| ROE Black Quartz BQ6.2 | 500 | 1000 | 80 | 160 | 6.25 | 22 | 450 | 82.62 |
+| ROE Black Quartz BQ6.2 Half | 500 | 500 | 80 | 80 | 6.25 | 9.8 | 230 | 82.62 |
 | ROE Carbon CB3 | 600 | 1200 | 160 | 320 | 3.75 | 13.2 | 540 | 77 |
 | ROE Carbon CB3 Half | 600 | 600 | 160 | 160 | 3.75 | 7.5 | 260 | 77 |
 | ROE Carbon CB5 | 600 | 1200 | 104 | 208 | 5.77 | 13.85 | 500 | 77 |
-| ROE Carbon CB5 Half | 600 | 600 | 104 | 104 | 5.77 | 7.5 | 250 | 77 |
+| ROE Carbon CB5 Half | 600 | 600 | 104 | 104 | 5.77 | 7.95 | 250 | 77 |
 | ROE Carbon CB8 | 600 | 1200 | 72 | 144 | 8.33 | 12.68 | 430 | 72 |
-| ROE Carbon CB8 Half | 600 | 600 | 72 | 72 | 8.33 | 7 | 215 | 72 |
+| ROE Carbon CB8 Half | 600 | 600 | 72 | 72 | 8.33 | 7.05 | 220 | 72 |
+| ROE Carbon CB8-Transparent | 600 | 1200 | 72 | 144 | 8.33 | 10.9 | 430 | 70 |
+| ROE Carbon CB8-Transparent Half | 600 | 600 | 72 | 72 | 8.33 | 6 | 220 | 70 |
+| ROE Carbon MkII CB3 | 600 | 1200 | 160 | 320 | 3.75 | 14.4 | 600 | 79 |
+| ROE Carbon MkII CB3 Half | 600 | 600 | 160 | 160 | 3.75 | 7.8 | 290 | 79 |
+| ROE Carbon MkII CB5 | 600 | 1200 | 104 | 208 | 5.77 | 13.6 | 480 | 79 |
+| ROE Carbon MkII CB5 Half | 600 | 600 | 104 | 104 | 5.77 | 7.2 | 250 | 79 |
+| ROE Carbon MkII CB8 | 600 | 1200 | 72 | 144 | 8.33 | 11 | 530 | 79 |
+| ROE Carbon MkII CB8 Half | 600 | 600 | 72 | 72 | 8.33 | 6 | 260 | 79 |
+| ROE Carbon Full Spectrum CB5 MkII RGBCA | 600 | 1200 | 104 | 208 | 5.77 | 15.5 | 300 | 80 |
+| ROE Carbon Full Spectrum CB5 MkII RGBW | 600 | 1200 | 104 | 208 | 5.77 | 17.5 | 750 | 80 |
+| ROE Coral S0.9 | 600 | 337.5 | 640 | 360 | 0.9375 | 5.4 | 60 | 29.2 |
+| ROE Coral S1.2 | 600 | 337.5 | 480 | 270 | 1.25 | 5.4 | 60 | 29.2 |
+| ROE Coral S1.5 | 600 | 337.5 | 384 | 216 | 1.5625 | 5.4 | 60 | 29.2 |
+| ROE Denali DL0.7 | 600 | 337.5 | 768 | 432 | 0.78125 | 5.5 | 70 | 29.2 |
+| ROE Denali DL0.9 | 600 | 337.5 | 640 | 360 | 0.9375 | 5.5 | 95 | 29.2 |
+| ROE Denali DL1.2 | 600 | 337.5 | 480 | 270 | 1.25 | 5.5 | 100 | 29.2 |
+| ROE Diamond DM2.6 | 500 | 500 | 192 | 192 | 2.6 | 5.76 | 180 | 80 |
+| ROE Diamond DM3.9 | 500 | 500 | 128 | 128 | 3.906 | 5.76 | 150 | 80 |
+| ROE Graphite GP1.9 (4 in 1) | 500 | 1000 | 256 | 512 | 1.953 | 9.32 | 250 | 80 |
+| ROE Graphite GP1.9 (4 in 1) Half | 500 | 500 | 256 | 256 | 1.953 | 5.51 | 125 | 80 |
+| ROE Graphite GP2.6 (4 in 1) | 500 | 1000 | 192 | 384 | 2.604 | 8.6 | 250 | 80 |
+| ROE Graphite GP2.6 (4 in 1) Half | 500 | 500 | 192 | 192 | 2.604 | 5.1 | 125 | 80 |
+| ROE Graphite GP2.6 | 500 | 1000 | 192 | 384 | 2.604 | 9 | 320 | 80 |
+| ROE Graphite GP2.6 Half | 500 | 500 | 192 | 192 | 2.604 | 5.2 | 160 | 80 |
+| ROE Graphite GP3.1 | 500 | 1000 | 160 | 320 | 3.125 | 9 | 320 | 80 |
+| ROE Graphite GP3.1 Half | 500 | 500 | 160 | 160 | 3.125 | 5.2 | 160 | 80 |
+| ROE Graphite GP3.9 | 500 | 1000 | 128 | 256 | 3.91 | 9 | 320 | 80 |
+| ROE Graphite GP3.9 Half | 500 | 500 | 128 | 128 | 3.91 | 5.2 | 160 | 80 |
+| ROE Jasper JA2.6 | 500 | 1000 | 192 | 384 | 2.604 | 14.15 | 340 | 60 |
+| ROE Jasper JA2.6 Half | 500 | 500 | 192 | 192 | 2.604 | 7.5 | 190 | 60 |
+| ROE Jasper JA3.9 | 500 | 1000 | 128 | 256 | 3.906 | 14.15 | 340 | 60 |
+| ROE Jasper JA3.9 Half | 500 | 500 | 128 | 128 | 3.906 | 7.5 | 160 | 60 |
+| ROE Jet JT1.9 (GOB) | 500 | 500 | 256 | 256 | 1.95 | 6.1 | 140 | 86 |
+| ROE Jet JT2.2 | 500 | 1000 | 224 | 448 | 2.23 | 10.8 | 280 | 86 |
+| ROE Jet JT2.2 Half | 500 | 500 | 224 | 224 | 2.23 | 6 | 140 | 86 |
+| ROE Jet JT2.6 | 500 | 1000 | 192 | 384 | 2.604 | 10.3 | 280 | 86 |
+| ROE Jet JT2.6 Half | 500 | 500 | 192 | 192 | 2.604 | 5.8 | 140 | 86 |
+| ROE Jet JT3.1 | 500 | 1000 | 160 | 320 | 3.125 | 10.3 | 280 | 86 |
+| ROE Jet JT3.1 Half | 500 | 500 | 160 | 160 | 3.125 | 5.8 | 140 | 86 |
+| ROE Jet JT3.9 | 500 | 1000 | 128 | 256 | 3.91 | 10.3 | 290 | 86 |
+| ROE Jet JT3.9 Half | 500 | 500 | 128 | 128 | 3.91 | 5.8 | 145 | 86 |
+| ROE Meru MR1.9 | 500 | 1000 | 256 | 512 | 1.9 | 14.8 | 220 | 48 |
+| ROE Meru MR1.9 Half | 500 | 500 | 256 | 256 | 1.9 | 7.4 | 110 | 48 |
+| ROE Meru MR2.6 | 500 | 1000 | 192 | 384 | 2.6 | 14.8 | 230 | 48 |
+| ROE Meru MR2.6 Half | 500 | 500 | 192 | 192 | 2.6 | 7.4 | 115 | 48 |
+| ROE Obsidian OB2.6 | 500 | 500 | 192 | 192 | 2.6 | 5.4 | 220 | 74.6 |
 | ROE Ruby RB2.3 | 500 | 500 | 216 | 216 | 2.31 | 8.16 | 180 | 73 |
-| ROE Black Pearl BP2V2 | 500 | 500 | 176 | 176 | 2.84 | 9.35 | 190 | 90 |
+| ROE Ruby RB1.2 | 500 | 500 | 400 | 400 | 1.25 | 8.24 | 210 | 73 |
+| ROE Ruby RB1.2F | 500 | 500 | 400 | 400 | 1.25 | 8.54 | 140 | 73 |
+| ROE Ruby RB1.5F | 500 | 500 | 320 | 320 | 1.56 | 8.16 | 140 | 73 |
+| ROE Ruby RB-C1.5F | 500 | 500 | 320 | 320 | 1.56 | 8.58 | 140 | 108 |
+| ROE Ruby RB1.9BV2 | 500 | 500 | 256 | 256 | 1.95 | 8.46 | 160 | 73 |
+| ROE Ruby RB-C1.9BV2 | 500 | 500 | 256 | 256 | 1.95 | 8.4 | 160 | 108 |
+| ROE Ruby RB1.9F | 500 | 500 | 256 | 256 | 1.95 | 8.3 | 140 | 73 |
+| ROE Ruby RB-C1.9F | 500 | 500 | 256 | 256 | 1.95 | 8.5 | 140 | 108 |
+| ROE Ruby RB2.2 | 500 | 500 | 224 | 224 | 2.23 | 8.24 | 160 | 73 |
+| ROE Ruby RB-C2.2F | 500 | 500 | 224 | 224 | 2.23 | 8.4 | 190 | 108 |
+| ROE Ruby RB2.2F (Deepsky) | 500 | 500 | 224 | 224 | 2.23 | 8.92 | 210 | 73 |
+| ROE Ruby RB-B2.2F | 500 | 500 | 224 | 224 | 2.23 | 8.9 | 190 | 72.19 |
+| ROE Ruby RB2.6 | 500 | 500 | 192 | 192 | 2.604 | 8.5 | 160 | 73 |
+| ROE Ruby RB2.6F | 500 | 500 | 192 | 192 | 2.604 | 8.02 | 215 | 73 |
+| ROE Ruby RB-C2.6 | 500 | 500 | 192 | 192 | 2.604 | 8.3 | 160 | 108 |
+| ROE Ruby RB-C2.6F | 500 | 500 | 192 | 192 | 2.604 | 8.3 | 210 | 108 |
+| ROE Ruby RB-B2.6 | 500 | 500 | 192 | 192 | 2.604 | 9.08 | 160 | 72.19 |
+| ROE Ruby RB-B2.6F | 500 | 500 | 192 | 192 | 2.604 | 8.7 | 215 | 72.19 |
+| ROE Sierra SR1.2 | 600 | 337.5 | 480 | 270 | 1.25 | 5.7 | 100 | 29.9 |
+| ROE Sierra SR1.5 | 600 | 337.5 | 384 | 216 | 1.56 | 5.7 | 80 | 29.9 |
+| ROE Sierra SR1.5F | 600 | 337.5 | 384 | 216 | 1.56 | 5.7 | 70 | 29.9 |
+| ROE Topaz TP1.5 | 500 | 500 | 320 | 320 | 1.56 | 8.16 | 160 | 73 |
+| ROE Topaz TP-C1.5 | 500 | 500 | 320 | 320 | 1.56 | 8.5 | 160 | 108 |
+| ROE Topaz TP1.9 | 500 | 500 | 256 | 256 | 1.95 | 8.3 | 140 | 73 |
+| ROE Topaz TP-C1.9 | 500 | 500 | 256 | 256 | 1.95 | 8.5 | 140 | 108 |
+| ROE Topaz TP-B1.9 | 500 | 500 | 256 | 256 | 1.95 | 8.9 | 140 | 72.19 |
+| ROE Topaz TP2.2 | 500 | 500 | 224 | 224 | 2.23 | 8 | 160 | 73 |
+| ROE Topaz TP-C2.2 | 500 | 500 | 224 | 224 | 2.23 | 8.4 | 160 | 108 |
+| ROE Topaz TP-B2.2 | 500 | 500 | 224 | 224 | 2.23 | 9.08 | 160 | 72.19 |
+| ROE Topaz TP2.6 | 500 | 500 | 192 | 192 | 2.604 | 8 | 140 | 73 |
+| ROE Topaz TP-C2.6 | 500 | 500 | 192 | 192 | 2.604 | 8.3 | 140 | 108 |
+| ROE Topaz TP-B2.6 | 500 | 500 | 192 | 192 | 2.604 | 9.08 | 140 | 72.19 |
+| ROE Vanish V5S MkII | 1000 | 1000 | 176 | 176 | 5.6 | 10.9 | 420 | 67 |
+| ROE Vanish V8S MkII (White LED) | 1000 | 1000 | 112 | 112 | 8.9 | 9.6 | 460 | 67 |
+| ROE Vanish V8T | 1000 | 1000 | 112 | 112 | 8.9 | 18.2 | 480 | 95 |
+| ROE Vanish V8T-H | 1000 | 500 | 112 | 56 | 8.9 | 11.22 | 260 | 95 |
+| ROE Vanish V8T-V | 500 | 1000 | 56 | 112 | 8.9 | 14.56 | 260 | 95 |
+| ROE Vanish ST V3ST | 1000 | 1000 | 256 | 256 | 3.9 | 27.5 | 700 | 116 |
+| ROE Vanish ST V3ST-H | 1000 | 500 | 256 | 128 | 3.9 | 16.5 | 350 | 116 |
+| ROE Vanish ST V3ST-V | 500 | 1000 | 128 | 256 | 3.9 | 19 | 350 | 103 |
+| ROE Vanish ST V3ST-Q | 500 | 500 | 128 | 128 | 3.9 | 14.5 | 180 | 108 |
+| ROE Vanish ST V3ST-X | 500 | 1000 | 128 | 256 | 3.9 | 22 | 350 | 107 |
+| ROE Vanish ST V3ST-Q-X | 500 | 500 | 128 | 128 | 3.9 | 13.5 | 180 | 107 |
+| ROE Vanish ST V4ST | 1000 | 1000 | 216 | 216 | 4.6 | 34.5 | 700 | 116 |
+| ROE Vanish ST V4ST-H | 1000 | 500 | 216 | 108 | 4.6 | 21.5 | 350 | 116 |
+| ROE Vanish ST V4ST-V | 500 | 1000 | 108 | 216 | 4.6 | 22.5 | 350 | 103 |
+| ROE Vanish ST V4ST-Q | 500 | 500 | 108 | 108 | 4.6 | 14.5 | 180 | 108 |
+| ROE Vanish ST V6ST | 1000 | 1000 | 144 | 144 | 6.94 | 34.3 | 700 | 116 |
+| ROE Vanish ST V6ST-H | 1000 | 500 | 144 | 72 | 6.94 | 21.2 | 350 | 116 |
+| ROE Vanish ST V6ST-V | 500 | 1000 | 72 | 144 | 6.94 | 22.2 | 350 | 103 |
+| ROE Vanish ST V6ST-Q | 500 | 500 | 72 | 72 | 6.94 | 14.3 | 180 | 108 |
+| ROE Vanish Air VAI (indoor) | 1000 | 1000 | 144 | 144 | 6.94 | 8.6 | 650 | 79 |
+| ROE Vanish Air VAO (outdoor) | 1000 | 1000 | 144 | 144 | 6.94 | 11.8 | 650 | 79 |
+| ROE Vanish Acoustics VC2.6 | 500 | 1000 | 192 | 384 | 2.604 | 9.26 | 210 | 85.6 |
 | Absen Polaris PL2.5 Pro | 500 | 500 | 200 | 200 | 2.5 | 9.6 | 128 | 87 |
 | Unilumin UpadIV 2.6 | 500 | 500 | 192 | 192 | 2.6 | 6.3 | 120 | 70 |
 | INFiLED Deep Black DB2.6 | 500 | 500 | 192 | 192 | 2.6 | 8 | 170 | 75 |
@@ -317,6 +450,26 @@ tiles" clears the list. Tile IDs keep their grid numbers (T = row x cols + col +
 | ROE Carbon CB3 | ROE Carbon CB3 Half | h = top/bottom (half height) |
 | ROE Carbon CB5 | ROE Carbon CB5 Half | h = top/bottom (half height) |
 | ROE Carbon CB8 | ROE Carbon CB8 Half | h = top/bottom (half height) |
+| ROE Black Quartz BQ3.9 | ROE Black Quartz BQ3.9 Half | h = top/bottom (half height) |
+| ROE Black Quartz BQ4.6 | ROE Black Quartz BQ4.6 Half | h = top/bottom (half height) |
+| ROE Black Quartz BQ6.2 | ROE Black Quartz BQ6.2 Half | h = top/bottom (half height) |
+| ROE Carbon MkII CB3 | ROE Carbon MkII CB3 Half | h = top/bottom (half height) |
+| ROE Carbon MkII CB5 | ROE Carbon MkII CB5 Half | h = top/bottom (half height) |
+| ROE Carbon MkII CB8 | ROE Carbon MkII CB8 Half | h = top/bottom (half height) |
+| ROE Graphite GP1.9 (4 in 1) | ROE Graphite GP1.9 (4 in 1) Half | h = top/bottom (half height) |
+| ROE Graphite GP2.6 (4 in 1) | ROE Graphite GP2.6 (4 in 1) Half | h = top/bottom (half height) |
+| ROE Graphite GP2.6 | ROE Graphite GP2.6 Half | h = top/bottom (half height) |
+| ROE Graphite GP3.1 | ROE Graphite GP3.1 Half | h = top/bottom (half height) |
+| ROE Graphite GP3.9 | ROE Graphite GP3.9 Half | h = top/bottom (half height) |
+| ROE Jasper JA2.6 | ROE Jasper JA2.6 Half | h = top/bottom (half height) |
+| ROE Jasper JA3.9 | ROE Jasper JA3.9 Half | h = top/bottom (half height) |
+| ROE Jet JT2.2 | ROE Jet JT2.2 Half | h = top/bottom (half height) |
+| ROE Jet JT2.6 | ROE Jet JT2.6 Half | h = top/bottom (half height) |
+| ROE Jet JT3.1 | ROE Jet JT3.1 Half | h = top/bottom (half height) |
+| ROE Jet JT3.9 | ROE Jet JT3.9 Half | h = top/bottom (half height) |
+| ROE Meru MR1.9 | ROE Meru MR1.9 Half | h = top/bottom (half height) |
+| ROE Meru MR2.6 | ROE Meru MR2.6 Half | h = top/bottom (half height) |
+| ROE Carbon CB8-Transparent | ROE Carbon CB8-Transparent Half | h = top/bottom (half height) |
 | YES TECH MU 2.6 500×1000 | YES TECH MU 2.6 | h = top/bottom (half height) |
 | YES TECH MU 3.9 500×1000 | YES TECH MU 3.9 | h = top/bottom (half height) |
 | YES TECH MU 4.8 500×1000 | YES TECH MU 4.8 | h = top/bottom (half height) |
@@ -328,7 +481,16 @@ The wall is a grid of half-tile **units**: for split h, units are tw x th/2 and 
 split w, units are tw/2 x th and the grid is 2*cols x rows. A piece is [u, v, a, b] = top-left unit and size in units:
 1x1 = half tile; the model's upright full tile = 1x2 (h) or 2x1 (w); ROE models may also use the turned full tile
 (2x1 for h). Pieces never overlap; any unit not covered is empty (black). The default layout is one upright full piece
-per non-removed cell. Mark half tiles mode (Tile model submenu); a press at a point decides one action:
+per non-removed cell. Half tile controls sit in the Size of LED Wall submenu (only for models in HALF): Convert bottom row to
+half tiles / Convert top row to half tiles (toggle: the label becomes Restore ... row to full tiles). Half-height models only ('h'):
+bottom row = remove the last unit row (full tiles shrink to their top half, lone bottom halves are dropped), top row = remove
+unit row 0 (full tiles keep their bottom half); restoring grows every lone half in the kept row back to a full tile when the
+removed unit above/below is free. Wall size (wW, wH) on a half-tile layout is the bounding box of the real pieces; piece x,y
+are relative to that box; wall position ox,oy is the box's top-left corner and gx,gy (wall keys, grid offset in px) record where
+that corner sits inside the full tile grid, so tiles keep their canvas position when the layout changes (wNorm). Patterns get the
+box size; the tile-shade checkerboard is drawn on the full grid shifted by (gx,gy). In marking mode the whole tile grid of the
+selected wall (dotted outline) is clickable and a red STOP MARKING HALF TILES button is shown over the top of the viewport (Esc also
+stops). Mark half tiles mode; a press at a point decides one action:
 
 1. If the point is within 22% of a unit edge, and the unit and the neighbour across that edge each hold a half piece,
    and the pair forms an allowed full tile (stacked = upright for h; side by side = turned, ROE only), **join** them
@@ -497,19 +659,23 @@ each segment midpoint; a filled circle badge "P#" at the first tile and a dark r
 
 ## 11. Power
 
-Tick **Power distribution** (Socapex, 6 circuits per cable) to enable. Usable watts per circuit = V x A x (0.8 if
+Tick **Power distribution** to enable and choose the Distribution cable (setting pdt). Usable watts per circuit = V x A x (0.8 if
 "Load circuits to 80%"). Tiles per circuit t = floor(usable / wmax), capped by the power link limit if set. Note text:
 "One 120 V 20 A circuit loaded to 80% supplies 1,920 W, enough for 12 tiles of ... at 150 W max each."
 
-Circuits are numbered k = 1, 2, ... across walls; labels S1-1 ... S1-6, S2-1 ... (cable = ceil(k/6), circuit =
-(k-1) mod 6 + 1); phase = ABC[(k-1) mod 3] (circuits 1 and 4 on A, 2 and 5 on B, 3 and 6 on C). Power wiring works
+Circuits are numbered k = 1, 2, ... across walls; with n circuits per cable (Socapex 6, L14-30 2, L21-30 3) circuit k is on cable ceil(k/n) as leg (k-1) mod n (legs 1-6 for Socapex, X,Y for
+L14-30, X,Y,Z for L21-30); labels cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ... No phase is assigned (the PDU does that).
+powerCON to Edison (n = 1, no PDU): every circuit is its own cable and is labelled just k (1, 2, 3 ...); cables needed = circuits, no spares. Selecting it sets pvolt 120 and pamps 15. Edison shows two extra
+fields, "Edison plugs per wall circuit (0 = do not check)" (pwall) and "Wall circuit breaker (A)" (pwallA). With pwall > 0, plug k is on wall circuit ceil(k / pwall); its load in amps is watts / pvolt, summed per wall circuit and
+compared with pwallA x (0.8 if "Load circuits to 80%"). Engineering rows: "Edison plugs needed", "Peak load per plug" ("plug 3 9.4 A"), and with pwall > 0 "Wall circuits needed", "Peak load per wall circuit" ("(over)" after any
+over its limit) and "Wall circuit over capacity". Labels: one pair per circuit, tags "1/2 EDISON PLUG END" (lines "Edison plug k[, wall circuit g]", "to <wall> <tile> (col, row)", tiles/watts/volts/breaker) and
+"2/2 POWERCON END" ("<wall> <tile> POWER IN", "from Edison plug k", tiles/watts); the Power labels select is hidden. Power wiring works
 like data wiring with the same patterns, corners and areas (Fewest circuits / Whole rows or columns / One continuous
 path), capacity t, plus the power link limit; on half-tile layouts by each piece's own watts (circuit full when watts >
 usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "This circuit is full (12 tiles)."
 
-Canvas rows: Power distribution "Socapex, 6 circuits per cable", Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
-Circuits used, Min. circuits if every circuit is full, Socapex cables "2 (3 spare circuits)", Peak load per phase "A
-45.0 A · B 45.0 A · C 30.0 A" (sum of circuit watts / V by phase), Over capacity. CSV adds Circuit, CircuitPos, Phase.
+Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
+Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "cable 1 24.0 A · cable 2 12.0 A" (sum of circuit watts / V per cable), Over capacity. CSV adds Circuit, CircuitPos, PowerCable.
 
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 ['#ff9f1c', '#ffd166', '#06d6a0', '#4cc9f0', '#ef476f', '#c77dff'] by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
@@ -525,7 +691,7 @@ tile: walkin 0.8 s, move 1.1 s, place 0.8 s, lock 0.6 s, walkout 1.5 s, scaled b
 starting. walkin: tech walks in from the wall edge carrying the tile; move: walks beside the slot; place: turns and
 lifts the tile into place (tile scales from carry size to full); lock: tile flashes into place (a ring sparkle expands
 from its centre) and the tile becomes lit; walkout: turns and walks off. Loop build restarts after Pause before restart.
-"Start build" clears all walls and plays; "Play/Pause" pauses; "Instant skip" shows every wall finished.
+The LED build submenu (Animation Options) has Start (clear all walls and play), Stop (stop and show every wall finished), Reset (clear all walls and wait) and Play/Pause (freeze and resume; the label follows S.play).
 
 The technician is a flat vector person (hard hat, hi-vis vest with reflective band and logo text or image, skin tone,
 hair colour, face photo optional, name tag) sized to fit inside the wall (size = min(2.4 x tile height, 42% of canvas
@@ -552,7 +718,7 @@ coprime, 1-240), so vx = 2 Wr m / T and vy = 2 Hr n / T, choosing m, n to keep t
 angle between 25° and 65°. Position(t) = (tri(U0 + vx t, Wr), tri(V0 + vy t, Hr)) with tri(u, L) = L - |((u mod 2L) +
 2L) mod 2L - L|. Start U0 = ((0.37 + 0.29 i) mod 1) x 2 Wr (i = wall index); V0 = Hr (U0/Wr)(n/m) for two corner hits
 per loop, plus Hr/(2m) to avoid all corners. Bounce times are the crossings of whole multiples of Wr and Hr; colours
-come from a seeded list (one per bounce, wrapping), so position and colour at T equal those at 0. "Export loop video"
+come from a seeded list (one per bounce, wrapping), so position and colour at T equal those at 0. "Export video" with DVD logo ticked
 renders exactly one loop frame by frame at 60 fps (walls shown built, moving patterns and scroll held still) into
 ffmpeg, file tilesmith-dvd-loop-Ns-*.ext.
 
@@ -622,10 +788,9 @@ tilesmith-build-YYYYMMDD-HHMMSS.ext. Click again to cancel. Estimated length is 
 data wiring (a processor is chosen and at least one port exists) or power wiring (Power distribution on and at least one
 circuit exists) is defined). Button "Print labels" (mobile: "Save label sheet"). One entry per cable with two labels
 (end 1/2 and 2/2): data cable P<n> (processor port -> first tile, DATA IN), return cable R<n> when Return is on (last
-tile DATA OUT -> processor return), power circuit <S?-?> (distribution end -> first tile POWER IN; shows circuit number,
-phase, voltage, breaker amps, tile count and watts); optional tile-to-tile jumper labels (P<n>-<i>, <circuit>-<i>). Each
+tile DATA OUT -> processor return), power cable <n> (one pair per distribution cable: distro end and fan-out/wall end, circuits used, walls, watts) and power circuit <n-m> (distribution end -> first tile POWER IN; shows cable x of y, circuit or leg, voltage, breaker amps, tile count and watts), selected by lblPow; optional tile-to-tile jumper labels (P<n>-<i>, <circuit>-<i>). Each
 label shows a small DATA/POWER + end caption, the cable name in large bold type, then three text lines (from/to with
-wall name, tile id Tnn and col/row; tile count and pixels or watts). Settings lblWhat, lblSize, lblW, lblH, lblCopies,
+wall name, tile id Tnn and col/row; tile count and pixels or watts). Settings lblWhat, lblPow, lblSize, lblW, lblH, lblCopies,
 lblSkip, lblColor, lblJump, lblKeep (see the settings table). Sheet presets (mm): Avery 5160 66.675x25.4, 3x10, margins
 4.76/12.7, gap 3.175; Avery 5163 101.6x50.8, 2x5, 3.97/12.7, gap 4.76; Avery L7160 63.5x38.1 on A4, 3x7, 7.21/15.15, gap
 2.54; roll 62x29 and custom: one label per page. Output is an HTML page with one absolutely positioned div per label
@@ -638,7 +803,7 @@ the wall's shadeC colour with the wall name (or W1, W2 in corner squares), shown
 or as a background tint). Flag styles: full-height end blocks (flag 20% + wall 14% of a half), top/bottom bars (17% of the
 height each), corner squares (36% of height). Black or white text is chosen by colour luminance. Extra preset: wrap-around
 strip roll 100x30 mm; the default sheet is Avery 5163. With "keep together" the two ends never straddle a row on a sheet.
-**PNG**: the full canvas as tilesmith-canvas.png. **CSV** (patching.csv), one row per tile (piece), columns: `Wall`, `TileID`, `Col`, `Row`, `BuildStep`, `StartX`, `StartY`, `EndX`, `EndY`, `W_px`, `H_px`, `Port`, `PortPos`, `Circuit`, `CircuitPos`, `Phase`, `MaxW`, `TypW`, `Tile`.
+**PNG**: the full canvas as tilesmith-canvas.png. **CSV** (patching.csv), one row per tile (piece), columns: `Wall`, `TileID`, `Col`, `Row`, `BuildStep`, `StartX`, `StartY`, `EndX`, `EndY`, `W_px`, `H_px`, `Port`, `PortPos`, `Circuit`, `CircuitPos`, `PowerCable`, `MaxW`, `TypW`, `Tile`.
 Port = "P1" or "P1 / R1" for the last tile; Tile = full | half top/bottom/left/right | full on its side; coordinates
 are canvas px; MaxW/TypW per piece. **Resolume XML**: an Arena Advanced Output preset (XmlState > ScreenSetup >
 screens > Screen > layers > Slice) whose composition size is the canvas, one virtual output screen the size of the

@@ -24,7 +24,7 @@ KEYDESC = {
  'dvdSpeed': 'Bounce speed multiplier (0.25-3). Base speed = 0.25 x shorter side per second.', 'dvdCorner': 'Corner hit chance slider 0-100 (100 = about 45% of bounces hit a corner).',
  'dvdTint': 'Recolour the logo at every bounce.', 'dvdLoop': 'Perfect loop mode (motion repeats exactly).', 'dvdLoopLen': 'Perfect loop length in seconds (4-600).',
  'dvdLoopCorners': 'Perfect loop includes exactly two corner hits per loop (else none).',
- 'vIntro': 'Video export: seconds of blank canvas before the build (0-60).', 'vHold': 'Video export: seconds holding the finished wall (0-120).',
+ 'vLed': 'Video export: tick to include the LED build video (blank intro, live build, final hold).', 'vDvd': 'Video export: tick to include the DVD logo perfect-loop video (desktop only; needs Bounce a logo and Perfect loop). With both ticked, one Export video click makes two files, LED build first.', 'vIntro': 'Video export: seconds of blank canvas before the build (0-60).', 'vHold': 'Video export: seconds holding the finished wall (0-120).',
  'vCodec': 'Video export format (see Video formats).', 'hapFmt': 'HAP flavour: hap | hap_alpha | hap_q.',
  'proc': 'LED processor model (or None). Gates all data/port features.', 'fps': 'Processor frame rate in Hz (affects pixels per port).',
  'bpc': 'Processor bit depth (8, 10, 12).', 'ull': 'Brompton Ultra Low Latency (halves port capacity).', 'ppx': 'Pixels per port in use (from spec, editable).',
@@ -435,7 +435,7 @@ tile: {sim}, scaled by Speed and a per-wall rate from {d['RATES']} (wall index);
 starting. walkin: tech walks in from the wall edge carrying the tile; move: walks beside the slot; place: turns and
 lifts the tile into place (tile scales from carry size to full); lock: tile flashes into place (a ring sparkle expands
 from its centre) and the tile becomes lit; walkout: turns and walks off. Loop build restarts after Pause before restart.
-"Start build" clears all walls and plays; "Play/Pause" pauses; "Instant skip" shows every wall finished.
+The LED build submenu (Animation Options) has Start (clear all walls and play), Stop (stop and show every wall finished), Reset (clear all walls and wait) and Play/Pause (freeze and resume; the label follows S.play).
 
 The technician is a flat vector person (hard hat, hi-vis vest with reflective band and logo text or image, skin tone,
 hair colour, face photo optional, name tag) sized to fit inside the wall (size = min(2.4 x tile height, 42% of canvas
@@ -462,7 +462,7 @@ coprime, 1-240), so vx = 2 Wr m / T and vy = 2 Hr n / T, choosing m, n to keep t
 angle between 25° and 65°. Position(t) = (tri(U0 + vx t, Wr), tri(V0 + vy t, Hr)) with tri(u, L) = L - |((u mod 2L) +
 2L) mod 2L - L|. Start U0 = ((0.37 + 0.29 i) mod 1) x 2 Wr (i = wall index); V0 = Hr (U0/Wr)(n/m) for two corner hits
 per loop, plus Hr/(2m) to avoid all corners. Bounce times are the crossings of whole multiples of Wr and Hr; colours
-come from a seeded list (one per bounce, wrapping), so position and colour at T equal those at 0. "Export loop video"
+come from a seeded list (one per bounce, wrapping), so position and colour at T equal those at 0. "Export video" with DVD logo ticked
 renders exactly one loop frame by frame at 60 fps (walls shown built, moving patterns and scroll held still) into
 ffmpeg, file tilesmith-dvd-loop-Ns-*.ext.
 

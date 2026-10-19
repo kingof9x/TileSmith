@@ -75,7 +75,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['Canvas, walls, presets, patterns, engineering, wiring, power, build animation, DVD screensaver', 'Yes', 'Yes'],
  ['Export PNG, CSV, Spec sheet, Resolume XML', 'Yes: through the share sheet (Files, Drive, AirDrop, e-mail …)', 'Yes: saved to folders'],
  ['Export video', 'H.264 MP4, recorded in real time with the device\'s encoder', 'HAP, H.264, H.265, ProRes 422 HQ, ProRes 4444 (ffmpeg)'],
- ['DVD screensaver: Export loop video', 'No', 'Yes'],
+ ['Video export: DVD logo (perfect loop video)', 'No', 'Yes'],
  ['NDI® output, Spout (Windows), Syphon (Mac)', 'No (buttons and menus hidden)', 'Yes'],
  ['Touch: pinch to zoom, two-finger pan', 'Yes', 'Windows touch screens'],
 ])}
@@ -105,9 +105,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 {img('ui-top-bar.png', 'Top bar. It scrolls sideways when it does not fit.')}
 {table(['Button', 'What it does'], [
  ['<b>ⓘ Info</b>', 'About TileSmith, credits, contact, Ko-fi and Reset saved settings (chapter 16).'],
- ['<b>Play / Pause</b>', 'Pauses or resumes the build animation.'],
- ['<b>Start build</b>', 'Clears every wall and lets the technician build them again.'],
- ['<b>Instant skip</b>', 'Shows every wall finished.'],
+ ['<b>Save</b> and <b>Open</b>', 'Next to New Project. Save keeps the whole project, with your images and crew, in one .tilesmith file; Open loads one.'],
  ['<b>Center canvas</b>', 'Centres the canvas in the viewport.'],
  ['<b>Show entire canvas</b>', 'Fits the whole canvas in the viewport again.'],
  ['<b>New Project</b>', 'Asks first, then wipes everything and starts a blank canvas. Undo brings it back.'],
@@ -115,7 +113,6 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['<b>Next pattern</b>', 'Moves the selected wall to the next test pattern; a message at the bottom names it.'],
  ['<b>Export PNG / Export CSV / Spec sheet</b>', 'Save the canvas picture, the patching list or the spec sheet (chapter 14).'],
  ['<b>Resolume XML ▾</b>', 'Saves a Resolume Arena Advanced Output preset: One slice per LED wall or One slice per tile.'],
- ['<b>Export video</b>', 'Records the build as an MP4 (chapter 15). Press it again to cancel.'],
 ])}
 <p>Next to the buttons: a red recording status, the zoom level and how many frames per second the canvas draws (<i>still</i> when nothing moves).</p></section>
 
@@ -136,7 +133,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <li><span class="key">Test pattern</span>: choose a pattern, or tap <b>Next pattern</b> to step through them.</li>
 <li><span class="key">Engineering › LED processor</span>: choose your processor, then a pattern under <span class="key">Data wiring</span>.</li>
 <li><span class="key">Engineering › Power</span>: tick <b>Power distribution</b>, then a pattern under <span class="key">Power wiring</span>.</li>
-<li>Tap <b>Start build</b> to watch the technician build the wall, or <b>Export video</b> to record it.</li>
+<li>Open <b>Animation Options › LED build</b> and tap <b>Start</b> to watch the technician build the wall, or open <b>Video export</b> and tap <b>Export video</b> to record it.</li>
 <li>Tap <b>Export PNG</b>, <b>Export CSV</b> or <b>Spec sheet</b> and pick where the file goes.</li></ol>
 {img('t02-two-walls-data.png', 'Two walls, a NovaStar VX1000 Pro and Snake data wiring.')}</section>
 
@@ -186,9 +183,9 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p>Tap a section heading to fold it. The same tables go into the <b>Spec sheet</b>.</p></div>{img('ui-engineering-panel.png', 'Engineering', maxh='150mm')}</div></section>
 
 <section class="chap"><h1>12. Build animation and technician</h1>
-<p>Tap <b>Start build</b> and a technician builds each wall tile by tile. He walks in carrying the tile, lifts it into its slot and locks it with a flash, then walks off while the next crew member brings the next tile. Each tile takes about 4.8 seconds at Speed 1. Several walls are built at the same time, each starting 0.6 s after the one before.</p>
+<p>Under <b>LED build</b> tap <b>Start</b> and a technician builds each wall tile by tile. He walks in carrying the tile, lifts it into its slot and locks it with a flash, then walks off while the next crew member brings the next tile. Each tile takes about 4.8 seconds at Speed 1. Several walls are built at the same time, each starting 0.6 s after the one before.</p>
 {img('anim-build-strip.png', 'One tile, every 0.2 s')}
-<div class="side"><div><h2>Build options</h2><p><b>Speed</b> (0.25× to 5×). <b>Loop build</b> restarts after <b>Pause before restart</b> seconds, which is handy on a display.</p>
+<div class="side"><div><h2>LED build</h2><p><b>Start</b>, <b>Stop</b> (shows the finished walls), <b>Reset</b> and <b>Play / Pause</b>. <b>Speed</b> (0.25× to 5×). <b>Loop build</b> restarts after <b>Pause before restart</b> seconds, which is handy on a display.</p>
 <h2>Technician</h2><p>Choose the hard hat and vest colours and the vest logo text, or upload a logo. With <b>Crew details &amp; name tags</b> on, each crew member has a name, skin tone, hair colour and an optional face photo, and wears a name tag. The crew take turns.</p></div>{img('ui-technician.png', 'Technician', maxh='140mm')}</div>
 {img('anim-tech-looks.png', 'Hard hat, vest and logo options')}</section>
 
@@ -208,7 +205,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 {img('t20-spec-sheet.png', 'The spec sheet', maxh='120mm')}</section>
 
 <section class="chap"><h1>15. Recording a video</h1>
-<div class="side"><div><p><b>Export video</b> records the master canvas as an <b>H.264 MP4</b> at 60 frames per second, using the device's own video encoder. The recording has three parts: the <b>Blank intro</b>, then the live build, then the <b>Final hold</b> of the finished walls. The estimated length is shown under the settings.</p>
+<div class="side"><div><p><b>Export video</b> (with <b>LED build</b> ticked) records the master canvas as an <b>H.264 MP4</b> at 60 frames per second, using the device's own video encoder. The recording has three parts: the <b>Blank intro</b>, then the live build, then the <b>Final hold</b> of the finished walls. The estimated length is shown under the settings.</p>
 <ol><li>Set Blank intro and Final hold (Video export).</li><li>Tap <b>Export video</b>. The top bar shows <i>● REC blank</i>, then <i>building</i>, then <i>hold</i>.</li><li>Keep TileSmith open. The screen stays on while it records.</li><li>When it finishes, the share sheet opens with <code>tilesmith-build-YYYYMMDD-HHMMSS.mp4</code>. On iPhone and iPad, <i>Save Video</i> puts it in Photos. On Android, choose Photos, Drive or Files.</li></ol>
 <p>Tap <b>Export video</b> again while it records to cancel.</p></div>{img('ui-video-export.png', 'Video export (mobile)')}</div>
 {row(img('t14-recording.png', 'Recording'), img('t15-recording-saved.png', 'Saved'))}

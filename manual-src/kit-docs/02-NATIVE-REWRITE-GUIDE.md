@@ -84,8 +84,8 @@ screenshots and ask AI Studio to fix any difference before going on.
 > options › Technician, Video export). Create every control shown in the attached screenshots with the defaults and
 > limits from the pasted settings tables, stored in data classes Settings and Wall with these exact field names.
 > Save all settings as JSON in filesDir/state.json, 400 ms after any change, and load them at start. The viewport and
-> engineering panel can be placeholders for now. Top bar buttons: ⓘ Info, Play / Pause, Start build, Instant skip,
-> Reset fit, Next pattern, Export PNG, Export CSV, Spec sheet, Resolume XML ▾, Export video.
+> engineering panel can be placeholders for now. Top bar buttons: New Project, Save, Open, ⓘ Info,
+> Reset fit, Next pattern, Export PNG, Export CSV, Spec sheet, Resolume XML ▾.
 
 **Attach:** `tablet/t01-first-launch.png`, `phone/p01…p0n-phone-portrait.png`, `panels/ui-header.png`,
 `panels/ui-canvas.png`, `panels/ui-led-walls.png`, `panels/ui-tile-model.png`, `panels/ui-size.png`,
@@ -175,8 +175,7 @@ and the data-path drawing part of `render`.
 > worker (the technician drawing: hard hat, hi-vis vest with logo, name tag, arms reaching the carried tile, walk cycle,
 > turning), cab (the carried tile) and the lock sparkle one to one, so the frames match the attached strips. Add the
 > crew editor (name, skin tone, hair colour, face photo, rotation across walls), hard hat and vest colours, vest logo
-> text or image, and Build options (Speed, Loop build, Pause before restart). Start build, Play / Pause and Instant
-> skip work as described.
+> text or image, and LED build (Start, Stop, Reset, Play / Pause, Speed, Loop build, Pause before restart).
 
 **Attach:** every file in `animations/` whose name starts with `anim-build`, `anim-tech` or `anim-multiwall`, plus
 `anim-carried-tile.png`, `tablet/t13-build-in-progress.png` and `panels/ui-technician.png`.
@@ -196,7 +195,7 @@ and the data-path drawing part of `render`.
 > Add Export PNG (the master bitmap as tilesmith-canvas.png), Export CSV (patching.csv, columns as pasted), Spec sheet
 > (tilesmith-spec.html with the same tables as the engineering panel), Resolume XML (One slice per LED wall / One slice
 > per tile, tilesmith-WxH.xml). Write the file to cacheDir/exports and open the Android share sheet through a
-> FileProvider; show the toast "Saved <name>." or "Not saved: <name>". Export video: record the master canvas at
+> FileProvider; show the toast "Saved <name>." or "Not saved: <name>". Export video (Video export menu, LED build ticked): record the master canvas at
 > 60 fps into an H.264 MP4 (MediaCodec input Surface + MediaMuxer, bitrate min(40 Mbps, max(4 Mbps, W × H × 60 ×
 > 0.12))), phases Blank intro, live build, Final hold, status "● REC blank 3s / building / hold 5s", keep the screen
 > on, then share tilesmith-build-YYYYMMDD-HHMMSS.mp4. Pressing Export video again cancels.

@@ -163,7 +163,7 @@ async def shots_and_data():
         await shot('build', VP); await ev("()=>{showAll()}")
         # DVD bounce
         await ev("()=>{S.dvdOn=true;S.dvdSize=24;S.pat='SMPTEbars';S.ids=false;storeWall();sync()}"); await pg.wait_for_timeout(1500)
-        await shot('dvd', VP); await sect('DVD screensaver', 'sec_dvd'); await sect('Build options', 'sec_anim', 380)
+        await shot('dvd', VP); await sect('DVD screensaver', 'sec_dvd'); await sect('LED build', 'sec_anim', 380)
         await ev("()=>{S.dvdOn=false;S.ids=true;S.pat='tileshade';storeWall();sync()}")
         await sect('NDI® options', 'sec_ndi')
         await sect('Video export', 'sec_video'); await sect('Technician', 'sec_tech')
@@ -267,20 +267,19 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <li><span class="key">Engineering › LED processor</span>: choose your processor to see tiles per port, then pick a pattern under <span class="key">Data wiring</span>.</li>
 <li><span class="key">Engineering › Power</span>: tick <b>Power distribution</b> to see tiles per circuit, then pick a pattern under <span class="key">Power wiring</span>.</li>
 <li>Click <b>Start NDI®</b> in the top bar (desktop app) and pick <i>TileSmith-LED-Out</i> in your receiver. For an app on the same computer, click <b>Start Spout</b> (Windows) or <b>Start Syphon</b> (Mac) and pick <i>TileSmith</i>.</li>
-<li>Click <b>Start build</b> to watch the technician build the wall, or <b>Instant skip</b> to show it finished.</li></ol>
+<li>Open <b>Animation Options › LED build</b> and click <b>Start</b> to watch the technician build the wall, or <b>Stop</b> to show it finished. Use <b>Save</b> in the top bar to keep the whole project in a file.</li></ol>
 {img('overview', 'The TileSmith window: settings on the left, actions along the top, the master canvas in the middle and the engineering panel on the right.')}</section>
 
 <section class="chap"><h1>4. The screen</h1>
-<p><b>Left panel</b> holds every setting, in collapsible sections, in this order: Canvas (with LED walls, Tile model, Size of LED Wall and Wall position submenus), Test pattern (with a Tile borders &amp; overlays submenu), Engineering (with LED processor and Power submenus; Data wiring is a submenu inside LED processor and Power wiring a submenu inside Power), Animation Options (with DVD screensaver, Build options, Video export and NDI® options submenus, plus Spout options on Windows or Syphon options on Mac; Technician is a submenu inside Build options), and Label printing options (below Animation Options; it appears only once data or power wiring is defined). Click a heading or submenu to open or close it. Data wiring appears once a processor is chosen; the power options and Power wiring appear once <b>Power distribution</b> is ticked. Sections marked with a wall name edit the selected wall. <b>Top bar</b> holds the actions. <b>Viewport</b> in the middle shows the master canvas exactly as it is sent over NDI®. <b>Engineering</b> on the right shows totals for the whole canvas and for each wall.</p>
+<p><b>Left panel</b> holds every setting, in collapsible sections, in this order: Canvas (with LED walls, Tile model, Size of LED Wall and Wall position submenus), Test pattern (with a Tile borders &amp; overlays submenu), Engineering (with LED processor and Power submenus; Data wiring is a submenu inside LED processor and Power wiring a submenu inside Power), Animation Options (with DVD screensaver, LED build, Video export and NDI® options submenus, plus Spout options on Windows or Syphon options on Mac; Technician is a submenu inside LED build), and Label printing options (below Animation Options; it appears only once data or power wiring is defined). Click a heading or submenu to open or close it. Data wiring appears once a processor is chosen; the power options and Power wiring appear once <b>Power distribution</b> is ticked. Sections marked with a wall name edit the selected wall. <b>Top bar</b> holds the actions. <b>Viewport</b> in the middle shows the master canvas exactly as it is sent over NDI®. <b>Engineering</b> on the right shows totals for the whole canvas and for each wall.</p>
 {img('toolbar', 'Top bar of the Windows app. The Mac app shows Start Syphon in place of Start Spout; the web version has neither.')}
 {table(['Button', 'What it does'], [
  ['ⓘ Info', 'Credits, contact, Ko-fi link, the NDI®, Spout and Syphon notices and <b>Reset saved settings</b>.'],
- ['Play / Pause', 'Pauses or resumes the build animation.'],
- ['Start build', 'Clears the walls and starts the technicians building from the first tile.'],
- ['Instant skip', 'Shows every wall fully built.'],
  ['Center canvas', 'Centres the canvas in the viewport without changing the zoom.'],
  ['Show entire canvas', 'Zooms so the whole canvas fits in the viewport.'],
  ['New Project', 'First button in the top bar. Asks first, then erases every wall, wiring, half tile, pattern and setting (including output, label and video options) and starts from a blank canvas. <b>Undo</b> brings it back.'],
+ ['Save', 'Next to New Project. Saves the whole project as one <code>.tilesmith</code> file: every wall and setting, the wiring and half tiles, all uploaded images (custom test patterns, tile and overlay images, the vest logo and the DVD logo) and the technician crew with their names, colours and photos.'],
+ ['Open', 'Next to Save. Pick a <code>.tilesmith</code> file. After a confirmation it replaces the project you have open now with the saved one. <b>Undo</b> brings the old one back.'],
  ['Undo ▾', 'Lists the last 20 changes, newest first. Click one to go back to just before it. <b>Ctrl+Z</b> (<b>Cmd+Z</b> on a Mac) undoes one step, <b>Ctrl+Y</b> or <b>Ctrl+Shift+Z</b> redoes it. Moving the view, playing the animation and exporting are not changes.'],
  ['Next pattern', 'Moves the selected wall to the next test pattern in the list, and back to the first after the last. <i>custom</i> is skipped until you upload an image.'],
  ['Start NDI®', 'Starts sending the canvas as an NDI® source (desktop app). While it runs the button is green and reads <b>Stop NDI®</b>; click it again to stop. Settings are in Animation Options › NDI® options.'],
@@ -289,7 +288,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['Export CSV', 'Saves a patching sheet with one row per tile.'],
  ['Spec sheet', 'Opens a printable spec sheet with every engineering figure.'],
  ['Resolume XML ▾', 'Drop-down: pick <b>One slice per LED wall</b> or <b>One slice per tile</b> to save an Advanced Output preset for Resolume Arena.'],
- ['Export video', 'Records the build to a video file (desktop app). Click again to stop and discard.']])}
+ ])}
 <h3>Moving around the viewport</h3><ul><li>Next to the zoom level, the top bar shows how many frames per second the canvas is drawing, or <i>still</i> when nothing is moving.</li>
 <li><b>Scroll wheel</b> zooms around the pointer. Zoom all the way out and the whole canvas, and any wall placed outside it, is centred in view, however small the window. <b>Drag empty space</b> pans. <b>Show entire canvas</b> brings the canvas back into view and <b>Center canvas</b> centres it at the current zoom.</li>
 <li>In a small window the top bar stays on one row; scroll it sideways to reach the rest of the buttons.</li>
@@ -381,15 +380,15 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p><b>Spec sheet</b> in the top bar opens the same figures as a printable page.</p></div>{img('engineering')}</div></section>
 
 <section class="chap"><h1>14. Technician and crew</h1><div class="side"><div>
-<p>These settings are the <b>Technician</b> submenu inside <b>Animation Options › Build options</b>.</p>
+<p>These settings are the <b>Technician</b> submenu inside <b>Animation Options › LED build</b>.</p>
 <p>Choose the <b>Hard hat</b> and <b>Vest</b> colours, and the <b>Vest logo text</b> or an uploaded logo.</p>
 <p>Turn on <b>Crew details & name tags</b> to name each technician and set skin and hair colour. Add a <b>Face photo</b> to put a real face on a technician. <b>Add crew member</b> grows the crew; <b>Reset to defaults</b> restores it.</p>
 <p>With several walls, technicians rotate so the same person is never on every wall at once, and each wall builds at a slightly different rate.</p></div>{img('sec_tech')}</div></section>
 
 <section class="chap"><h1>15. Animation options</h1>
-<p><b>Start build</b> clears the walls; technicians walk on, carry each tile to its place, latch it and walk off. Only built tiles light up, in NDI® and in exports. Use <b>Play / Pause</b> to pause and <b>Instant skip</b> to finish.</p>
-<p>Under <b>Animation Options › Build options</b>: <b>Loop build continuously</b> restarts the build after <b>Pause before restart</b> seconds; <b>Speed</b> runs the build from 0.25× to 5×.</p>
-<div class="cols">{img('build', 'A wall partway through its build.')}{img('sec_anim', 'Build options, with the Technician submenu.')}</div>
+<p>Under <b>Animation Options › LED build</b>: <b>Start</b> clears the walls and the technicians walk on, carry each tile to its place, latch it and walk off. Only built tiles light up, in NDI® and in exports. <b>Play / Pause</b> freezes the build and carries on from the same spot, <b>Stop</b> ends it and shows every wall finished, and <b>Reset</b> clears the walls and waits.</p>
+<p>Also under <b>LED build</b>: <b>Loop build continuously</b> restarts the build after <b>Pause before restart</b> seconds; <b>Speed</b> runs the build from 0.25× to 5×.</p>
+<div class="cols">{img('build', 'A wall partway through its build.')}{img('sec_anim', 'LED build, with the Technician submenu.')}</div>
 <h3>DVD screensaver</h3><p>In the <b>DVD screensaver</b> submenu, tick <b>Bounce a logo around the screen</b> to bounce a logo like the classic DVD screensaver. It shows on every lit tile and is included in NDI® and video export.</p>
 <ul><li><b>Logo</b>: {', '.join(E(x) for x in d['dvdSrc'])}. Upload a PNG with a transparent background for the best result.</li>
 <li><b>Bounce inside</b>: <b>Each LED wall</b> gives every wall its own logo; <b>Whole canvas</b> bounces one logo across the canvas, visible wherever it crosses a wall.</li>
@@ -397,7 +396,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <li><b>Corner hit chance</b>: how often the logo lands exactly in a corner. At 100% about 45 of every 100 bounces are corners, at 50% about 22, and at 0% the logo is steered so it never touches a corner. The value shows the expected share of bounces, and the line underneath counts real corner hits as it runs.</li>
 <li><b>Change color on each bounce</b> recolours the logo at every bounce. Turn it off to keep your logo's own colours.</li></ul>
 <h3>Perfect loop video</h3><p>Tick <b>Perfect loop</b> to make the bounce repeat exactly: after <b>Loop length</b> seconds the logo is back where it started, moving the same way and in the same colour, so the video can play on repeat with no visible seam. <b>Include corner hits</b> gives two exact corner hits per loop; untick it and the logo never touches a corner. The corner hit chance slider is not used in this mode. TileSmith picks the nearest speed and angle that close the loop, so the speed can differ a little from Bounce speed; the line underneath shows the real speed, bounces and corner hits per loop. A short loop on a very wide wall can force a fast logo, so use a longer loop to slow it down.</p>
-<p><b>Export loop video</b> (desktop app) renders exactly one loop, frame by frame at 60 fps, in the Format chosen under Video export, and saves it next to your other videos as <code>tilesmith-dvd-loop-…</code>. The walls are shown fully built, and moving patterns and Scroll are held still so the loop is seamless. Click the button again to cancel.</p>
+<p>To save the loop as a video (desktop app), tick <b>DVD logo</b> under <b>Video export</b> and click <b>Export video</b>. It renders exactly one loop, frame by frame at 60 fps, in the Format chosen there, and saves it next to your other videos as <code>tilesmith-dvd-loop-…</code>. The walls are shown fully built, and moving patterns and Scroll are held still so the loop is seamless. It needs <b>Bounce a logo around the screen</b> and <b>Perfect loop</b> turned on.</p>
 {img('dvd', 'DVD screensaver over SMPTE bars.', '75%')}</section>
 
 <section class="chap"><h1>16. NDI®, Spout and Syphon output</h1><h2>NDI®</h2><div class="side"><div>
@@ -429,7 +428,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 {tx_lic}</section>
 <section class="chap"><h1>17. Video export</h1>
 <p>These settings are the <b>Video export</b> submenu inside <b>Animation Options</b>.</p>
-<p><b>Export video</b> (desktop app) records a 60 fps video: the <b>Blank intro</b> (seconds of empty canvas), the whole live build, then the <b>Final hold</b> on the finished wall. The length follows the tile count and Speed; with several walls the slowest wall sets it. The estimate is shown under the settings. Files go to <code>Videos\\TileSmith</code> (Windows) or <code>Movies/TileSmith</code> (Mac) and the folder opens when done. Click the button again while recording to cancel.</p>
+<p>Under <b>Video export</b> tick what to export and click <b>Export video</b>. Tick <b>LED build</b> and <b>DVD logo</b> together and one click makes two files, the LED build first and then the DVD logo loop. <b>LED build</b> (desktop app) records a 60 fps video: the <b>Blank intro</b> (seconds of empty canvas), the whole live build, then the <b>Final hold</b> on the finished wall. The length follows the tile count and Speed; with several walls the slowest wall sets it. The estimate is shown under the settings. Files go to <code>Videos\\TileSmith</code> (Windows) or <code>Movies/TileSmith</code> (Mac) and the folder opens when done. Click the button again (it then reads <b>Cancel export</b>) to cancel.</p>
 {codecs}
 <p>For HAP, <b>HAP type</b> picks <code>hap</code>, <code>hap_alpha</code> or <code>hap_q</code> (higher quality). All formats are tagged BT.709 so colours match the canvas. Video export needs ffmpeg with the matching encoder (see Installing).</p>{img('sec_video', '', '50%')}</section>
 
@@ -463,7 +462,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p>The Android and iOS apps run the same TileSmith page as the desktop app, so canvas, walls, tile models, patterns, engineering, wiring, power and the build animation all work the same way, and everything is saved automatically on the device. They are built from the <code>mobile</code> folder (see <b>BUILD-ANDROID.txt</b> and <b>BUILD-IOS.txt</b>); a Kotlin version of the Android app for Google AI Studio is in the <code>android-aistudio</code> folder. Tablets give the most room; on a phone the panels stack under each other. The mobile app has its own manual, <b>TileSmith-Mobile-Manual.pdf</b>.</p>
 <ul><li><b>Saving files</b>: Export PNG, Export CSV, Spec sheet and Resolume XML open the share sheet, where you pick where the file goes: Files, Google Drive, iCloud, AirDrop, Quick Share, e-mail and so on. Closing the sheet cancels the save (TileSmith says <i>Not saved</i>).</li>
 <li><b>Spec sheet</b> is saved as an HTML file; open it in a browser to print it or save it as a PDF.</li>
-<li><b>Export video</b> records an H.264 MP4 with the device's own encoder, in real time: the Blank intro, the live build and the Final hold, the same as on the desktop. The screen stays on while it records; keep TileSmith open until it says <i>Saved</i>, then pick where the video goes ("Save Video" puts it in Photos on iPhone and iPad). HAP, ProRes and the DVD screensaver's <b>Export loop video</b> are desktop only.</li>
+<li><b>Export video</b> (with <b>LED build</b> ticked) records an H.264 MP4 with the device's own encoder, in real time: the Blank intro, the live build and the Final hold, the same as on the desktop. The screen stays on while it records; keep TileSmith open until it says <i>Saved</i>, then pick where the video goes ("Save Video" puts it in Photos on iPhone and iPad). HAP, ProRes and the <b>DVD logo</b> video are desktop only.</li>
 <li><b>NDI®, Spout and Syphon</b> are not in the mobile app yet, so their buttons and submenus are hidden, along with their notices in ⓘ Info.</li>
 <li><b>Touch</b>: two fingers pinch to zoom and drag to pan the viewport. One finger drags a wall, wires tiles, marks half tiles and removes tiles, just like the mouse. Links (Ko-fi, ndi.video …) open in the system browser.</li></ul></section>
 

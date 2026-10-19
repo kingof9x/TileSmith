@@ -21,7 +21,7 @@ ROLE = {
  'stepSim': 'Build state machine for one wall: wait → walkin → move → place → lock → walkout → next tile.',
  'mkSim': 'New build simulation state for wall i (staggered start delay, per-wall rate).',
  'reset': 'Starts the build from an empty wall on every wall.',
- 'showAll': 'Shows every wall finished (Instant skip).',
+ 'showAll': 'Shows every wall finished (the LED build Stop button).',
  'drawWallTech': 'Positions the technician and the carried tile for the current phase (walk in, move, place, lock, walk out) and calls drawTech.',
  'worker': 'Draws the technician (flat vector person) at feet position x,y with size s and pose o (facing angle, gait, arms, carry, lock, hands).',
  'drawTech': 'Calls worker().',

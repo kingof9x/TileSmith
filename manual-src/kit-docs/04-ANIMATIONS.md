@@ -56,9 +56,10 @@ another wall. Default crew: Marcus #8d5524, Elena #e0ac69, David #f1c27d, Chen #
 (skin), with hair colours #2b1d14, #4a3020, #6b4a2b, #14100c, #0f0f0f, #1c1410.
 
 **Buttons:**
-- **Start build** clears every wall and plays.
+- **Start** (LED build menu) clears every wall and plays.
 - **Play / Pause** freezes the simulation.
-- **Instant skip** marks every wall done.
+- **Stop** marks every wall done and stops.
+- **Reset** clears every wall and waits.
 - **Loop build**: when everything is done, wait **Pause before restart** seconds (default 3), then start again.
 
 ## 3. Build animation: positions and motion (`drawWallTech`)

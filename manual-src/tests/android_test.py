@@ -66,16 +66,16 @@ async def main():
         await pg.evaluate("showAbout(0)")
         # video: MediaRecorder -> streamed file -> share; then a cancelled recording
         await pg.evaluate("()=>{S.x=0;S.ox=0;S.cols=2;S.rows=2;S.speed=5;S.vIntro=1;S.vHold=1;storeWall();showAll();sync();__calls.length=0;if(!MediaRecorder.isTypeSupported('video/mp4'))window.mrType=()=>'video/webm'}")
-        await pg.click('#bar [data-a=rec]')
+        await pg.evaluate("document.querySelector('[data-a=rec]').click()")
         for i in range(40):
             await pg.wait_for_timeout(500)
-            st = await pg.evaluate("document.querySelector('#recs').textContent")
+            st = await pg.evaluate("document.querySelector('#vexps').textContent")
             if st.startswith('Saved') or 'Could not' in st or 'failed' in st: break
-        r = await pg.evaluate("()=>({st:document.querySelector('#recs').textContent,calls:__calls.filter(c=>c[0]!='write'),writes:__calls.filter(c=>c[0]=='write').length})")
+        r = await pg.evaluate("()=>({st:document.querySelector('#vexps').textContent,calls:__calls.filter(c=>c[0]!='write'),writes:__calls.filter(c=>c[0]=='write').length})")
         print('REC', r); files = await pg.evaluate('__files'); vids = [k for k in files if k.endswith('.mp4')]; print('video', vids, [size(files, k) for k in vids])
         ok &= r['st'].startswith('Saved') and any(c[0] == 'share' and c[2] == 'video/mp4' for c in r['calls']) and ['awake', True] in r['calls'] and ['awake', False] in r['calls'] and r['writes'] >= 2
-        await pg.evaluate("__calls.length=0"); await pg.click('#bar [data-a=rec]'); await pg.wait_for_timeout(1800); await pg.click('#bar [data-a=rec]'); await pg.wait_for_timeout(800)
-        r = await pg.evaluate("()=>({st:document.querySelector('#recs').textContent,calls:__calls.filter(c=>c[0]!='write')})"); print('REC CANCEL', r)
+        await pg.evaluate("__calls.length=0"); await pg.evaluate("document.querySelector('[data-a=rec]').click()"); await pg.wait_for_timeout(1800); await pg.evaluate("document.querySelector('[data-a=rec]').click()"); await pg.wait_for_timeout(800)
+        r = await pg.evaluate("()=>({st:document.querySelector('#vexps').textContent,calls:__calls.filter(c=>c[0]!='write')})"); print('REC CANCEL', r)
         ok &= r['st'] == 'Recording cancelled' and not any(c[0] == 'share' for c in r['calls']) and any(c[0] == 'delete' for c in r['calls'])
         print('errors', errs); ok &= not errs
         await ctx.close()

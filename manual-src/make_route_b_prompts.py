@@ -71,8 +71,8 @@ viewport and the engineering panel are placeholders for now.
    - Canvas presets come from R.
 5. Saving. Save as the same JSON as saveNow() ({sv:23,S,walls,cur,crew,logo,dvd}) in filesDir/state.json, 400 ms
    after any change. Load and validate it at start-up as loadState() does.
-6. Top bar buttons: ⓘ Info, Play / Pause, Start build, Instant skip, Center canvas, Show entire canvas, New Project, Undo menu, Next pattern, Export PNG, Export CSV,
-   Spec sheet, Resolume XML ▾ (menu: One slice per LED wall / One slice per tile), Export video. After them, a red
+6. Top bar buttons: ⓘ Info, New Project, Save, Open, Undo menu, Center canvas, Show entire canvas, Next pattern, Export PNG, Export CSV,
+   Spec sheet, Resolume XML ▾ (menu: One slice per LED wall / One slice per tile). Save writes the whole project (the saveNow() JSON incl. images, crew, logo) to a .tilesmith file; Open reads one after a confirmation and replaces the current project. After them, a red
    recording status, the zoom % and the fps label. They can do nothing yet.
 7. LED walls list (wallsUI) with Add wall / Duplicate / Remove working on the list (positions come in step 4).""",
   spec=['1', '2', '3', '4'], code=[('R', 'R'), ('S', 'loadWall'), ('LIM', 'HEAVY'), ('wallsUI', 'wallsUI'), ('F', 'build'), ('sync', 'uiVis'), ('stFile', 'resetSaved')], css=True),
@@ -263,8 +263,7 @@ attached frame strips are the exact reference: same canvas, same timing, same po
 4. The carried tile (cab) and the lock sparkle (end of render()): a ring that grows by 0.03 × Speed per frame, radius
    t × max(tw, th) × 0.9, line width 6(1 − t) + 1, colour rgba(255,255,200,1 − t).
 5. Controls:
-   - Start build: clear every wall and play. Play / Pause. Instant skip: everything done.
-   - Build options: Speed 0.25–5, Loop build, Pause before restart.
+   - LED build submenu: Start (clear every wall and play), Stop (everything done), Reset (clear, paused), Play / Pause. Then Speed 0.25–5, Loop build, Pause before restart.
    - Technician: Hard hat and Vest colours, Vest logo text or uploaded image, "Crew details & name tags".
    - Crew editor (crewUI): name, 6 skin swatches, custom skin colour, hair colour, face photo; default crew Marcus,
      Elena, David, Chen, Priya, Malik.
@@ -286,7 +285,7 @@ attached frame strips are the exact reference: same canvas, same timing, same po
      bounce, and the Perfect loop mode (dvdLoopPlan/dvdLoopAt).
    - The logo is drawn over the pattern, under the tile borders (dvdDraw from render).
    - The stats line counts bounces and corner hits.
-   - Export loop video is desktop only: leave it out.
+   - Exporting the DVD loop video is desktop only (Video export > DVD logo): leave it out.
 2. Moving patterns:
    - tileshade-cycle: a 2.5 s step, with the next colour sliding in from the left with smoothstep during the last
      1.5 s; neighbours never match.
@@ -310,7 +309,7 @@ sheet returns OK or the app went to the background while it was open. Toast "Sav
 3. Spec sheet: tilesmith-spec.html, the HTML from spec(), without the print script (the mobile app shares the file).
 4. Resolume XML: tilesmith-WxH.xml from resolumeXML(), with One slice per LED wall or One slice per tile from the
    menu, and the toast text from exportRes().
-5. Export video, the same behaviour as recToggle/recStartMR/recTick/endRec, in Kotlin:
+5. Export video (Video export submenu, button Export video, with the LED build box ticked), the same behaviour as recToggle/recStartMR/recTick/endRec, in Kotlin:
    - record the master bitmap at 60 fps into an H.264 MP4 with MediaCodec (an input Surface: draw the bitmap with
      lockHardwareCanvas each frame) and MediaMuxer;
    - bitrate min(40 Mbps, max(4 Mbps, W × H × 60 × 0.12));
