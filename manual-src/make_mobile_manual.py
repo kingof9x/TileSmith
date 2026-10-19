@@ -212,7 +212,8 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 
 <section class="chap"><h1>16. Info, saving and resetting</h1>
 <div class="side"><div><p><b>ⓘ Info</b> shows the version, credits, the contact address and the Ko-fi link to support the project. <b>Reset saved settings</b> goes back to the defaults after you confirm.</p>
-<p>Everything you set up (walls, patterns, wiring, crew, uploaded pictures) is <b>saved automatically</b> on the device and comes back the next time you open TileSmith. Installing a newer build keeps it. Uninstalling the app deletes it.</p></div>{img('ui-info-dialog.png', 'Info')}</div></section>
+<p>Everything you set up (walls, patterns, wiring, crew, uploaded pictures) is <b>saved automatically</b> on the device and comes back the next time you open TileSmith. Installing a newer build keeps it. Uninstalling the app deletes it.</p>
+<p><b>Moving to another device:</b> use <b>Save</b> to write a project file and open it on the other device; it carries the walls and wiring plus every custom tile and NovaStar receiving card file the walls use, and adds them to that device's library. A full Backup and Restore feature for all settings is planned for a later version.</p></div>{img('ui-info-dialog.png', 'Info')}</div></section>
 
 <section class="chap"><h1>17. Battery and speed tips</h1><ul>
 <li>When nothing moves, TileSmith stops drawing (the top bar says <i>still</i>). The build animation, the DVD screensaver, sweep and scrolling patterns keep it drawing.</li>
