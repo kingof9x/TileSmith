@@ -195,8 +195,8 @@ jobs:
           retention-days: 7
 
   release:
-    needs: [windows, mac, linux, snap, flatpak, android, docs]
-    if: ${{ !cancelled() && needs.windows.result == 'success' && needs.mac.result == 'success' && needs.linux.result == 'success' && needs.docs.result == 'success' && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
+    needs: [windows, mac, linux, snap, flatpak, android,]
+    if: ${{ !cancelled() && needs.windows.result == 'success' && needs.mac.result == 'success' && needs.linux.result == 'success' && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
