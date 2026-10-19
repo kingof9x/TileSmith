@@ -6,8 +6,9 @@
 #
 # Linux: .AppImage, .deb, .rpm and .pacman (Arch) come from the "linux" job; .snap and .flatpak have their own jobs
 # that may fail without stopping the release. The downloads live on the Releases page (no container Packages).
-# The "docs" job builds the manuals and the app spec for the typed version. When the release is published, the separate
-# workflow "VirusTotal scan" (virustotal.yml) scans the files and writes the results to VIRUSTOTAL.md in the project root.
+# When the release is published, two separate workflows start by themselves: "Build documentation" (docs.yml) builds the
+# manuals and the app spec for the release version and attaches them to the release, and "VirusTotal scan"
+# (virustotal.yml) scans the files and writes the results to VIRUSTOTAL.md in the project root.
 #
 # The builds are UNSIGNED (Windows shows SmartScreen, on a Mac use right-click > Open). They do NOT contain the
 # NDI(R) runtime or ffmpeg (their licences do not allow putting them in the repository); NDI(R) output needs the free
@@ -195,7 +196,7 @@ jobs:
           retention-days: 7
 
   release:
-    needs: [windows, mac, linux, snap, flatpak, android,]
+    needs: [windows, mac, linux, snap, flatpak, android]
     if: ${{ !cancelled() && needs.windows.result == 'success' && needs.mac.result == 'success' && needs.linux.result == 'success' && (startsWith(github.ref, 'refs/tags/') || (github.event_name == 'workflow_dispatch' && inputs.version != '')) }}
     runs-on: ubuntu-latest
     steps:
@@ -225,7 +226,7 @@ jobs:
             gh release upload "$TAG" upload/* --clobber
           else
             gh release create "$TAG" --target "$GITHUB_SHA" --title "TileSmith $VER" \
-              --notes "Windows portable app, Mac universal installer and Linux packages (AppImage, deb, rpm, Arch pacman, snap, flatpak) and an Android APK (debug-signed, for testing), unsigned. Manuals and the app spec are attached. NDI runtime and ffmpeg are not included: see BUILD-WINDOWS.txt / BUILD-MAC.txt." \
+              --notes "Windows portable app, Mac universal installer and Linux packages (AppImage, deb, rpm, Arch pacman, snap, flatpak) and an Android APK (debug-signed, for testing), unsigned. Manuals and the app spec are attached a few minutes after the release by the Build documentation workflow. NDI runtime and ffmpeg are not included: see BUILD-WINDOWS.txt / BUILD-MAC.txt." \
               upload/*
           fi
       - uses: actions/upload-artifact@v4

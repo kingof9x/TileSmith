@@ -1,0 +1,167 @@
+# Builds the manuals (TileSmith-Manual.pdf, TileSmith-Mobile-Manual.pdf) and the app spec (TileSmith-App-Spec.md)
+# for a release, attaches them to that release and commits them to the project so the copies in the repository match.
+#
+# It starts by itself when "Build and release" has published a release. To build them again (or for an older release,
+# or after editing the manual text): Actions tab > Build documentation > Run workflow > type the tag (for example v3.5;
+# empty = the latest release). Tick "Only build" to get the files as a download under the run's Artifacts without
+# touching the release or the repository.
+#
+# The version on the manuals' cover and footer comes from the release tag, so it always matches the release.
+# A failure here never affects the release itself (it has already been published when this runs).
+name: Build documentation
+
+on:
+  workflow_run:
+    workflows: ['Build and release']
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build the documents for, for example v3.5 (empty = the latest release)'
+        required: false
+        default: ''
+      only_build:
+        description: 'Only build (keep the files as a run artifact; do not attach them to the release or commit them)'
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: documentation
+  cancel-in-progress: false
+
+jobs:
+  docs:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+
+      # Started by a finished build: the build left the release tag as an artifact (a test build leaves none).
+      - name: Get the tag from the build
+        id: gettag
+        if: ${{ github.event_name == 'workflow_run' }}
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: release-tag
+          path: from-build
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+
+      - name: Work out which release to build the documents for
+        id: rel
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          GOT_TAG: ${{ steps.gettag.outcome }}
+        run: |
+          if [ "$EVENT" = "workflow_run" ]; then
+            if [ "$GOT_TAG" != "success" ]; then echo "This build did not publish a release (a test build), so there are no documents to build."; echo "skip=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+            TAG=$(cat from-build/release-tag.txt)
+          else
+            TAG="$INPUT_TAG"
+            [ -n "$TAG" ] || TAG=$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName -q .tagName)
+            case "$TAG" in v*) ;; *) TAG="v$TAG" ;; esac
+          fi
+          echo "Building the documents for release $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/setup-node@v4
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        with:
+          node-version: 22
+      - name: Put the release version into the app (the manuals read it from there)
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        working-directory: tilesmith-desktop
+        run: node scripts/set-version.js "${{ steps.rel.outputs.tag }}"
+
+      - uses: actions/setup-python@v5
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        with:
+          python-version: '3.12'
+      - name: Tools for the screenshots and the PDFs
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        run: |
+          pip install playwright pillow
+          playwright install --with-deps chromium
+          sudo apt-get install -y poppler-utils
+
+      - name: Desktop manual
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        working-directory: manual-src
+        run: python make_manual.py
+      # The Android kit screenshots and animations feed the mobile manual; if they fail the mobile manual is still built
+      - name: Android kit screenshots
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        continue-on-error: true
+        working-directory: manual-src
+        run: python make_kit_shots.py
+      - name: Android kit animations
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        continue-on-error: true
+        working-directory: manual-src
+        run: python make_kit_anims.py
+      - name: Mobile manual
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        working-directory: manual-src
+        run: python make_mobile_manual.py
+      - name: App spec
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        working-directory: manual-src
+        run: python make_spec.py
+
+      - name: Check that the documents show the release version
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        env:
+          TAG: ${{ steps.rel.outputs.tag }}
+        run: |
+          V="${TAG#v}"
+          mkdir -p docs-out
+          cp tilesmith-desktop/TileSmith-Manual.pdf tilesmith-desktop/TileSmith-Mobile-Manual.pdf tilesmith-desktop/TileSmith-App-Spec.md docs-out/
+          if echo "$V" | grep -Eq '^[0-9]+(\.[0-9]+)+$'; then
+            for f in TileSmith-Manual.pdf TileSmith-Mobile-Manual.pdf; do
+              pdftotext docs-out/$f - | grep -q "v$V" || { echo "::error::$f does not show version $V"; exit 1; }
+            done
+            head -1 docs-out/TileSmith-App-Spec.md | grep -q "TileSmith $V " || { echo "::error::the app spec does not show version $V"; exit 1; }
+            echo "Manuals and spec show version $V"
+          fi
+          ls -la docs-out
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ steps.rel.outputs.skip != 'true' }}
+        with:
+          name: docs-${{ steps.rel.outputs.tag }}
+          path: docs-out/*
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attach the documents to the release
+        if: ${{ steps.rel.outputs.skip != 'true' && !inputs.only_build }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.rel.outputs.tag }}
+        run: gh release upload "$TAG" docs-out/* --clobber --repo "$GITHUB_REPOSITORY"
+
+      # Only the three documents are committed (set-version also stamped the app files above; those stay out of the commit).
+      - name: Commit the documents to the project
+        if: ${{ steps.rel.outputs.skip != 'true' && !inputs.only_build }}
+        env:
+          TAG: ${{ steps.rel.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tilesmith-desktop/TileSmith-Manual.pdf tilesmith-desktop/TileSmith-Mobile-Manual.pdf tilesmith-desktop/TileSmith-App-Spec.md
+          if git diff --cached --quiet; then echo "Nothing changed."; exit 0; fi
+          git commit -m "Documentation for $TAG"
+          git stash --include-untracked -q || true
+          for i in 1 2 3; do git pull --rebase origin "${{ github.event.repository.default_branch }}" && git push origin "HEAD:${{ github.event.repository.default_branch }}" && exit 0; sleep 5; done
+          echo "::error::Could not push the documents"; exit 1
