@@ -15,7 +15,7 @@ async def main():
         await pg.goto(APP); await pg.evaluate("()=>{localStorage.clear()}"); await pg.reload(); await pg.wait_for_timeout(800)
         ev = pg.evaluate
         async def setk(k, v):
-            await ev("([k,v])=>{const e=document.querySelector('[data-k='+k+']');e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))}", [k, v])
+            await ev("([k,v])=>{if(k=='preset'){const bs=document.querySelector('[data-brand]');if(bs&&bs.value!=brandOf(v)){bs.value=brandOf(v);bs.dispatchEvent(new Event('change',{bubbles:true}))}}const e=document.querySelector('[data-k='+k+']');e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))}", [k, v])
         async def tap(a): await ev("(a)=>document.querySelector('[data-a='+a+']').click()", a)
         # not shown for a model without a half version
         r = await ev("()=>getComputedStyle(document.querySelector('#halfBox')).display"); chk(r == 'none', 'hidden for plain model'); print('HIDDEN', r)

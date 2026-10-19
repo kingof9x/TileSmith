@@ -16,7 +16,7 @@ async def main():
         ev = pg.evaluate
         r = await ev("""()=>{const roe=Object.keys(P).filter(k=>k.startsWith('ROE '));const bad=[],pit=[];
           for(const k of roe){const v=P[k];if(v.length!=8||v.some(x=>!(x>0)))bad.push(k);const a=v[0]/v[2],c=v[1]/v[3];if(Math.abs(a-c)>.02*a||Math.abs(a-v[4])>.04*v[4])pit.push([k,a,c,v[4]])}
-          const grp=[...document.querySelectorAll('select[data-k=preset] optgroup')].map(o=>o.label);
+          if(brandOf(S.preset)!='ROE')brandPick('ROE');const grp=[...document.querySelectorAll('select[data-k=preset] optgroup')].map(o=>o.label);
           const hb=Object.entries(HALF).filter(([f,h])=>f.startsWith('ROE ')&&(!P[f]||!P[h[0]]||P[f][0]!=P[h[0]][0]||P[f][1]!=2*P[h[0]][1]||P[f][2]!=P[h[0]][2]||P[f][3]!=2*P[h[0]][3]));
           return{n:roe.length,bad,pit,hb,grp,names:new Set(roe).size}}""")
         print(json.dumps(r)[:600]); chk(r['n'] >= 120 and not r['bad'] and not r['pit'] and not r['hb'] and r['names'] == r['n'], 'preset data')

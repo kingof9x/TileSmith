@@ -146,7 +146,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <h2>Wall position</h2><div class="side"><div><p>Type <b>Offset X</b> and <b>Offset Y</b> in canvas pixels, or tap an alignment button: Top-Left, Center Both, Top-Center, Bottom-Left, Bottom-Center. You can also drag the wall in the viewport.</p></div>{img('ui-position.png', 'Wall position')}</div></section>
 
 <section class="chap"><h1>7. Tile model, size and shape</h1>
-<div class="side"><div><p><b>Tile model</b> picks a preset, grouped by manufacturer (ROE, Absen, Unilumin, INFiLED, YES TECH). The preset fills in the tile's pixels, millimetres, pitch, weight, max watts and depth. Change any of them and the model becomes <b>Custom</b>.</p>
+<div class="side"><div><p><b>Tile model</b> has a <b>Brand</b> menu (ROE, Absen, Unilumin, INFiLED, YES TECH) and a <b>Model</b> menu for that brand. The model fills in the tile's pixels, millimetres, pitch, weight, max watts and depth. Change any of them and the model becomes <b>Custom</b>.</p>
 <p><b>Size of LED Wall</b> sets Columns and Rows, with quick buttons 4×3, 6×4, 8×5, 10×6 and 16×9.</p></div>{img('ui-tile-model.png', 'Tile model')}</div>
 <h2>Removing tiles</h2><p>For a wall that is not a rectangle, tap <b>Remove tiles</b> (Size of LED Wall). Then tap tiles in the viewport to take them out or put them back, or drag across several. Removed spots show a red ✕ in the viewport only, never in the output. <b>Restore all tiles</b> puts them all back.</p>
 {row(img('t10-remove-tiles.png', 'Remove tiles mode'), img('cv-removed-tiles.png', 'The output: six corner tiles removed'))}

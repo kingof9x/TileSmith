@@ -35,7 +35,7 @@ main{position:relative;min-width:0;min-height:0;overflow:hidden;display:flex;fle
 .mob-only{display:none}.mobile .mob-only{display:block}.mobile .desk-only{display:none!important}
 .mobile #vp{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.mobile button,.mobile select{min-height:34px}
 table{width:100%;border-collapse:collapse}td{padding:5px 0;border-bottom:1px solid var(--ln)}td:last-child{text-align:right;font-variant-numeric:tabular-nums}
-.ok{color:#18a05a}.bad{color:#e5484d}
+.ok{color:#18a05a}.bad{color:#e5484d}tr.warn td{background:#ffd400;color:#000;font-weight:700}
 .wn{font-size:11px;font-weight:600;color:var(--mu);margin-left:6px}#wlist{display:flex;flex-direction:column;gap:6px}.wl{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;text-align:left}.wl span{color:var(--mu);font-size:12px}.wl[aria-pressed=true]{border-color:var(--am);box-shadow:inset 3px 0 0 var(--am)}button:disabled{opacity:.45;cursor:default}#right th{text-align:left;padding:14px 0 4px;color:var(--ac);font-size:12px;border-bottom:1px solid var(--ln)}
 .mem{border-bottom:1px solid var(--ln);padding-bottom:8px;margin-bottom:8px}.crew{display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;gap:8px;margin:3px 0 6px}
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}.ov.on{display:flex}
@@ -225,7 +225,40 @@ const P={ // wmm,hmm,pxw,pxh,pitch,kg,wmax,depth
 'YES TECH Mega 4.6 outdoor':[500,1000,108,216,4.63,12.5,400,86],'YES TECH Mega 5.7 outdoor':[500,1000,88,176,5.68,12.5,400,86],'YES TECH MAir 5.9 mesh outdoor':[1000,1000,168,168,5.95,19,500,102],
 'YES TECH MAir 7.8 mesh outdoor':[1000,1000,128,128,7.81,19,500,102],'YES TECH MAir 5.9 solid outdoor':[1000,1000,168,168,5.95,23.5,500,102],'YES TECH MT II 3.9-7.8 1000×500':[1000,500,256,64,3.91,8.7,225,83],
 'YES TECH MT II 3.9-7.8 500×500':[500,500,128,64,3.91,5.8,113,83],
+// Added from manufacturer data (via ledwallcentral.com / unilumin.com). PEST lists the figures a source did not publish: those are ESTIMATED
+// from sibling models and flagged in the Engineering panel and the PDF spec sheet.
+'Absen Polaris PL2.5 XR V2':[500,500,200,200,2.5,7.8,185,78],
+'Absen Polaris PL3.9 Pro V3':[500,500,128,128,3.906,11.5,180,88],
+'Absen A27 1.9 (A2719)':[610,343,320,180,1.906,8.5,105,61],
+'Absen A27 1.4 (A2714)':[610,343,416,234,1.46,8.5,97,61],
+'Absen A27 1.2 (A2712)':[610,343,480,270,1.27,8.5,97,61],
+'Absen KL3':[640,480,208,156,3.07,7.8,166,60],
+'Unilumin UpadIV 1.9':[500,500,256,256,1.953,6.3,120,70.1],
+'Unilumin UpadIV 1.9 MIP':[500,500,256,256,1.953,6.3,80,70.1],
+'Unilumin UpadIV 2.6 (8 scan)':[500,500,192,192,2.604,6.3,165,70.1],
+'INFiLED Deep Black DB1.9 M2 MK2':[500,500,256,256,1.95,7.8,140,75.5],
+'INFiLED Deep Black DB2.3 Pro':[500,500,216,216,2.31,8.8,150,75.5],
+'INFiLED Deep Black DB1.56 M4':[500,500,320,320,1.5625,7.8,140,75.5],
+'INFiLED Deep Black DB1.9 Lite':[500,500,256,256,1.953,7.8,140,75.5],
+'INFiLED Deep Black DB1.9 Pro':[500,500,256,256,1.953,7.8,140,75.5],
+'INFiLED Deep Black DB2.3 Lite':[500,500,216,216,2.315,8.8,150,75.5],
+'INFiLED Deep Black DB2.6 Lite':[500,500,192,192,2.604,7.8,140,75.5],
+'INFiLED Deep Black DB2.6 Pro':[500,500,192,192,2.604,7.8,140,75.5],
+'INFiLED Deep Black DB2.8 Lite':[500,500,176,176,2.84,7.8,140,75.5],
+'INFiLED Deep Black DB3.4 Lite':[500,500,144,144,3.47,7.8,140,75.5],
+'INFiLED Deep Black DB3.4 Pro':[500,500,144,144,3.47,7.8,140,75.5],
+'INFiLED HR1.5 M4':[600,337.5,384,216,1.5625,7.8,150,73],
+'INFiLED WP1.5 MT4 MK2':[600,337.5,384,216,1.5625,5.2,52,29.7],
+'INFiLED AR3.4 Mini':[500,500,144,144,3.47,8,150,66],
+'INFiLED AR4.8':[500,1000,104,208,4.81,12.5,300,66],
+'INFiLED AR4.6 Mini outdoor':[500,500,108,108,4.63,13,150,131],
+'YES TECH Xtra 1.9':[500,500,256,256,1.953,7.5,145,73],
+'YES TECH MG6S Pro 2.6':[500,500,192,192,2.604,6,113,73],
+'YES TECH MG6S 4.8':[500,500,104,104,4.807,5.6,105,73],
+'YES TECH MG6S 5.2':[500,500,96,96,5.208,5.5,105,73],
 'Custom':null};
+const PEST={};
+['1.56 M4','1.9 Lite','1.9 Pro','2.3 Lite','2.6 Lite','2.6 Pro','2.8 Lite','3.4 Lite','3.4 Pro'].forEach(k=>PEST['INFiLED Deep Black DB'+k]=['resolution','weight','max power','depth']);
 // Models that also come as a half tile: full preset -> [half preset, 'h' = half height (top/bottom) | 'w' = half width (left/right)]
 // ROE: every model that has a half panel (500×500 or 600×600) in its series
 const HALF={'ROE Carbon CB3':['ROE Carbon CB3 Half','h'],'ROE Carbon CB5':['ROE Carbon CB5 Half','h'],'ROE Carbon CB8':['ROE Carbon CB8 Half','h'],'ROE Black Quartz BQ3.9':['ROE Black Quartz BQ3.9 Half','h'],'ROE Black Quartz BQ4.6':['ROE Black Quartz BQ4.6 Half','h'],'ROE Black Quartz BQ6.2':['ROE Black Quartz BQ6.2 Half','h'],'ROE Carbon MkII CB3':['ROE Carbon MkII CB3 Half','h'],'ROE Carbon MkII CB5':['ROE Carbon MkII CB5 Half','h'],'ROE Carbon MkII CB8':['ROE Carbon MkII CB8 Half','h'],'ROE Graphite GP1.9 (4 in 1)':['ROE Graphite GP1.9 (4 in 1) Half','h'],'ROE Graphite GP2.6 (4 in 1)':['ROE Graphite GP2.6 (4 in 1) Half','h'],'ROE Graphite GP2.6':['ROE Graphite GP2.6 Half','h'],'ROE Graphite GP3.1':['ROE Graphite GP3.1 Half','h'],'ROE Graphite GP3.9':['ROE Graphite GP3.9 Half','h'],'ROE Jasper JA2.6':['ROE Jasper JA2.6 Half','h'],'ROE Jasper JA3.9':['ROE Jasper JA3.9 Half','h'],'ROE Jet JT2.2':['ROE Jet JT2.2 Half','h'],'ROE Jet JT2.6':['ROE Jet JT2.6 Half','h'],'ROE Jet JT3.1':['ROE Jet JT3.1 Half','h'],'ROE Jet JT3.9':['ROE Jet JT3.9 Half','h'],'ROE Meru MR1.9':['ROE Meru MR1.9 Half','h'],'ROE Meru MR2.6':['ROE Meru MR2.6 Half','h'],'ROE Carbon CB8-Transparent':['ROE Carbon CB8-Transparent Half','h'],
@@ -389,7 +422,7 @@ ${F('lblLayout','Wrap layout','select',['Two identical panels','Flag fold-over (
 $('#bar').innerHTML=B('newc','New Project')+B('psave','Save')+B('popen','Open')+B('about','ⓘ Info')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('fit','Show entire canvas')+B('ctr','Center canvas')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('pdf','Export PDF')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>';
 if(!$('#opf')){const i=document.createElement('input');i.type='file';i.id='opf';i.accept='.tilesmith,.json,application/json';i.hidden=true;document.body.appendChild(i)}
 sync();crewUI();}
-function sync(){storeWall();procRefresh();document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
+function sync(){storeWall();procRefresh();tileRefresh();document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
 $('#crew').style.display=S.cd?'':'none';$('#den').textContent=Math.round(1e6/S.pitch**2).toLocaleString()+' px/m²';{const b=buildSecs(),t=S.vIntro+b+S.vHold,m=Math.floor(t/60),q=Math.round(t%60);const tx=m+':'+String(q).padStart(2,'0')+'  (build '+Math.round(b)+' s)';['#vest','#vestm'].forEach(k=>{const e=$(k);if(e)e.textContent=tx})}
 $('#typ').textContent=Math.round(S.wmax*.4)+' W';wallsUI();uiVis();info()}
 function uiVis(){const on=procOn(),m=PROC[S.proc],hide=(id,h)=>{const e=$('#'+id);if(e)e.style.display=h?'none':''},plan=portPlan();lblVis();
@@ -460,7 +493,7 @@ if(t.dataset.face!==undefined){const f=t.files[0],ix=+t.dataset.face;if(f)loadIm
 if(t.dataset.c){crew[t.dataset.c][t.dataset.f]=t.value;return}
 if(t.id=='lf'){const f=t.files[0];if(f)loadImgFile(f,512,'image/png',im=>{logoImg=im;saveSoon()});return}
 if(t.type=='number'&&HEAVY.includes(t.dataset.k))return;applyKey(t);sync();});
-document.addEventListener('change',e=>{const t=e.target,k=t.dataset&&t.dataset.k;if(!k||t.type!='number')return;applyKey(t);t.value=S[k];sync();});
+document.addEventListener('change',e=>{const t=e.target;if(t.dataset&&t.dataset.brand){brandPick(t.value);return}const k=t.dataset&&t.dataset.k;if(!k||t.type!='number')return;applyKey(t);t.value=S[k];sync();});
 document.addEventListener('click',e=>{const t=e.target;const wsb=t.closest&&t.closest('[data-wsel]');if(wsb){selWall(+wsb.dataset.wsel);return}
 const wpb=t.closest&&t.closest('[data-wp]');if(wpb){const q=WPAT[+wpb.dataset.wp];if(q){S.wcorner=q[0];S.wdir=q[1];storeWall();sync()}return}
 const ppb=t.closest&&t.closest('[data-pp]');if(ppb){const q=WPAT[+ppb.dataset.pp];if(q){S.pcorner=q[0];S.pwdir=q[1];storeWall();sync()}return}
@@ -949,8 +982,14 @@ function tposDraw(c,x,y,tw,th,row,col,top){const z=tposSize(c,tw,th,row,col),f=z
  cx+=aw+g;c.fillText(t2,cx,cy+f*.05)}
 // Tile model preset list, grouped by manufacturer
 const ROES=['Amber','Black Marble','Black Pearl','Black Quartz','Carbon','Carbon MkII','Carbon Full Spectrum','Coral','Denali','Diamond','Graphite','Jasper','Jet','Meru','Obsidian','Ruby','Sierra','Topaz','Vanish','Vanish ST','Vanish Air','Vanish Acoustics'];
-function presetSel(){const B=[...ROES.map(x=>'ROE '+x),'ROE','Absen','Unilumin','INFiLED','YES TECH'],g={};Object.keys(P).forEach(k=>{const b=B.filter(x=>k.startsWith(x+' ')).sort((x,y)=>y.length-x.length)[0]||'';(g[b]=g[b]||[]).push(k)});
- return `<label class="w">Preset<select data-k="preset">${B.filter(b=>g[b]).map(b=>`<optgroup label="${b}">${g[b].map(k=>`<option>${k}</option>`).join('')}</optgroup>`).join('')}${(g['']||[]).map(k=>`<option>${k}</option>`).join('')}</select></label>`}
+const PBR=['ROE','Absen','Unilumin','INFiLED','YES TECH'],brandOf=k=>PBR.find(b=>k.startsWith(b+' '))||'Other';
+function modelOpts(br,cur){const keys=Object.keys(P).filter(k=>brandOf(k)==br),B=ROES.map(x=>'ROE '+x),g={},opt=k=>`<option>${esc(k)}</option>`;
+ if(br!='ROE')return keys.map(opt).join('');keys.forEach(k=>{const b=B.filter(x=>k.startsWith(x+' ')).sort((x,y)=>y.length-x.length)[0]||'';(g[b]=g[b]||[]).push(k)});
+ return B.filter(b=>g[b]).map(b=>`<optgroup label="${b}">${g[b].map(opt).join('')}</optgroup>`).join('')+(g['']||[]).map(opt).join('')}
+function presetSel(){const br=brandOf(S.preset||''),all=PBR.concat(Object.keys(P).some(k=>brandOf(k)=='Other')?['Other']:[]);
+ return `<label class="w">Brand<select data-brand="1">${all.map(b=>`<option${b==br?' selected':''}>${b}</option>`).join('')}</select></label><label class="w">Model<select data-k="preset" data-b="${br}">${modelOpts(br)}</select></label>`}
+function tileRefresh(){const bs=document.querySelector('[data-brand]'),ms=document.querySelector('[data-k=preset]');if(!bs||!ms)return;const br=brandOf(S.preset||'');if(ms.dataset.b!=br){ms.innerHTML=modelOpts(br);ms.dataset.b=br}bs.value=br}
+function brandPick(b){const k=Object.keys(P).find(x=>brandOf(x)==b);if(!k)return;S.preset=k;applyPreset();storeWall();showAll();sync()}
 function render(){const c=mc,W=S.cw,H=S.ch,multi=walls.length>1,PLAN=S.showData&&procOn()?portPlan():[],PPL=S.showPow&&pdOn()?powerPlan():[];
 c.fillStyle='#050608';c.fillRect(0,0,W,H);if(REC&&REC.ph=='blank')return;
 const busy=[];
@@ -1069,8 +1108,8 @@ function canvasRows(){const q=gcd(S.cw,S.ch),T=walls.map(wst).reduce((a,s)=>{for
  return[['Canvas',`${S.cw} × ${S.ch}`],['Aspect',`${S.cw/q}:${S.ch/q} (${(S.cw/S.ch).toFixed(2)})`],['Canvas pixels',(S.cw*S.ch).toLocaleString()+` (${(S.cw*S.ch/1e6).toFixed(2)} MP)`],['LED walls',walls.length],['Tiles',T.nh||T.ng?`${T.N} (${[T.nh?`${T.N-T.nh} full + ${T.nh} half`:'',T.ng?`${T.ng} removed`:''].filter(Boolean).join(', ')})`:T.N],['LED pixels',`${T.px.toLocaleString()} (${(T.px/1e6).toFixed(2)} MP)`],
  ['Area',`${T.A.toFixed(2)} m² / ${(T.A*10.7639).toFixed(1)} sq ft`],['Weight',`${T.kg.toFixed(1)} kg / ${(T.kg*2.20462).toFixed(0)} lbs`],['Peak power',kw(T.pk)],['Typical (40%)',kw(T.pk*.4)]]
  .concat(pdOn()?[[`Current peak @${S.pvolt} V`,amp(T.pk,S.pvolt)]]:[])}
-function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',w.preset],['Wall pixels',`${s.pw} × ${s.ph} (${(s.px/1e6).toFixed(2)} MP)`],['Position',`${w.ox}, ${w.oy}`],['Tiles',`${s.N} (${[s.nh?`${s.N-s.nh} full + ${s.nh} half`:'',s.ng?`${s.ng} removed`:'',`${w.cols} × ${w.rows}`].filter(Boolean).join(', ')})`],['Wall size',`${s.mw.toFixed(2)} × ${s.mh.toFixed(2)} m`],['Wall size',`${ft(s.mw)} × ${ft(s.mh)} ft`],['Area',`${s.A.toFixed(2)} m² / ${(s.A*10.7639).toFixed(1)} sq ft`],
- ['Weight',`${s.kg.toFixed(1)} kg / ${(s.kg*2.20462).toFixed(0)} lbs`],['Peak power',kw(s.pk)],['Typical (40%)',kw(s.pk*.4)]];
+function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',w.preset]].concat(PEST[w.preset]?[['MISSING DATA','Not published by the manufacturer, so ESTIMATED from similar panels: '+PEST[w.preset].join(', ')+'. Check with the manufacturer before relying on weight, power or circuit counts.','warn']]:[]).concat([['Wall pixels',`${s.pw} × ${s.ph} (${(s.px/1e6).toFixed(2)} MP)`],['Position',`${w.ox}, ${w.oy}`],['Tiles',`${s.N} (${[s.nh?`${s.N-s.nh} full + ${s.nh} half`:'',s.ng?`${s.ng} removed`:'',`${w.cols} × ${w.rows}`].filter(Boolean).join(', ')})`],['Wall size',`${s.mw.toFixed(2)} × ${s.mh.toFixed(2)} m`],['Wall size',`${ft(s.mw)} × ${ft(s.mh)} ft`],['Area',`${s.A.toFixed(2)} m² / ${(s.A*10.7639).toFixed(1)} sq ft`],
+ ['Weight',`${s.kg.toFixed(1)} kg / ${(s.kg*2.20462).toFixed(0)} lbs`],['Peak power',kw(s.pk)],['Typical (40%)',kw(s.pk*.4)]]);
  if(pdOn()){const t=tpcW(w),pw=pmine.reduce((a,c)=>a+c.tiles.length,0),po=pmine.filter(x=>x.over).length;
   r.push([`Current peak @${S.pvolt} V`,amp(s.pk,S.pvolt)],['Tiles per circuit',t>0?t+(w.plink>0&&w.plink<tpcCalc(w)?' (power link limit)':''):'One tile exceeds a circuit'],['Min. circuits if every circuit is full',t>0?Math.ceil(s.pk*1000/w.wmax/t-1e-9):'-'],
    ['Power wiring',w.pmode=='None'?'None':w.pmode=='Manual'?'Manual':`${w.pmode}, ${w.pcorner.toLowerCase()} start, ${w.pwdir.toLowerCase()}, ${fillTxt(w.pfill,PFILL)}`]);
@@ -1081,7 +1120,7 @@ function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',
   if(mine.length)r.push(['Data paths',mine.length>1?`P${mine[0].p} to R${mine[0].p} … P${mine[mine.length-1].p} to R${mine[mine.length-1].p}`:`P${mine[0].p} to R${mine[0].p}`],['Ports used',`${mine.length}${S.ret?` + ${mine.length} return`:''}`]);
   if(w.wmode!='None'&&wired<s.N)r.push(['Unwired tiles',s.N-wired]);if(ov)r.push(['Over capacity',`${ov} port${ov>1?'s':''}`])}
  return r.concat([['Test pattern',w.pat],['Build start',`${w.corner}, ${w.dir.toLowerCase()}`]])}
-const trs=rows=>rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join(''),thr=t=>`<tr><th colspan="2">${esc(t)}</th></tr>`;
+const trs=rows=>rows.map(r=>`<tr${r[2]=='warn'?' class="warn"':''}><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join(''),thr=t=>`<tr><th colspan="2">${esc(t)}</th></tr>`;
 const engOpen={};document.addEventListener('toggle',e=>{const k=e.target&&e.target.dataset&&e.target.dataset.eng;if(k)engOpen[k]=e.target.open},true);
 function info(){storeWall();const w=walls[cur],s=wst(w),fits=w.ox>=0&&w.oy>=0&&w.ox+s.pw<=S.cw&&w.oy+s.ph<=S.ch,plan=procOn()?portPlan():walls.map(()=>[]),pplan=pdOn()?powerPlan():walls.map(()=>[]);
 const ov=walls.filter((o,i)=>i!=cur&&o.ox<w.ox+s.pw&&w.ox<o.ox+wW(o)&&o.oy<w.oy+s.ph&&w.oy<o.oy+wH(o)).map(o=>o.name);
@@ -1240,8 +1279,9 @@ async function exportPDF(){storeWall();toast('Building the PDF…',2500);await n
   // 2. the spec sheet
   {const lw=190,vw=PW-2*mg-lw-10,fs=8.5,lh=11;let pg=null,y=0;const np=()=>{pg=new PdfPage(PW,PH);pages.push(pg);y=mg;if(pages.length==2){pg.text('TileSmith - LED Wall Spec',mg,y+12,16,1,'#000');pg.text(stamp,mg,y+25,8.5,0,'#555');y+=38}};np();
    specSections().forEach(([title,rows])=>{if(y+40>PH-mg)np();pg.rect(mg,y,PW-2*mg,17,'#dfe8ea');pg.text(title,mg+5,y+12,11,1,'#000');y+=21;
-    rows.forEach(r=>{const A=pdfWrap(r[0],fs,0,lw-8),V=pdfWrap(r[1],fs,0,vw),n=Math.max(A.length,V.length),hh=n*lh+5;if(y+hh>PH-mg){np()}
-     A.forEach((t,i)=>pg.text(t,mg+4,y+lh*(i+1)-1+1,fs,0,'#000'));V.forEach((t,i)=>pg.text(t,mg+lw+6,y+lh*(i+1),fs,0,'#000'));pg.line(mg,y+hh-1,PW-mg,y+hh-1,'#cccccc',.4);y+=hh});y+=8})}
+    rows.forEach(r=>{const wn=r[2]=='warn',A=pdfWrap(r[0],fs,wn,lw-8),V=pdfWrap(r[1],fs,wn,vw),n=Math.max(A.length,V.length),hh=n*lh+5;if(y+hh>PH-mg){np()}
+     if(wn)pg.rect(mg,y,PW-2*mg,hh-1,'#ffd400');
+     A.forEach((t,i)=>pg.text(t,mg+4,y+lh*(i+1)-1+1,fs,wn,'#000'));V.forEach((t,i)=>pg.text(t,mg+lw+6,y+lh*(i+1),fs,wn,'#000'));pg.line(mg,y+hh-1,PW-mg,y+hh-1,'#cccccc',.4);y+=hh});y+=8})}
   // 3. the cable labels, one PDF page per label sheet, sized like the label sheet itself
   if(lblHas().on){const L=labelList(),g=lblGeom(),lay=Math.max(0,LBLLAY.indexOf(S.lblLayout)),K=72/25.4;
    labelPages(L).forEach(cells=>{const pg=new PdfPage(g.pw,g.ph,K);pages.push(pg);

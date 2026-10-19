@@ -15,7 +15,7 @@ async def main():
         ev = pg.evaluate
         opts = "()=>[...document.querySelectorAll('select[data-k=proc] option')].map(o=>o.value||o.textContent)"
         async def setk(k, v):
-            await ev("""([k,v])=>{const e=document.querySelector('[data-k='+k+']');if(e.type=='checkbox')e.checked=v;else e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))}""", [k, v]); await pg.wait_for_timeout(150)
+            await ev("""([k,v])=>{if(k=='preset'){const bs=document.querySelector('[data-brand]');if(bs&&bs.value!=brandOf(v)){bs.value=brandOf(v);bs.dispatchEvent(new Event('change',{bubbles:true}))}}const e=document.querySelector('[data-k='+k+']');if(e.type=='checkbox')e.checked=v;else e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}))}""", [k, v]); await pg.wait_for_timeout(150)
         # default tile (Unilumin) is unrestricted
         o = await ev(opts); chk(len(o) == len(await ev("()=>Object.keys(PROC)")) , 'unknown tile lists all ' + str(len(o)))
         chk('not' not in (await ev("()=>document.querySelector('#procInfo').textContent")).lower().split('no processor')[0], 'info')

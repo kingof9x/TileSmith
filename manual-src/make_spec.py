@@ -53,7 +53,7 @@ KEYDESC = {
  'gone': 'Removed tiles on a plain grid: list of [col,row].',
  'lay': 'Half-tile layout: {} for a plain grid, or {s: split "h"|"w", uc/ur: unit grid size when last edited, p: [[u,v,unitsWide,unitsTall],...]}.',
  'name': 'Wall name.', 'ox': 'Wall X offset on the canvas in px (-20000..20000).', 'oy': 'Wall Y offset on the canvas in px.',
- 'cols': 'Columns of tiles (1-64).', 'rows': 'Rows of tiles (1-64).', 'preset': 'Tile model preset name ("Custom" once any tile field is edited).',
+ 'cols': 'Columns of tiles (1-64).', 'rows': 'Rows of tiles (1-64).', 'preset': 'Tile model preset name ("Custom" once any tile field is edited). The UI picks Brand first, then a model of that brand; models in PEST have estimated figures flagged as MISSING DATA in Engineering and the PDF.',
  'tw': 'Tile width in px.', 'th': 'Tile height in px.', 'wmm': 'Tile width in mm.', 'hmm': 'Tile height in mm.', 'dmm': 'Tile depth in mm.', 'kg': 'Tile weight in kg.',
  'wmax': 'Tile max power in W.', 'pitch': 'Pixel pitch in mm.', 'pat': 'Test pattern (see Patterns).', 'pfit': 'Image fit for image patterns (see Image fit).',
  'pdir': 'Scroll direction: none | diagonal ↘ | diagonal ↗ | horizontal → | vertical ↓.', 'pspd': 'Scroll speed (0-3).', 'shadeC': 'Tile-shade colour (tileshade, tileshade-clean).',
