@@ -149,6 +149,8 @@ dialog) deletes the state and reloads.
 | `dvdLoop` | false | Perfect loop mode (motion repeats exactly). |
 | `dvdLoopLen` | 30 | Perfect loop length in seconds (4-600). |
 | `dvdLoopCorners` | true | Perfect loop includes exactly two corner hits per loop (else none). |
+| `rcard` | any | Engineering > LED processor: receiving card family in the tile (any, brompton, novastar, helios, evision). Narrows the processor list; resets to any when the tile does not allow it. |
+| `procAll` | false | Engineering > LED processor: show every processor instead of only those the tile maker lists. The currently chosen processor is always listed; if the tile does not list it, an amber warning shows. Compatibility comes from ROE brochure Processing Platform lines (CMP table: Carbon, Carbon MkII, Graphite, Black Pearl BP2V2, Ruby 2.2/2.6, Vanish V5S/V8S MkII, V8T, ST V4ST/V6ST, Black Quartz, Jet, Topaz, Meru, Sierra, Diamond); tiles not in the table are unrestricted; with several walls the list is the intersection. |
 | `vIntro` | 5 | Video export: seconds of blank canvas before the build (0-60). |
 | `vHold` | 10 | Video export: seconds holding the finished wall (0-120). |
 | `vLed` | true | Video export: tick to include the LED build video (blank intro, live build, final hold). |
