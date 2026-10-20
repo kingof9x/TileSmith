@@ -1,4 +1,5 @@
-# Technician character styles: the dropdown, all four styles draw through a whole build without errors, the choice is saved in a project.
+# Technician character style: the dropdown offers Classic and Character pack, Classic draws through a whole build,
+# the choice is saved, and a project that picked the removed Cartoon style falls back to Classic.
 import asyncio, sys
 from playwright.async_api import async_playwright
 APP = '/home/claude/tilesmith-desktop/app/index.html'
@@ -10,29 +11,26 @@ async def main():
         ok = True
         def chk(c, m):
             nonlocal ok
-            print(('PASS ' if c else 'FAIL ') + m)
-            ok = ok and c
+            print(('PASS ' if c else 'FAIL ') + m); ok = ok and c
         opts = await pg.evaluate("()=>[...document.querySelector('[data-k=tstyle]').options].map(o=>o.value)")
-        chk(opts == ['Classic', 'Cartoon', 'Character pack'], f'dropdown lists the styles {opts}')
+        chk(opts == ['Classic', 'Character pack'], f'dropdown lists the styles {opts}')
         chk(await pg.evaluate("()=>S.tstyle") == 'Classic', 'default is Classic')
-        sums = {}
-        for st in ['Classic', 'Cartoon']:
-            await pg.evaluate("""(st)=>{const e=document.querySelector('[data-k=tstyle]');e.value=st;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));
-              S.cols=4;S.rows=3;storeWall();showAll();sync();fit();reset();S.play=true}""", st)
-            chk(await pg.evaluate("()=>S.tstyle") == st, f'{st}: dropdown sets S.tstyle')
-            seen = set()
-            for i in range(40):
-                await pg.evaluate("()=>{for(let k=0;k<20;k++)step(1/60);forceRen=true}"); await pg.wait_for_timeout(30)
-                seen.add(await pg.evaluate("()=>sims[0].ph"))
-            sums[st] = await pg.evaluate("()=>{const c=document.getElementById('vp');const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let s=0;for(let i=0;i<d.length;i+=97)s=(s*31+d[i])>>>0;return s}")
-            chk(len(seen) >= 3, f'{st}: build phases ran {sorted(seen)}')
-        chk(len(set(sums.values())) >= 2, f'styles render differently {sums}')
-        await pg.evaluate("()=>{S.tstyle='Cartoon'}")
+        await pg.evaluate("()=>{S.cols=4;S.rows=3;storeWall();showAll();sync();fit();reset();S.play=true}")
+        seen = set()
+        for i in range(40):
+            await pg.evaluate("()=>{for(let k=0;k<20;k++)step(1/60);forceRen=true}"); await pg.wait_for_timeout(30); seen.add(await pg.evaluate("()=>sims[0].ph"))
+        chk(len(seen) >= 3, f'Classic build phases ran {sorted(seen)}')
+        chk(await pg.evaluate("()=>typeof workerCartoon") == 'undefined', 'Cartoon drawing code is gone')
+        await pg.evaluate("()=>{S.tstyle='Character pack'}")
         o = await pg.evaluate("()=>stateObj()")
-        chk(o.get('tstyle') == 'Cartoon' or 'Cartoon' in str(o)[:200000], 'style is part of the saved state')
+        chk(o['S'].get('tstyle') == 'Character pack', 'style is part of the saved state')
         await pg.evaluate("(o)=>{S.tstyle='Classic';applyState(o)}", o)
-        chk(await pg.evaluate("()=>S.tstyle") == 'Cartoon', 'style restored when state is loaded')
+        chk(await pg.evaluate("()=>S.tstyle") == 'Character pack', 'style restored when state is loaded')
+        o['S']['tstyle'] = 'Cartoon'
+        await pg.evaluate("(o)=>applyState(o)", o)
+        chk(await pg.evaluate("()=>S.tstyle") == 'Classic', 'a project with the removed Cartoon style opens as Classic')
+        await pg.evaluate("()=>{S.tstyle='Character pack';S.tpack='';reset();for(let k=0;k<200;k++)step(1/60);forceRen=true}")
+        chk(await pg.evaluate("()=>{let n=0;const o=worker;window.worker=function(){n++;return o.apply(this,arguments)};drawTech(document.createElement('canvas').getContext('2d'),100,100,100,{th:1,mv:0,m:crew[0],ix:0,hands:null});return n}") == 1, 'Character pack with no pack loaded draws the Classic technician')
         chk(not errs, f'no page errors {errs[:2]}')
-        await b.close()
-        print('ALL OK' if ok else 'FAILED'); sys.exit(0 if ok else 1)
+        await b.close(); print('ALL OK' if ok else 'FAILED'); sys.exit(0 if ok else 1)
 asyncio.run(main())
