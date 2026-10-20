@@ -13,7 +13,7 @@ async def main():
             print(('PASS ' if c else 'FAIL ') + m)
             ok = ok and c
         opts = await pg.evaluate("()=>[...document.querySelector('[data-k=tstyle]').options].map(o=>o.value)")
-        chk(opts == ['Classic', 'Cartoon'], f'dropdown lists the styles {opts}')
+        chk(opts == ['Classic', 'Cartoon', 'Character pack'], f'dropdown lists the styles {opts}')
         chk(await pg.evaluate("()=>S.tstyle") == 'Classic', 'default is Classic')
         sums = {}
         for st in ['Classic', 'Cartoon']:

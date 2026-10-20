@@ -343,14 +343,14 @@ const HALF={'Owl Vision Black Owl 3.9 500×1000':['Owl Vision Black Owl 3.9','h'
 const R={'1080p Full HD':[1920,1080],'4K UHD':[3840,2160],'2K DCI':[2048,1080],'4K DCI':[4096,2160],'720p HD':[1280,720],'32:9 Banner':[3840,1080]};
 const S={cw:1920,ch:1080,ox:0,oy:0,cols:6,rows:4,preset:'Unilumin UpadIV 2.6',tw:192,th:192,wmm:500,hmm:500,dmm:70,kg:6.3,wmax:120,pitch:2.6,
 bc:'#22d3ee',bt:3,rcfg:'',pat:'tileshade',tpos:true,half:[],gone:[],lay:{},gx:0,gy:0,ids:true,addr:false,mm:false,speed:1,dvdOn:false,dvdSrc:'TileSmith logo',dvdText:'TILESMITH',dvdArea:'Each LED wall',dvdSize:20,dvdSpeed:1,dvdCorner:10,dvdTint:true,dvdLoop:false,dvdLoopLen:30,dvdLoopCorners:true,rcard:'any',procAll:false,vIntro:5,vHold:10,vLed:true,vDvd:false,vCodec:'HAP (.mov)',hapFmt:'hap',name:'LED Wall',corner:'Top-left',dir:'Horizontal',wmode:'None',wcorner:'Top-left',wdir:'Horizontal',wfill:'Fewest ports',wman:[],pmode:'None',pcorner:'Top-left',pwdir:'Horizontal',pfill:'Fewest circuits',plink:0,pman:[],proc:'None',fps:60,bpc:8,ull:false,ppx:0,pports:0,ret:true,showData:true,pdist:false,pvolt:120,pamps:20,derate:true,showPow:true,resSl:'One slice per LED wall',pfit:'Stretch to wall',pdir:'none',pspd:1,patImg:null,loop:false,loopHold:3,shadeC:'#3f8080',boxMode:'Nothing',boxText:'',boxCol:'#ffffff',boxImg:null,
-ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblPow:'Cable and circuit labels',pdt:'Socapex (6 circuits per cable)',pwall:0,pwallA:20,lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',tstyle:'Classic',logo:'TILESMITH',cd:true,play:true};
+ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblPow:'Cable and circuit labels',pdt:'Socapex (6 circuits per cable)',pwall:0,pwallA:20,lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',tstyle:'Classic',tpack:'',logo:'TILESMITH',cd:true,play:true};
 const LBL={'Avery 5160 (30 per US Letter sheet)':{pw:215.9,ph:279.4,w:66.675,h:25.4,c:3,r:10,x:4.76,y:12.7,gx:3.175,gy:0},
 'Avery 5163 (10 per US Letter sheet)':{pw:215.9,ph:279.4,w:101.6,h:50.8,c:2,r:5,x:3.97,y:12.7,gx:4.76,gy:0},
 'Avery L7160 (21 per A4 sheet)':{pw:210,ph:297,w:63.5,h:38.1,c:3,r:7,x:7.21,y:15.15,gx:2.54,gy:0},
 'Label roll 62 x 29 mm (one per page)':{pw:62,ph:29,w:62,h:29,c:1,r:1,x:0,y:0,gx:0,gy:0,roll:1},
 'Wrap-around strip 100 x 30 mm (one per page)':{pw:100,ph:30,w:100,h:30,c:1,r:1,x:0,y:0,gx:0,gy:0,roll:1},
 'Custom label roll (one per page)':{roll:1,custom:1}};
-const TSTY=['Classic','Cartoon'];
+const TSTY=['Classic','Cartoon','Character pack'];
 const HAIR=['#2b1d14','#4a3020','#6b4a2b','#14100c','#0f0f0f','#1c1410'];
 const defCrew=()=>[['Marcus','#8d5524'],['Elena','#e0ac69'],['David','#f1c27d'],['Chen','#ffdbac'],['Priya','#c68642'],['Malik','#5c3a21']].map((c,i)=>[c[0],c[1],null,HAIR[i]]);
 let crew=defCrew();
@@ -532,7 +532,7 @@ ${F('dvdArea','Bounce inside','select',['Each LED wall','Whole canvas'],'w')}${F
 ${F('dvdCorner','Corner hit chance <b id="dvdCv"></b>','range','min=0 max=100 step=1','w')}${F('dvdTint','Change color on each bounce','check')}
 <div id="dvdCornerNote" class="w" style="color:var(--mu);font-size:12px">How often the logo lands exactly in a corner. At 100% about 45 of every 100 bounces are corners; at 0% the logo is steered so it never touches one.</div><div id="dvdStat" class="w" style="font-size:12px"></div>${F('dvdLoop','Perfect loop (repeats exactly, for video)','check')}<div id="dvdLoopBox" class="g w">${F('dvdLoopLen','Loop length (s)','number','min=4 max=600 step=1')}${F('dvdLoopCorners','Include corner hits','check')}<div class="w" style="color:var(--mu);font-size:12px">The logo ends exactly where, and in the colour, it started. Speed is adjusted slightly so the loop closes. The loop video shows the walls fully built, holds moving patterns and Scroll still so it repeats seamlessly, and uses the Format chosen under Video export (60 fps).</div><div class="w desk-only" style="color:var(--mu);font-size:12px">To save the loop as a video, tick <b>DVD logo</b> under Video export and press Export video.</div></div></div>`)}
 ${SUB('LED build',`<div class="row" id="bctl">${B('rs','Start')}${B('bstop','Stop')}${B('brst','Reset')}${B('pp','Pause')}</div><div style="color:var(--mu);font-size:12px">Start builds from the first tile. Stop ends the build and shows the finished walls. Reset clears the walls. Play / Pause freezes the build and carries on from the same spot.</div><div class="g">${F('loop','Loop build continuously','check')}${F('loopHold','Pause before restart (s)','number','min=0 max=600 step=0.5','w')}${F('speed','Speed 0.25–5×','range','min=0.25 max=5 step=0.25','w')}</div>
-${SUB('Technician',`<div class="g">${F('tstyle','Character style','select',TSTY,'w')}${F('hat','Hard hat','select',['#ffcc00','#ffffff','#2563ff','#ff7a00'])}${F('vest','Vest','select',['#b6ff00','#ff6a00','#f5e800'])}${F('logo','Vest logo text','text','','w')}<label class="w">Upload logo (PNG/SVG/JPG)<input type="file" id="lf" accept="image/*"></label></div>
+${SUB('Technician',`<div class="g">${F('tstyle','Character style','select',TSTY,'w')}<div id="pkBox" class="w" style="display:none"><label class="w">Character pack<select data-k="tpack" id="pkSel"></select></label><div class="row"><label style="display:inline-flex;align-items:center;gap:6px"><span class="btn" style="cursor:pointer">Load character pack…</span><input type="file" id="pkf" accept=".zip,.png,.json" multiple style="display:none"></label>${B('pkdel','Delete pack')}</div><div id="pkNote" style="color:var(--mu);font-size:12px"></div></div>${F('hat','Hard hat','select',['#ffcc00','#ffffff','#2563ff','#ff7a00'])}${F('vest','Vest','select',['#b6ff00','#ff6a00','#f5e800'])}${F('logo','Vest logo text','text','','w')}<label class="w">Upload logo (PNG/SVG/JPG)<input type="file" id="lf" accept="image/*"></label></div>
 ${F('cd','Crew details & name tags','check')}<div id="crew"></div>`)}`)}
 ${SUB('Video export',`<div class="g">${F('vLed','LED build (blank intro, the build, final hold)','check')}<span class="w desk-only">${F('vDvd','DVD logo (one perfect loop)','check')}</span></div><div id="vdvdNote" class="desk-only" style="color:#e5a000;font-size:12px"></div><div class="g">${F('vIntro','Blank intro (s)')}${F('vHold','Final hold (s)')}${F('vCodec','Format','select',Object.keys(VCODEC),'w desk-only')}${F('hapFmt','HAP type','select',['hap','hap_alpha','hap_q'],'w desk-only')}</div><div id="vcn" class="desk-only" style="color:var(--mu);font-size:12px"></div><div class="mob-only" style="color:var(--mu)">This device records the video as H.264 MP4 with its own encoder, in real time: keep TileSmith open while it records (the screen stays on). When it finishes, pick where to save or send it (Files, Photos, Drive, AirDrop, e-mail…). Video = intro + live build + hold.<br>Estimated length: <b id="vestm" style="color:var(--tx)"></b></div><div class="desk-only" style="color:var(--mu)">Saves the video (60 fps, desktop app) to your Videos folder (Windows) or Movies folder (Mac), in a TileSmith subfolder. Video = intro + live build + hold. Build time follows tile count and Speed (under LED build); with several walls the slowest wall sets the length. With both boxes ticked you get two files, the LED build first and then the DVD logo loop.<br>Estimated length: <b id="vest" style="color:var(--tx)"></b></div><div class="row">${B('rec','Export video')}</div><div id="vexps" style="font-size:12px;color:var(--mu)"></div>`)}
 ${SUB('NDI® options',`<div class="g">${F('ndiName','NDI® source name','text','','w')}${F('ndiFps','Frame rate','select',['60','59.94','50','30','29.97','25'],'w')}${F('ndiIdle','Save CPU while the picture is still','check')}</div><div style="color:var(--mu)">Lower frame rates use less CPU. With "Save CPU" on, a still picture is sent about 4 times a second instead of at the full rate; most receivers hold the last frame, but leave it off if one of yours flags a low frame rate.</div><div style="color:var(--mu);font-size:12px">Desktop app only. Start and stop NDI® with the <b>Start NDI®</b> button in the top bar or here. A new source name applies the next time NDI® starts; frame rate and Save CPU apply right away.</div><div class="row">${B('ndi','Start NDI®')}</div><div id="ndis" style="color:var(--mu)"></div><div style="color:var(--mu);font-size:11px">NDI® is a registered trademark of Vizrt NDI AB · <a class="ext" href="https://ndi.video/" target="_blank" rel="noopener">ndi.video</a> · <a class="ext" href="https://ndi.video/tools/" target="_blank" rel="noopener">NDI® Tools</a></div>`,0,'desk-only')}
@@ -548,7 +548,7 @@ ${F('lblLayout','Wrap layout','select',['Two identical panels','Flag fold-over (
 $('#bar').innerHTML=B('newc','New Project')+B('psave','Save')+B('popen','Open')+B('about','ⓘ Info')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('fit','Show entire canvas')+B('ctr','Center canvas')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('pdf','Export PDF')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>';
 if(!$('#opf')){const i=document.createElement('input');i.type='file';i.id='opf';i.accept='.tilesmith,.json,application/json';i.hidden=true;document.body.appendChild(i)}
 sync();crewUI();}
-function sync(){storeWall();procRefresh();tileRefresh();rcUI();cvUI();document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
+function sync(){storeWall();procRefresh();tileRefresh();rcUI();pkUI();cvUI();document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
 $('#crew').style.display=S.cd?'':'none';$('#den').textContent=Math.round(1e6/S.pitch**2).toLocaleString()+' px/m²';{const b=buildSecs(),t=S.vIntro+b+S.vHold,m=Math.floor(t/60),q=Math.round(t%60);const tx=m+':'+String(q).padStart(2,'0')+'  (build '+Math.round(b)+' s)';['#vest','#vestm'].forEach(k=>{const e=$(k);if(e)e.textContent=tx})}
 $('#typ').textContent=Math.round(S.wmax*.4)+' W';wallsUI();uiVis();info()}
 function uiVis(){const on=procOn(),m=PROC[S.proc],hide=(id,h)=>{const e=$('#'+id);if(e)e.style.display=h?'none':''},plan=portPlan();lblVis();
@@ -590,7 +590,7 @@ function loadImgFile(f,max,mime,cb){const fr=new FileReader();fr.onload=()=>{con
 if(f.type=='image/svg+xml'||/\.svg$/i.test(f.name)){im.onload=()=>{im.__src=src;cb(im)};im.src=src;return}
 im.onload=()=>{const k=Math.min(1,max/Math.max(im.naturalWidth,im.naturalHeight));if(k<1||mime=='image/jpeg'){const cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(im.naturalWidth*k));cv.height=Math.max(1,Math.round(im.naturalHeight*k));const q=cv.getContext('2d');if(mime=='image/jpeg'){q.fillStyle='#fff';q.fillRect(0,0,cv.width,cv.height)}q.drawImage(im,0,0,cv.width,cv.height);const u=cv.toDataURL(mime,.9),i2=new Image();i2.onload=()=>{i2.__src=u;cb(i2)};i2.src=u}else{im.__src=src;cb(im)}};im.src=src};fr.readAsDataURL(f)}
 const SK=['#ffdbac','#f1c27d','#e0ac69','#c68642','#8d5524','#5c3a21'];
-function crewUI(){$('#crew').innerHTML=crew.map((c,i)=>`<div class="mem"><div class="crew"><input value="${esc(c[0])}" placeholder="Name" aria-label="Crew name ${i+1}" data-c="${i}" data-f="0"><input type="color" value="${c[1]}" aria-label="Skin color ${i+1}" title="Skin color" data-c="${i}" data-f="1"><input type="color" value="${c[3]||'#2b1d14'}" aria-label="Hair color ${i+1}" title="Hair color" data-c="${i}" data-f="3"></div>
+function crewUI(){$('#crew').innerHTML=crew.map((c,i)=>`<div class="mem"><div class="crew"><input value="${esc(c[0])}" placeholder="Name" aria-label="Crew name ${i+1}" data-c="${i}" data-f="0"><input type="color" value="${c[1]}" aria-label="Skin color ${i+1}" title="Skin color" data-c="${i}" data-f="1"><input type="color" value="${c[3]||'#2b1d14'}" aria-label="Hair color ${i+1}" title="Hair color" data-c="${i}" data-f="3"></div>${PK.size?`<label style="color:var(--mu);font-size:12px">Character pack <select data-c="${i}" data-f="4" aria-label="Character pack for crew member ${i+1}"><option value="">Technician style</option>${[...PK.values()].map(r=>`<option value="${r.id}"${c[4]==r.id?' selected':''}>${esc(r.name)}</option>`).join('')}</select></label>`:''}
 <div class="row">${SK.map(k=>`<button class="sw" title="${k}" data-cs="${i}" data-v="${k}" style="background:${k};width:18px;height:18px"></button>`).join('')}<button data-rm="${i}" title="Remove">✕</button></div><div class="row" style="align-items:center"><label style="color:var(--mu);font-size:12px">Face photo <input type="file" accept="image/*" data-face="${i}" style="width:190px"></label>${c[2]?'<span class="ok">✔</span><button data-rmface="'+i+'">Remove face</button>':''}</div></div>`).join('')+
 `<div class="row">${B('add','Add crew member')}${B('rcrew','Reset to defaults')}</div>`+(crew.length<walls.length?`<div class="bad" style="font-size:12px;margin-top:6px">Add ${walls.length-crew.length} more crew so every wall has its own tech.</div>`:'')}
 const RATES=[1,.88,1.1,.94,1.06,.84,1.14,.97],STAG=.6;
@@ -612,6 +612,7 @@ if(k=='loop'&&v&&allDone()&&!REC){reset();S.play=true}
 if(k=='shGpu'&&shOut){shStop();toggleShare()}}
 document.addEventListener('input',e=>{const t=e.target;
 if(t.id=='rcf'){const f=t.files[0];t.value='';if(f)rcAdd(f);return}
+if(t.id=='pkf'){const fs=[...t.files];t.value='';if(fs.length)pkAdd(fs);return}
 if(t.id=='rcVend'||t.id=='rcRev'){const r=RC.get(S.rcfg);if(r){r[t.id=='rcVend'?'vendor':'revision']=t.value.slice(0,t.id=='rcVend'?60:40);clearTimeout(rcSave.t);rcSave.t=setTimeout(()=>rcSave(r),400);rcUI()}return}
 if(t.dataset&&t.dataset.k=='rcfg'&&t.value){const r=RC.get(t.value);if(r&&!r.models.includes(S.preset)){r.models.push(S.preset);rcSave(r)}}
 if(t.id=='outSel'){const c=CVS[cc];if(t.value)outOpen(c,t.value);else outClose(c);cvUI();return}
@@ -637,7 +638,7 @@ const a=t.dataset.a;if(!a)return;const v=t.dataset.v,cw=S.cw,ch=S.ch;
 ({undom(){const t=e.target.closest('button'),m=$('#undom'),o=m.hidden;ddClose();if(o){unUI();const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-260))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');const f=m.querySelector('button:not([disabled])');if(f)f.focus()}},undo(){ddClose();if(v)unUndo(+v)},redo(){ddClose();unRedo()},ctr(){const r=vp.getBoundingClientRect();V.x=(r.width-S.cw*V.z)/2;V.y=(r.height-S.ch*V.z)/2},newc(){newCanvasAsk()},res(){[S.cw,S.ch]=R[v]},match(){fitCanvas()},wadd(){addWall(false)},pspec(){applySpec()},npat(){nextPattern()},hrowb(){halfRow('bottom')},hrowt(){halfRow('top')},hedit(){halfEdit=!halfEdit&&!!halfOf(S);if(halfEdit){wiring=false;pwiring=false;goneEdit=false}},gedit(){goneEdit=!goneEdit;if(goneEdit){wiring=false;pwiring=false;halfEdit=false}},gclr(){restoreAll()},hclr(){S.half=[];S.lay={};storeWall();showAll();sync()},dvdexp(){dvdExportLoop()},rxml(){if(v)S.resSl=v;ddClose();exportRes()},rxmlm(){const m=$('#rxmlm'),o=m.hidden;ddClose();if(o){const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-200))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');m.querySelector('button').focus()}},wedit(){wiring=!wiring;if(wiring){S.showData=true;pwiring=false;halfEdit=false;goneEdit=false}wireMsg(wiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},wnew(){if(!Array.isArray(S.wman))S.wman=[];const l=S.wman[S.wman.length-1];if(!l||l.length)S.wman.push([]);wireMsg('')},wundo(){const m=S.wman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();wireMsg('')},wclr(){S.wman=[];wireMsg('')},pedit(){pwiring=!pwiring;if(pwiring){S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg(pwiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},pnew(){if(!Array.isArray(S.pman))S.pman=[];const l=S.pman[S.pman.length-1];if(!l||l.length)S.pman.push([]);pwMsg('')},pundo(){const m=S.pman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();pwMsg('')},pclr(){S.pman=[];pwMsg('')},wdup(){addWall(true)},wdel(){delWall()},
 al(){S.ox=v[0]=='c'||v=='tc'||v=='bc'?Math.round((cw-WW())/2):0;S.oy=v=='c'?Math.round((ch-WH())/2):v[0]=='b'?ch-WH():0;if(v=='tl'||v=='bl')S.ox=0},
 arr(){[S.cols,S.rows]=v.split('x').map(Number);showAll()},
-pp(){S.play=!S.play},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},rcdel(){rcDel()},pcfg(){exportConfig()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
+pp(){S.play=!S.play},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},rcdel(){rcDel()},pkdel(){pkDel()},pcfg(){exportConfig()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
 about(){showAbout(1)},ndi(){toggleNdi()},share(){toggleShare()},png(){eachCv(()=>{const m=M,n=`tilesmith-canvas${cvTag()}.png`;m.toBlob(b=>dl(b,n))})},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
 add(){crew.push(['Tech '+(crew.length+1),'#e0ac69',null,HAIR[crew.length%HAIR.length]]);crewUI()},rcrew(){crew=defCrew();crewUI()}}[a])();
 sync();fit_if();});
@@ -810,7 +811,7 @@ function seqRC(w,k){const C=w.cols,R=w.rows;let c,r;if(w.dir=='Vertical'){c=Math
 const PC=['#ff4d4d','#4dff88','#4da6ff','#ffd24d','#d24dff','#4dfff0','#ff944d','#b0ff4d'];
 // ---------- worker
 const STY={hr:.1,hy:.1,vb:1,W:1.05,arm:1,leg:1,out:0,face:1,eye:1,blush:0,tools:0,nolabel:0,shirt:'#2b6cb0',pants:'#1f2937',glove:'#fb923c'};
-function drawTech(c,x,y,s,o){if(S.tstyle=='Cartoon')workerCartoon(c,x,y,s,o);else worker(c,x,y,s,o)}
+function drawTech(c,x,y,s,o){const pid=pkFor(o.m);if(pid)workerPack(c,x,y,s,o,pid);else if(S.tstyle=='Cartoon'||S.tstyle=='Character pack')workerCartoon(c,x,y,s,o);else worker(c,x,y,s,o)}
 function sh(h,k){const n=parseInt(h.slice(1),16);return `rgb(${Math.round((n>>16)*k)},${Math.round((n>>8&255)*k)},${Math.round((n&255)*k)})`}
 function rr(c,x,y,w,h,r){c.beginPath();c.roundRect(x,y,w,h,r)}
 function worker(c,x,y,s,o){const th=o.th,Sn=Math.sin(th),Cs=Math.cos(th),F=Math.abs(Sn),Sd=Math.abs(Cs),L=Cs<0?-1:1,mv=o.mv,m=o.m,sk=m[1],hair=m[3]||'#2b1d14',back=Sn<-.1,
@@ -1079,6 +1080,111 @@ function tcHead(c,V,C,m,hair,ex,blink,tileC,mv,g,OL,L){
  c.beginPath();c.moveTo(-hw-.01-(V==4?.006:0),-.146);c.quadraticCurveTo(-hw-.012,-.156,-hw*.8,-.155);c.lineTo(hw*.8,-.155);c.quadraticCurveTo(hw+.012+pk,-.155,hw+.012+pk,-.144);c.quadraticCurveTo(0,(V==0?-.132:-.14),-hw-.01,-.146);c.closePath();fs(S.hat);
  if(V<=2){const lx=[0,.042,.07][V],lw=[.032,.026,.012][V];c.fillStyle='#3a3a40';c.beginPath();c.roundRect(lx-lw/2,-.188,lw,.026,.006);c.fill();c.stroke();if(V<2){c.fillStyle='#fff6c4';c.beginPath();c.ellipse(lx+(V?.004:0),-.175,lw*.3,.008,0,0,7);c.fill();c.stroke()}else{c.fillStyle='#fff6c4';c.beginPath();c.ellipse(lx+.006,-.175,.004,.008,0,0,7);c.fill();c.stroke()}}
  else{c.fillStyle='#3a3a40';c.beginPath();c.arc(V==3?-.03:0,-.158,.009,0,7);c.fill();c.stroke()}}
+// ---------- Character packs: your own artwork, cut into parts (see the Character Pack art brief), rigged and animated here.
+// Parts sit on fixed canvases with their joints at fixed points; 1000 px = the technician's height.
+const PKV=['front','three_quarter','side','back'];
+const PKP={head:[360,320,{neck:[180,300]}],torso:[400,380,{neck:[200,30],hips:[200,320]}],upper_arm:[140,230,{shoulder:[70,30],elbow:[70,200]}],forearm:[120,200,{elbow:[60,25],wrist:[60,175]}],
+ hand_open:[140,150,{wrist:[70,25]}],hand_grip:[140,150,{wrist:[70,25]}],thigh:[180,300,{hip:[90,30],knee:[90,275]}],shin:[160,280,{knee:[80,25],ankle:[80,250]}],boot:[260,120,{ankle:[90,40]}]};
+const PKSH={front:[[325,62],[75,62]],three_quarter:[[290,65],[130,60]],side:[[205,65],[195,65]],back:[[75,62],[325,62]]};
+const PKEX=['neutral','focused','stressed','happy','tired','blink'];
+const PK=new Map();   // id -> {id,name,files:{'view/part':dataURL},json,added}
+const PKI=new Map();  // id -> {img:{view:{part:Image}},J:{view:{part:{joint:[x,y]}}}}
+const PKDB={p:null,open(){return this.p||(this.p=new Promise((res,rej)=>{try{const r=indexedDB.open('tilesmith-packs',1);r.onupgradeneeded=()=>r.result.createObjectStore('packs',{keyPath:'id'});r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)}catch(e){rej(e)}}))},
+ async tx(m,f){const db=await this.open();return new Promise((res,rej)=>{const t=db.transaction('packs',m),st=t.objectStore('packs'),q=f(st);t.oncomplete=()=>res(q&&q.result);t.onerror=()=>rej(t.error)})},
+ all(){return this.tx('readonly',st=>st.getAll())},put(r){return this.tx('readwrite',st=>st.put(r))},del(id){return this.tx('readwrite',st=>st.delete(id))}};
+async function pkInit(){try{(await PKDB.all()||[]).forEach(r=>{if(!PK.has(r.id))PK.set(r.id,r)})}catch(e){console.warn('character packs',e)}try{sync();crewUI()}catch(e){}}
+// read a .zip (stored or deflated) into [{name,data}]
+async function unzipFiles(buf){const dv=new DataView(buf),u8=new Uint8Array(buf);let e=-1;for(let i=u8.length-22;i>=Math.max(0,u8.length-65558);i--)if(dv.getUint32(i,true)===0x06054b50){e=i;break}
+ if(e<0)throw new Error('This is not a zip file.');const n=dv.getUint16(e+10,true),td=new TextDecoder();let p=dv.getUint32(e+16,true);const out=[];
+ for(let k=0;k<n;k++){if(dv.getUint32(p,true)!==0x02014b50)break;const meth=dv.getUint16(p+10,true),csz=dv.getUint32(p+20,true),fl=dv.getUint16(p+28,true),xl=dv.getUint16(p+30,true),cl2=dv.getUint16(p+32,true),off=dv.getUint32(p+42,true);
+  const name=td.decode(u8.subarray(p+46,p+46+fl));p+=46+fl+xl+cl2;if(name.endsWith('/')||/(^|\/)(__MACOSX|\.)/.test(name))continue;
+  const st=off+30+dv.getUint16(off+26,true)+dv.getUint16(off+28,true),raw=u8.subarray(st,st+csz);let data=null;
+  if(meth===0)data=raw.slice();else if(meth===8){if(typeof DecompressionStream=='undefined')throw new Error('This device cannot unpack zip files; pick the PNG files instead.');data=new Uint8Array(await new Response(new Blob([raw]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).arrayBuffer())}
+  if(data)out.push({name,data})}return out}
+// "Tobi/three_quarter/head_happy.png" or "three_quarter_head_happy.png" -> ['three_quarter','head_happy']
+function pkPath(name){let s=name.toLowerCase().replace(/\\/g,'/').replace(/\.png$/,'');const parts=s.split('/');let view=null,file=parts.pop();
+ const vn=v=>({front:'front',three_quarter:'three_quarter','three-quarter':'three_quarter',threequarter:'three_quarter','3q':'three_quarter','3_4':'three_quarter',quarter:'three_quarter',side:'side',profile:'side',back:'back'})[v.replace(/\s+/g,'_')];
+ for(const d of parts){if(vn(d)){view=vn(d)}}
+ if(!view){const m=file.match(/^(front|three[_-]?quarter|3q|3_4|side|profile|back)[_-](.+)$/);if(m){view=vn(m[1]);file=m[2]}}
+ if(!view)return null;file=file.replace(/-/g,'_');if(file=='head')file='head_neutral';
+ if(!(file in PKP)&&!/^head_(neutral|focused|stressed|happy|tired|blink)$/.test(file))return null;return[view,file]}
+const u8b64=u=>{let s='';for(let i=0;i<u.length;i+=32768)s+=String.fromCharCode.apply(null,u.subarray(i,i+32768));return btoa(s)};
+async function pkAdd(fileList){const items=[];let json=null,zipName='';
+ try{for(const f of fileList){const buf=await f.arrayBuffer();if(/\.zip$/i.test(f.name)){zipName=f.name.replace(/\.zip$/i,'');for(const z of await unzipFiles(buf)){if(/pack\.json$/i.test(z.name))json=z.data;else if(/\.png$/i.test(z.name))items.push([z.name,z.data])}}
+  else if(/pack\.json$/i.test(f.name))json=new Uint8Array(buf);else if(/\.png$/i.test(f.name))items.push([f.name,new Uint8Array(buf)])}}catch(e){toast('Could not read the character pack: '+(e.message||e),6000);return}
+ const files={};let n=0;for(const[nm,data]of items){const q=pkPath(nm);if(!q)continue;files[q[0]+'/'+q[1]]='data:image/png;base64,'+u8b64(data);n++}
+ if(!n){toast('No pack images found. Name them like three_quarter/torso.png (see the Character Pack art brief).',7000);return}
+ let js={};try{if(json)js=JSON.parse(new TextDecoder().decode(json))||{}}catch(e){toast('pack.json is not valid JSON; using the standard joint points.',5000)}
+ const name=String(js.name||zipName||'Character').slice(0,40),id='pk'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+ const r={id,name,files,json:js&&typeof js=='object'?js:{},added:Date.now()};PK.set(id,r);PKDB.put(r).catch(()=>toast('The pack is loaded but could not be stored on this device.',5000));
+ S.tpack=id;if(S.tstyle!='Character pack')S.tstyle='Character pack';sync();crewUI();saveSoon();
+ const views=PKV.filter(v=>Object.keys(files).some(k=>k.startsWith(v+'/')));toast(`Loaded ${name}: ${n} images, views: ${views.join(', ').replace(/_/g,' ')}.`,5000)}
+function pkDel(){const r=PK.get(S.tpack);if(!r)return;PK.delete(r.id);PKI.delete(r.id);PKDB.del(r.id).catch(()=>{});crew.forEach(c=>{if(c[4]==r.id)c[4]=''});S.tpack='';sync();crewUI();saveSoon()}
+function pkLoad(id){if(PKI.has(id))return PKI.get(id);const r=PK.get(id);if(!r)return null;const img={},J={};
+ for(const v of PKV){img[v]={};J[v]={};for(const p in PKP){J[v][p]=JSON.parse(JSON.stringify(PKP[p][2]))}J[v].torso.near_shoulder=PKSH[v][0].slice();J[v].torso.far_shoulder=PKSH[v][1].slice();if(v=='front'||v=='back')J[v].boot.ankle=[130,40];
+  const o=r.json&&r.json.joints&&r.json.joints[v];if(o&&typeof o=='object')for(const p in o)if(J[v][p.startsWith('head')?'head':p]&&o[p]&&typeof o[p]=='object')for(const j in o[p]){const q=o[p][j];if(Array.isArray(q)&&q.length==2&&q.every(Number.isFinite))J[v][p.startsWith('head')?'head':p][j]=q}}
+ for(const k in r.files){const[v,p]=k.split('/');const im=new Image();im.onload=()=>{forceRen=true};im.src=r.files[k];img[v][p]=im}
+ const e={img,J};PKI.set(id,e);return e}
+function pkForProject(){const o={},ids=new Set([S.tpack,...crew.map(c=>c[4])].filter(Boolean));for(const id of ids){const r=PK.get(id);if(r)o[id]={name:r.name,files:r.files,json:r.json,added:r.added}}return o}
+function pkFromProject(o){if(!o||!o.pk||typeof o.pk!='object')return;for(const id in o.pk){const x=o.pk[id];if(!x||typeof x.files!='object'||!/^[\w-]+$/.test(id)||PK.has(id))continue;
+ const files={};for(const k in x.files){const q=pkPath(k+'.png');if(q&&typeof x.files[k]=='string'&&x.files[k].startsWith('data:image/png;base64,'))files[q[0]+'/'+q[1]]=x.files[k]}
+ const r={id,name:String(x.name||'Character').slice(0,40),files,json:x.json&&typeof x.json=='object'?x.json:{},added:+x.added||Date.now()};PK.set(id,r);PKDB.put(r).catch(()=>{})}}
+function pkUI(){const box=$('#pkBox');if(!box)return;box.style.display=S.tstyle=='Character pack'?'':'none';const sel=$('#pkSel');if(!sel)return;
+ const opts=[...PK.values()].sort((a,b)=>a.name.localeCompare(b.name));const key=opts.map(r=>r.id+r.name).join('|');
+ if(sel.dataset.u!==key){sel.innerHTML=(opts.length?'':'<option value="">No packs loaded yet</option>')+opts.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');sel.dataset.u=key}
+ if(!PK.has(S.tpack)&&opts.length)S.tpack=opts[0].id;if(PK.has(S.tpack))pkLoad(S.tpack);crew.forEach(c=>{if(c[4]&&PK.has(c[4]))pkLoad(c[4])});sel.value=PK.has(S.tpack)?S.tpack:'';const d=document.querySelector('[data-a=pkdel]');if(d)d.style.display=PK.has(S.tpack)?'':'none';
+ const r=PK.get(S.tpack),n=$('#pkNote');if(n)n.textContent=r?`${Object.keys(r.files).length} images. Views: ${PKV.filter(v=>Object.keys(r.files).some(k=>k.startsWith(v+'/'))).join(', ').replace(/_/g,' ')}. Missing views borrow the nearest one.`:'Load a zip of your artwork made to the Character Pack art brief. Until then the Cartoon technician stands in.'}
+// which pack (if any) draws this crew member
+function pkFor(m){const id=(m&&m[4])||(S.tstyle=='Character pack'?S.tpack:'');return id&&PK.has(id)?id:''}
+function workerPack(c,x,y,s,o,id){
+ const P=pkLoad(id);if(!P)return worker(c,x,y,s,o);
+ const th=o.th,Sn=Math.sin(th),Cs=Math.cos(th),L=Cs<0?-1:1,mv=o.mv||0,ph=o.ph||'',pp=o.p||0,g=o.g||0,k=s,
+  V=Sn>.82?0:Sn>.28?1:Sn>-.28?2:Sn>-.82?3:4,back=V>=3,cv=[1,.71,0,.71,1][V],sv=[0,.71,1,.71,0][V],lv=Math.max(cv,.24),
+  HS=o.hands?o.hands.map(h=>[(h[0]-x)*L/k,(h[1]-y)/k]).sort((p,q)=>p[0]-q[0]):null;
+ // pick the art for this view, borrowing the nearest view for any part that is missing
+ const want=['front','three_quarter','side','back','back'][V],chain={front:['front','three_quarter','side','back'],three_quarter:['three_quarter','side','front','back'],side:['side','three_quarter','front','back'],back:['back','three_quarter','side','front']}[want];
+ const part=p=>{for(const v of chain){const im=P.img[v][p];if(im&&im.complete&&im.naturalWidth)return{im,J:P.J[v][p.startsWith('head')?'head':p],v}}return null};
+ // ---------- pose (lengths from the brief: thigh 245, shin 225, ankle 50, torso 290, upper arm 170, forearm 150, all /1000)
+ const TH=.245,SN=.225,AK=.05,TO=.29,UA=.17,FA=.15,hipY=-(AK+SN+TH)+.004;
+ let drop=0,toe=0,lean=.06*mv;const bob=(Math.abs(Math.sin(g))*.016-.008)*mv,reach=UA+FA+.04,sh0=hipY-TO+.032;
+ if(HS){const hx=(HS[0][0]+HS[1][0])/2,lo=Math.max(HS[0][1],HS[1][1]),hi=Math.min(HS[0][1],HS[1][1]);
+  const dl=Math.hypot(hx*.8,lo-sh0);if(lo>sh0+.17&&dl>reach)drop=Math.min(.32,(dl-reach)*1.05);
+  const du=Math.hypot(hx*.8,hi-sh0);if(hi<sh0-.04&&du>reach)toe=Math.min(.06,du-reach);lean+=drop*1.2+(o.carry&&!drop?.04:0)}
+ const cr=Math.min(1,drop/.2),py=hipY+bob+drop-toe,pz=-drop*.25,prj=(lat,z)=>lat*lv+z*sv;
+ const syq=1-(1-sv)*(1-Math.cos(lean)),rot=lean*sv;
+ const tf=(px,qy)=>{const yy=qy*syq;return[prj(0,pz)+px*Math.cos(rot)-yy*Math.sin(rot),py+px*Math.sin(rot)+yy*Math.cos(rot)]};
+ const legs=[0,1].map(i=>{const sgn=i?-1:1,s2=Math.sin(g+i*Math.PI),lift=Math.max(0,Math.cos(g+i*Math.PI))*.055*mv;
+  let fz=s2*.15*mv+(mv?0:(i?-.025:.03));if(cr){fz=fz*(1-cr)+(i?-.08:.085)*cr}
+  const hz=pz,hyy=py,az=fz,ay=-AK-lift-(i&&cr>.5?.02*cr:0)-toe,r=tcIK(hz,hyy,az,ay,TH,SN,(a,b)=>a[0]>b[0]?a:b),bend=Math.max(0,r.j[0]-(hz+az)/2),lat=sgn*.052;
+  return{hip:[prj(lat,hz),hyy],knee:[prj(lat*1.05,r.j[0])+sgn*bend*.75*cv*cr,r.j[1]],ank:[prj(lat*1.1,r.e[0]),r.e[1]],tilt:(i&&cr>.5?-.5*cr:0)-(toe?.55:0)+(mv&&s2<0?Math.max(0,-Math.cos(g+i*Math.PI))*-.35*mv:0),i}});
+ const tj=(part('torso')||{J:{near_shoulder:PKSH[want][0],far_shoulder:PKSH[want][1],hips:[200,320]}}).J;
+ const arms=[0,1].map(i=>{const sp=i?tj.far_shoulder:tj.near_shoulder,S0=tf((sp[0]-tj.hips[0])/1000,(sp[1]-tj.hips[1])/1000);
+  let tgt=HS?HS[i?0:1]:null;
+  if(tgt){const d=Math.hypot(tgt[0]-S0[0],tgt[1]-S0[1]),mx=(UA+FA)*1.1+.045;if(d>mx)tgt=[S0[0]+(tgt[0]-S0[0])*mx/d,S0[1]+(tgt[1]-S0[1])*mx/d];
+   const sc=Math.min(1.1,Math.max(1,(d-.045)/(UA+FA))),r=tcIK(S0[0],S0[1],tgt[0],tgt[1],UA*sc,FA*sc,(a,b)=>a[1]>b[1]?a:b);return{s:S0,e:r.j,w:r.e,grip:1,i}}
+  const sw=-Math.sin(g+i*Math.PI)*.55*mv,al=sw+.05+(mv?0:Math.sin(T*1.3+i)*.02),be=.2+Math.max(0,sw)*.6,lat=(i?-1:1)*(.01+.012*(1-mv));
+  const ez=Math.sin(al)*UA,ey=Math.cos(al)*UA,wz=ez+Math.sin(al+be)*FA,wy=ey+Math.cos(al+be)*FA;return{s:S0,e:[S0[0]+prj(lat*.6,ez),S0[1]+ey],w:[S0[0]+prj(lat,wz),S0[1]+wy],grip:0,i}});
+ // ---------- face for what he is doing
+ let ex='neutral';if((ph=='walkin'||ph=='move')&&o.carry)ex='focused';if(ph=='place')ex='stressed';if(ph=='lock')ex=pp<.55?'stressed':'happy';if(ph=='walkout')ex=pp<.5?'happy':((o.prog||0)>.5?'tired':'neutral');
+ if(((T+(o.ix||0)*.73)%4.2)<.11&&ex!='happy')ex='blink';
+ // ---------- draw
+ c.save();c.translate(x,y);c.fillStyle='rgba(0,0,0,.24)';c.beginPath();c.ellipse(0,0,.13*k*(.6+.4*cv),.02*k,0,0,7);c.fill();c.scale(L*k,k);
+ const dim=far=>{if(far&&'filter' in c)c.filter='brightness(0.82)'};
+ const bone=(p,ja,jb,A,B,far,mir)=>{const q=part(p);if(!q)return;const a=q.J[ja],b=q.J[jb],ang=Math.atan2(B[1]-A[1],B[0]-A[0])-Math.atan2(b[1]-a[1],b[0]-a[0]),r=Math.hypot(B[0]-A[0],B[1]-A[1])/Math.hypot(b[0]-a[0],b[1]-a[1])*1000,sc=.001*Math.max(.85,Math.min(1.2,r));
+  c.save();dim(far);c.translate(A[0],A[1]);c.rotate(ang);c.scale(mir?-sc:sc,sc);c.drawImage(q.im,-a[0],-a[1],q.im.naturalWidth,q.im.naturalHeight);c.restore()};
+ const pin=(p,jn,A,ang,far,mir)=>{const q=part(p);if(!q)return false;const a=q.J[jn];c.save();dim(far);c.translate(A[0],A[1]);c.rotate(ang);c.scale(mir?-.001:.001,.001);c.drawImage(q.im,-a[0],-a[1],q.im.naturalWidth,q.im.naturalHeight);c.restore();return true};
+ // mirror the far-side limbs in front and back views so thumbs and pockets face the right way
+ const mirArm=a=>(V==0||V==4||V==3)&&a.i==1,mirLeg=l=>(V==0||V==4||V==3)&&l.i==1;
+ const leg=(l,far)=>{pin('boot','ankle',l.ank,l.tilt*sv,far,mirLeg(l));bone('shin','knee','ankle',l.knee,l.ank,far,mirLeg(l));bone('thigh','hip','knee',l.hip,l.knee,far,mirLeg(l))};
+ const arm=(a,far)=>{bone('forearm','elbow','wrist',a.e,a.w,far,mirArm(a));const an=Math.atan2(a.w[1]-a.e[1],a.w[0]-a.e[0])-Math.PI/2;pin(a.grip?'hand_grip':'hand_open','wrist',a.w,an,far,mirArm(a))||pin('hand_open','wrist',a.w,an,far,mirArm(a));bone('upper_arm','shoulder','elbow',a.s,a.e,far,mirArm(a))};
+ arm(arms[1],1);if(back)arm(arms[0],0);
+ leg(legs[1],1);leg(legs[0],0);
+ // torso pinned at the hips, leaning; then the head on the neck
+ const tq=part('torso');if(tq){const hp=[prj(0,pz),py];c.save();c.translate(hp[0],hp[1]);c.rotate(rot);c.scale(.001,.001*syq);c.drawImage(tq.im,-tq.J.hips[0],-tq.J.hips[1]);c.restore()}
+ const nk=tf((tj.neck?tj.neck[0]-tj.hips[0]:0)/1000,(tj.neck?tj.neck[1]-tj.hips[1]:-290)/1000);
+ const hn='head_'+ex;pin(part(hn)?hn:'head_neutral','neck',nk,rot*.4+(ph=='place'||ph=='lock'?-.06*sv:0)+Math.sin(T*.8)*.012,0,false);
+ if(!back)arm(arms[0],0);
+ c.restore()}
 function cab(c,x,y,L,k){k=k||1;const w=L.tw*k,h=L.th*k,pn=Math.max(2,7*k);c.fillStyle='#1b2028';c.fillRect(x-w/2,y-h/2,w,h);c.strokeStyle='#8ea0b0';c.lineWidth=Math.max(1,2*k);c.strokeRect(x-w/2,y-h/2,w,h);c.fillStyle='#e8c11c';[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(q=>c.fillRect(x+q[0]*w/2-(q[0]>0?pn:0),y+q[1]*h/2-(q[1]>0?pn:0),pn,pn));c.fillStyle='#000';c.fillRect(x-w*.12,y-4*k,w*.24,8*k)}
 // ---------- sim
 const D={walkin:.8,move:1.1,place:.8,lock:.6,walkout:1.5};
@@ -1423,7 +1529,7 @@ lo=L0+.31*sz,hi=R0-.31*sz,fits=v=>v>=lo&&v<=hi,gap=.05*sz,pref=sx-eF*(tw/2+gap),
 xs=fits(pref)?pref:fits(alt)?alt:(lo>hi?(L0+R0)/2:Math.max(lo,Math.min(hi,pref))),sF=sx>xs+1?1:sx<xs-1?-1:eF,
 loW=L0+(eF>0?.31:.5)*sz,hiW=R0-(eF>0?.5:.31)*sz,st=eF>0?Math.min(loW,hiW):Math.max(loW,hiW),off=eF>0?L0-.6*sz:R0+.6*sz,
 m=crew.length&&sm.m>=0?crew[sm.m%crew.length]:['','#e0ac69',null,'#2b1d14'],ss=q=>q*q*(3-2*q),wd=.75,SIDE=.3,A=(f,b)=>f>0?b:Math.PI-b,
-yy=Math.max(T0+(S.tstyle=='Cartoon'?1.06:.99)*sz,Math.min(B0-.045*sz,sy));
+yy=Math.max(T0+(S.tstyle=='Cartoon'||S.tstyle=='Character pack'?1.06:.99)*sz,Math.min(B0-.045*sz,sy));
 // stands beside the slot (on the side he walked in from, unless the wall edge is in the way) and faces it, so both hands stay visible
 let x=xs,ang=A(eF,wd),mv=0,carry=false,u=0,tx=0,ty=0,ts=1,showTile=false;
 if(sm.ph=='walkin'){x=off+(st-off)*p;mv=1;carry=true}
@@ -1439,7 +1545,7 @@ else if(sm.ph=='lock'){tx=sx;ty=cy;showTile=true}
 c.save();c.beginPath();c.rect(L0,T0,R0-L0,B0-T0);c.clip();
 if(showTile)cab(c,tx,ty,{tw,th},ts);
 let hands=null;if(showTile){const hw=tw*ts/2,top=ty-th*ts/2,ins=Math.min(.045*sz,hw*.45,th*ts*.45),j=sm.ph=='lock'?Math.sin(sm.t*40)*.006*sz:0;hands=[[tx-hw+ins,top+ins+j],[tx+hw-ins,top+ins-j]]}
-drawTech(c,x,yy,sz,{th:ang,mv,ph:sm.ph,p,ix:crew.length&&sm.m>=0?sm.m%crew.length:0,g:x/(sz*.2),u,m,carry,lock:sm.ph=='lock',shake:Math.sin(sm.t*40),hands});
+drawTech(c,x,yy,sz,{th:ang,mv,ph:sm.ph,p,prog:k/Math.max(1,N),ix:crew.length&&sm.m>=0?sm.m%crew.length:0,g:x/(sz*.2),u,m,carry,lock:sm.ph=='lock',shake:Math.sin(sm.t*40),hands});
 c.restore()}
 function vpDraw(){const r=vp.getBoundingClientRect(),d=devicePixelRatio||1;if(vp.width!=r.width*d||vp.height!=r.height*d){vp.width=r.width*d;vp.height=r.height*d}
 const c=vc,z=V.z;c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,r.width,r.height);
@@ -2118,7 +2224,7 @@ const SKEY='tilesmith-state-v1',SKIP=['patImg','boxImg','play'];let saveT=null;
 function stFile(){const path=require('path');const d=MAC?path.join(require('os').homedir(),'Library','Application Support','TileSmith'):LIN?path.join(process.env.XDG_CONFIG_HOME||path.join(require('os').homedir(),'.config'),'TileSmith'):path.join(process.env.APPDATA||require('os').homedir(),'TileSmith');return{d,f:path.join(d,'state.json')}}
 // Everything that makes up the project (settings, every wall, wiring, half tiles, the selected wall, uploaded images, the crew and the vest logo); images are stored as data URLs.
 const serW=ws=>ws.map(w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?(w[k]&&w[k].__src||null):w[k]);return x});
-function stateObj(){storeWall();cvStore();const o={sv:23,S:{},walls:serW(walls),cur,ac:cc,cvs:CVS.map((c,i)=>({name:c.name,cw:i==cc?S.cw:c.cw,ch:i==cc?S.ch:c.ch,cur:i==cc?cur:c.cur,walls:i==cc?null:serW(c.walls)})),crew:crew.map(c=>[c[0],c[1],c[2]&&c[2].__src||null,c[3]]),logo:logoImg&&logoImg.__src||null,dvd:dvdImg&&dvdImg.__src||null,ut:(()=>{const u={};utInit();(CVS.length?CVS.flatMap((c,i)=>i==cc?walls:c.walls):walls).forEach(w=>{if(UT[w.preset])u[w.preset]=UT[w.preset]});if(UT[S.preset])u[S.preset]=UT[S.preset];return u})()};for(const k in S)if(!SKIP.includes(k))o.S[k]=S[k];return o}
+function stateObj(){storeWall();cvStore();const o={sv:23,S:{},walls:serW(walls),cur,ac:cc,cvs:CVS.map((c,i)=>({name:c.name,cw:i==cc?S.cw:c.cw,ch:i==cc?S.ch:c.ch,cur:i==cc?cur:c.cur,walls:i==cc?null:serW(c.walls)})),crew:crew.map(c=>[c[0],c[1],c[2]&&c[2].__src||null,c[3],c[4]||'']),logo:logoImg&&logoImg.__src||null,dvd:dvdImg&&dvdImg.__src||null,ut:(()=>{const u={};utInit();(CVS.length?CVS.flatMap((c,i)=>i==cc?walls:c.walls):walls).forEach(w=>{if(UT[w.preset])u[w.preset]=UT[w.preset]});if(UT[S.preset])u[S.preset]=UT[S.preset];return u})()};for(const k in S)if(!SKIP.includes(k))o.S[k]=S[k];return o}
 function saveNow(){if(window.__noSave)return;let o;try{o=stateObj()}catch(e){return}
 const w=obj=>{const j=JSON.stringify(obj);if(DESK){const{d,f}=stFile(),fs=require('fs');fs.mkdirSync(d,{recursive:true});fs.writeFileSync(f,j)}else localStorage.setItem(SKEY,j)};
 try{w(o)}catch(e){try{o.walls.forEach(x=>{x.patImg=null;x.boxImg=null});(o.cvs||[]).forEach(c=>(c.walls||[]).forEach(x=>{x.patImg=null;x.boxImg=null}));o.logo=null;o.dvd=null;o.crew.forEach(c=>c[2]=null);w(o)}catch(e2){}}}
@@ -2167,7 +2273,7 @@ function newCanvas(){stopMarking();document.querySelectorAll('#left details').fo
  showAll();crewUI();sync();fit_if();fit();saveSoon();setTimeout(()=>unCheck('New Project'),0)}
 function stopMarking(){halfEdit=false}
 // ---------- Save / Open project: one .tilesmith file (JSON) with everything, including uploaded logos, patterns, DVD image and the crew
-function saveProject(){let o;try{o=stateObj();o.rc=rcForProject()}catch(e){toast('Could not save the project: '+(e.message||e),6000);return}
+function saveProject(){let o;try{o=stateObj();o.rc=rcForProject();o.pk=pkForProject()}catch(e){toast('Could not save the project: '+(e.message||e),6000);return}
  const z=n=>String(n).padStart(2,'0'),d=new Date(),name=`TileSmith-project-${d.getFullYear()}${z(d.getMonth()+1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}.tilesmith`;
  dl(new Blob([JSON.stringify(Object.assign({format:'TileSmith project',saved:d.toISOString()},o))],{type:'application/json'}),name);if(!MOBILE)toast('Saved '+name,4000)}
 function openProjectAsk(f){const rd=new FileReader();rd.onerror=()=>toast('Could not read '+f.name,6000);rd.onload=()=>{let o;try{o=JSON.parse(rd.result)}catch(e){}
@@ -2187,9 +2293,9 @@ function applyState(o){const nm0='Canvas 1';applyCore(o);const LIMc=(k,v)=>Math.
    if(Array.isArray(x.walls)&&x.walls.length){applyCore({sv:o.sv,S:{},walls:x.walls,cur:x.cur});ws=walls;c0=cur}list.push(cvMake(nm,LIMc('cw',x.cw),LIMc('ch',x.ch),ws,c0))});
   walls=A.walls;cur=A.cur;WK.forEach(k=>S[k]=sk[k]);list[ac]=cvFromGlobals(String(o.cvs[ac]&&o.cvs[ac].name||'Canvas '+(ac+1)).slice(0,40));CVS=list;cc=ac;CVS.forEach((c,i)=>{if(i!=cc)withCv(i,()=>showAll())})}
  else{CVS=[cvFromGlobals(nm0)];cc=0}}
-function applyCore(o){{utFromProject(o);rcFromProject(o);if(o.S&&typeof o.S.pdist=='string')o.S.pdist=o.S.pdist!='None';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}
+function applyCore(o){{utFromProject(o);rcFromProject(o);pkFromProject(o);if(o.S&&typeof o.S.pdist=='string')o.S.pdist=o.S.pdist!='None';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}
 const mk=src=>{if(!src)return null;const im=new Image();im.__src=src;im.onload=()=>{forceRen=true};im.src=src;return im};
-if(Array.isArray(o.crew)&&o.crew.length)crew=o.crew.map((c,i)=>[String(c[0]||''),c[1]||'#e0ac69',mk(c[2]),c[3]||HAIR[i%HAIR.length]]);
+if(Array.isArray(o.crew)&&o.crew.length)crew=o.crew.map((c,i)=>[String(c[0]||''),c[1]||'#e0ac69',mk(c[2]),c[3]||HAIR[i%HAIR.length],String(c[4]||'')]);
 if(o.logo)logoImg=mk(o.logo);if(o.dvd){dvdImg=mk(o.dvd);dvdImg.__id=++imgId}
 if(Array.isArray(o.walls)&&o.walls.length){walls=o.walls.map(x=>{const w=wallFromS();for(const k of WK){if(k=='patImg'||k=='boxImg'){w[k]=mk(x[k]);if(w[k])w[k].__id=++imgId;continue}
  if(k in x&&typeof x[k]==typeof w[k]&&Array.isArray(x[k])==Array.isArray(w[k])){let v=x[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}w[k]=v}}return w});walls.forEach(w=>{const q=P[w.preset];if(q)[w.wmm,w.hmm,w.tw,w.th,w.pitch,w.kg,w.wmax,w.dmm]=q;
@@ -2205,5 +2311,5 @@ function resetSaved(){window.__noSave=true;try{if(DESK){const{f}=stFile();requir
 addEventListener('beforeunload',saveNow);addEventListener('pagehide',saveNow);document.addEventListener('visibilitychange',()=>{if(document.hidden)saveNow()});
 $('#rst').onclick=()=>{if(confirm('Reset all saved settings, crew and uploads to defaults?'))resetSaved()};
 CVS=[cvFromGlobals('Canvas 1')];cc=0;loadState();if(!PROC.hasOwnProperty(S.proc))S.proc='None';if(SHK=='Spout'&&!shGpus().includes(S.shGpu))S.shGpu='Automatic';if(procOn()&&!S.ppx&&PROC[S.proc].px)applySpec();
-build();outInit();tpPlace();rcInit();showAll();CVS.forEach((c,i)=>{if(i!=cc){c.M.width=c.cw;c.M.height=c.ch}});M.width=S.cw;M.height=S.ch;fit();unBase();unUI();requestAnimationFrame(loop);addEventListener('resize',()=>{fit();ddClose()});$('#bar').addEventListener('scroll',ddClose,{passive:true});
+build();outInit();tpPlace();rcInit();pkInit();showAll();CVS.forEach((c,i)=>{if(i!=cc){c.M.width=c.cw;c.M.height=c.ch}});M.width=S.cw;M.height=S.ch;fit();unBase();unUI();requestAnimationFrame(loop);addEventListener('resize',()=>{fit();ddClose()});$('#bar').addEventListener('scroll',ddClose,{passive:true});
 </script></body></html>

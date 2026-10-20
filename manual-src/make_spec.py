@@ -47,7 +47,7 @@ KEYDESC = {
  'lblJump': 'Also print labels for the tile-to-tile links (data and power jumpers).',
  'lblKeep': 'Sheets: keep the two ends of one cable in the same row (pad with a blank cell).',
  'shGpu': 'Spout graphics card (Windows): Automatic (the high-performance card) or a card name from the list. The receiver must be on the same card.',
- 'hat': 'Technician hard hat colour.', 'vest': 'Technician vest colour.', 'logo': 'Vest logo text.', 'tstyle': 'Technician character style: Classic or Cartoon.', 'cd': 'Show crew details editor and name tags.', 'play': 'Build animation playing (not saved).',
+ 'hat': 'Technician hard hat colour.', 'vest': 'Technician vest colour.', 'logo': 'Vest logo text.', 'tstyle': 'Technician character style: Classic, Cartoon or Character pack.', 'tpack': 'Selected character pack (id in the on-device pack library).', 'cd': 'Show crew details editor and name tags.', 'play': 'Build animation playing (not saved).',
  # per wall
  'half': 'Legacy half-tile marks from v3.2 previews ([col,row,side]); converted to "lay" on load.',
  'gone': 'Removed tiles on a plain grid: list of [col,row].',
