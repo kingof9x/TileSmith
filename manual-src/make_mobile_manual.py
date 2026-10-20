@@ -186,7 +186,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p>Under <b>LED build</b> tap <b>Start</b> and a technician builds each wall tile by tile. He walks in carrying the tile, lifts it into its slot and locks it with a flash, then walks off while the next crew member brings the next tile. Each tile takes about 4.8 seconds at Speed 1. Several walls are built at the same time, each starting 0.6 s after the one before.</p>
 {img('anim-build-strip.png', 'One tile, every 0.2 s')}
 <div class="side"><div><h2>LED build</h2><p><b>Start</b>, <b>Stop</b> (shows the finished walls), <b>Reset</b> and <b>Play / Pause</b>. <b>Speed</b> (0.25× to 5×). <b>Loop build</b> restarts after <b>Pause before restart</b> seconds, which is handy on a display.</p>
-<h2>Technician</h2><p>Choose the hard hat and vest colours and the vest logo text, or upload a logo. With <b>Crew details &amp; name tags</b> on, each crew member has a name, skin tone, hair colour and an optional face photo, and wears a name tag. The crew take turns.</p></div>{img('ui-technician.png', 'Technician', maxh='140mm')}</div>
+<h2>Technician</h2><p>Pick a <b>Character style</b>: Classic, Realistic, Cartoon or Anime. Choose the hard hat and vest colours and the vest logo text, or upload a logo. With <b>Crew details &amp; name tags</b> on, each crew member has a name, skin tone, hair colour and an optional face photo, and wears a name tag. The crew take turns.</p></div>{img('ui-technician.png', 'Technician', maxh='140mm')}</div>
 {img('anim-tech-looks.png', 'Hard hat, vest and logo options')}</section>
 
 <section class="chap"><h1>13. DVD screensaver</h1>

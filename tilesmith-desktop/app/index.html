@@ -343,13 +343,14 @@ const HALF={'Owl Vision Black Owl 3.9 500×1000':['Owl Vision Black Owl 3.9','h'
 const R={'1080p Full HD':[1920,1080],'4K UHD':[3840,2160],'2K DCI':[2048,1080],'4K DCI':[4096,2160],'720p HD':[1280,720],'32:9 Banner':[3840,1080]};
 const S={cw:1920,ch:1080,ox:0,oy:0,cols:6,rows:4,preset:'Unilumin UpadIV 2.6',tw:192,th:192,wmm:500,hmm:500,dmm:70,kg:6.3,wmax:120,pitch:2.6,
 bc:'#22d3ee',bt:3,rcfg:'',pat:'tileshade',tpos:true,half:[],gone:[],lay:{},gx:0,gy:0,ids:true,addr:false,mm:false,speed:1,dvdOn:false,dvdSrc:'TileSmith logo',dvdText:'TILESMITH',dvdArea:'Each LED wall',dvdSize:20,dvdSpeed:1,dvdCorner:10,dvdTint:true,dvdLoop:false,dvdLoopLen:30,dvdLoopCorners:true,rcard:'any',procAll:false,vIntro:5,vHold:10,vLed:true,vDvd:false,vCodec:'HAP (.mov)',hapFmt:'hap',name:'LED Wall',corner:'Top-left',dir:'Horizontal',wmode:'None',wcorner:'Top-left',wdir:'Horizontal',wfill:'Fewest ports',wman:[],pmode:'None',pcorner:'Top-left',pwdir:'Horizontal',pfill:'Fewest circuits',plink:0,pman:[],proc:'None',fps:60,bpc:8,ull:false,ppx:0,pports:0,ret:true,showData:true,pdist:false,pvolt:120,pamps:20,derate:true,showPow:true,resSl:'One slice per LED wall',pfit:'Stretch to wall',pdir:'none',pspd:1,patImg:null,loop:false,loopHold:3,shadeC:'#3f8080',boxMode:'Nothing',boxText:'',boxCol:'#ffffff',boxImg:null,
-ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblPow:'Cable and circuit labels',pdt:'Socapex (6 circuits per cable)',pwall:0,pwallA:20,lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',logo:'TILESMITH',cd:true,play:true};
+ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblPow:'Cable and circuit labels',pdt:'Socapex (6 circuits per cable)',pwall:0,pwallA:20,lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',tstyle:'Classic',logo:'TILESMITH',cd:true,play:true};
 const LBL={'Avery 5160 (30 per US Letter sheet)':{pw:215.9,ph:279.4,w:66.675,h:25.4,c:3,r:10,x:4.76,y:12.7,gx:3.175,gy:0},
 'Avery 5163 (10 per US Letter sheet)':{pw:215.9,ph:279.4,w:101.6,h:50.8,c:2,r:5,x:3.97,y:12.7,gx:4.76,gy:0},
 'Avery L7160 (21 per A4 sheet)':{pw:210,ph:297,w:63.5,h:38.1,c:3,r:7,x:7.21,y:15.15,gx:2.54,gy:0},
 'Label roll 62 x 29 mm (one per page)':{pw:62,ph:29,w:62,h:29,c:1,r:1,x:0,y:0,gx:0,gy:0,roll:1},
 'Wrap-around strip 100 x 30 mm (one per page)':{pw:100,ph:30,w:100,h:30,c:1,r:1,x:0,y:0,gx:0,gy:0,roll:1},
 'Custom label roll (one per page)':{roll:1,custom:1}};
+const TSTY=['Classic','Realistic','Cartoon','Anime'],TKEY={Realistic:'real',Cartoon:'toon',Anime:'anime'};
 const HAIR=['#2b1d14','#4a3020','#6b4a2b','#14100c','#0f0f0f','#1c1410'];
 const defCrew=()=>[['Marcus','#8d5524'],['Elena','#e0ac69'],['David','#f1c27d'],['Chen','#ffdbac'],['Priya','#c68642'],['Malik','#5c3a21']].map((c,i)=>[c[0],c[1],null,HAIR[i]]);
 let crew=defCrew();
@@ -531,7 +532,7 @@ ${F('dvdArea','Bounce inside','select',['Each LED wall','Whole canvas'],'w')}${F
 ${F('dvdCorner','Corner hit chance <b id="dvdCv"></b>','range','min=0 max=100 step=1','w')}${F('dvdTint','Change color on each bounce','check')}
 <div id="dvdCornerNote" class="w" style="color:var(--mu);font-size:12px">How often the logo lands exactly in a corner. At 100% about 45 of every 100 bounces are corners; at 0% the logo is steered so it never touches one.</div><div id="dvdStat" class="w" style="font-size:12px"></div>${F('dvdLoop','Perfect loop (repeats exactly, for video)','check')}<div id="dvdLoopBox" class="g w">${F('dvdLoopLen','Loop length (s)','number','min=4 max=600 step=1')}${F('dvdLoopCorners','Include corner hits','check')}<div class="w" style="color:var(--mu);font-size:12px">The logo ends exactly where, and in the colour, it started. Speed is adjusted slightly so the loop closes. The loop video shows the walls fully built, holds moving patterns and Scroll still so it repeats seamlessly, and uses the Format chosen under Video export (60 fps).</div><div class="w desk-only" style="color:var(--mu);font-size:12px">To save the loop as a video, tick <b>DVD logo</b> under Video export and press Export video.</div></div></div>`)}
 ${SUB('LED build',`<div class="row" id="bctl">${B('rs','Start')}${B('bstop','Stop')}${B('brst','Reset')}${B('pp','Pause')}</div><div style="color:var(--mu);font-size:12px">Start builds from the first tile. Stop ends the build and shows the finished walls. Reset clears the walls. Play / Pause freezes the build and carries on from the same spot.</div><div class="g">${F('loop','Loop build continuously','check')}${F('loopHold','Pause before restart (s)','number','min=0 max=600 step=0.5','w')}${F('speed','Speed 0.25–5×','range','min=0.25 max=5 step=0.25','w')}</div>
-${SUB('Technician',`<div class="g">${F('hat','Hard hat','select',['#ffcc00','#ffffff','#2563ff','#ff7a00'])}${F('vest','Vest','select',['#b6ff00','#ff6a00','#f5e800'])}${F('logo','Vest logo text','text','','w')}<label class="w">Upload logo (PNG/SVG/JPG)<input type="file" id="lf" accept="image/*"></label></div>
+${SUB('Technician',`<div class="g">${F('tstyle','Character style','select',TSTY,'w')}${F('hat','Hard hat','select',['#ffcc00','#ffffff','#2563ff','#ff7a00'])}${F('vest','Vest','select',['#b6ff00','#ff6a00','#f5e800'])}${F('logo','Vest logo text','text','','w')}<label class="w">Upload logo (PNG/SVG/JPG)<input type="file" id="lf" accept="image/*"></label></div>
 ${F('cd','Crew details & name tags','check')}<div id="crew"></div>`)}`)}
 ${SUB('Video export',`<div class="g">${F('vLed','LED build (blank intro, the build, final hold)','check')}<span class="w desk-only">${F('vDvd','DVD logo (one perfect loop)','check')}</span></div><div id="vdvdNote" class="desk-only" style="color:#e5a000;font-size:12px"></div><div class="g">${F('vIntro','Blank intro (s)')}${F('vHold','Final hold (s)')}${F('vCodec','Format','select',Object.keys(VCODEC),'w desk-only')}${F('hapFmt','HAP type','select',['hap','hap_alpha','hap_q'],'w desk-only')}</div><div id="vcn" class="desk-only" style="color:var(--mu);font-size:12px"></div><div class="mob-only" style="color:var(--mu)">This device records the video as H.264 MP4 with its own encoder, in real time: keep TileSmith open while it records (the screen stays on). When it finishes, pick where to save or send it (Files, Photos, Drive, AirDrop, e-mail…). Video = intro + live build + hold.<br>Estimated length: <b id="vestm" style="color:var(--tx)"></b></div><div class="desk-only" style="color:var(--mu)">Saves the video (60 fps, desktop app) to your Videos folder (Windows) or Movies folder (Mac), in a TileSmith subfolder. Video = intro + live build + hold. Build time follows tile count and Speed (under LED build); with several walls the slowest wall sets the length. With both boxes ticked you get two files, the LED build first and then the DVD logo loop.<br>Estimated length: <b id="vest" style="color:var(--tx)"></b></div><div class="row">${B('rec','Export video')}</div><div id="vexps" style="font-size:12px;color:var(--mu)"></div>`)}
 ${SUB('NDI® options',`<div class="g">${F('ndiName','NDI® source name','text','','w')}${F('ndiFps','Frame rate','select',['60','59.94','50','30','29.97','25'],'w')}${F('ndiIdle','Save CPU while the picture is still','check')}</div><div style="color:var(--mu)">Lower frame rates use less CPU. With "Save CPU" on, a still picture is sent about 4 times a second instead of at the full rate; most receivers hold the last frame, but leave it off if one of yours flags a low frame rate.</div><div style="color:var(--mu);font-size:12px">Desktop app only. Start and stop NDI® with the <b>Start NDI®</b> button in the top bar or here. A new source name applies the next time NDI® starts; frame rate and Save CPU apply right away.</div><div class="row">${B('ndi','Start NDI®')}</div><div id="ndis" style="color:var(--mu)"></div><div style="color:var(--mu);font-size:11px">NDI® is a registered trademark of Vizrt NDI AB · <a class="ext" href="https://ndi.video/" target="_blank" rel="noopener">ndi.video</a> · <a class="ext" href="https://ndi.video/tools/" target="_blank" rel="noopener">NDI® Tools</a></div>`,0,'desk-only')}
@@ -809,7 +810,7 @@ function seqRC(w,k){const C=w.cols,R=w.rows;let c,r;if(w.dir=='Vertical'){c=Math
 const PC=['#ff4d4d','#4dff88','#4da6ff','#ffd24d','#d24dff','#4dfff0','#ff944d','#b0ff4d'];
 // ---------- worker
 const STY={hr:.1,hy:.1,vb:1,W:1.05,arm:1,leg:1,out:0,face:1,eye:1,blush:0,tools:0,nolabel:0,shirt:'#2b6cb0',pants:'#1f2937',glove:'#fb923c'};
-function drawTech(c,x,y,s,o){worker(c,x,y,s,o)}
+function drawTech(c,x,y,s,o){const k=TKEY[S.tstyle];if(k)workerStyled(c,x,y,s,o,k);else worker(c,x,y,s,o)}
 function sh(h,k){const n=parseInt(h.slice(1),16);return `rgb(${Math.round((n>>16)*k)},${Math.round((n>>8&255)*k)},${Math.round((n&255)*k)})`}
 function rr(c,x,y,w,h,r){c.beginPath();c.roundRect(x,y,w,h,r)}
 function worker(c,x,y,s,o){const th=o.th,Sn=Math.sin(th),Cs=Math.cos(th),F=Math.abs(Sn),Sd=Math.abs(Cs),L=Cs<0?-1:1,mv=o.mv,m=o.m,sk=m[1],hair=m[3]||'#2b1d14',back=Sn<-.1,
@@ -866,6 +867,144 @@ c.lineWidth=lw;c.strokeStyle=ol;c.fillStyle=S.hat;c.beginPath();c.ellipse(hx,hy-
 rr(c,hx-hr*1.22,hy-hr*.2,hr*2.44+.07*s*Sd,hr*.22,hr*.1);c.fill();c.stroke();
 c.fillStyle='rgba(255,255,255,.3)';rr(c,hx-hr*.12,hy-hr*1.12,hr*.24,hr*.9,hr*.1);c.fill();c.fillStyle='rgba(255,255,255,.35)';c.beginPath();c.ellipse(hx-hr*.5,hy-hr*.75,hr*.18,hr*.1,-.5,0,7);c.fill();
 if(!back){c.save();c.scale(1,st.vb);arm(0);c.restore()}c.restore()}
+// ---------- technician character styles (Classic = worker() above; the three below share its pose and reach)
+const STYS={
+ real:{hr:.076,hy:.078,W:1,arm:.95,leg:1,out:.5,ol:'#0f1620',shirt:'#3a4656',pants:'#3a4152',glove:'#2a2a2e',bob:.013,sw:.5,lean:.05},
+ toon:{hr:.14,hy:.105,W:1.2,arm:1.3,leg:1.3,out:2,ol:'#1b1030',shirt:'#3b82f6',pants:'#7c3aed',glove:'#ffffff',bob:.04,sw:.8,lean:.1},
+ anime:{hr:.094,hy:.09,W:.88,arm:.78,leg:.82,out:.8,ol:'#2a2140',shirt:'#e8eef6',pants:'#2f3b63',glove:'#f1f5f9',bob:.016,sw:.55,lean:.04}};
+// per crew member (by position in the crew list): hair style and facial hair, so people look different
+const HSTY=[{h:'short',b:2},{h:'pony',b:0},{h:'side',b:1},{h:'spike',b:0},{h:'braid',b:0},{h:'curly',b:2}];
+const IRIS={real:['#5a3a22','#3f6b4f','#4a78a8','#6b4a2a','#7a5a2b','#2a2a2a'],anime:['#e74c3c','#16c79a','#3b82f6','#a855f7','#f59e0b','#06b6d4'],toon:['#1a1a1a','#1a1a1a','#1a1a1a','#1a1a1a','#1a1a1a','#1a1a1a']};
+function workerStyled(c,x,y,s,o,k){
+ const st=STYS[k],th=o.th,Sn=Math.sin(th),Cs=Math.cos(th),F=Math.abs(Sn),Sd=Math.abs(Cs),L=Cs<0?-1:1,mv=o.mv,m=o.m,sk=m[1],hair=m[3]||'#2b1d14',back=Sn<-.1,ix=(o.ix||0)%6,hs=HSTY[ix],
+ W=(.15+.2*F)*s*st.W,ol=st.ol,lw=Math.max(.5,.009*s*st.out),shirt=st.shirt,pants=st.pants,glove=st.glove,
+ bob=Math.abs(Math.sin(o.g))*st.bob*s*mv+Math.sin(T*2)*.004*s,sq=k=='toon'&&!o.hands?Math.sin(o.g*2)*.05*mv:0;
+ c.save();c.lineJoin='round';c.lineCap='round';c.lineWidth=lw;c.strokeStyle=ol;
+ c.save();c.translate(x,y);c.fillStyle='rgba(0,0,0,.3)';c.beginPath();c.ellipse(0,0,.2*s*(.55+.45*F)*(k=='toon'?1.2:1),.028*s,0,0,7);c.fill();c.restore();
+ c.translate(x,y-bob);c.scale(L*(1-sq*.6),1+sq);
+ const HS=o.hands?o.hands.map(h=>[(h[0]-x)*L,h[1]-(y-bob)]).sort((p,q)=>p[0]-q[0]):null;
+ const grad=(col,w)=>{const q=c.createLinearGradient(-w/2,0,w/2,0);q.addColorStop(0,sh(col,.8));q.addColorStop(.4,col);q.addColorStop(1,sh(col,.68));return q};
+ const leg=i=>{const ph=o.g+i*Math.PI,a=Math.sin(ph)*st.sw*mv*Sd,bd=Math.max(0,-Math.sin(ph+.7))*.8*mv*Sd,lg=st.leg;c.save();c.translate((i?1:-1)*.07*s*F*st.W,-.37*s);c.rotate(a);
+  c.fillStyle=k=='real'?grad(pants,.1*s*lg):pants;rr(c,-.048*s*lg,-.02*s,.096*s*lg,.22*s,.03*s);c.fill();c.stroke();
+  if(k=='anime'){c.fillStyle='rgba(15,10,50,.22)';rr(c,.004*s,-.02*s,.04*s*lg,.22*s,.02*s);c.fill()}
+  c.translate(0,.19*s);c.rotate(bd);c.fillStyle=k=='real'?grad(pants,.09*s*lg):pants;rr(c,-.042*s*lg,0,.084*s*lg,.19*s,.025*s);c.fill();c.stroke();
+  if(k=='real'){c.fillStyle='#262c38';rr(c,-.046*s,-.04*s,.092*s,.075*s,.02*s);c.fill();c.stroke();c.strokeStyle='rgba(255,255,255,.14)';c.beginPath();c.moveTo(0,.04*s);c.lineTo(0,.14*s);c.stroke();c.strokeStyle=ol}
+  const bx=-.05*s+.02*s*Sd;
+  if(k=='real'){c.fillStyle='#2b2420';rr(c,bx,.145*s,.13*s,.055*s,.02*s);c.fill();c.stroke();c.fillStyle='#0d0d0d';c.fillRect(bx,.192*s,.13*s,.016*s);c.strokeStyle='#b9b4aa';c.lineWidth=Math.max(.5,.004*s);for(let j=0;j<3;j++){c.beginPath();c.moveTo(bx+.005*s,.152*s+j*.01*s);c.lineTo(bx+.06*s,.152*s+j*.01*s);c.stroke()}c.lineWidth=lw;c.strokeStyle=ol}
+  else if(k=='toon'){c.fillStyle='#f97316';rr(c,bx-.015*s,.13*s,.17*s,.075*s,.036*s);c.fill();c.stroke();c.fillStyle='#fff';rr(c,bx-.015*s,.188*s,.17*s,.022*s,.01*s);c.fill();c.stroke()}
+  else{c.fillStyle='#3a2f55';rr(c,bx,.14*s,.12*s,.06*s,.025*s);c.fill();c.stroke();c.fillStyle='rgba(180,170,255,.55)';c.fillRect(bx+.012*s,.15*s,.05*s,.008*s)}
+  c.restore()};
+ const arm=i=>{const ax=(i?1:-1)*W/2*.9,ay=-.69*s,l1=.16*s,l2=.155*s;let a1,a2,kk=1;const tg=HS&&HS[i];
+  if(tg){const dx=tg[0]-ax,dy=tg[1]-ay,len=Math.max(.06*s,Math.hypot(dx,dy)),a0=Math.atan2(dx,dy);
+   if(len>=(l1+l2)*.999){kk=Math.min(1.5,len/(l1+l2));a1=a2=a0}
+   else{const al=Math.acos(Math.max(-1,Math.min(1,(l1*l1+len*len-l2*l2)/(2*l1*len)))),t=Math.cos(a0+al)>=Math.cos(a0-al)?a0+al:a0-al;a1=t;a2=Math.atan2(dx-Math.sin(t)*l1,dy-Math.cos(t)*l1)}}
+  else{let a=Math.sin(o.g+i*Math.PI+Math.PI)*(st.sw+.1)*mv*Sd;if(o.carry)a=1.25+o.u*1.6;if(o.lock)a=2.85+o.shake*.1;a1=a2=a}
+  const u1=l1*kk,u2=l2*kk,ar=st.arm;
+  c.save();c.translate(ax,ay);c.rotate(-a1);c.fillStyle=shirt;rr(c,-.036*s*ar,-.02*s,.072*s*ar,u1+.04*s,.03*s);c.fill();c.stroke();
+  c.translate(0,u1);c.rotate(-(a2-a1));rr(c,-.031*s*ar,-.02*s,.062*s*ar,u2+.005*s,.026*s);c.fill();c.stroke();
+  if(k=='real'){c.fillStyle='rgba(0,0,0,.25)';c.fillRect(-.031*s*ar+lw/2,u2*.72,.062*s*ar-lw,.02*s)}
+  const gr=(k=='toon'?.052:k=='anime'?.032:.036)*s*ar/(k=='toon'?1.3:1);
+  c.fillStyle=glove;c.beginPath();c.arc(0,u2,gr,0,7);c.fill();c.stroke();
+  if(k=='toon'){c.beginPath();c.moveTo(-gr*.5,u2+gr*.45);c.lineTo(-gr*.5,u2+gr*.95);c.moveTo(gr*.1,u2+gr*.55);c.lineTo(gr*.1,u2+gr);c.stroke()}
+  if(k=='real'){c.strokeStyle='rgba(255,255,255,.2)';c.beginPath();c.moveTo(-gr*.6,u2+gr*.1);c.lineTo(gr*.6,u2+gr*.1);c.stroke();c.strokeStyle=ol}
+  c.restore()};
+ c.save();leg(1);leg(0);arm(1);if(back)arm(0);
+ c.save();c.translate(0,-.37*s);c.rotate(st.lean*mv);c.translate(0,.37*s);
+ c.fillStyle=k=='real'?grad(shirt,W):shirt;rr(c,-W/2,-.74*s,W,.4*s,.05*s);c.fill();c.stroke();
+ c.fillStyle=k=='real'?grad(S.vest,W):S.vest;rr(c,-W/2,-.73*s,W,.36*s,.04*s);c.fill();c.stroke();
+ if(k=='anime'){c.save();rr(c,-W/2,-.73*s,W,.36*s,.04*s);c.clip();c.fillStyle='rgba(20,10,60,.2)';c.fillRect(W*.1,-.8*s,W,.5*s);c.fillStyle='rgba(255,255,255,.3)';c.fillRect(-W*.38,-.72*s,W*.07,.34*s);c.restore()}
+ if(k=='toon'){c.save();rr(c,-W/2,-.73*s,W,.36*s,.04*s);c.clip();c.fillStyle='rgba(255,255,255,.28)';c.fillRect(-W*.42,-.72*s,W*.1,.34*s);c.restore()}
+ if(Sn>.2){c.fillStyle=shirt;c.beginPath();c.moveTo(-.05*s*F,-.73*s);c.lineTo(.05*s*F,-.73*s);c.lineTo(0,-.64*s);c.closePath();c.fill();c.stroke();c.beginPath();c.moveTo(0,-.64*s);c.lineTo(0,-.37*s);c.stroke()}
+ c.fillStyle='#d8dde2';c.fillRect(-W/2+lw,-.64*s,W-2*lw,.026*s);c.fillRect(-W/2+lw,-.47*s,W-2*lw,.026*s);
+ if(k=='real'){c.fillStyle='rgba(255,255,255,.35)';c.fillRect(-W/2+lw,-.64*s,W-2*lw,.008*s);c.fillRect(-W/2+lw,-.47*s,W-2*lw,.008*s);
+  c.fillStyle='#16191f';c.fillRect(-W/2,-.385*s,W,.03*s);
+  if(F>.3){c.fillStyle='#22262d';rr(c,W*.18,-.415*s,.055*s*F+.02*s,.1*s,.012*s);c.fill();c.stroke();c.fillStyle='#4b5563';rr(c,-W*.4,-.42*s,.04*s,.07*s,.008*s);c.fill();c.fillStyle='#111';c.fillRect(-W*.4+.012*s,-.445*s,.006*s,.03*s)}}
+ c.save();c.scale(L,1);
+ if(back&&F>.35){const bw=.3*s*F,bh=.12*s,by=-.612*s;if(logoImg){const r=Math.min(bw/logoImg.width,bh/logoImg.height);c.drawImage(logoImg,-logoImg.width*r/2,by+(bh-logoImg.height*r)/2,logoImg.width*r,logoImg.height*r)}
+  else if(S.logo){c.fillStyle='#111';c.font=`800 ${bh*.62}px sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(S.logo,0,by+bh/2,bw)}}
+ else if(S.cd&&m[0]&&Sn>-.1){const tw=.21*s*Math.max(F,.55),tt=.12*s,tx=L*Sd*W*.17,ty=-.64*s;
+  c.strokeStyle='#8a8f96';c.lineWidth=Math.max(1,.006*s);c.beginPath();c.moveTo(tx-tw*.3,-.73*s);c.lineTo(tx-tw*.12,ty);c.moveTo(tx+tw*.3,-.73*s);c.lineTo(tx+tw*.12,ty);c.stroke();
+  c.fillStyle='#fff';rr(c,tx-tw/2,ty,tw,tt,.012*s);c.fill();c.strokeStyle=ol;c.lineWidth=lw;c.stroke();c.fillStyle='#0a8f4d';c.fillRect(tx-tw/2+.004*s,ty+.004*s,tw-.008*s,.026*s);
+  c.fillStyle='#000';c.font=`800 ${.05*s}px sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(m[0],tx,ty+.078*s,tw*.9)}
+ c.restore();c.restore();c.restore();
+ // ---- head
+ const hr=st.hr*s,hx=.02*s*Sd,hy=-(.74+st.hy)*s,a=hr*.95,b=hr*1.05,sway=Math.sin(o.g*2)*mv;
+ c.lineWidth=lw;c.strokeStyle=ol;
+ // hair behind the head (ponytail, braid, long hair, curls)
+ c.fillStyle=hair;
+ if((hs.h=='pony'||hs.h=='braid')&&(back||F<.6)){const px=hx-a*(.55+.4*Sd)*(back?0:1)-a*.1,py=hy-hr*.05,len=(k=='toon'?.2:.25)*s*(hs.h=='braid'?1.15:1),sx=sway*.05*s;
+  if(hs.h=='pony'){c.beginPath();c.moveTo(px,py);c.bezierCurveTo(px-.07*s+sx,py+len*.3,px-.06*s+sx*1.6,py+len*.8,px-.02*s+sx*2,py+len);c.bezierCurveTo(px+.01*s+sx*1.5,py+len*.7,px+.03*s+sx,py+len*.3,px+.02*s,py);c.closePath();c.fill();c.stroke()}
+  else{for(let j=0;j<6;j++){const q=j/6;c.beginPath();c.ellipse(px+(-.012*s-sx*q*1.5)+Math.sin(j*1.3)*.006*s,py+len*q+hr*.1,.026*s*(1-q*.4),.028*s,0,0,7);c.fill();c.stroke()}}}
+ else if(hs.h=='curly'){for(const q of[-1,1])for(const r of[0,1]){c.beginPath();c.arc(hx+q*a*(.8-r*.05)*(F>.5?1:.6)-(F>.5?0:a*.2*q),hy+r*hr*.45-hr*.05,hr*.42,0,7);c.fill();c.stroke()}}
+ // neck
+ c.fillStyle=sh(sk,.82);rr(c,-(k=='real'?.026:.032)*s,-.76*s,(k=='real'?.052:.064)*s,.08*s,.015*s);c.fill();c.stroke();
+ c.fillStyle=sk;
+ const ear=ex=>{c.beginPath();c.ellipse(ex,hy+.012*s,hr*.22,hr*.3,0,0,7);c.fill();c.stroke()};
+ if(F>.6&&k!='anime'){ear(hx-a*.97);ear(hx+a*.97)}else if(Sd>.5&&k!='anime')ear(hx-a*(.1+.75*F));
+ const hp=()=>{c.beginPath();if(k=='anime'){c.moveTo(hx-a,hy);c.bezierCurveTo(hx-a,hy-b*1.35,hx+a,hy-b*1.35,hx+a,hy);c.bezierCurveTo(hx+a*.97,hy+b*.7,hx+a*.38,hy+b*1.18,hx,hy+b*1.3);c.bezierCurveTo(hx-a*.38,hy+b*1.18,hx-a*.97,hy+b*.7,hx-a,hy);c.closePath()}else c.ellipse(hx,hy,a,b,0,0,7)};
+ hp();c.fill();c.stroke();
+ if(Sd>.55&&!back&&k!='anime'){c.beginPath();c.ellipse(hx+a*.95*Sd,hy+hr*.2,hr*.16,hr*.2,0,0,7);c.fill();c.stroke()}
+ c.save();hp();c.clip();
+ if(k!='toon'){const q=c.createLinearGradient(hx-hr*1.1,0,hx+hr*(.1+.4*Sd),0),r=k=='anime'?'25,10,70':'0,0,0';q.addColorStop(0,`rgba(${r},.22)`);q.addColorStop(1,`rgba(${r},0)`);c.fillStyle=q;c.fillRect(hx-hr*1.2,hy-hr*1.5,hr*2.4,hr*3.2)}
+ // facial hair
+ if(!back&&hs.b&&k!='anime'&&Sn>-.1){c.fillStyle=hair;c.globalAlpha=hs.b==2?1:.3;c.beginPath();c.moveTo(hx-a*1.02,hy+hr*.05);c.bezierCurveTo(hx-a*.9,hy+b*1.1,hx+a*.9,hy+b*1.1,hx+a*1.02,hy+hr*.05);c.lineTo(hx+a*(F>.5?.6:.9),hy+hr*.35);c.bezierCurveTo(hx+a*.3,hy+hr*.5,hx-a*.3,hy+hr*.5,hx-a*(F>.5?.6:.9),hy+hr*.35);c.closePath();c.fill();c.globalAlpha=1}
+ // hair under the hat: back of the head always, plus a front/side shape by hair style
+ c.fillStyle=hair;
+ if(back)c.fillRect(hx-hr*1.1,hy-hr*1.2,hr*2.4,hr*2.6);
+ else{const hb=hs.h=='long'?hr*1.3:hs.h=='braid'||hs.h=='pony'?hr*.75:hs.h=='curly'?hr*.4:hr*.55;
+  const top=hy-hr*1.15,bot=hy+hr*.1+hb;c.beginPath();c.ellipse(hx-a*(.8-.2*Sd),(top+bot)/2,a*(.25+.45*Sd),(bot-top)/2,0,0,7);c.fill();
+  if(F>.5){c.beginPath();c.ellipse(hx+a*.85,(top+bot)/2-hb*.15,a*.22,(bot-top)/2-hb*.15,0,0,7);c.fill()}
+  if(Sn>.15){if(hs.h=='spike'||k=='anime'){c.beginPath();const n=k=='anime'?5:4,w0=(a*1.9)/n;for(let j=0;j<n;j++){const x0=hx-a+j*w0;c.moveTo(x0,hy-hr*.4);c.lineTo(x0+w0*.5,hy+hr*(k=='anime'?.42+(j%2)*.14:.3));c.lineTo(x0+w0,hy-hr*.4)}c.fill()}
+   else if(hs.h=='side'){c.beginPath();c.moveTo(hx-a,hy-hr*.3);c.lineTo(hx+a*.7,hy-hr*.3);c.quadraticCurveTo(hx+a*.1,hy+hr*.25,hx-a*.7,hy+hr*.12);c.closePath();c.fill()}
+   else{c.fillRect(hx-a,hy-hr*.4,a*2,hr*(k=='toon'?.25:.32))}}}
+ if(k=='anime'&&!back){c.beginPath();for(const q of[-1,1]){const x0=hx+q*a*(F>.5?.95:.7);c.moveTo(x0-q*hr*.05,hy-hr*.2);c.quadraticCurveTo(x0+q*hr*.25,hy+hr*.8,x0-q*hr*.12,hy+hr*1.15);c.quadraticCurveTo(x0-q*hr*.3,hy+hr*.5,x0-q*hr*.5,hy-hr*.1);c.closePath()}c.fill()}
+ c.restore();
+ hp();c.stroke();
+ // face
+ if(Sn>.15){c.save();c.scale(L,1);c.translate(L*(hx+hr*.3*Sd),hy+hr*.1);c.scale(.5+.5*F,1);
+  if(m[2]&&m[2].width){c.save();c.beginPath();c.ellipse(0,0,hr*.9,hr*1.0,0,0,7);c.clip();const q=Math.max(2*hr/m[2].width,2.1*hr/m[2].height);c.drawImage(m[2],-m[2].width*q/2,-m[2].height*q/2,m[2].width*q,m[2].height*q);c.restore()}
+  else{const lw2=Math.max(.8,.007*s),ic=IRIS[k][ix];c.lineWidth=lw2;c.lineCap='round';
+   if(k=='real'){
+    for(const e of[-1,1]){const ex=e*hr*.38,ey=-hr*.02;
+     c.fillStyle='#f4f1ec';c.beginPath();c.ellipse(ex,ey,hr*.2,hr*.1,0,0,7);c.fill();
+     c.fillStyle=ic;c.beginPath();c.arc(ex+hr*.03,ey,hr*.09,0,7);c.fill();c.fillStyle='#050505';c.beginPath();c.arc(ex+hr*.03,ey,hr*.045,0,7);c.fill();
+     c.strokeStyle=sh(sk,.5);c.beginPath();c.ellipse(ex,ey,hr*.2,hr*.1,0,Math.PI,2*Math.PI);c.stroke();
+     c.strokeStyle=hair;c.lineWidth=lw2*1.7;c.beginPath();c.moveTo(ex-hr*.22,ey-hr*.2);c.quadraticCurveTo(ex,ey-hr*.3,ex+hr*.22,ey-hr*.18);c.stroke();c.lineWidth=lw2}
+    c.strokeStyle=sh(sk,.6);c.beginPath();c.moveTo(hr*.02,-hr*.0);c.lineTo(hr*.1,hr*.3);c.lineTo(-hr*.04,hr*.34);c.stroke();
+    c.strokeStyle='#6b2f2f';c.beginPath();c.moveTo(-hr*.2,hr*.55);c.quadraticCurveTo(0,hr*.62,hr*.2,hr*.55);c.stroke()}
+   else if(k=='toon'){
+    for(const e of[-1,1]){const ex=e*hr*.36,ey=hr*.05;c.fillStyle='#fff';c.beginPath();c.ellipse(ex,ey,hr*.24,hr*.3,0,0,7);c.fill();c.lineWidth=lw*.55;c.stroke();
+     c.fillStyle='#1a1a1a';c.beginPath();c.arc(ex+hr*.05,ey+hr*.03,hr*.13,0,7);c.fill();c.fillStyle='#fff';c.beginPath();c.arc(ex+hr*.09,ey-hr*.03,hr*.05,0,7);c.fill();
+     c.strokeStyle=hair;c.lineWidth=lw*1.1;c.beginPath();c.moveTo(ex-hr*.26,ey-hr*.42);c.lineTo(ex+hr*.26,ey-hr*.36+e*hr*.06);c.stroke();c.strokeStyle=ol}
+    c.fillStyle='rgba(255,90,110,.45)';for(const e of[-1,1]){c.beginPath();c.ellipse(e*hr*.62,hr*.45,hr*.14,hr*.09,0,0,7);c.fill()}
+    c.fillStyle=sh(sk,.9);c.beginPath();c.ellipse(hr*.02,hr*.28,hr*.1,hr*.09,0,0,7);c.fill();c.lineWidth=lw*.7;c.stroke();
+    c.lineWidth=lw;c.fillStyle='#5b1a1a';c.beginPath();c.moveTo(-hr*.34,hr*.5);c.quadraticCurveTo(0,hr*.95,hr*.34,hr*.5);c.closePath();c.fill();c.stroke();c.fillStyle='#fff';c.beginPath();c.moveTo(-hr*.3,hr*.52);c.quadraticCurveTo(0,hr*.62,hr*.3,hr*.52);c.lineTo(hr*.28,hr*.6);c.quadraticCurveTo(0,hr*.7,-hr*.28,hr*.6);c.fill()}
+   else{
+    for(const e of[-1,1]){const ex=e*hr*.4,ey=hr*.05,ew=hr*.22,eh=hr*.34;
+     c.fillStyle='#fff';c.beginPath();c.ellipse(ex,ey,ew,eh,0,0,7);c.fill();
+     const q=c.createLinearGradient(0,ey-eh,0,ey+eh);q.addColorStop(0,sh(ic,.55));q.addColorStop(.6,ic);q.addColorStop(1,'#ffffff');
+     c.fillStyle=q;c.beginPath();c.ellipse(ex+hr*.02,ey+hr*.02,ew*.78,eh*.9,0,0,7);c.fill();c.fillStyle='#0b0b1a';c.beginPath();c.ellipse(ex+hr*.02,ey+hr*.03,ew*.36,eh*.46,0,0,7);c.fill();
+     c.fillStyle='#fff';c.beginPath();c.ellipse(ex+hr*.1,ey-hr*.12,ew*.26,eh*.2,0,0,7);c.fill();c.beginPath();c.arc(ex-hr*.07,ey+hr*.16,ew*.13,0,7);c.fill();
+     c.strokeStyle='#1c1230';c.lineWidth=lw2*2.2;c.beginPath();c.ellipse(ex,ey,ew,eh,0,Math.PI*1.05,Math.PI*1.95);c.stroke();c.lineWidth=lw2;
+     c.beginPath();c.moveTo(ex+e*ew,ey-eh*.3);c.lineTo(ex+e*(ew+hr*.12),ey-eh*.55);c.stroke();
+     c.strokeStyle=hair;c.lineWidth=lw2*1.4;c.beginPath();c.moveTo(ex-ew,ey-eh*1.15);c.quadraticCurveTo(ex,ey-eh*1.4,ex+ew,ey-eh*1.2);c.stroke();c.lineWidth=lw2}
+    c.fillStyle='rgba(255,120,130,.4)';for(const e of[-1,1]){c.beginPath();c.ellipse(e*hr*.68,hr*.55,hr*.16,hr*.08,0,0,7);c.fill()}
+    c.strokeStyle=sh(sk,.6);c.beginPath();c.moveTo(hr*.02,hr*.4);c.lineTo(hr*.07,hr*.5);c.stroke();
+    c.strokeStyle='#8a3b3b';c.beginPath();c.moveTo(-hr*.14,hr*.72);c.quadraticCurveTo(0,hr*.8,hr*.14,hr*.72);c.stroke()}}
+  c.restore()}
+ // hard hat (sits higher than the Classic one so the face shows under the brim)
+ c.lineWidth=lw;c.strokeStyle=ol;const hty=hy-hr*(k=='toon'?.4:.45),hrw=hr*(k=='toon'?1.25:1.12);
+ c.fillStyle=k=='real'?(()=>{const q=c.createLinearGradient(0,hty-hr,0,hty);q.addColorStop(0,sh(S.hat,1));q.addColorStop(1,sh(S.hat,.75));return q})():S.hat;
+ c.beginPath();c.ellipse(hx,hty,hrw,hr*(k=='toon'?1.05:.95),0,Math.PI,2*Math.PI);c.closePath();c.fill();c.stroke();
+ c.fillStyle=k=='real'?sh(S.hat,.85):S.hat;rr(c,hx-hrw*1.12,hty-hr*.05,hrw*2.24+.07*s*Sd,hr*.2,hr*.1);c.fill();c.stroke();
+ if(k=='real'){c.strokeStyle='rgba(0,0,0,.25)';for(const q of[-.5,0,.5]){c.beginPath();c.moveTo(hx+q*hrw,hty-hr*.05);c.quadraticCurveTo(hx+q*hrw*1.05,hty-hr*.6,hx+q*hrw*.7,hty-hr*.9);c.stroke()}c.strokeStyle=ol}
+ c.fillStyle='rgba(255,255,255,.32)';rr(c,hx-hr*.12,hty-hr*.95,hr*.24,hr*.85,hr*.1);c.fill();
+ if(k!='real'){c.fillStyle='rgba(255,255,255,.55)';c.beginPath();c.ellipse(hx-hrw*.5,hty-hr*.55,hr*.2,hr*.1,-.5,0,7);c.fill()}
+ if(k=='anime'&&!back){c.save();c.translate(hx+hrw*.45,hty-hr*.35);c.fillStyle='#fff';c.beginPath();for(let j=0;j<10;j++){const r=j%2?hr*.1:hr*.24,an=j*Math.PI/5-Math.PI/2;c.lineTo(Math.cos(an)*r,Math.sin(an)*r)}c.closePath();c.fill();c.restore()}
+ if(!back){c.save();arm(0);c.restore()}
+ // anime: sparkles around the tile when it locks in
+ if(k=='anime'&&o.lock){c.fillStyle='#fff';c.strokeStyle='#ffe066';c.lineWidth=Math.max(1,.006*s);for(let j=0;j<4;j++){const an=j*1.7+T*6,r=.2*s*(.6+.4*Math.sin(T*9+j)),px=Math.cos(an)*r*1.4,py=-.5*s+Math.sin(an)*r,z=.03*s*(.6+.4*Math.sin(T*12+j*2));c.beginPath();c.moveTo(px,py-z);c.lineTo(px+z*.3,py-z*.3);c.lineTo(px+z,py);c.lineTo(px+z*.3,py+z*.3);c.lineTo(px,py+z);c.lineTo(px-z*.3,py+z*.3);c.lineTo(px-z,py);c.lineTo(px-z*.3,py-z*.3);c.closePath();c.fill();c.stroke()}}
+ c.restore()}
 function cab(c,x,y,L,k){k=k||1;const w=L.tw*k,h=L.th*k,pn=Math.max(2,7*k);c.fillStyle='#1b2028';c.fillRect(x-w/2,y-h/2,w,h);c.strokeStyle='#8ea0b0';c.lineWidth=Math.max(1,2*k);c.strokeRect(x-w/2,y-h/2,w,h);c.fillStyle='#e8c11c';[[-1,-1],[1,-1],[-1,1],[1,1]].forEach(q=>c.fillRect(x+q[0]*w/2-(q[0]>0?pn:0),y+q[1]*h/2-(q[1]>0?pn:0),pn,pn));c.fillStyle='#000';c.fillRect(x-w*.12,y-4*k,w*.24,8*k)}
 // ---------- sim
 const D={walkin:.8,move:1.1,place:.8,lock:.6,walkout:1.5};
@@ -1210,7 +1349,7 @@ lo=L0+.31*sz,hi=R0-.31*sz,fits=v=>v>=lo&&v<=hi,gap=.05*sz,pref=sx-eF*(tw/2+gap),
 xs=fits(pref)?pref:fits(alt)?alt:(lo>hi?(L0+R0)/2:Math.max(lo,Math.min(hi,pref))),sF=sx>xs+1?1:sx<xs-1?-1:eF,
 loW=L0+(eF>0?.31:.5)*sz,hiW=R0-(eF>0?.5:.31)*sz,st=eF>0?Math.min(loW,hiW):Math.max(loW,hiW),off=eF>0?L0-.6*sz:R0+.6*sz,
 m=crew.length&&sm.m>=0?crew[sm.m%crew.length]:['','#e0ac69',null,'#2b1d14'],ss=q=>q*q*(3-2*q),wd=.75,SIDE=.3,A=(f,b)=>f>0?b:Math.PI-b,
-yy=Math.max(T0+.99*sz,Math.min(B0-.045*sz,sy));
+yy=Math.max(T0+(S.tstyle=='Cartoon'?1.06:.99)*sz,Math.min(B0-.045*sz,sy));
 // stands beside the slot (on the side he walked in from, unless the wall edge is in the way) and faces it, so both hands stay visible
 let x=xs,ang=A(eF,wd),mv=0,carry=false,u=0,tx=0,ty=0,ts=1,showTile=false;
 if(sm.ph=='walkin'){x=off+(st-off)*p;mv=1;carry=true}
@@ -1226,7 +1365,7 @@ else if(sm.ph=='lock'){tx=sx;ty=cy;showTile=true}
 c.save();c.beginPath();c.rect(L0,T0,R0-L0,B0-T0);c.clip();
 if(showTile)cab(c,tx,ty,{tw,th},ts);
 let hands=null;if(showTile){const hw=tw*ts/2,top=ty-th*ts/2,ins=Math.min(.045*sz,hw*.45,th*ts*.45),j=sm.ph=='lock'?Math.sin(sm.t*40)*.006*sz:0;hands=[[tx-hw+ins,top+ins+j],[tx+hw-ins,top+ins-j]]}
-drawTech(c,x,yy,sz,{th:ang,mv,g:x/(sz*.2),u,m,carry,lock:sm.ph=='lock',shake:Math.sin(sm.t*40),hands});
+drawTech(c,x,yy,sz,{th:ang,mv,ix:crew.length&&sm.m>=0?sm.m%crew.length:0,g:x/(sz*.2),u,m,carry,lock:sm.ph=='lock',shake:Math.sin(sm.t*40),hands});
 c.restore()}
 function vpDraw(){const r=vp.getBoundingClientRect(),d=devicePixelRatio||1;if(vp.width!=r.width*d||vp.height!=r.height*d){vp.width=r.width*d;vp.height=r.height*d}
 const c=vc,z=V.z;c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,r.width,r.height);
