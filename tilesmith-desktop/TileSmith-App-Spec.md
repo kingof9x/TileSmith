@@ -201,6 +201,8 @@ dialog) deletes the state and reloads.
 | `lblSkip` | 1 | First label position to use on a sheet (skips used labels). |
 | `hat` | #ffcc00 | Technician hard hat colour. |
 | `vest` | #b6ff00 | Technician vest colour. |
+| `tstyle` | Classic | Technician character style: Classic or Character pack. |
+| `tpack` |  | Selected character pack (id in the on-device pack library). |
 | `logo` | TILESMITH | Vest logo text. |
 | `cd` | true | Show crew details editor and name tags. |
 | `play` | true | Build animation playing (not saved). |
