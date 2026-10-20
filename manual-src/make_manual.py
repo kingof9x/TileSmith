@@ -168,8 +168,8 @@ async def shots_and_data():
         # the four technician styles side by side (a temporary canvas, drawn with the app's own drawing code)
         await ev("""()=>{const c=document.createElement('canvas');c.id='tsty';c.width=1760;c.height=560;c.style.cssText='position:fixed;left:0;top:0;z-index:99999';document.body.appendChild(c);
           const g=c.getContext('2d');g.fillStyle='#232b34';g.fillRect(0,0,1760,560);const keep=S.tstyle,cd=S.cd;S.cd=true;
-          ['Classic','Realistic','Cartoon','Anime'].forEach((st,j)=>{S.tstyle=st;g.fillStyle='#9fb0c0';g.font='600 22px sans-serif';g.textAlign='center';g.fillText(st,220+j*440,40);
-            [[Math.PI/2+.55,0],[Math.PI/2+.55,3]].forEach(([th,i],n)=>drawTech(g,130+j*440+n*190,520,430,{th,mv:0,g:0,u:0,m:crew[i],ix:i,carry:false,lock:false,shake:0,hands:null}))});S.tstyle=keep;S.cd=cd}""")
+          ['Classic','Realistic'].forEach((st,j)=>{S.tstyle=st;g.fillStyle='#9fb0c0';g.font='600 22px sans-serif';g.textAlign='center';g.fillText(st,440+j*880,40);
+            [[Math.PI/2+.55,0],[Math.PI/2+.55,3]].forEach(([th,i],n)=>drawTech(g,260+j*880+n*380,540,500,{th,mv:0,g:0,u:0,m:crew[i],ix:i,carry:false,lock:false,shake:0,hands:null}))});S.tstyle=keep;S.cd=cd}""")
         await shot('tech_styles', el='#tsty'); await ev("()=>document.getElementById('tsty').remove()")
         await sect('Tile model', 'sec_tile'); await sect('Tile borders', 'sec_borders')
         # half tiles: a Carbon CB5 wall with half panels along the top and two in the bottom row
@@ -390,7 +390,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 
 <section class="chap"><h1>14. Technician and crew</h1><div class="side"><div>
 <p>These settings are the <b>Technician</b> submenu inside <b>Animation Options › LED build</b>.</p>
-<p>Pick a <b>Character style</b> for the technician: <b>Classic</b> (the flat original), <b>Realistic</b> (natural proportions, shaded clothes, boots and a tool belt), <b>Cartoon</b> (a big head, thick outlines and a bouncy walk) or <b>Anime</b> (slim, big glossy eyes, cel shading and sparkles when a tile locks in). Every style carries the same crew colours, name tags, face photos and logo, and each crew member gets their own hairstyle (ponytail, braid, beard and so on). The choice is saved with the project and is used in video export.</p>
+<p>Pick a <b>Character style</b> for the technician: <b>Classic</b> (the flat original) or <b>Realistic</b> (natural proportions, shaded work clothes, safety glasses, gloves, work boots and a tool belt; more styles are planned). Every style carries the same crew colours, name tags, face photos and logo, and in the Realistic style each crew member gets their own hairstyle (ponytail, braid, beard and so on). The choice is saved with the project and is used in video export.</p>
 <p>Choose the <b>Hard hat</b> and <b>Vest</b> colours, and the <b>Vest logo text</b> or an uploaded logo.</p>
 <p>Turn on <b>Crew details & name tags</b> to name each technician and set skin and hair colour. Add a <b>Face photo</b> to put a real face on a technician. <b>Add crew member</b> grows the crew; <b>Reset to defaults</b> restores it.</p>
 <p>With several walls, technicians rotate so the same person is never on every wall at once, and each wall builds at a slightly different rate.</p></div>{img('sec_tech')}</div>{img('tech_styles')}</section>

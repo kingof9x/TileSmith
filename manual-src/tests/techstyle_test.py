@@ -13,10 +13,10 @@ async def main():
             print(('PASS ' if c else 'FAIL ') + m)
             ok = ok and c
         opts = await pg.evaluate("()=>[...document.querySelector('[data-k=tstyle]').options].map(o=>o.value)")
-        chk(opts == ['Classic', 'Realistic', 'Cartoon', 'Anime'], f'dropdown lists the four styles {opts}')
+        chk(opts == ['Classic', 'Realistic'], f'dropdown lists the styles {opts}')
         chk(await pg.evaluate("()=>S.tstyle") == 'Classic', 'default is Classic')
         sums = {}
-        for st in ['Classic', 'Realistic', 'Cartoon', 'Anime']:
+        for st in ['Classic', 'Realistic']:
             await pg.evaluate("""(st)=>{const e=document.querySelector('[data-k=tstyle]');e.value=st;e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));
               S.cols=4;S.rows=3;storeWall();showAll();sync();fit();reset();S.play=true}""", st)
             chk(await pg.evaluate("()=>S.tstyle") == st, f'{st}: dropdown sets S.tstyle')
@@ -26,12 +26,12 @@ async def main():
                 seen.add(await pg.evaluate("()=>sims[0].ph"))
             sums[st] = await pg.evaluate("()=>{const c=document.getElementById('vp');const d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let s=0;for(let i=0;i<d.length;i+=97)s=(s*31+d[i])>>>0;return s}")
             chk(len(seen) >= 3, f'{st}: build phases ran {sorted(seen)}')
-        chk(len(set(sums.values())) >= 3, f'styles render differently {sums}')
-        await pg.evaluate("()=>{S.tstyle='Anime'}")
+        chk(len(set(sums.values())) >= 2, f'styles render differently {sums}')
+        await pg.evaluate("()=>{S.tstyle='Realistic'}")
         o = await pg.evaluate("()=>stateObj()")
-        chk(o.get('tstyle') == 'Anime' or (o.get('S') or {}).get('tstyle') == 'Anime' or 'Anime' in str(o)[:200000], 'style is part of the saved state')
+        chk(o.get('tstyle') == 'Realistic' or 'Realistic' in str(o)[:200000], 'style is part of the saved state')
         await pg.evaluate("(o)=>{S.tstyle='Classic';applyState(o)}", o)
-        chk(await pg.evaluate("()=>S.tstyle") == 'Anime', 'style restored when state is loaded')
+        chk(await pg.evaluate("()=>S.tstyle") == 'Realistic', 'style restored when state is loaded')
         chk(not errs, f'no page errors {errs[:2]}')
         await b.close()
         print('ALL OK' if ok else 'FAILED'); sys.exit(0 if ok else 1)
