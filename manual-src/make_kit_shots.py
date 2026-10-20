@@ -100,7 +100,7 @@ async def main():
         await full('t01-first-launch.png', 'First launch (tablet, landscape)',
                    'Default state: one 6x4 wall of Unilumin UpadIV 2.6 tiles on a 1920x1080 canvas, tileshade pattern. Left: settings panel. Top: action bar. Centre: viewport. Right: engineering panel.')
         await pg.locator('#bar').screenshot(path=str(OUT / 'ui-top-bar.png')); add('ui-top-bar.png', 'panel', 'Top bar (mobile app)', 'NDI® and Spout/Syphon buttons are hidden in the mobile app.')
-        hc = await ev("(()=>{const a=document.querySelector('#left > h1').getBoundingClientRect(),b=document.querySelector('#left > h1 + div').getBoundingClientRect();return{x:a.left-4,y:a.top-4,w:b.right-a.left+8,h:b.bottom-a.top+8}})()")
+        hc = await ev("(()=>{const a=document.querySelector('#left h1').getBoundingClientRect(),b=document.querySelector('#left h1 + div').getBoundingClientRect();return{x:a.left-4,y:a.top-4,width:b.right-a.left+8,height:b.bottom-a.top+8}})()")
         await pg.screenshot(path=str(OUT / 'ui-header.png'), clip=hc); add('ui-header.png', 'panel', 'App header', 'Title with the version in amber, subtitle in muted grey.')
 
         # a working setup: two walls, processor and data paths
@@ -117,6 +117,15 @@ async def main():
         await ui('LED processor', 'ui-led-processor.png', 'LED processor submenu (with Data wiring)', '')
         await ui('Data wiring', 'ui-data-wiring.png', 'Data wiring submenu', 'Pattern (None/Snake/Linear/Manual), 8 start icons, Data wiring preference with explanation, Show data paths, status.')
         await full('t05-data-wiring.png', 'Engineering > LED processor > Data wiring', '')
+        await pg.locator('#right').screenshot(path=str(OUT / 'ui-engineering-panel.png')); add('ui-engineering-panel.png', 'panel', 'Engineering panel (right side)', 'Entire canvas, then one section per wall.')
+
+        # manual data wiring in progress
+        await ev(f"""()=>{{selWall(1);delWall();S.cols=10;S.rows=5;S.ox=0;S.oy=0;S.wmode='Manual';S.wman=[[[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[9,0],[9,1],[8,1],[7,1],[6,1],[5,1],[4,1],[3,1]],[[2,1],[1,1],[0,1],[0,2],[1,2],[2,2]]];{PREP}}}""")
+        await ev("()=>document.querySelector('[data-a=wedit]').click()")
+        await opensub('Data wiring'); await full('t06-manual-data-wiring.png', 'Manual data wiring', 'Pattern = Manual, Wire tiles pressed (button reads Stop wiring). Port P1 is full (17 tiles); P2 is being drawn.')
+        await ev("()=>document.querySelector('[data-a=wedit]').click()")
+
+        await ev(f"""()=>{{S.pdist=true;S.pmode='Snake';walls.forEach(w=>{{w.pmode='Snake'}});{PREP}}}""")
         await ui('Power', 'ui-power.png', 'Power submenu (with Power wiring)', '')
         await ui('Power wiring', 'ui-power-wiring.png', 'Power wiring submenu', '')
         await full('t07-power-and-data.png', 'Data and power on the same wall', 'Data paths run left of the tile centres, power runs (white on black) right and below; circuit badges show a lightning icon.')
@@ -162,7 +171,7 @@ async def main():
         await ev(f"""()=>{{S.vIntro=1;S.vHold=1;S.speed=2;{PREP};if(!MediaRecorder.isTypeSupported('video/mp4'))window.mrType=()=>'video/webm'}}""")
         # The click below has timed out in CI; add a longer timeout and capture artifacts on failure so CI uploads them.
         try:
-            await pg.click('#bar [data-a=rec]', timeout=60000)
+            await pg.click('[data-a=rec]', timeout=60000)
             await pg.wait_for_timeout(2600)
         except Exception:
             art = OUT / 'failure-artifacts'
