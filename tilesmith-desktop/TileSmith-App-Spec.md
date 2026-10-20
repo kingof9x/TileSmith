@@ -1,6 +1,6 @@
 # TileSmith 3.5 - app specification for building a clone
 
-Generated 2026-10-19 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-10-20 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -46,19 +46,22 @@ amber for the version). Header: "TileSmith v3.5" and subtitle "LED Wall Pixel Ma
 Sections are collapsible `<details>`; submenus are nested collapsible blocks. Sections marked with the wall name edit
 the selected wall.
 
-- **Canvas**
-  - LED walls
-  - Tile model
-  - Size of LED Wall
-  - Wall position
-- **Test pattern**
-  - Tile borders & overlays
+- **Canvases**
+  - Canvas 1 1920×1080
+    - LED walls
+    - Tile model
+      - Tile details
+    - Size of LED Wall
+    - Wall position
+    - Test pattern
+    - Tile borders & overlays
 - **Engineering**
   - LED processor
     - Data wiring
   - Power
     - Power wiring
 - **Animation Options**
+  - Test pattern
   - DVD screensaver
   - LED build
     - Technician
@@ -129,7 +132,7 @@ dialog) deletes the state and reloads.
 
 | Key | Default | Meaning |
 |---|---|---|
-| `cw` | 1920 | Canvas width in px (16-8192). The canvas is the raster sent over NDI and recorded to video. |
+| `cw` | 1920 | Canvas width in px (16-8192) of the selected canvas. Each canvas is a raster sent over its own NDI / Spout / Syphon source and recorded to its own video. Projects store every canvas in cvs:[{name,cw,ch,cur,walls}] with ac = the selected canvas (its walls are the top-level walls, cvs[ac].walls is null). |
 | `ch` | 1080 | Canvas height in px (16-8192). |
 | `bc` | #22d3ee | Tile border colour (overlay drawn on every lit tile). |
 | `bt` | 3 | Tile border thickness in px (1-8). |
@@ -150,7 +153,7 @@ dialog) deletes the state and reloads.
 | `dvdLoopLen` | 30 | Perfect loop length in seconds (4-600). |
 | `dvdLoopCorners` | true | Perfect loop includes exactly two corner hits per loop (else none). |
 | `rcard` | any | Engineering > LED processor: receiving card family in the tile (any, brompton, novastar, helios, evision). Narrows the processor list; resets to any when the tile does not allow it. |
-| `procAll` | false | Engineering > LED processor: show every processor instead of only those the tile maker lists. The currently chosen processor is always listed; if the tile does not list it, an amber warning shows. Compatibility comes from ROE brochure Processing Platform lines (CMP table: Carbon, Carbon MkII, Graphite, Black Pearl BP2V2, Ruby 2.2/2.6, Vanish V5S/V8S MkII, V8T, ST V4ST/V6ST, Black Quartz, Jet, Topaz, Meru, Sierra, Diamond); tiles not in the table are unrestricted; with several walls the list is the intersection. |
+| `procAll` | false | Engineering > LED processor (UI label "Show incompatible processors"): show every processor instead of only those listed for the selected wall's tile. The currently chosen processor is always listed; if the tile does not list it, an amber warning shows. Compatibility comes from ROE brochure Processing Platform lines (CMP table: Carbon, Carbon MkII, Graphite, Black Pearl BP2V2, Ruby 2.2/2.6, Vanish V5S/V8S MkII, V8T, ST V4ST/V6ST, Black Quartz, Jet, Topaz, Meru, Sierra, Diamond); tiles not in the table are unrestricted; the list follows the selected wall; #procWarn names every wall on any canvas whose tile does not list the chosen processor. Download config file (experimental): NovaStar = zip of NovaLCT .scr per canvas (DSCI header, DVI info, Standard screens of 17-byte cabinet regions, adjust info; 16-bit byte-sum checksums) + wiring CSV/JSON; other brands = wiring CSV/JSON. Canvas output: per-canvas display picker opens a borderless full-screen window (frame name tsout:<display id>:<canvas id>) drawn 1:1 in device pixels. |
 | `vIntro` | 5 | Video export: seconds of blank canvas before the build (0-60). |
 | `vHold` | 10 | Video export: seconds holding the finished wall (0-120). |
 | `vLed` | true | Video export: tick to include the LED build video (blank intro, live build, final hold). |
@@ -216,7 +219,8 @@ dialog) deletes the state and reloads.
 | `oy` | 0 | Wall Y offset on the canvas in px. |
 | `cols` | 6 | Columns of tiles (1-64). |
 | `rows` | 4 | Rows of tiles (1-64). |
-| `preset` | Unilumin UpadIV 2.6 | Tile model preset name ("Custom" once any tile field is edited). |
+| `preset` | Unilumin UpadIV 2.6 | Tile model preset name ("Custom" once any tile field is edited). The UI picks Brand first, then a model of that brand; user presets live in localStorage "tilesmith-tiles-v1" ({name:[wmm,hmm,tw,th,pitch,kg,wmax,dmm]}) and are copied into the project file as "ut" for every preset a wall uses (on open a differing same-name tile is kept as "Name (from project)"); PINFO holds extra spec-sheet facts per model (receiving card, brightness, refresh, IP, curving, hanging height with an over-limit warning); models in PEST have estimated figures flagged as MISSING DATA in Engineering and the PDF. |
+| `rcfg` |  | Per wall: id (SHA-256 hex) of the NovaStar receiving card file (.rcfg/.rcfgx) the wall uses, or empty. Files live in IndexedDB tilesmith-rcfg/files {id,name,ext,size,data,models[],vendor,revision,added}; saved projects carry the used ones as rc:{id:{name,ext,vendor,revision,models,added,data:base64}} (autosave does not), opening a project merges them into the library; Download config file adds them under receiving-card-files/ with a README of which walls use each. |
 | `tw` | 192 | Tile width in px. |
 | `th` | 192 | Tile height in px. |
 | `wmm` | 500 | Tile width in mm. |
@@ -412,7 +416,7 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | YES TECH MU 2.9 outdoor 500×1000 | 500 | 1000 | 168 | 336 | 2.98 | 12.6 | 350 | 73 |
 | YES TECH MU 3.9 outdoor | 500 | 500 | 128 | 128 | 3.91 | 7.6 | 175 | 73 |
 | YES TECH MU 3.9 outdoor 500×1000 | 500 | 1000 | 128 | 256 | 3.91 | 12.6 | 350 | 73 |
-| YES TECH Xtra 1.9 | 500 | 500 | 256 | 256 | 1.95 | 7.5 | 163 | 73 |
+| YES TECH Xtra 1.9 | 500 | 500 | 256 | 256 | 1.953 | 7.5 | 145 | 73 |
 | YES TECH Xtra 2.6 | 500 | 500 | 192 | 192 | 2.6 | 7.5 | 163 | 73 |
 | YES TECH Xtra 2.9 outdoor | 500 | 500 | 168 | 168 | 2.98 | 7.5 | 175 | 73 |
 | YES TECH Xtra 3.9 outdoor | 500 | 500 | 128 | 128 | 3.91 | 7.5 | 175 | 73 |
@@ -432,6 +436,37 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | YES TECH MAir 5.9 solid outdoor | 1000 | 1000 | 168 | 168 | 5.95 | 23.5 | 500 | 102 |
 | YES TECH MT II 3.9-7.8 1000×500 | 1000 | 500 | 256 | 64 | 3.91 | 8.7 | 225 | 83 |
 | YES TECH MT II 3.9-7.8 500×500 | 500 | 500 | 128 | 64 | 3.91 | 5.8 | 113 | 83 |
+| Absen Polaris PL2.5 XR V2 | 500 | 500 | 200 | 200 | 2.5 | 7.8 | 185 | 78 |
+| Absen Polaris PL3.9 Pro V3 | 500 | 500 | 128 | 128 | 3.906 | 11.5 | 180 | 88 |
+| Absen A27 1.9 (A2719) | 610 | 343 | 320 | 180 | 1.906 | 8.5 | 105 | 61 |
+| Absen A27 1.4 (A2714) | 610 | 343 | 416 | 234 | 1.46 | 8.5 | 97 | 61 |
+| Absen A27 1.2 (A2712) | 610 | 343 | 480 | 270 | 1.27 | 8.5 | 97 | 61 |
+| Absen KL3 | 640 | 480 | 208 | 156 | 3.07 | 7.8 | 166 | 60 |
+| Unilumin UpadIV 1.9 | 500 | 500 | 256 | 256 | 1.953 | 6.3 | 120 | 70.1 |
+| Unilumin UpadIV 1.9 MIP | 500 | 500 | 256 | 256 | 1.953 | 6.3 | 80 | 70.1 |
+| Unilumin UpadIV 2.6 (8 scan) | 500 | 500 | 192 | 192 | 2.604 | 6.3 | 165 | 70.1 |
+| INFiLED Deep Black DB1.9 M2 MK2 | 500 | 500 | 256 | 256 | 1.95 | 7.8 | 140 | 75.5 |
+| INFiLED Deep Black DB2.3 Pro | 500 | 500 | 216 | 216 | 2.31 | 8.8 | 150 | 75.5 |
+| INFiLED Deep Black DB1.56 M4 | 500 | 500 | 320 | 320 | 1.5625 | 7.8 | 140 | 75.5 |
+| INFiLED Deep Black DB1.9 Lite | 500 | 500 | 256 | 256 | 1.953 | 7.8 | 140 | 75.5 |
+| INFiLED Deep Black DB1.9 Pro | 500 | 500 | 256 | 256 | 1.953 | 7.8 | 140 | 75.5 |
+| INFiLED Deep Black DB2.3 Lite | 500 | 500 | 216 | 216 | 2.315 | 8.8 | 150 | 75.5 |
+| INFiLED Deep Black DB2.6 Lite | 500 | 500 | 192 | 192 | 2.604 | 7.8 | 140 | 75.5 |
+| INFiLED Deep Black DB2.6 Pro | 500 | 500 | 192 | 192 | 2.604 | 7.8 | 140 | 75.5 |
+| INFiLED Deep Black DB2.8 Lite | 500 | 500 | 176 | 176 | 2.84 | 7.8 | 140 | 75.5 |
+| INFiLED Deep Black DB3.4 Lite | 500 | 500 | 144 | 144 | 3.47 | 7.8 | 140 | 75.5 |
+| INFiLED Deep Black DB3.4 Pro | 500 | 500 | 144 | 144 | 3.47 | 7.8 | 140 | 75.5 |
+| INFiLED HR1.5 M4 | 600 | 337.5 | 384 | 216 | 1.5625 | 7.8 | 150 | 73 |
+| INFiLED WP1.5 MT4 MK2 | 600 | 337.5 | 384 | 216 | 1.5625 | 5.2 | 52 | 29.7 |
+| INFiLED AR3.4 Mini | 500 | 500 | 144 | 144 | 3.47 | 8 | 150 | 66 |
+| INFiLED AR4.8 | 500 | 1000 | 104 | 208 | 4.81 | 12.5 | 300 | 66 |
+| INFiLED AR4.6 Mini outdoor | 500 | 500 | 108 | 108 | 4.63 | 13 | 150 | 131 |
+| YES TECH MG6S Pro 2.6 | 500 | 500 | 192 | 192 | 2.604 | 6 | 113 | 73 |
+| YES TECH MG6S 4.8 | 500 | 500 | 104 | 104 | 4.807 | 5.6 | 105 | 73 |
+| YES TECH MG6S 5.2 | 500 | 500 | 96 | 96 | 5.208 | 5.5 | 105 | 73 |
+| Owl Vision Black Owl 3.9 500×1000 | 500 | 1000 | 128 | 256 | 3.906 | 14 | 360 | 74 |
+| Owl Vision Black Owl 3.9 | 500 | 500 | 128 | 128 | 3.906 | 8.7 | 180 | 74 |
+| Owl Vision Pilot 2.6 | 500 | 500 | 192 | 192 | 2.604 | 7.4 | 50 | 71 |
 
 ## 6. Wall shapes: removed tiles and half tiles
 
@@ -449,6 +484,7 @@ tiles" clears the list. Tile IDs keep their grid numbers (T = row x cols + col +
 
 | Full model | Half model | Split |
 |---|---|---|
+| Owl Vision Black Owl 3.9 500×1000 | Owl Vision Black Owl 3.9 | h = top/bottom (half height) |
 | ROE Carbon CB3 | ROE Carbon CB3 Half | h = top/bottom (half height) |
 | ROE Carbon CB5 | ROE Carbon CB5 Half | h = top/bottom (half height) |
 | ROE Carbon CB8 | ROE Carbon CB8 Half | h = top/bottom (half height) |
@@ -847,7 +883,7 @@ webview-bridge.js turns into the same window.TSM. A native Android clone, as des
 
 - tileshade-cycle: for every wall up to 40x40 and every step, no tile shares a colour with the tile left, right, above
   or below it.
-- Auto data and power wiring (all 8 patterns x 3 areas x Snake/Linear, any size, with removed tiles or half tiles):
+- Auto data and power wiring (all 16 signal-flow choices = 8 start corner/direction x Snake/Linear, picked from a 2 x 8 icon grid styled like Brompton's mapping picker; x 3 areas, any size, with removed tiles or half tiles):
   every tile appears in exactly one chain, no chain is over capacity, and One continuous path uses ceil(tiles / t)
   chains.
 - Engineering for a 6x4 Unilumin UpadIV 2.6 wall: 24 tiles, 1152 x 768 px (884,736 LED px), 6.00 m^2, 151.2 kg,
