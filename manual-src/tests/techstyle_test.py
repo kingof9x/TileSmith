@@ -30,7 +30,7 @@ async def main():
         await pg.evaluate("(o)=>applyState(o)", o)
         chk(await pg.evaluate("()=>S.tstyle") == 'Classic', 'a project with the removed Cartoon style opens as Classic')
         await pg.evaluate("()=>{S.tstyle='Character pack';S.tpack='';reset();for(let k=0;k<200;k++)step(1/60);forceRen=true}")
-        chk(await pg.evaluate("()=>{let n=0;const o=worker;window.worker=function(){n++;return o.apply(this,arguments)};drawTech(document.createElement('canvas').getContext('2d'),100,100,100,{th:1,mv:0,m:crew[0],ix:0,hands:null});return n}") == 1, 'Character pack with no pack loaded draws the Classic technician')
+        chk(await pg.evaluate("()=>{let n=0;const o=workerPack;window.workerPack=function(){n++;return o.apply(this,arguments)};drawTech(document.createElement('canvas').getContext('2d'),100,100,100,{th:1,mv:0,m:crew[0],ix:0,hands:null});return n}") == 1, 'Character pack with no pack chosen draws the built-in Khalid')
         chk(not errs, f'no page errors {errs[:2]}')
         await b.close(); print('ALL OK' if ok else 'FAILED'); sys.exit(0 if ok else 1)
 asyncio.run(main())
