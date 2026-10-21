@@ -1,6 +1,6 @@
 # TileSmith 3.5 - app specification for building a clone
 
-Generated 2026-10-20 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-10-21 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -202,7 +202,7 @@ dialog) deletes the state and reloads.
 | `hat` | #ffcc00 | Technician hard hat colour. |
 | `vest` | #b6ff00 | Technician vest colour. |
 | `tstyle` | Classic | Technician character style: Classic or Character pack. |
-| `tpack` |  | Selected character pack (id in the on-device pack library). |
+| `tpack` | builtin-khalid | Selected character pack (id in the on-device pack library). |
 | `logo` | TILESMITH | Vest logo text. |
 | `cd` | true | Show crew details editor and name tags. |
 | `play` | true | Build animation playing (not saved). |
