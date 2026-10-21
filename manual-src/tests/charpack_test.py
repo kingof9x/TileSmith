@@ -9,10 +9,13 @@ async def main():
         errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
         await pg.goto('file://' + APP); await pg.evaluate("()=>{localStorage.clear();indexedDB.deleteDatabase('tilesmith-packs')}"); await pg.reload(); await pg.wait_for_timeout(800)
         ok = True
+        await pg.evaluate("()=>{window.NB=[...PK.values()].filter(r=>r.builtin).length}")
         def chk(c, m):
             nonlocal ok
             print(('PASS ' if c else 'FAIL ') + m); ok = ok and c
         chk('Character pack' in await pg.evaluate("()=>[...document.querySelector('[data-k=tstyle]').options].map(o=>o.value)"), 'style list has Character pack')
+        names = await pg.evaluate("()=>[...PK.values()].filter(r=>r.builtin).map(r=>r.name)")
+        chk(names == ['Khalid', 'Yuki', 'Kenji', 'Maria'], f'four built-in characters {names}')
         k = await pg.evaluate("()=>{const r=PK.get('builtin-khalid');return r?{n:Object.keys(r.files).length,views:[...new Set(Object.keys(r.files).map(x=>x.split('/')[0]))].sort(),b:!!r.builtin}:null}")
         chk(k and k['n'] == 24 and k['views'] == ['back', 'front', 'three_quarter'] and k['b'], f'built-in Khalid present {k}')
         await pg.evaluate("()=>{const e=document.querySelector('[data-k=tstyle]');e.value='Character pack';e.dispatchEvent(new Event('input',{bubbles:true}))}")
@@ -38,8 +41,8 @@ async def main():
         info = await pg.evaluate("()=>{const r=PK.get(S.tpack);return r?{name:r.name,n:Object.keys(r.files).length,b:!!r.builtin}:null}")
         chk(info and info['n'] == 24 and info['name'] == 'Test copy' and not info['b'], f'zip loaded as a new pack {info}')
         chk(await pg.evaluate("()=>getComputedStyle(document.querySelector('[data-a=pkdel]')).display!='none'"), 'your own pack can be deleted')
-        await pg.reload(); await pg.wait_for_timeout(1500)
-        chk(await pg.evaluate("()=>PK.size==2&&PK.has(S.tpack)&&!PK.get(S.tpack).builtin"), 'your pack kept on the device after reload')
+        await pg.reload(); await pg.wait_for_timeout(1500); await pg.evaluate("()=>{window.NB=[...PK.values()].filter(r=>r.builtin).length}")
+        chk(await pg.evaluate("()=>PK.size==NB+1&&PK.has(S.tpack)&&!PK.get(S.tpack).builtin"), 'your pack kept on the device after reload')
         # per crew member
         await pg.evaluate("()=>{S.cd=true;sync();crewUI()}")
         chk(await pg.evaluate("()=>document.querySelectorAll('#crew select[data-f=\"4\"]').length==crew.length"), 'each crew member has a pack picker')
@@ -48,17 +51,17 @@ async def main():
         proj = await pg.evaluate("()=>{const o=stateObj();o.rc=rcForProject();o.pk=pkForProject();return JSON.stringify(o)}")
         chk(len(json.loads(proj)['pk']) == 1, 'project carries your pack')
         await pg.evaluate("()=>{indexedDB.deleteDatabase('tilesmith-packs');localStorage.clear()}"); await pg.reload(); await pg.wait_for_timeout(1000)
-        chk(await pg.evaluate("()=>PK.size") == 1, 'clean device has only the built-in pack')
-        await pg.evaluate("(s)=>applyState(JSON.parse(s))", proj); await pg.wait_for_timeout(500)
-        chk(await pg.evaluate("()=>PK.size==2&&pkFor(crew[0])!=''"), 'opening the project adds the pack and the crew assignment')
+        chk(await pg.evaluate("()=>PK.size") == 4, 'clean device has only the four built-in packs')
+        await pg.evaluate("()=>{window.NB=[...PK.values()].filter(r=>r.builtin).length}"); await pg.evaluate("(s)=>applyState(JSON.parse(s))", proj); await pg.wait_for_timeout(500)
+        chk(await pg.evaluate("()=>PK.size==NB+1&&pkFor(crew[0])!=''"), 'opening the project adds the pack and the crew assignment')
         # loose PNG files with view prefixes
         paths = []
         for key, url in list(files.items())[:12]:
             fn = os.path.join(tmp, key.replace('/', '_') + '.png'); Image.open(io.BytesIO(base64.b64decode(url.split(',', 1)[1]))).convert('RGBA').save(fn); paths.append(fn)
         n0 = await pg.evaluate('()=>PK.size'); await pg.set_input_files('#pkf', paths); await pg.wait_for_function(f'()=>PK.size>{n0}', timeout=20000)
-        chk(await pg.evaluate("()=>PK.size==3&&Object.keys(PK.get(S.tpack).files).length==12"), 'loose PNG files load as a pack')
+        chk(await pg.evaluate("()=>PK.size==NB+2&&Object.keys(PK.get(S.tpack).files).length==12"), 'loose PNG files load as a pack')
         await pg.evaluate("()=>pkDel()")
-        chk(await pg.evaluate("()=>PK.size==2"), 'delete removes your pack')
+        chk(await pg.evaluate("()=>PK.size==NB+1"), 'delete removes your pack')
         await pg.evaluate("()=>{S.tpack='builtin-khalid';pkDel()}")
         chk(await pg.evaluate("()=>PK.has('builtin-khalid')"), 'built-in pack survives delete')
         chk(not errs, f'no page errors {errs[:3]}')
