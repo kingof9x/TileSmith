@@ -16,7 +16,7 @@ async def main():
         chk('Character pack' in await pg.evaluate("()=>[...document.querySelector('[data-k=tstyle]').options].map(o=>o.value)"), 'style list has Character pack')
         names = await pg.evaluate("()=>[...PK.values()].filter(r=>r.builtin).map(r=>r.name)")
         chk(names == ['Khalid', 'Yuki', 'Kenji', 'Maria'], f'four built-in characters {names}')
-        k = await pg.evaluate("()=>{const r=PK.get('builtin-khalid');return r?{n:Object.keys(r.files).length,views:[...new Set(Object.keys(r.files).map(x=>x.split('/')[0]))].sort(),b:!!r.builtin}:null}")
+        k = await pg.evaluate("()=>{const r=PK.get('builtin-khalid');return r?{n:Object.keys(r.files).filter(x=>!x.includes('~')).length,views:[...new Set(Object.keys(r.files).map(x=>x.split('/')[0]))].sort(),b:!!r.builtin}:null}")
         chk(k and k['n'] == 24 and k['views'] == ['back', 'front', 'three_quarter'] and k['b'], f'built-in Khalid present {k}')
         await pg.evaluate("()=>{const e=document.querySelector('[data-k=tstyle]');e.value='Character pack';e.dispatchEvent(new Event('input',{bubbles:true}))}")
         chk(await pg.evaluate("()=>getComputedStyle(document.getElementById('pkBox')).display!='none'&&S.tpack=='builtin-khalid'"), 'Character pack picks Khalid by default')
@@ -30,7 +30,7 @@ async def main():
         chk(used == 1, 'technician is drawn from the pack')
         chk(await pg.evaluate("()=>Object.keys(pkForProject()).length") == 0, 'built-in pack is not copied into projects')
         # a user pack: Khalid's images re-saved as PNG in a zip with folders per view
-        files = await pg.evaluate("()=>PK.get('builtin-khalid').files")
+        files = await pg.evaluate("()=>Object.fromEntries(Object.entries(PK.get('builtin-khalid').files).filter(([k])=>!k.includes('~')))")
         tmp = tempfile.mkdtemp(); zp = os.path.join(tmp, 'Copy.zip')
         with zipfile.ZipFile(zp, 'w', zipfile.ZIP_DEFLATED) as z:
             for key, url in files.items():
@@ -64,6 +64,15 @@ async def main():
         chk(await pg.evaluate("()=>PK.size==NB+1"), 'delete removes your pack')
         await pg.evaluate("()=>{S.tpack='builtin-khalid';pkDel()}")
         chk(await pg.evaluate("()=>PK.has('builtin-khalid')"), 'built-in pack survives delete')
+        await pg.evaluate("()=>{S.tstyle='Character pack';S.tpack='builtin-khalid';S.cd=true;sync();crewUI()}")
+        chk(await pg.evaluate("()=>document.querySelectorAll('#crew input[type=color]').length==0&&document.querySelectorAll('#crew [data-face]').length==0"), 'skin, hair and face photo hidden when every crew member uses a pack')
+        await pg.evaluate("()=>{S.tstyle='Classic';sync();crewUI()}")
+        chk(await pg.evaluate("()=>document.querySelectorAll('#crew input[type=color]').length==crew.filter(c=>!pkFor(c)).length*2&&crew.some(c=>!pkFor(c))"), 'skin and hair shown again for Classic crew (hidden only for crew given their own pack)')
+        px = await pg.evaluate("""async()=>{S.tstyle='Character pack';S.tpack='builtin-khalid';const P=pkLoad('builtin-khalid');await new Promise(r=>setTimeout(r,800));
+          const f=c=>{S.vest=c;const im=pkTint('builtin-khalid',P,'front','torso',P.img.front.torso),g=document.createElement('canvas');g.width=im.width;g.height=im.height;const x=g.getContext('2d');x.drawImage(im,0,0);
+            const d=x.getImageData(0,0,g.width,g.height).data;let r=0,gr=0,n=0;for(let i=0;i<d.length;i+=4)if(d[i+3]>200){r+=d[i];gr+=d[i+1];n++}return[r/n,gr/n]};
+          return [f('#ff6a00'),f('#b6ff00')]}""")
+        chk(px[1][1] > px[0][1] + 15, f'vest colour setting recolours the pack art {px}')
         chk(not errs, f'no page errors {errs[:3]}')
         await b.close(); print('ALL OK' if ok else 'FAILED'); sys.exit(0 if ok else 1)
 asyncio.run(main())
