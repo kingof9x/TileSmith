@@ -1,6 +1,6 @@
 # TileSmith 3.5 - app specification for building a clone
 
-Generated 2026-10-21 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-10-22 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -81,7 +81,7 @@ Visibility rules:
 
 ### 3.2 Top bar
 
-Buttons: **New Project**, **Save**, **Open**, **ⓘ Info**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
+Buttons: **New Project**, **Save**, **Open**, **ⓘ Info**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
 moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Start NDI®" toggles NDI; while
 live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout" (Windows) or "Start Syphon" (Mac)
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
@@ -114,7 +114,7 @@ goes to the output.
   the cursor is a crosshair over the selected wall and drags edit instead of moving the wall. While Remove tiles or
   Mark half tiles is on, empty spots of the selected wall show a red dashed outline with an X (viewport only).
 
-### 3.4 Engineering panel (right)
+### 3.4 Engineering data panel (right; a collapsible menu after the settings on phones)
 
 Collapsible "Entire canvas" section then one section per wall, as two-column tables (label, value). Rows in section 9.
 
