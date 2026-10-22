@@ -1042,11 +1042,11 @@ function applySpec(){const m=PROC[S.proc];if(m){S.ppx=specPx(m);S.pports=m.ports
 const FAM={'Brompton':'brompton','NovaStar':'novastar','Megapixel HELIOS':'helios','Evision':'evision'},
  FAMN={brompton:'Brompton Tessera (R2 / R2+ card)',novastar:'NovaStar (MRV / A-series card)',helios:'Megapixel HELIOS (PX1 card)',evision:'ROE Evision (i6 / i9 card)'},
  FAMS={brompton:'Brompton',novastar:'NovaStar',helios:'Megapixel HELIOS',evision:'ROE Evision'},
- CMP=[[/^Owl Vision (Black Owl|Pilot) /,['novastar']],[/^ROE Carbon MkII CB/,['brompton','novastar','evision']],[/^ROE Carbon CB8( Half)?$/,['brompton','evision']],[/^ROE Carbon CB[35]( Half)?$/,['brompton','helios','evision']],
- [/^ROE Graphite GP(2\.6|3\.1|3\.9)( Half)?$/,['brompton','novastar','evision']],[/^ROE Black Pearl BP2V2/,['brompton','helios']],[/^ROE Ruby RB(-[CB])?2\.[26]/,['brompton','helios']],
- [/^ROE Vanish V[58]S MkII/,['brompton','helios','evision','novastar']],[/^ROE Vanish V8T/,['brompton','helios','evision']],[/^ROE Vanish ST V[46]ST/,['brompton','helios','evision']],
- [/^ROE Black Quartz/,['brompton','helios','evision']],[/^ROE Jet /,['brompton','helios','evision','novastar']],[/^ROE Topaz /,['brompton','helios','evision']],[/^ROE Meru /,['brompton','helios']],
- [/^ROE Sierra SR1\.[25]/,['helios','novastar']],[/^ROE Diamond DM2\.6/,['brompton','evision','novastar']],[/^ROE Diamond DM3\.9/,['brompton','evision']]];
+ CMP=[[/^YES TECH /,['novastar']],[/^ROE Carbon (CB8-Transparent|Full Spectrum)/,['brompton','novastar']],[/^Owl Vision (Black Owl|Pilot) /,['novastar']],[/^ROE Carbon MkII CB/,['brompton','novastar','evision']],[/^ROE Carbon CB8( Half)?$/,['brompton','evision','novastar']],[/^ROE Carbon CB[35]( Half)?$/,['brompton','helios','evision','novastar']],
+ [/^ROE Graphite GP(2\.6|3\.1|3\.9)( Half)?$/,['brompton','novastar','evision']],[/^ROE Black Pearl BP2V2/,['brompton','helios','novastar']],[/^ROE Ruby RB(-[CB])?2\.[26]/,['brompton','helios','novastar']],
+ [/^ROE Vanish V[58]S MkII/,['brompton','helios','evision','novastar']],[/^ROE Vanish V8T/,['brompton','helios','evision','novastar']],[/^ROE Vanish ST V[46]ST/,['brompton','helios','evision','novastar']],
+ [/^ROE Black Quartz/,['brompton','helios','evision','novastar']],[/^ROE Jet /,['brompton','helios','evision','novastar']],[/^ROE Topaz /,['brompton','helios','evision','novastar']],[/^ROE Meru /,['brompton','helios','novastar']],
+ [/^ROE Sierra SR1\.[25]/,['helios','novastar']],[/^ROE Diamond DM2\.6/,['brompton','evision','novastar']],[/^ROE Diamond DM3\.9/,['brompton','evision','novastar']]];
 const tileFam=n=>{const r=CMP.find(c=>c[0].test(n||''));return r?r[1]:null},procFam=k=>{const m=PROC[k];return m&&FAM[m.brand]||null};
 // Families every wall's tile can use (null = no published limit); a wall with an unlisted tile does not restrict.
 // the processor families the selected wall's tile works with (null = no published limit); other walls are checked in the warning
@@ -1059,9 +1059,9 @@ function procRefresh(){const a=tileLimit();if(S.rcard!='any'&&a&&!a.includes(S.r
  const f=procFam(S.proc),inf=$('#procInfo'),wn=$('#procWarn');storeWall();
  // every wall on every canvas whose tile is not listed for the chosen processor
  const odd=f&&procOn()?(CVS.length?CVS.flatMap((c,i)=>(i==cc?walls:c.walls).map(w=>[w,CVS.length>1?c.name+': ':''])):walls.map(w=>[w,''])).filter(([w])=>{const q=tileFam(w.preset);return q&&!q.includes(f)}):[];
- const t=a?`Processors listed for ${S.preset}: ${a.map(x=>FAMS[x]).join(', ')}.${S.procAll?'':' Tick Show incompatible processors to see the rest.'}`:'No processor limit is published for this tile, so every processor is listed.',
+ const t=a?`Processors listed for ${S.preset}: ${a.map(x=>FAMS[x]).join(', ')}.${S.procAll?'':' Tick Show incompatible processors to see the rest.'}`:`⚠ Processor compatibility data is missing for ${S.preset}. Every processor brand is listed; check the tile's receiving card with the supplier.`,
   w=odd.length?`⚠ ${S.proc} is not listed for ${odd.slice(0,4).map(([w,c])=>`${c}${w.name||'a wall'} (${w.preset})`).join(', ')}${odd.length>4?' and '+(odd.length-4)+' more':''}. Check with the manufacturer before relying on it.`:'';
- if(inf&&inf.textContent!==t)inf.textContent=t;if(wn&&wn.textContent!==w)wn.textContent=w}
+ if(inf&&inf.textContent!==t){inf.textContent=t;inf.style.color=a?'var(--mu)':'#e5a000'}if(wn&&wn.textContent!==w)wn.textContent=w}
 // ---------- data wiring: each port's chain is a list of [col,row]; ports numbered P1.. across walls in list order
 const tpp=w=>procOn()&&S.ppx>0?Math.floor(S.ppx/(w.tw*w.th)):0;
 // Auto wiring works like NovaLCT's quick connection: each port loads a rectangle of tiles, and the data runs through
