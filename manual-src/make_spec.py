@@ -191,7 +191,17 @@ live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
 desktop build made without the Spout/Syphon files. Short messages (NDI started/stopped/errors, Resolume saved, Next
 pattern name) appear as a toast at the bottom centre for 2.5-9 s. In a cramped viewport (narrower than 640 px or a
-window under 520 px tall) the top bar stays on one row and scrolls sideways.
+window under 520 px tall) the top bar wraps onto several rows. After the export buttons: "Start LED Build" / "Stop LED Build",
+"Start DVD Screensaver" / "Stop DVD Screensaver" and a Zoom slider (log2 of zoom relative to Show entire canvas, -2 to +4).
+
+**Output options** (section after Animation Options): first "Take over a display", one row per non-primary display (up to
+three: Display 2-4, numbered with the primary display first, then left to right), each with its size in device pixels, a
+Canvas drop-down when there are several canvases, and a Take over / Release button. The desktop app lists displays through
+Electron's screen API and opens a borderless full-screen window there (frame name tsout:<display id>:<canvas id>); in
+Chrome/Edge the Window Management API (getScreenDetails, permission "window-management", button "Find displays") lists
+them and a pop-up opens on the display with a one-click full-screen button. Each canvas drives at most one display; the
+per-canvas "Send this canvas to a display" menu controls the same outputs. Then the NDI® options and Spout/Syphon options
+submenus.
 
 ### 3.3 Viewport (centre)
 
@@ -483,7 +493,7 @@ notices"), do not bundle NDI® Tools, and follow the NDI® SDK License Agreement
 
 **Spout** (Windows desktop) and **Syphon** (Mac desktop) share the canvas with other programs on the same computer
 through the GPU (no network, no compression). Submenu "Spout options" / "Syphon options" (web: "Spout / Syphon
-options") under Animation Options, after NDI® options: sender/server name shName (default TileSmith), "Frame rate when
+options") under Output options, after NDI® options: sender/server name shName (default TileSmith), "Frame rate when
 NDI® is off" shFps (60/50/30/25), "Save CPU while the picture is still" shIdle (default on), the explanation text, a
 Start/Stop button (hidden when not built in), a status line and the credit line ("Spout by Lynn Jarvis ·
 spout.zeal.co" / "Syphon by Tom Butterworth & Anton Marini · syphon.github.io"). One output timer paces everything
@@ -519,7 +529,7 @@ pipe:0 [format args] -an out`. Saved to Videos/TileSmith (Windows) or Movies/Til
 tilesmith-build-YYYYMMDD-HHMMSS.ext. Click again to cancel. Estimated length is shown.
 
 {codecs}
-**Cable labels** (section "Label printing options", placed after Animation Options; the whole section is hidden unless
+**Cable labels** (section "Label printing options", placed after Output options; the whole section is hidden unless
 data wiring (a processor is chosen and at least one port exists) or power wiring (Power distribution on and at least one
 circuit exists) is defined). Button "Print labels" (mobile: "Save label sheet"). One entry per cable with two labels
 (end 1/2 and 2/2): data cable P<n> (processor port -> first tile, DATA IN), return cable R<n> when Return is on (last

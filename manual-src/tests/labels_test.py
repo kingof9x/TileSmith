@@ -13,7 +13,7 @@ async def main():
         r = await pg.evaluate(vis); print('HIDDEN when nothing wired:', not r); ok &= not r
         await pg.evaluate("()=>{S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';S.ret=true;sync()}")
         await pg.evaluate("()=>{storeWall();sync()}"); await pg.wait_for_timeout(200)
-        r = await pg.evaluate("()=>({vis:"+VIS+",n:labelList().length,stat:document.querySelector('#lblStat').textContent,after:!!(document.querySelector('#lblBox').closest('details').previousElementSibling&&/Animation/.test(document.querySelector('#lblBox').closest('details').previousElementSibling.textContent.slice(0,40))),first:labelList()[0],pl:portPlan().flat().length})")
+        r = await pg.evaluate("()=>({vis:"+VIS+",n:labelList().length,stat:document.querySelector('#lblStat').textContent,after:!!(document.querySelector('#lblBox').closest('details').previousElementSibling&&/Output options/.test(document.querySelector('#lblBox').closest('details').previousElementSibling.textContent.slice(0,40))),first:labelList()[0],pl:portPlan().flat().length})")
         print('DATA wired', json.dumps(r)[:700]); ok &= r['vis'] and r['n'] == 2 * r['pl'] and r['after']
         # power
         await pg.evaluate("()=>{S.pdist=true;S.pmode='Snake';sync()}"); await pg.wait_for_timeout(200)
