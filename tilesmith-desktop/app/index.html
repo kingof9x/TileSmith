@@ -996,7 +996,7 @@ function workerPack(c,x,y,s,o,id){
  // torso pinned at the hips, leaning; then the head on the neck
  const tq=part('torso');if(tq){const hp=[prj(0,pz),py];c.save();c.translate(hp[0],hp[1]);c.rotate(rot);c.scale(.001,.001*syq);c.drawImage(tq.im,-tq.J.hips[0],-tq.J.hips[1]);
   const iw=tq.im.naturalWidth||tq.im.width,nk=tq.J.neck||[iw/2,0],hy=tq.J.hips[1],ox=-tq.J.hips[0],oy=-hy,ln=hy-nk[1];
-  if(back){const bw=iw*(V==4?.46:.36),bh=bw*.42,bx=ox+nk[0]+(V==3?-iw*.04:0)-bw/2,by=oy+nk[1]+ln*.3;
+  if(back){const LS=[.8,.62,.56,.2],bw=iw*(V==4?LS[0]:LS[1]),bh=bw*LS[2],bx=ox+nk[0]+(V==3?-iw*.04:0)-bw/2,by=oy+nk[1]+ln*LS[3];
    if(logoImg&&logoImg.width){const r=Math.min(bw/logoImg.width,bh/logoImg.height),lw=logoImg.width*r,lh=logoImg.height*r;c.drawImage(logoImg,bx+(bw-lw)/2,by+(bh-lh)/2,lw,lh)}
    else if(S.logo){c.save();c.translate(bx+bw/2,by+bh/2);c.scale(L,1);c.fillStyle='#111';c.font=`800 ${bh*.62}px sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(S.logo,0,0,bw);c.restore()}}
   else if(S.cd&&o.m&&o.m[0]&&V<=1){const tw=iw*(V==0?.27:.3),tt=tw*.55,tx=ox+nk[0]+(V==0?-iw*.2:iw*.06),ty=oy+nk[1]+ln*.22;
