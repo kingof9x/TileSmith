@@ -46,8 +46,12 @@ async def main():
         # per crew member
         await pg.evaluate("()=>{S.cd=true;sync();crewUI()}")
         chk(await pg.evaluate("()=>document.querySelectorAll('#crew select[data-f=\"4\"]').length==crew.length"), 'each crew member has a pack picker')
-        await pg.evaluate("()=>{S.tstyle='Classic';sync();const s=document.querySelector('#crew select[data-f=\"4\"]');s.value=S.tpack;s.dispatchEvent(new Event('input',{bubbles:true}))}")
-        chk(await pg.evaluate("()=>pkFor(crew[0])==S.tpack&&pkFor(crew[1])==''"), 'pack per crew member while the style is Classic')
+        await pg.evaluate("()=>{const own=S.tpack;S.tpack='builtin-khalid';sync();crewUI();const s=document.querySelector('#crew select[data-f=\"4\"]');s.value=own;s.dispatchEvent(new Event('input',{bubbles:true}));window.OWN=own}")
+        chk(await pg.evaluate("()=>pkFor(crew[0])==OWN&&pkFor(crew[1])=='builtin-khalid'"), 'each crew member can have their own pack')
+        await pg.evaluate("()=>{S.tstyle='Classic';sync();crewUI()}")
+        chk(await pg.evaluate("()=>crew.every(c=>pkFor(c)=='')&&document.querySelectorAll('#crew select[data-f=\"4\"]').length==0"), 'Classic draws the Classic technician for everyone and hides the pack pickers')
+        chk(await pg.evaluate("()=>crew[0][4]==OWN"), 'the crew member keeps their pack choice for when Character pack is picked again')
+        await pg.evaluate("()=>{S.tstyle='Character pack';sync()}")
         proj = await pg.evaluate("()=>{const o=stateObj();o.rc=rcForProject();o.pk=pkForProject();return JSON.stringify(o)}")
         chk(len(json.loads(proj)['pk']) == 1, 'project carries your pack')
         await pg.evaluate("()=>{indexedDB.deleteDatabase('tilesmith-packs');localStorage.clear()}"); await pg.reload(); await pg.wait_for_timeout(1000)
@@ -67,7 +71,7 @@ async def main():
         await pg.evaluate("()=>{S.tstyle='Character pack';S.tpack='builtin-khalid';S.cd=true;sync();crewUI()}")
         chk(await pg.evaluate("()=>document.querySelectorAll('#crew input[type=color]').length==0&&document.querySelectorAll('#crew [data-face]').length==0"), 'skin, hair and face photo hidden when every crew member uses a pack')
         await pg.evaluate("()=>{S.tstyle='Classic';sync();crewUI()}")
-        chk(await pg.evaluate("()=>document.querySelectorAll('#crew input[type=color]').length==crew.filter(c=>!pkFor(c)).length*2&&crew.some(c=>!pkFor(c))"), 'skin and hair shown again for Classic crew (hidden only for crew given their own pack)')
+        chk(await pg.evaluate("()=>document.querySelectorAll('#crew input[type=color]').length==crew.length*2"), 'skin and hair shown for every crew member with Classic')
         px = await pg.evaluate("""async()=>{S.tstyle='Character pack';S.tpack='builtin-khalid';const P=pkLoad('builtin-khalid');await new Promise(r=>setTimeout(r,800));
           const f=c=>{S.vest=c;const im=pkTint('builtin-khalid',P,'front','torso',P.img.front.torso),g=document.createElement('canvas');g.width=im.width;g.height=im.height;const x=g.getContext('2d');x.drawImage(im,0,0);
             const d=x.getImageData(0,0,g.width,g.height).data;let r=0,gr=0,n=0;for(let i=0;i<d.length;i+=4)if(d[i+3]>200){r+=d[i];gr+=d[i+1];n++}return[r/n,gr/n]};
