@@ -79,7 +79,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['NDI® output, Spout (Windows), Syphon (Mac)', 'No (buttons and menus hidden)', 'Yes'],
  ['Touch: pinch to zoom, two-finger pan', 'Yes', 'Windows touch screens'],
 ])}
-<div class="note">Tablets give the most room. On a phone the panels stack under each other and you scroll between them (chapter 3). A dedicated phone layout is planned.</div></section>
+<div class="note">Tablets give the most room. On a phone the panels stack under each other and you scroll between them (chapter 3). On a phone the viewport sits at the bottom of the page (chapter 3).</div></section>
 
 <section class="chap"><h1>2. Installing</h1>
 <p>TileSmith Mobile is built from the TileSmith project. It is not in the app stores yet.</p>
@@ -95,9 +95,9 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p>On a <b>tablet</b>, or any screen wider than 900 points, TileSmith shows three columns:</p>
 <ul><li><b>Settings</b> on the left, in collapsible sections. It scrolls on its own.</li>
 <li>The <b>top bar</b> of actions and the <b>viewport</b> in the middle. The viewport is a preview of the master canvas: the picture your LED processor or media server would get.</li>
-<li><b>Engineering</b> on the right.</li></ul>
+<li><b>Engineering data</b> on the right.</li></ul>
 {img('t01-first-launch.png', 'Tablet, landscape: a new install shows one 6 × 4 wall on a 1920 × 1080 canvas.')}
-<p>On a <b>phone</b> the three parts stack. Scroll down past the settings to reach the top bar and viewport, then the engineering tables. Turning the phone sideways shows the three columns, side by side but narrow.</p>
+<p>On a <b>phone</b> the page runs top to bottom: the settings, the collapsed <b>Engineering data</b> menu, the button bar (wrapped onto several rows, ending with <b>Start LED Build</b> and <b>Start DVD Screensaver</b>) and the viewport at the bottom, with a <b>Zoom</b> slider along its lower edge. With several canvases a phone shows them one above the other. Turning the phone sideways shows the three columns, side by side but narrow.</p>
 {row(*[img(f, f'Phone, screen {i + 1}', maxh='120mm') for i, f in enumerate(phone[:3])])}
 <p>The app follows the system <b>light or dark</b> setting.</p>
 {row(img('t21-light-theme.png', 'Light theme'), img('p90-phone-landscape.png', 'Phone in landscape'))}
@@ -123,7 +123,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <b>One finger, editing modes</b><span>In <i>Wire tiles</i>, <i>Remove tiles</i> and <i>Mark half tiles</i>, tapping and dragging edit the selected wall instead of moving it.</span>
 <b>One finger on empty space</b><span>Pans the viewport.</span>
 <b>Two fingers</b><span>Pinch to zoom (up to 500%) around your fingers, and move to pan. Only the viewport zooms, never the whole screen.</span>
-<b>Scroll</b><span>Swipe the settings or engineering panel to scroll it. On a phone, swipe outside the viewport to scroll the page.</span>
+<b>Scroll</b><span>Swipe the settings or Engineering data panel to scroll it. On a phone, swipe outside the viewport to scroll the page.</span>
 <b>Show entire canvas</b><span>Brings the whole canvas back into view.</span></div>
 <p>Text and number fields open the keyboard. Colour fields open the system colour picker. Upload fields open the photo picker or file browser. Web links, Ko-fi and e-mail open in your browser or mail app.</p></section>
 
@@ -178,8 +178,8 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 {img('cv-power-wiring-all.png', 'The five preferences on a 10 × 5 wall, 16 tiles per circuit')}
 {img('cv-data-and-power.png', 'Data and power together: power is drawn white on black, with lightning-bolt badges')}</section>
 
-<section class="chap"><h1>11. Engineering panel</h1>
-<div class="side"><div><p>The engineering panel (on the right on a tablet, at the bottom on a phone) shows totals for the <b>Entire canvas</b> and for each wall. The canvas section covers canvas and LED pixels, area, weight, peak and typical power, processor ports and processors needed, and with power on, circuits, Socapex cables and peak load per phase. Each wall section covers its tile model, wall pixels, position, tiles, size in metres and feet, area, weight, power, tiles per port or circuit, minimum ports and circuits, and its data and power paths.</p>
+<section class="chap"><h1>11. Engineering data</h1>
+<div class="side"><div><p>The <b>Engineering data</b> panel (on the right on a tablet; a collapsible menu after the settings on a phone) shows totals for the <b>Entire canvas</b> and for each wall. The canvas section covers canvas and LED pixels, area, weight, peak and typical power, processor ports and processors needed, and with power on, circuits, Socapex cables and peak load per phase. Each wall section covers its tile model, wall pixels, position, tiles, size in metres and feet, area, weight, power, tiles per port or circuit, minimum ports and circuits, and its data and power paths.</p>
 <p>Tap a section heading to fold it. The same tables go into the spec sheet pages of the exported PDF.</p></div>{img('ui-engineering-panel.png', 'Engineering', maxh='150mm')}</div></section>
 
 <section class="chap"><h1>12. Build animation and technician</h1>
@@ -227,7 +227,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['The video stopped, froze or is shorter than expected', 'Keep TileSmith open and on screen while it records. Switching apps or locking the device interrupts the recording.'],
  ['Pinch zooms the whole page instead of the canvas', 'Pinch inside the viewport. If the whole page still zooms, the build is missing its mobile setup: rebuild with the project\'s scripts (npm run android / npm run ios, or prepare-assets.js for the AI Studio build).'],
  ['The app shows "The TileSmith page is not in this app yet"', 'AI Studio build: copy android-assets/tilesmith into app/src/main/assets/ (see 00-START-HERE.md in the AI Studio kit).'],
- ['Everything is tiny on a phone', 'Use landscape, zoom the viewport with two fingers, or use a tablet. A phone layout is planned.'],
+ ['Everything is tiny on a phone', 'Use the Zoom slider under the viewport, zoom with two fingers, turn the phone to landscape, or use a tablet.'],
  ['iPhone/iPad app stops opening after a week', 'Free Apple ID builds expire after 7 days. Run it again from Xcode (BUILD-IOS.txt).'],
  ['Settings are wrong after testing', 'ⓘ Info › Reset saved settings.'],
  ['No Start NDI® button', 'NDI®, Spout and Syphon are desktop features. Use the Windows or Mac app for live output.'],

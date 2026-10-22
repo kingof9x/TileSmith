@@ -265,7 +265,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <li><span class="key">Engineering › Power</span>: tick <b>Power distribution</b> to see tiles per circuit, then pick a pattern under <span class="key">Power wiring</span>.</li>
 <li>Click <b>Start NDI®</b> in the top bar (desktop app) and pick <i>TileSmith-LED-Out</i> in your receiver. For an app on the same computer, click <b>Start Spout</b> (Windows) or <b>Start Syphon</b> (Mac) and pick <i>TileSmith</i>.</li>
 <li>Open <b>Animation Options › LED build</b> and click <b>Start</b> to watch the technician build the wall, or <b>Stop</b> to show it finished. Use <b>Save</b> in the top bar to keep the whole project in a file.</li></ol>
-{img('overview', 'The TileSmith window: settings on the left, actions along the top, the master canvas in the middle and the engineering panel on the right.')}</section>
+{img('overview', 'The TileSmith window: settings on the left, actions along the top, the master canvas in the middle and the Engineering data panel on the right.')}</section>
 
 <section class="chap"><h1>4. The screen</h1>
 <p>The <b>Test pattern</b> submenu appears both in the canvas menu and under <b>Animation Options</b>; they are the same controls (for the selected wall), shown in whichever one you open.</p>
@@ -285,6 +285,9 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['Export PNG', 'Saves the canvas as a PNG image at full resolution.'],
  ['Export PDF', 'Saves one PDF: the full raster on the first page, the spec sheet with every engineering figure, and the cable labels (chapter 18).'],
  ['Resolume XML ▾', 'Drop-down: pick <b>One slice per LED wall</b> or <b>One slice per tile</b> to save an Advanced Output preset for Resolume Arena.'],
+ ['Start LED Build', 'Starts the build animation on every wall (the same as Start in Animation Options › LED build). While it runs the button reads <b>Stop LED Build</b>, which shows the finished walls.'],
+ ['Start DVD Screensaver', 'Turns the DVD screensaver on; the button then reads <b>Stop DVD Screensaver</b>. Its settings are in Animation Options › DVD screensaver.'],
+ ['Zoom', 'Slider for the viewport zoom. The middle is <b>Show entire canvas</b>; left zooms out, right zooms in, around the centre of the viewport.'],
  ])}
 <h3>Moving around the viewport</h3><ul><li>Next to the zoom level, the top bar shows how many frames per second the canvas is drawing, or <i>still</i> when nothing is moving.</li>
 <li><b>Scroll wheel</b> zooms around the pointer. Zoom all the way out and the whole canvas, and any wall placed outside it, is centred in view, however small the window. <b>Drag empty space</b> pans. <b>Show entire canvas</b> brings the canvas back into view and <b>Center canvas</b> centres it at the current zoom.</li>
@@ -374,8 +377,8 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <div class="side"><div><h3>Manual power wiring</h3><ol><li>Set Pattern to <b>Manual</b> and click <b>Wire tiles</b>.</li><li>Click tiles in the viewport in power-link order, or press on a tile and drag across the others, the same way as data wiring. A circuit stops accepting tiles when it is full.</li><li><b>New circuit</b> starts the next circuit, <b>Undo</b> removes the last tile, <b>Clear</b> starts again. Click <b>Stop wiring</b> when done.</li></ol>
 <p>Below the controls TileSmith lists every circuit (for example <i>1-2: 12/12</i>), flags circuits over capacity in red and counts tiles without power.</p></div>{img('sec_pwiring')}</div></section>
 
-<section class="chap"><h1>13. Engineering panel</h1><div class="side"><div>
-<p>The right-hand panel has an <b>Entire canvas</b> section and one section per wall. Click a heading to fold it away.</p>
+<section class="chap"><h1>13. Engineering data</h1><div class="side"><div>
+<p>The right-hand <b>Engineering data</b> panel has an <b>Entire canvas</b> section and one section per wall. Click a heading to fold it away. On a phone it is a collapsible <b>Engineering data</b> menu after the last settings section.</p>
 <ul><li>Canvas size, aspect, pixels, tile count, LED pixels, area (m² and sq ft), weight (kg and lbs).</li>
 <li>Peak and typical power, and the peak current at the circuit voltage once Power distribution is ticked.</li>
 <li>With Power distribution ticked: circuit size, tiles per circuit, circuits used, the fewest circuits possible, cables and spare circuits, peak load per cable, circuits over capacity and tiles without power.</li>

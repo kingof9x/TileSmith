@@ -218,7 +218,7 @@ goes to the output.
   the cursor is a crosshair over the selected wall and drags edit instead of moving the wall. While Remove tiles or
   Mark half tiles is on, empty spots of the selected wall show a red dashed outline with an X (viewport only).
 
-### 3.4 Engineering panel (right)
+### 3.4 Engineering data panel (right; a collapsible menu after the settings on phones)
 
 Collapsible "Entire canvas" section then one section per wall, as two-column tables (label, value). Rows in section 9.
 
