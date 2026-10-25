@@ -193,6 +193,9 @@ desktop build made without the Spout/Syphon files. Short messages (NDI started/s
 pattern name) appear as a toast at the bottom centre for 2.5-9 s. In a cramped viewport (narrower than 640 px or a
 window under 520 px tall) the top bar wraps onto several rows. After the export buttons: "Start LED Build" / "Stop LED Build",
 "Start DVD Screensaver" / "Stop DVD Screensaver" and a Zoom slider (log2 of zoom relative to Show entire canvas, -2 to +4).
+Right after "Center canvas", "Data" and "Power" toggle `S.showData`/`S.showPow` (the same flags as the "Show data paths" /
+"Show power runs on the canvas" checkboxes in Engineering) and get a `tgon` CSS class (accent-coloured border/text) while on;
+turning either off also exits its tile-by-tile wiring edit mode if it was active.
 A right-aligned group at the end of the bar (pushed to the end of the row it wraps onto with a flex `margin-left:auto`, so it
 sits bottom-right of the button area, above the viewport) holds "ⓘ Info" and "Report a bug / feedback". The latter captures a
 screenshot (via `getDisplayMedia`, a picker the user confirms; falls back to just the LED viewport canvas if denied or

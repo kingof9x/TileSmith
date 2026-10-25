@@ -82,7 +82,7 @@ Visibility rules:
 
 ### 3.2 Top bar
 
-Buttons: **New Project**, **Save**, **Open**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**, **ⓘ Info**, **Report a bug / feedback**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
+Buttons: **New Project**, **Save**, **Open**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Data**, **Power**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**, **ⓘ Info**, **Report a bug / feedback**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
 moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Start NDI®" toggles NDI; while
 live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout" (Windows) or "Start Syphon" (Mac)
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
@@ -90,6 +90,9 @@ desktop build made without the Spout/Syphon files. Short messages (NDI started/s
 pattern name) appear as a toast at the bottom centre for 2.5-9 s. In a cramped viewport (narrower than 640 px or a
 window under 520 px tall) the top bar wraps onto several rows. After the export buttons: "Start LED Build" / "Stop LED Build",
 "Start DVD Screensaver" / "Stop DVD Screensaver" and a Zoom slider (log2 of zoom relative to Show entire canvas, -2 to +4).
+Right after "Center canvas", "Data" and "Power" toggle `S.showData`/`S.showPow` (the same flags as the "Show data paths" /
+"Show power runs on the canvas" checkboxes in Engineering) and get a `tgon` CSS class (accent-coloured border/text) while on;
+turning either off also exits its tile-by-tile wiring edit mode if it was active.
 A right-aligned group at the end of the bar (pushed to the end of the row it wraps onto with a flex `margin-left:auto`, so it
 sits bottom-right of the button area, above the viewport) holds "ⓘ Info" and "Report a bug / feedback". The latter captures a
 screenshot (via `getDisplayMedia`, a picker the user confirms; falls back to just the LED viewport canvas if denied or

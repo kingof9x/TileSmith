@@ -110,6 +110,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['<b>Show entire canvas</b>', 'Fits the whole canvas in the viewport again.'],
  ['<b>New Project</b>', 'Asks first, then wipes everything and starts a blank canvas. Undo brings it back.'],
  ['<b>Undo</b>', 'Opens a list of the last 20 changes; tap one to go back to just before it. The first item can be <i>Redo</i>.'],
+ ['<b>Data</b> / <b>Power</b>', 'Show or hide the data cable paths and power runs drawn on the canvas. Highlighted while on; same as the Show data paths / Show power runs checkboxes in Engineering.'],
  ['<b>Next pattern</b>', 'Moves the selected wall to the next test pattern; a message at the bottom names it.'],
  ['<b>Export PNG / Export PDF</b>', 'Save the canvas picture, or one PDF with the full raster, the spec sheet and the cable labels (chapter 14).'],
  ['<b>Resolume XML ▾</b>', 'Saves a Resolume Arena Advanced Output preset: One slice per LED wall or One slice per tile.'],
