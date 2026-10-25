@@ -113,6 +113,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['<b>Next pattern</b>', 'Moves the selected wall to the next test pattern; a message at the bottom names it.'],
  ['<b>Export PNG / Export PDF</b>', 'Save the canvas picture, or one PDF with the full raster, the spec sheet and the cable labels (chapter 14).'],
  ['<b>Resolume XML ▾</b>', 'Saves a Resolume Arena Advanced Output preset: One slice per LED wall or One slice per tile.'],
+ ['<b>Report a bug / feedback</b>', 'At the end of the bar, next to ⓘ Info. Captures a screenshot, lets you mark it up and add a description, then saves the marked-up screenshot through the share sheet and opens an email to tilesmithapp@gmail.com with your description — attach the saved screenshot before sending.'],
 ])}
 <p>Next to the buttons: a red recording status, the zoom level and how many frames per second the canvas draws (<i>still</i> when nothing moves).</p></section>
 

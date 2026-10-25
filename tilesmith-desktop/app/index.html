@@ -42,6 +42,11 @@ table{width:100%;border-collapse:collapse}td{padding:5px 0;border-bottom:1px sol
 .dlg{background:var(--pn);color:var(--tx);border:1px solid var(--ln);border-radius:12px;padding:22px 26px;max-width:440px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .dlg{max-height:90vh;overflow:auto}.dlg h2{margin:0 0 4px;font-size:20px}.dlg .sub{color:var(--mu);margin-bottom:16px}.dlg dt{color:var(--mu);font-size:12px;margin-top:12px}.dlg dd{margin:2px 0 0;font-size:15px}.dlg a{color:var(--ac)}.dlg a.kofi{display:inline-flex;align-items:center;gap:9px;background:#29abe0;color:#fff;text-decoration:none;font-weight:700;padding:8px 16px 8px 12px;border-radius:9px}.dlg a.kofi:hover,.dlg a.kofi:focus-visible{filter:brightness(1.1)}
 main{container-type:inline-size;position:relative}#halfStop{position:absolute;left:50%;transform:translateX(-50%);z-index:6;padding:9px 18px;font-weight:800;letter-spacing:.04em;background:#e5484d;color:#fff;border:2px solid #fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.5);cursor:pointer}#halfStop[hidden]{display:none}@container (max-width:640px){#bar{flex-wrap:wrap;gap:5px;padding:6px}#bar>*{flex:0 0 auto}#bar button{padding:5px 9px}}@media(max-height:520px){#bar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin}#bar>*{flex:0 0 auto}}
+.bar-r{margin-left:auto;display:flex;gap:6px}
+#bugCv{display:block;max-width:100%;max-height:50vh;touch-action:none;cursor:crosshair;background:#000}
+#bugWrap{border:1px solid var(--ln);border-radius:6px;overflow:auto;max-height:50vh;line-height:0}
+#bugTools{align-items:center;gap:8px;margin:8px 0}#bugTools input[type=range]{width:90px;accent-color:var(--ac)}#bugTools input[type=color]{width:36px;height:28px;padding:0;border:1px solid var(--ln);border-radius:4px;background:none}
+#bugDesc{width:100%;box-sizing:border-box;font:inherit;resize:vertical}
 @media(max-width:900px){#app{grid-template-columns:1fr;height:auto}main{height:70vh;order:3}#left{order:1;padding-bottom:4px}#right{order:2;padding-top:0}aside{border:0}#engD>summary{font-size:13px}#engD>summary h1{display:inline;font-size:inherit;margin:0;color:inherit}}
 #zbox{display:inline-flex;align-items:center;gap:6px;color:var(--mu);font-size:12px}#zbox input{width:130px;accent-color:var(--ac)}@container (max-width:640px){#zbox{position:absolute;left:8px;right:8px;bottom:8px;z-index:5;background:var(--pn);border:1px solid var(--ln);border-radius:8px;padding:6px 10px;display:flex}#zbox input{flex:1;width:auto}}#engD:not(.mob)>summary{display:none}#engD:not(.mob){border-top:0;padding:0}
 </style></head><body><div id="app">
@@ -58,6 +63,19 @@ main{container-type:inline-size;position:relative}#halfStop{position:absolute;le
 <dt class="desk-only">NDI® license</dt><dd class="desk-only" style="font-size:12px;color:var(--mu)"><span id="ndiinc">The desktop app includes the NDI® runtime library from the NDI® SDK (Processing.NDI.Lib.x64.dll on Windows, libndi.dylib on Mac), © Vizrt NDI AB.</span> It is distributed under, and its use is subject to, the NDI® SDK License Agreement (<a class="ext" href="https://ndi.link/ndisdk_license" target="_blank" rel="noopener">ndi.link/ndisdk_license</a>). The NDI® runtime uses third-party libraries; their license notices are included with TileSmith. NDI® Tools are not included and are not distributed with TileSmith. <button id="ndilic" style="margin-top:6px">View NDI® license notices</button></dd>
 <dt class="desk-only">Spout and Syphon</dt><dd class="desk-only" style="font-size:12px;color:var(--mu)">The Windows app can include SpoutDX from the Spout SDK by Lynn Jarvis (<a class="ext" href="https://spout.zeal.co/" target="_blank" rel="noopener">spout.zeal.co</a>), Simplified BSD licence. The Mac app can include the Syphon framework by Tom Butterworth &amp; Anton Marini (<a class="ext" href="https://syphon.github.io/" target="_blank" rel="noopener">syphon.github.io</a>), BSD licence, and node-syphon by Benoît Lahoz, MIT licence. Their licence texts ship with TileSmith. <button id="shlic" style="margin-top:6px">View Spout / Syphon licences</button></dd></dl>
 <div style="color:var(--mu);font-size:12px;margin-top:16px">Your crew, canvas, wall, tile model, patterns, uploads and options are saved automatically and restored next time.</div><div class="row" style="margin-top:14px;justify-content:flex-end"><button id="rst">Reset saved settings</button><button id="cpy">Copy email</button><button id="cls">Close</button></div></div></div>
+<div class="ov" id="bugrpt" role="dialog" aria-modal="true" aria-labelledby="bgt"><div class="dlg" style="max-width:720px">
+<h2 id="bgt">Report a bug / feedback</h2>
+<div class="sub" style="margin-bottom:10px">Draw on the screenshot to point out the problem, then describe it below.</div>
+<div id="bugWrap"><canvas id="bugCv"></canvas></div>
+<div class="row" id="bugTools">
+<span style="font-size:12px;color:var(--mu)">Pen</span><input type="color" id="bugColor" value="#e5484d" aria-label="Pen color" title="Pen color">
+<input type="range" id="bugWidth" min="1" max="14" value="4" step="1" aria-label="Pen width" title="Pen width">
+<button id="bugUndo">Undo</button><button id="bugClear">Clear markup</button>
+</div>
+<label style="display:block;margin:10px 0 2px;font-size:13px">Description<textarea id="bugDesc" rows="5" placeholder="What happened? What did you expect?"></textarea></label>
+<div style="color:var(--mu);font-size:12px;margin:8px 0 14px">This downloads the marked-up screenshot as a PNG, then opens an email to <b>tilesmithapp@gmail.com</b> with your description. Please attach the downloaded PNG before sending.</div>
+<div class="row" style="justify-content:flex-end;gap:8px"><button id="bugCancel">Cancel</button><button id="bugSend">Download screenshot &amp; open email</button></div>
+</div></div>
 <script>
 const P={ // wmm,hmm,pxw,pxh,pitch,kg,wmax,depth
 // Absen, Unilumin: manufacturer spec sheets.
@@ -548,7 +566,7 @@ ${F('lblLayout','Wrap layout','select',['Two identical panels','Flag fold-over (
 <div id="lblStat" style="font-size:12px;color:var(--mu);margin:6px 0"></div>
 <div class="row">${MOBILE?B('lbl','Save label sheet'):B('lbl','Print labels')}</div>
 <div style="color:var(--mu);font-size:12px">${MOBILE?'The label sheet is saved as a web page: open it in a browser and print it at 100% scale (no "fit to page").':'Print at 100% scale (turn off "fit to page") so the labels line up with the sheet.'} Each label is a wrap-around strip: it wraps around the cable and sticks to itself. Each label shows the cable name, which end it is, what it plugs into and where the other end goes.</div></div>`);
-$('#bar').innerHTML=B('newc','New Project')+B('psave','Save')+B('popen','Open')+B('about','ⓘ Info')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('fit','Show entire canvas')+B('ctr','Center canvas')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('pdf','Export PDF')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+B('bldgo','Start LED Build')+B('dvdgo','Start DVD Screensaver')+'<label id="zbox">Zoom <input type="range" id="zsl" min="-2" max="4" step="0.01" value="0" aria-label="Zoom"></label>'+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>';
+$('#bar').innerHTML=B('newc','New Project')+B('psave','Save')+B('popen','Open')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('fit','Show entire canvas')+B('ctr','Center canvas')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('pdf','Export PDF')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+B('bldgo','Start LED Build')+B('dvdgo','Start DVD Screensaver')+'<label id="zbox">Zoom <input type="range" id="zsl" min="-2" max="4" step="0.01" value="0" aria-label="Zoom"></label>'+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>'+`<span class="bar-r">${B('about','ⓘ Info')}${B('bugrpt','Report a bug / feedback')}</span>`;
 if(!$('#opf')){const i=document.createElement('input');i.type='file';i.id='opf';i.accept='.tilesmith,.json,application/json';i.hidden=true;document.body.appendChild(i)}
 sync();crewUI();}
 function sync(){storeWall();procRefresh();tileRefresh();rcUI();pkUI();cvUI();document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
@@ -644,7 +662,7 @@ const a=t.dataset.a;if(!a)return;const v=t.dataset.v,cw=S.cw,ch=S.ch;
 al(){S.ox=v[0]=='c'||v=='tc'||v=='bc'?Math.round((cw-WW())/2):0;S.oy=v=='c'?Math.round((ch-WH())/2):v[0]=='b'?ch-WH():0;if(v=='tl'||v=='bl')S.ox=0},
 arr(){[S.cols,S.rows]=v.split('x').map(Number);showAll()},
 pp(){S.play=!S.play},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},rcdel(){rcDel()},dispfind(){dispList(true)},dispon(){const d=DISP.find(x=>String(x.id)===v);if(!d)return;for(const[c,o]of[...OUTW])if(String(o.d.id)===v)outClose(c);const s=document.querySelector(`[data-dispcv="${CSS.escape(v)}"]`),c=(s&&CVS.find(x=>String(x.id)===s.value))||CVS[cc];outOpen(c,d.id);cvUI()},dispoff(){for(const[c,o]of[...OUTW])if(String(o.d.id)===v)outClose(c);cvUI()},bldgo(){if(barBuilding()){eachCv(()=>showAll());S.play=false}else{eachCv(()=>reset());S.play=true}},dvdgo(){S.dvdOn=!S.dvdOn;storeWall();sync();saveSoon()},pkdel(){pkDel()},pcfg(){exportConfig()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
-about(){showAbout(1)},ndi(){toggleNdi()},share(){toggleShare()},png(){eachCv(()=>{const m=M,n=`tilesmith-canvas${cvTag()}.png`;m.toBlob(b=>dl(b,n))})},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
+about(){showAbout(1)},bugrpt(){showBugReport()},ndi(){toggleNdi()},share(){toggleShare()},png(){eachCv(()=>{const m=M,n=`tilesmith-canvas${cvTag()}.png`;m.toBlob(b=>dl(b,n))})},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
 add(){crew.push(['Tech '+(crew.length+1),'#e0ac69',null,HAIR[crew.length%HAIR.length]]);crewUI()},rcrew(){crew=defCrew();crewUI()}}[a])();
 sync();fit_if();});
 function fit_if(){if(M.width!=S.cw||M.height!=S.ch){if(REC&&!CVX)endRec(false);M.width=S.cw;M.height=S.ch;if(!CVX)fit();forceRen=true}}
@@ -1856,7 +1874,52 @@ catch(e){shStop();shMsg(SHN+' error: '+(e.message||e),1)}}
 addEventListener('beforeunload',shStop);
 function showAbout(on){const o=$('#about');o.classList.toggle('on',!!on);if(on)$('#cls').focus();else{const b=document.querySelector('[data-a=about]');b&&b.focus()}}
 $('#cls').onclick=()=>showAbout(0);$('#about').addEventListener('click',e=>{if(e.target.id=='about')showAbout(0)});
-addEventListener('keydown',e=>{if(e.key=='Escape'){showAbout(0);ddClose();if(halfEdit){stopMarking();sync()}}});
+addEventListener('keydown',e=>{if(e.key=='Escape'){showAbout(0);hideBugReport();ddClose();if(halfEdit){stopMarking();sync()}}});
+// Report a bug / feedback: screenshot + markup + mailto
+let bugImg=null,bugStrokes=[],bugDraw=null;
+async function bugCapture(){
+ try{
+  if(navigator.mediaDevices&&navigator.mediaDevices.getDisplayMedia){
+   const stream=await navigator.mediaDevices.getDisplayMedia({video:{displaySurface:'window'},audio:false});
+   const v=document.createElement('video');v.muted=true;v.playsInline=true;v.srcObject=stream;
+   await new Promise((res,rej)=>{v.onloadedmetadata=()=>v.play().then(res,rej);v.onerror=rej});
+   await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+   const cv=document.createElement('canvas');cv.width=v.videoWidth||M.width;cv.height=v.videoHeight||M.height;
+   cv.getContext('2d').drawImage(v,0,0,cv.width,cv.height);
+   stream.getTracks().forEach(t=>t.stop());
+   return cv;
+  }
+ }catch(err){/* no permission / unsupported: fall back below */}
+ const cv=document.createElement('canvas');cv.width=M.width;cv.height=M.height;cv.getContext('2d').drawImage(M,0,0);
+ return cv;
+}
+function bugRedraw(){const cv=$('#bugCv');if(!cv.width)return;const g=cv.getContext('2d');g.clearRect(0,0,cv.width,cv.height);if(bugImg)g.drawImage(bugImg,0,0,cv.width,cv.height);
+ for(const s of bugStrokes){g.strokeStyle=s.c;g.lineWidth=s.w;g.lineCap='round';g.lineJoin='round';g.beginPath();s.pts.forEach((p,i)=>i?g.lineTo(p[0],p[1]):g.moveTo(p[0],p[1]));g.stroke()}}
+function bugPos(e){const cv=$('#bugCv'),r=cv.getBoundingClientRect();return[(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]}
+async function showBugReport(){
+ let img;try{img=await bugCapture()}catch(err){toast('Could not capture a screenshot: '+(err&&err.message||err));return}
+ bugImg=img;bugStrokes=[];bugDraw=null;
+ const cv=$('#bugCv');cv.width=img.width;cv.height=img.height;bugRedraw();
+ $('#bugDesc').value='';$('#bugrpt').classList.add('on');$('#bugDesc').focus();
+}
+function hideBugReport(){const o=$('#bugrpt');if(!o.classList.contains('on'))return;o.classList.remove('on');bugImg=null;bugStrokes=[];bugDraw=null;const b=document.querySelector('[data-a=bugrpt]');b&&b.focus()}
+{const cv=$('#bugCv');
+cv.addEventListener('pointerdown',e=>{if(!bugImg)return;try{cv.setPointerCapture(e.pointerId)}catch(x){}bugDraw={c:$('#bugColor').value,w:+$('#bugWidth').value,pts:[bugPos(e)]};bugStrokes.push(bugDraw);bugRedraw()});
+cv.addEventListener('pointermove',e=>{if(!bugDraw)return;bugDraw.pts.push(bugPos(e));bugRedraw()});
+const bugEnd=()=>{bugDraw=null};cv.addEventListener('pointerup',bugEnd);cv.addEventListener('pointercancel',bugEnd);cv.addEventListener('pointerleave',bugEnd)}
+$('#bugUndo').onclick=()=>{bugStrokes.pop();bugRedraw()};
+$('#bugClear').onclick=()=>{bugStrokes=[];bugRedraw()};
+$('#bugCancel').onclick=()=>hideBugReport();
+$('#bugrpt').addEventListener('click',e=>{if(e.target.id=='bugrpt')hideBugReport()});
+function openMail(subject,body){const u='mailto:tilesmithapp@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+ if(DESK){try{require('electron').shell.openExternal(u);return}catch(err){}}
+ if(MOBILE){try{TSM.openUrl(u);return}catch(err){}}
+ location.href=u}
+$('#bugSend').onclick=()=>{const cv=$('#bugCv'),desc=$('#bugDesc').value.trim();
+ cv.toBlob(b=>{const n='tilesmith-bugreport-'+Date.now()+'.png';dl(b,n);
+  const subject='TileSmith bug report / feedback (v3.5)',
+   body=(desc||'(no description entered)')+'\n\n— A marked-up screenshot was saved as '+n+'. Please attach it to this email before sending. —';
+  openMail(subject,body);hideBugReport();toast('Screenshot saved as '+n+'. Attach it to the email before sending.')},'image/png')};
 // top-bar drop-down menus
 function ddClose(){document.querySelectorAll('.ddm').forEach(m=>{if(!m.hidden){m.hidden=true;const b=m.parentNode.querySelector('[aria-haspopup]');if(b)b.setAttribute('aria-expanded','false')}})}
 document.addEventListener('click',e=>{if(!(e.target.closest&&e.target.closest('.dd')))ddClose()});

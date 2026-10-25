@@ -288,6 +288,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['Start LED Build', 'Starts the build animation on every wall (the same as Start in Animation Options › LED build). While it runs the button reads <b>Stop LED Build</b>, which shows the finished walls.'],
  ['Start DVD Screensaver', 'Turns the DVD screensaver on; the button then reads <b>Stop DVD Screensaver</b>. Its settings are in Animation Options › DVD screensaver.'],
  ['Zoom', 'Slider for the viewport zoom. The middle is <b>Show entire canvas</b>; left zooms out, right zooms in, around the centre of the viewport.'],
+ ['Report a bug / feedback', 'Bottom right of the top bar, next to <b>ⓘ Info</b>. Captures a screenshot, lets you draw on it to point out the problem, and takes a description. <b>Download screenshot &amp; open email</b> saves the marked-up screenshot as a PNG and opens an email to <code>tilesmithapp@gmail.com</code> with your description; attach the downloaded PNG before sending, since an email link cannot attach a file on its own.'],
  ])}
 <h3>Moving around the viewport</h3><ul><li>Next to the zoom level, the top bar shows how many frames per second the canvas is drawing, or <i>still</i> when nothing is moving.</li>
 <li><b>Scroll wheel</b> zooms around the pointer. Zoom all the way out and the whole canvas, and any wall placed outside it, is centred in view, however small the window. <b>Drag empty space</b> pans. <b>Show entire canvas</b> brings the canvas back into view and <b>Center canvas</b> centres it at the current zoom.</li>

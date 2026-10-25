@@ -1,6 +1,6 @@
 # TileSmith 3.5 - app specification for building a clone
 
-Generated 2026-10-22 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-10-25 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -82,7 +82,7 @@ Visibility rules:
 
 ### 3.2 Top bar
 
-Buttons: **New Project**, **Save**, **Open**, **ⓘ Info**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
+Buttons: **New Project**, **Save**, **Open**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**, **ⓘ Info**, **Report a bug / feedback**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
 moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Start NDI®" toggles NDI; while
 live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout" (Windows) or "Start Syphon" (Mac)
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
@@ -90,6 +90,13 @@ desktop build made without the Spout/Syphon files. Short messages (NDI started/s
 pattern name) appear as a toast at the bottom centre for 2.5-9 s. In a cramped viewport (narrower than 640 px or a
 window under 520 px tall) the top bar wraps onto several rows. After the export buttons: "Start LED Build" / "Stop LED Build",
 "Start DVD Screensaver" / "Stop DVD Screensaver" and a Zoom slider (log2 of zoom relative to Show entire canvas, -2 to +4).
+A right-aligned group at the end of the bar (pushed to the end of the row it wraps onto with a flex `margin-left:auto`, so it
+sits bottom-right of the button area, above the viewport) holds "ⓘ Info" and "Report a bug / feedback". The latter captures a
+screenshot (via `getDisplayMedia`, a picker the user confirms; falls back to just the LED viewport canvas if denied or
+unsupported), opens a dialog to draw on it (colour and width pickers, Undo, Clear markup) and add a text description, then on
+"Download screenshot & open email" downloads the marked-up image as `tilesmith-bugreport-<timestamp>.png` and opens a
+`mailto:tilesmithapp@gmail.com` link pre-filled with the description (a mailto link cannot attach a file, so the user attaches
+the downloaded PNG by hand).
 
 **Output options** (section after Animation Options): first "Take over a display", one row per non-primary display (up to
 three: Display 2-4, numbered with the primary display first, then left to right), each with its size in device pixels, a

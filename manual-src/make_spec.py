@@ -93,7 +93,7 @@ async def collect():
           return {S:o,WK,P:Object.entries(P).filter(([k,v])=>v),HALF:Object.entries(HALF),PROC:Object.entries(PROC).filter(([k,v])=>v),PATS:PAT_LIST,PFIT,SCRV:Object.keys(SCRV),
            WFILL,WFILLN,PFILL,PFILLN,WPAT,R:Object.entries(R),NFR:Object.entries(NFR),codecs:Object.entries(VCODEC).map(([k,v])=>({name:k,ext:v.ext,enc:v.enc,note:v.note,args:v.args().join(' ')})),
            crew:defCrew().map(c=>c[0]),D,RATES,STAG,GAP,DVD_MAX,TCYC,TC_STEP,TC_SLIDE,STEP_S,PC,POWC,SHADES,NEWPATS:PATS,PATIMG_BOX:Object.entries(PATIMG_BOX),
-           top:[...document.querySelectorAll('#bar > button, #bar .dd > button')].map(x=>x.textContent),
+           top:[...document.querySelectorAll('#bar > button, #bar .dd > button, #bar .bar-r > button')].map(x=>x.textContent),
            panel:[...document.querySelectorAll('#left > details')].map(dd=>[dd.querySelector(':scope>summary').textContent.trim(),[...dd.querySelectorAll('details.subd')].map(x=>{let n=0,e=x.parentElement;while(e&&e!==dd){if(e.matches('details.subd'))n++;e=e.parentElement}return [n,x.querySelector(':scope>summary').textContent.trim()]})])}}""")
         await b.close()
         assert not errs, errs
@@ -193,6 +193,13 @@ desktop build made without the Spout/Syphon files. Short messages (NDI started/s
 pattern name) appear as a toast at the bottom centre for 2.5-9 s. In a cramped viewport (narrower than 640 px or a
 window under 520 px tall) the top bar wraps onto several rows. After the export buttons: "Start LED Build" / "Stop LED Build",
 "Start DVD Screensaver" / "Stop DVD Screensaver" and a Zoom slider (log2 of zoom relative to Show entire canvas, -2 to +4).
+A right-aligned group at the end of the bar (pushed to the end of the row it wraps onto with a flex `margin-left:auto`, so it
+sits bottom-right of the button area, above the viewport) holds "ⓘ Info" and "Report a bug / feedback". The latter captures a
+screenshot (via `getDisplayMedia`, a picker the user confirms; falls back to just the LED viewport canvas if denied or
+unsupported), opens a dialog to draw on it (colour and width pickers, Undo, Clear markup) and add a text description, then on
+"Download screenshot & open email" downloads the marked-up image as `tilesmith-bugreport-<timestamp>.png` and opens a
+`mailto:tilesmithapp@gmail.com` link pre-filled with the description (a mailto link cannot attach a file, so the user attaches
+the downloaded PNG by hand).
 
 **Output options** (section after Animation Options): first "Take over a display", one row per non-primary display (up to
 three: Display 2-4, numbered with the primary display first, then left to right), each with its size in device pixels, a
