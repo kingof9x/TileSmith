@@ -82,7 +82,7 @@ Visibility rules:
 
 ### 3.2 Top bar
 
-Buttons: **New Project**, **Save**, **Open**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Data**, **Power**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**, **ⓘ Info**, **Report a bug / feedback**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
+Buttons: **New Project**, **Save**, **Open**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Data**, **Power**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**, **Engineering data**, **ⓘ Info**, **Report a bug / feedback**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
 moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Start NDI®" toggles NDI; while
 live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout" (Windows) or "Start Syphon" (Mac)
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
@@ -93,13 +93,25 @@ window under 520 px tall) the top bar wraps onto several rows. After the export 
 Right after "Center canvas", "Data" and "Power" toggle `S.showData`/`S.showPow` (the same flags as the "Show data paths" /
 "Show power runs on the canvas" checkboxes in Engineering) and get a `tgon` CSS class (accent-coloured border/text) while on;
 turning either off also exits its tile-by-tile wiring edit mode if it was active.
-A right-aligned group at the end of the bar (pushed to the end of the row it wraps onto with a flex `margin-left:auto`, so it
-sits bottom-right of the button area, above the viewport) holds "ⓘ Info" and "Report a bug / feedback". The latter captures a
-screenshot (via `getDisplayMedia`, a picker the user confirms; falls back to just the LED viewport canvas if denied or
-unsupported), opens a dialog to draw on it (colour and width pickers, Undo, Clear markup) and add a text description, then on
-"Download screenshot & open email" downloads the marked-up image as `tilesmith-bugreport-<timestamp>.png` and opens a
-`mailto:tilesmithapp@gmail.com` link pre-filled with the description (a mailto link cannot attach a file, so the user attaches
-the downloaded PNG by hand).
+The last item in the bar is a full-width `.bar-split` row (`justify-content:space-between`, always wraps onto its own line):
+"Engineering data" sits at its left end and a nested group with "ⓘ Info" and "Report a bug / feedback" sits at its right end.
+"Engineering data" toggles `S.hideEng`; while true, `#app` gets a `no-eng` class that sets `#right{display:none}` and, at
+widths over 900 px, collapses that grid column to 0 so the viewport expands to fill the freed space, same as the panel being
+hidden on mobile. The button gets the `tgon` class (and is highlighted) while the panel is shown, and is itself hidden below
+900 px, since the phone layout already collapses the panel under its own `<details id="engD">` disclosure. "Report a bug /
+feedback" captures a screenshot (via `getDisplayMedia`, a picker the user confirms; falls back to just the LED viewport canvas
+if denied or unsupported), opens a dialog to draw on it (colour and width pickers, Undo, Clear markup) and add a text
+description, then on "Download screenshot & open email" downloads the marked-up image as
+`tilesmith-bugreport-<timestamp>.png` and opens a `mailto:tilesmithapp@gmail.com` link pre-filled with the description (a
+mailto link cannot attach a file, so the user attaches the downloaded PNG by hand).
+
+**UI font** ("ⓘ Info" → Preferences, at the bottom of the popup): a `<select data-k="font">` choosing `S.font`, one of
+`JetBrains Mono` (default), `OpenDyslexic` or `Current` (the original `Barlow,system-ui,sans-serif` stack). Both JetBrains
+Mono and OpenDyslexic ship embedded in `index.html` as base64 `@font-face` woff2 data URIs (regular and bold weights, Latin
+subset, SIL Open Font License), so no network access is needed to render them. `sync()` sets
+`--font-ui` on `:root` to the chosen family and `body{font-family:var(--font-ui)}` picks it up everywhere in the UI; canvas-
+drawn text (tile labels, PDF/label exports) is unaffected and stays on Barlow. The choice is stored in `S.font` and saved and
+restored like any other setting.
 
 **Output options** (section after Animation Options): first "Take over a display", one row per non-primary display (up to
 three: Display 2-4, numbered with the primary display first, then left to right), each with its size in device pixels, a
@@ -227,6 +239,8 @@ dialog) deletes the state and reloads.
 | `logo` | TILESMITH | Vest logo text. |
 | `cd` | true | Show crew details editor and name tags. |
 | `play` | true | Build animation playing (not saved). |
+| `font` | JetBrains Mono | UI font: JetBrains Mono (default), OpenDyslexic, or Current (the original Barlow-based stack). Set from Preferences in the Info popup; applies to the app chrome via --font-ui, not to canvas-drawn text. |
+| `hideEng` | false | Hide the Engineering data panel entirely. Toggled from the Engineering data button in the top bar (desktop only). |
 
 ### 4.2 Per-wall settings
 

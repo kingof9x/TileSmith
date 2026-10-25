@@ -104,7 +104,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <h2>Top bar</h2>
 {img('ui-top-bar.png', 'Top bar. It scrolls sideways when it does not fit.')}
 {table(['Button', 'What it does'], [
- ['<b>ⓘ Info</b>', 'About TileSmith, credits, contact, Ko-fi and Reset saved settings (chapter 16).'],
+ ['<b>ⓘ Info</b>', 'About TileSmith, credits, contact, Ko-fi, a Preferences section with the UI font picker, and Reset saved settings (chapter 16).'],
  ['<b>Save</b> and <b>Open</b>', 'Next to New Project. Save keeps the whole project, with your images and crew, in one .tilesmith file; Open loads one.'],
  ['<b>Center canvas</b>', 'Centres the canvas in the viewport.'],
  ['<b>Show entire canvas</b>', 'Fits the whole canvas in the viewport again.'],
@@ -114,7 +114,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
  ['<b>Next pattern</b>', 'Moves the selected wall to the next test pattern; a message at the bottom names it.'],
  ['<b>Export PNG / Export PDF</b>', 'Save the canvas picture, or one PDF with the full raster, the spec sheet and the cable labels (chapter 14).'],
  ['<b>Resolume XML ▾</b>', 'Saves a Resolume Arena Advanced Output preset: One slice per LED wall or One slice per tile.'],
- ['<b>Report a bug / feedback</b>', 'At the end of the bar, next to ⓘ Info. Captures a screenshot, lets you mark it up and add a description, then saves the marked-up screenshot through the share sheet and opens an email to tilesmithapp@gmail.com with your description — attach the saved screenshot before sending.'],
+ ['<b>Report a bug / feedback</b>', 'At the end of the bar, next to ⓘ Info. Captures a screenshot, lets you mark it up and add a description, then saves the marked-up screenshot through the share sheet and opens an email to tilesmithapp@gmail.com with your description — attach the saved screenshot before sending. (The Engineering data button shown on desktop is not in the phone bar — the ▸ Engineering data section further up already opens and closes it.)'],
 ])}
 <p>Next to the buttons: a red recording status, the zoom level and how many frames per second the canvas draws (<i>still</i> when nothing moves).</p></section>
 
@@ -213,7 +213,7 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <div class="note">The video is recorded in real time, so switching apps or locking the device interrupts it. Large canvases on older devices can drop frames. If that happens, tap <b>Fit canvas to walls</b> or choose a smaller canvas, and keep the device on its charger. HAP and ProRes need the desktop app.</div></section>
 
 <section class="chap"><h1>16. Info, saving and resetting</h1>
-<div class="side"><div><p><b>ⓘ Info</b> shows the version, credits, the contact address and the Ko-fi link to support the project. <b>Reset saved settings</b> goes back to the defaults after you confirm.</p>
+<div class="side"><div><p><b>ⓘ Info</b> shows the version, credits, the contact address and the Ko-fi link to support the project. Its <b>Preferences</b> section has a UI font picker (JetBrains Mono by default, plus OpenDyslexic and the original Barlow-based font as Current); your choice is saved and restored next time. <b>Reset saved settings</b> goes back to the defaults after you confirm.</p>
 <p>Everything you set up (walls, patterns, wiring, crew, uploaded pictures) is <b>saved automatically</b> on the device and comes back the next time you open TileSmith. Installing a newer build keeps it. Uninstalling the app deletes it.</p>
 <p><b>Moving to another device:</b> use <b>Save</b> to write a project file and open it on the other device; it carries the walls and wiring plus every custom tile and NovaStar receiving card file the walls use, and adds them to that device's library. A full Backup and Restore feature for all settings is planned for a later version.</p></div>{img('ui-info-dialog.png', 'Info')}</div></section>
 
