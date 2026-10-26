@@ -1,4 +1,6 @@
 
+https://github.com/user-attachments/assets/f801cc11-f61d-4a3c-8c87-d3287773e893
+
 
 
 
@@ -12,16 +14,21 @@ Pre production software for LED walls. Engineering specs, cable labels, pixel ma
 
 > **Note:** these videos show a very early version of TileSmith. The app has changed a lot since they were filmed.
 
-https://github.com/kingof9x/TileSmith/blob/main/docs/screenshots/PXL_20261006_204815116_H264%20High%20Quality_H264%20Low%20Quality.mp4
-https://github.com/kingof9x/TileSmith/blob/main/docs/screenshots/PXL_20261007_185942391_H264%20High%20Quality.mp4
-https://github.com/kingof9x/TileSmith/blob/main/docs/screenshots/PXL_20261007_185942391_H264%20High%20Quality_H264%20Low%20Quality.mp4
-https://github.com/user-attachments/assets/7a908c4a-9a76-4100-8384-bc32d4842bed
-
-https://github.com/user-attachments/assets/1d7aa195-7bd9-4ba7-b49c-4e8ddc2baecc
 
 
 
-https://github.com/user-attachments/assets/5b64079b-8531-4905-8813-d90909b4550e
+
+https://github.com/user-attachments/assets/ad490931-0c5d-47d6-92ca-d4c2faeee1d6
+
+
+
+https://github.com/user-attachments/assets/ccb46ffc-e185-4ef4-a353-455af979b058
+
+
+
+https://github.com/user-attachments/assets/3fe2f407-80e1-4f42-a2f5-a2593f6d69d9
+
+
 
 
 
