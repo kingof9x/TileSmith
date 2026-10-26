@@ -1,3 +1,7 @@
+
+
+
+
 # TileSmith
 
 **[TLDR I just want to download it](#download)**
@@ -11,6 +15,15 @@ Pre production software for LED walls. Engineering specs, cable labels, pixel ma
 https://github.com/kingof9x/TileSmith/blob/main/docs/screenshots/PXL_20261006_204815116_H264%20High%20Quality_H264%20Low%20Quality.mp4
 https://github.com/kingof9x/TileSmith/blob/main/docs/screenshots/PXL_20261007_185942391_H264%20High%20Quality.mp4
 https://github.com/kingof9x/TileSmith/blob/main/docs/screenshots/PXL_20261007_185942391_H264%20High%20Quality_H264%20Low%20Quality.mp4
+https://github.com/user-attachments/assets/7a908c4a-9a76-4100-8384-bc32d4842bed
+
+https://github.com/user-attachments/assets/1d7aa195-7bd9-4ba7-b49c-4e8ddc2baecc
+
+
+
+https://github.com/user-attachments/assets/5b64079b-8531-4905-8813-d90909b4550e
+
+
 
 <sub>The previews above are sped up. Click one to open the full video.</sub>
 
