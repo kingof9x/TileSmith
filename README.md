@@ -1,9 +1,3 @@
-
-https://github.com/user-attachments/assets/f801cc11-f61d-4a3c-8c87-d3287773e893
-
-
-
-
 # TileSmith
 
 **[TLDR I just want to download it](#download)**
