@@ -8,25 +8,31 @@ Pre production software for LED walls. Engineering specs, cable labels, pixel ma
 
 > **Note:** these videos show a very early version of TileSmith. The app has changed a lot since they were filmed.
 
-
-
-
+<table>
+<tr>
+<td width="33%" valign="top">
 
 https://github.com/user-attachments/assets/ad490931-0c5d-47d6-92ca-d4c2faeee1d6
 
+<b>On site, building a real wall</b><br>The build animation running on an LED wall in an arena while the crew builds it, tile by tile.
 
+</td>
+<td width="33%" valign="top">
 
 https://github.com/user-attachments/assets/ccb46ffc-e185-4ef4-a353-455af979b058
 
+<b>LED build animation</b><br>A tech carries tiles into place and the wall fills in, row by row, on a laptop.
 
+</td>
+<td width="33%" valign="top">
 
 https://github.com/user-attachments/assets/3fe2f407-80e1-4f42-a2f5-a2593f6d69d9
 
+<b>Test pattern in an arena</b><br>A TileSmith test pattern on the side screens of an arena during setup.
 
-
-
-
-<sub>The previews above are sped up. Click one to open the full video.</sub>
+</td>
+</tr>
+</table>
 
 ## Screenshots
 
