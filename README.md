@@ -4,6 +4,23 @@
 
 Pre production software for LED walls. Engineering specs, cable labels, pixel maps and test patterns with some fun animation for vidiots. Yes it is vibe coded.
 
+## Videos
+
+> **Note:** these videos show a very early version of TileSmith. The app has changed a lot since they were filmed.
+
+<table>
+<tr>
+<td align="center" width="50%"><a href="docs/screenshots/PXL_20261006_204815116_H264%20High%20Quality_H264%20Low%20Quality.mp4"><img src="docs/screenshots/video-build-preview.gif" width="200" alt="Early TileSmith build animation on a laptop, a tech placing tiles row by row"></a></td>
+<td align="center" width="50%"><a href="docs/screenshots/PXL_20261007_185942391_H264%20High%20Quality_H264%20Low%20Quality.mp4"><img src="docs/screenshots/video-venue-preview.gif" width="200" alt="Early TileSmith test pattern on the LED screens in an arena"></a></td>
+</tr>
+<tr>
+<td align="center"><b>LED build animation</b> (45 s)<br><a href="docs/screenshots/PXL_20261006_204815116_H264%20High%20Quality_H264%20Low%20Quality.mp4">Watch the video</a></td>
+<td align="center"><b>On site in an arena</b> (10 s)<br><a href="docs/screenshots/PXL_20261007_185942391_H264%20High%20Quality_H264%20Low%20Quality.mp4">Watch the video</a></td>
+</tr>
+</table>
+
+<sub>The previews above are sped up. Click one to open the full video.</sub>
+
 ## Screenshots
 
 **Data and power wiring.** Two walls on a Brompton Tessera S8, with data paths (P# to R#) and power circuits drawn on the tiles, and the engineering figures on the right.
