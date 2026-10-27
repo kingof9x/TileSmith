@@ -34,19 +34,21 @@ async def m():
         chk('OpenDyslexic' in fam2,f'switching to OpenDyslexic changes the applied font {fam2}')
         await pg.click('#cls');await pg.wait_for_timeout(200)
 
-        # Engineering data toggle: left-justified, Info/Report a bug right-justified, same row
+        # Engineering data toggle: right-justified, Info/Report a bug left-justified, same row
         eng=await pg.eval_on_selector('[data-a=engtog]',"e=>e.getBoundingClientRect()")
         info=await pg.eval_on_selector('[data-a=about]',"e=>e.getBoundingClientRect()")
         bug=await pg.eval_on_selector('[data-a=bugrpt]',"e=>e.getBoundingClientRect()")
         bar=await pg.eval_on_selector('#bar',"e=>e.getBoundingClientRect()")
         chk(abs(eng['top']-info['top'])<2,'Engineering data sits on the same row as Info')
-        chk(eng['left']<bar['left']+10,'Engineering data is left-justified in its row')
-        chk(bug['right']>info['right']>eng['right'],'Info and Report a bug are right-justified, after Engineering data')
+        chk(eng['right']>bar['right']-10,'Engineering data is right-justified in its row')
+        chk(info['left']<bar['left']+10 and info['right']<bug['right']<eng['left'],'Info and Report a bug are left-justified, before Engineering data')
+        chk(await pg.evaluate("()=>document.querySelector('[data-a=engtog]').textContent")=='Hide Engineering Data','button reads Hide Engineering Data while the panel is shown')
         chk(await pg.evaluate("()=>document.querySelector('[data-a=engtog]').classList.contains('tgon')"),'Engineering data button is highlighted while the panel is shown')
 
         await pg.click('[data-a=engtog]');await pg.wait_for_timeout(200)
         chk(await pg.evaluate("()=>getComputedStyle(document.getElementById('right')).display")=='none','clicking it hides the Engineering data panel completely')
         chk(not await pg.evaluate("()=>document.querySelector('[data-a=engtog]').classList.contains('tgon')"),'button un-highlights once hidden')
+        chk(await pg.evaluate("()=>document.querySelector('[data-a=engtog]').textContent")=='Show Engineering Data','button reads Show Engineering Data once hidden')
 
         await pg.reload();await pg.wait_for_timeout(1000)
         chk(await pg.evaluate("()=>S.font")=='OpenDyslexic','font choice is saved and restored after reload')

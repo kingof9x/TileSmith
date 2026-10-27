@@ -48,7 +48,7 @@ KEYDESC = {
  'lblKeep': 'Sheets: keep the two ends of one cable in the same row (pad with a blank cell).',
  'shGpu': 'Spout graphics card (Windows): Automatic (the high-performance card) or a card name from the list. The receiver must be on the same card.',
  'hat': 'Technician hard hat colour.', 'vest': 'Technician vest colour.', 'logo': 'Vest logo text.', 'tstyle': 'Technician character style: Classic or Character pack.', 'tpack': 'Selected character pack (id in the on-device pack library).', 'cd': 'Show crew details editor and name tags.', 'play': 'Build animation playing (not saved).',
- 'font': 'UI font: JetBrains Mono (default), OpenDyslexic, or Current (the original Barlow-based stack). Set from Preferences in the Info popup; applies to the app chrome via --font-ui, not to canvas-drawn text.', 'hideEng': 'Hide the Engineering data panel entirely. Toggled from the Engineering data button in the top bar (desktop only).',
+ 'font': 'UI font: JetBrains Mono (default), OpenDyslexic, or Current (the original Barlow-based stack). Set from Preferences in the Info popup; applies to the app chrome via --font-ui, not to canvas-drawn text.', 'hideEng': 'Hide the Engineering data panel entirely. Toggled from the Hide / Show Engineering Data button in the top bar (desktop only).',
  # per wall
  'half': 'Legacy half-tile marks from v3.2 previews ([col,row,side]); converted to "lay" on load.',
  'gone': 'Removed tiles on a plain grid: list of [col,row].',
@@ -198,8 +198,8 @@ Right after "Center canvas", "Data" and "Power" toggle `S.showData`/`S.showPow` 
 "Show power runs on the canvas" checkboxes in Engineering) and get a `tgon` CSS class (accent-coloured border/text) while on;
 turning either off also exits its tile-by-tile wiring edit mode if it was active.
 The last item in the bar is a full-width `.bar-split` row (`justify-content:space-between`, always wraps onto its own line):
-"Engineering data" sits at its left end and a nested group with "ⓘ Info" and "Report a bug / feedback" sits at its right end.
-"Engineering data" toggles `S.hideEng`; while true, `#app` gets a `no-eng` class that sets `#right{{display:none}}` and, at
+a nested group with "ⓘ Info" and "Report a bug / feedback" sits at its left end and "Hide Engineering Data" sits at its right end.
+That button reads "Hide Engineering Data" while the panel is shown and "Show Engineering Data" while it is hidden; it toggles `S.hideEng`; while true, `#app` gets a `no-eng` class that sets `#right{{display:none}}` and, at
 widths over 900 px, collapses that grid column to 0 so the viewport expands to fill the freed space, same as the panel being
 hidden on mobile. The button gets the `tgon` class (and is highlighted) while the panel is shown, and is itself hidden below
 900 px, since the phone layout already collapses the panel under its own `<details id="engD">` disclosure. "Report a bug /
