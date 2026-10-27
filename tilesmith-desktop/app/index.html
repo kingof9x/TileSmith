@@ -419,7 +419,7 @@ function cvAdd(dup){if(cvBusy()){toast('Finish or cancel the video export first.
  const c=dup?cvMake(nm,S.cw,S.ch,walls.map(cloneWall),cur):cvMake(nm,1920,1080,[wallDef()],0);c.open=true;CVS.push(c);const i=CVS.length-1;withCv(i,()=>showAll());
  switchTo(i,true);fit();sync();saveSoon();toast((dup?'Duplicated as ':'Added ')+nm+'. Each canvas is its own output.',3500)}
 function cvDel(){if(CVS.length<2)return;if(cvBusy()){toast('Finish or cancel the video export first.',3000);return}const i=cc,nm=CVS[i].name;stopMarking();goneEdit=false;wiring=false;pwiring=false;
- outClose(CVS[i]);CVS.splice(i,1);cvLoad(Math.min(i,CVS.length-1));fit();forceRen=true;sync();saveSoon();toast('Removed '+nm+'.',3000)}
+ outCloseCv(CVS[i]);CVS.splice(i,1);cvLoad(Math.min(i,CVS.length-1));fit();forceRen=true;sync();saveSoon();toast('Removed '+nm+'.',3000)}
 // the canvas list in the panel: one "Canvas n" submenu each; the canvas and LED wall controls (#cvCtl) live in the selected one
 function cvUI(){if(CVX)return;const L=$('#cvList'),ctl=$('#cvCtl');if(!L||!ctl||!CVS.length)return;const key=CVS.map(c=>c.id).join()+'#'+cc;
  if(L.__k!==key){ctl.remove();L.innerHTML=CVS.map((c,i)=>`<details class="subd cvd" data-cvd="${i}"${c.open?' open':''}><summary data-cvs="${i}"><span class="cvn"></span> <span class="cvz" style="color:var(--mu);font-weight:400"></span></summary><div class="sec" data-slot="${i}"></div></details>`).join('');
@@ -512,7 +512,7 @@ $('#left').innerHTML=sect(`<h1>TileSmith <span style="font-size:11px;font-weight
 <h2>Canvases</h2><div id="cvList"></div><div class="row">${B('cvadd','Add canvas')}</div>
 <div id="cvCtl"><div class="g"><label class="w">Canvas name<input type="text" id="cvName" maxlength="40"></label></div><div class="row">${B('cvdup','Duplicate canvas')}${B('cvdel','Remove canvas')}</div><div style="color:var(--mu);font-size:12px">Each canvas is its own output (its own NDI®, Spout / Syphon source, PNG, PDF raster page and video). Click a canvas in the viewport or its name here to select it.</div>
 <div class="g">${F('cw','Width px')}${F('ch','Height px')}</div>
-<div id="outBox" class="desk-only"><div class="g"><label class="w">Send this canvas to a display<select id="outSel"></select></label></div><div id="outNote" style="font-size:12px;color:var(--mu)"></div></div>
+<div id="outBox" class="desk-only"><div style="color:var(--mu);font-size:12px">Send this canvas to displays</div><div id="outSel" class="row" style="flex-direction:column;align-items:flex-start"></div><div id="outNote" style="font-size:12px;color:var(--mu)"></div></div>
 <div class="row">${Object.keys(R).map(k=>B('res',k,k)).join('')}${B('match','Fit canvas to walls')}</div>
 ${SUB('LED walls',`<div id="wlist"></div>
 <div class="row">${B('wadd','Add wall')}${B('wdup','Duplicate')}${B('wdel','Remove')}</div>
@@ -652,7 +652,7 @@ if(t.id=='pkf'){const fs=[...t.files];t.value='';if(fs.length)pkAdd(fs);return}
 if(t.id=='rcVend'||t.id=='rcRev'){const r=RC.get(S.rcfg);if(r){r[t.id=='rcVend'?'vendor':'revision']=t.value.slice(0,t.id=='rcVend'?60:40);clearTimeout(rcSave.t);rcSave.t=setTimeout(()=>rcSave(r),400);rcUI()}return}
 if(t.dataset&&t.dataset.k=='rcfg'&&t.value){const r=RC.get(t.value);if(r&&!r.models.includes(S.preset)){r.models.push(S.preset);rcSave(r)}}
 if(t.dataset&&t.dataset.dispcv!==undefined){const R=$('#dispRows');R.__pick=R.__pick||{};R.__pick[t.dataset.dispcv]=t.value;return}
-if(t.id=='outSel'){const c=CVS[cc];if(t.value)outOpen(c,t.value);else outClose(c);cvUI();return}
+if(t.dataset&&t.dataset.outd!==undefined){const c=CVS[cc];if(t.checked)outOpen(c,t.dataset.outd);else outClose(t.dataset.outd);cvUI();return}
 if(t.id=='cvName'){if(CVS[cc])CVS[cc].name=t.value.replace(/\s+/g,' ').slice(0,40)||'Canvas';cvUI();forceRen=true;return}
 if(t.dataset&&t.dataset.brand){brandPick(t.value);return}
 if(t.id=='opf'){const f=t.files[0];t.value='';if(f)openProjectAsk(f);return}
@@ -675,7 +675,7 @@ const a=t.dataset.a;if(!a)return;const v=t.dataset.v,cw=S.cw,ch=S.ch;
 ({undom(){const t=e.target.closest('button'),m=$('#undom'),o=m.hidden;ddClose();if(o){unUI();const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-260))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');const f=m.querySelector('button:not([disabled])');if(f)f.focus()}},undo(){ddClose();if(v)unUndo(+v)},redo(){ddClose();unRedo()},ctr(){const r=vp.getBoundingClientRect();V.x=(r.width-S.cw*V.z)/2;V.y=(r.height-S.ch*V.z)/2},newc(){newCanvasAsk()},res(){[S.cw,S.ch]=R[v]},match(){fitCanvas()},wadd(){addWall(false)},pspec(){applySpec()},npat(){nextPattern()},hrowb(){halfRow('bottom')},hrowt(){halfRow('top')},hedit(){halfEdit=!halfEdit&&!!halfOf(S);if(halfEdit){wiring=false;pwiring=false;goneEdit=false}},gedit(){goneEdit=!goneEdit;if(goneEdit){wiring=false;pwiring=false;halfEdit=false}},gclr(){restoreAll()},hclr(){S.half=[];S.lay={};storeWall();showAll();sync()},dvdexp(){dvdExportLoop()},rxml(){if(v)S.resSl=v;ddClose();exportRes()},rxmlm(){const m=$('#rxmlm'),o=m.hidden;ddClose();if(o){const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-200))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');m.querySelector('button').focus()}},wedit(){wiring=!wiring;if(wiring){S.showData=true;pwiring=false;halfEdit=false;goneEdit=false}wireMsg(wiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},wnew(){if(!Array.isArray(S.wman))S.wman=[];const l=S.wman[S.wman.length-1];if(!l||l.length)S.wman.push([]);wireMsg('')},wundo(){const m=S.wman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();wireMsg('')},wclr(){S.wman=[];wireMsg('')},pedit(){pwiring=!pwiring;if(pwiring){S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg(pwiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},pnew(){if(!Array.isArray(S.pman))S.pman=[];const l=S.pman[S.pman.length-1];if(!l||l.length)S.pman.push([]);pwMsg('')},pundo(){const m=S.pman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();pwMsg('')},pclr(){S.pman=[];pwMsg('')},wdup(){addWall(true)},wdel(){delWall()},
 al(){S.ox=v[0]=='c'||v=='tc'||v=='bc'?Math.round((cw-WW())/2):0;S.oy=v=='c'?Math.round((ch-WH())/2):v[0]=='b'?ch-WH():0;if(v=='tl'||v=='bl')S.ox=0},
 arr(){[S.cols,S.rows]=v.split('x').map(Number);showAll()},
-pp(){S.play=!S.play},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},rcdel(){rcDel()},dispfind(){dispList(true)},dispon(){const d=DISP.find(x=>String(x.id)===v);if(!d)return;for(const[c,o]of[...OUTW])if(String(o.d.id)===v)outClose(c);const s=document.querySelector(`[data-dispcv="${CSS.escape(v)}"]`),c=(s&&CVS.find(x=>String(x.id)===s.value))||CVS[cc];outOpen(c,d.id);cvUI()},dispoff(){for(const[c,o]of[...OUTW])if(String(o.d.id)===v)outClose(c);cvUI()},bldgo(){if(barBuilding()){eachCv(()=>showAll());S.play=false}else{eachCv(()=>reset());S.play=true}},dvdgo(){S.dvdOn=!S.dvdOn;storeWall();sync();saveSoon()},pkdel(){pkDel()},pcfg(){exportConfig()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
+pp(){S.play=!S.play},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},rcdel(){rcDel()},dispfind(){dispList(true)},dispon(){const d=DISP.find(x=>String(x.id)===v);if(!d)return;outClose(v);const s=document.querySelector(`[data-dispcv="${CSS.escape(v)}"]`),c=(s&&CVS.find(x=>String(x.id)===s.value))||CVS[cc];outOpen(c,d.id);cvUI()},dispoff(){outClose(v);cvUI()},bldgo(){if(barBuilding()){eachCv(()=>showAll());S.play=false}else{eachCv(()=>reset());S.play=true}},dvdgo(){S.dvdOn=!S.dvdOn;storeWall();sync();saveSoon()},pkdel(){pkDel()},pcfg(){exportConfig()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
 about(){showAbout(1)},bugrpt(){showBugReport()},dwtog(){S.showData=!S.showData;if(!S.showData)wiring=false;storeWall();sync();saveSoon()},pwtog(){S.showPow=!S.showPow;if(!S.showPow)pwiring=false;storeWall();sync();saveSoon()},engtog(){S.hideEng=!S.hideEng;sync();saveSoon()},ndi(){toggleNdi()},share(){toggleShare()},png(){eachCv(()=>{const m=M,n=`tilesmith-canvas${cvTag()}.png`;m.toBlob(b=>dl(b,n))})},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
 add(){crew.push(['Tech '+(crew.length+1),'#e0ac69',null,HAIR[crew.length%HAIR.length]]);crewUI()},rcrew(){crew=defCrew();crewUI()}}[a])();
 sync();fit_if();});
@@ -1635,7 +1635,8 @@ async function exportPDF(){storeWall();toast('Building the PDF…',2500);await n
 // ---------- send a canvas to a display (desktop app): a borderless full-screen window on that display, opened from this page so the
 // canvas is drawn straight into it every frame (no copying between processes). The canvas element is sized in device pixels, so one
 // canvas pixel is one pixel on the output even when the system scales the display (125 %, Retina...). Esc on the output closes it.
-const OUTW=new Map();let DISP=[];
+// OUTW maps a display id to its output window {c,win,cv,x,d,g,dpr}: one canvas per display, but a canvas can be on several displays.
+const OUTW=new Map();const outsOf=c=>[...OUTW.values()].filter(o=>o.c===c);let DISP=[];
 let SD=null;const WEBMS=()=>!DESK&&typeof window.getScreenDetails=='function';
 const dispSort=a=>a.sort((p,q)=>(q.primary?1:0)-(p.primary?1:0)||p.bounds.x-q.bounds.x||p.bounds.y-q.bounds.y);
 async function dispList(ask){if(DESK){try{DISP=dispSort(await require('electron').ipcRenderer.invoke('ts-displays')||[])}catch(e){DISP=[]}outUI();return DISP}
@@ -1646,35 +1647,38 @@ async function dispList(ask){if(DESK){try{DISP=dispSort(await require('electron'
 let WEBDENY=false;
 function outInit(){if(!DESK){setTimeout(()=>dispList(),300);return}setTimeout(dispList,300);try{const ir=require('electron').ipcRenderer;ir.on('ts-displays-changed',()=>dispList().then(()=>{for(const[c,o]of OUTW)if(!DISP.some(d=>String(d.id)===String(o.d.id)))outClose(c);outUI()}))}catch(e){}}
 const dispName=(d,i)=>`Display ${i+1}: ${d.px[0]}×${d.px[1]}${d.label?' ('+d.label+')':''}${d.main?' (TileSmith is here)':''}`;
-function outOpen(c,id){outClose(c);const d=DISP.find(x=>String(x.id)===String(id));if(!d||!c)return;
+function outOpen(c,id){const d=DISP.find(x=>String(x.id)===String(id));if(!d||!c)return;const k=String(d.id);outClose(k);
  const B=d.full||d.bounds,win=window.open('about:blank','tsout:'+String(d.id).replace(/[^\w#-]/g,'_')+':'+c.id,`popup,left=${B.x},top=${B.y},width=${B.width},height=${B.height}`);if(!win){toast(DESK?'Could not open the output window.':'The browser blocked the output window. Allow pop-ups for TileSmith and try again.',6000);return}
  const doc=win.document;doc.title='TileSmith output: '+c.name;doc.body.style.cssText='margin:0;background:#000;overflow:hidden;cursor:none';const cv=doc.createElement('canvas');cv.style.cssText='position:fixed;left:0;top:0;image-rendering:pixelated';doc.body.appendChild(cv);
  if(!DESK){const fb=doc.createElement('button');fb.textContent='Click to fill this display';fb.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;font:600 22px sans-serif;padding:18px 28px;border-radius:12px;border:2px solid #fff;background:#0b6f86;color:#fff;cursor:pointer';fb.onclick=()=>{try{const q=doc.documentElement.requestFullscreen(d.web?{screen:d.web}:undefined);if(q&&q.catch)q.catch(()=>{})}catch(e){}fb.remove();doc.body.style.cursor='none'};doc.body.style.cursor='default';doc.body.appendChild(fb);try{win.moveTo(B.x,B.y);win.resizeTo(B.width,B.height)}catch(e){}}
- const o={win,cv,x:cv.getContext('2d',{alpha:false}),d,g:-1,dpr:0};win.addEventListener('keydown',e=>{if(e.key=='Escape'){outClose(c);cvUI()}});
- win.addEventListener('beforeunload',()=>{if(OUTW.get(c)===o){OUTW.delete(c);c.out='';setTimeout(cvUI)}});OUTW.set(c,o);c.out=String(d.id);
+ const o={c,win,cv,x:cv.getContext('2d',{alpha:false}),d,g:-1,dpr:0};win.addEventListener('keydown',e=>{if(e.key=='Escape'){outClose(k);cvUI()}});
+ win.addEventListener('beforeunload',()=>{if(OUTW.get(k)===o){OUTW.delete(k);setTimeout(cvUI)}});OUTW.set(k,o);
  [0,200,800].forEach(t=>setTimeout(()=>outDraw(c,true),t));setTimeout(outUI);toast(`${c.name} is on ${dispName(d,DISP.indexOf(d))}. Press Esc on that display to close it.`,5000)}
-function outClose(c){const o=OUTW.get(c);if(!o)return;OUTW.delete(c);if(c)c.out='';try{o.win.close()}catch(e){}setTimeout(outUI)}
-function outDraw(c,force){const o=OUTW.get(c);if(!o)return;if(o.win.closed){OUTW.delete(c);c.out='';return}const cur=c===CVS[cc],m=cur?M:c.M,g=cur?gen:c.gen;if(!force&&o.g===g)return;
+function outClose(k){k=String(k);const o=OUTW.get(k);if(!o)return;OUTW.delete(k);try{o.win.close()}catch(e){}setTimeout(outUI)}
+function outCloseCv(c){for(const[k,o]of[...OUTW])if(o.c===c)outClose(k)}
+function outDraw(c,force){const cur=c===CVS[cc],m=cur?M:c.M,g=cur?gen:c.gen;for(const[k,o]of[...OUTW]){if(o.c!==c)continue;if(o.win.closed){OUTW.delete(k);continue}if(!force&&o.g===g)continue;
  const dpr=o.win.devicePixelRatio||1,W=m.width,H=m.height;if(o.cv.width!==W||o.cv.height!==H||o.dpr!==dpr){o.cv.width=W;o.cv.height=H;o.cv.style.width=W/dpr+'px';o.cv.style.height=H/dpr+'px';o.dpr=dpr}
- o.x.imageSmoothingEnabled=false;o.x.drawImage(m,0,0);o.g=g}
+ o.x.imageSmoothingEnabled=false;o.x.drawImage(m,0,0);o.g=g}}
 function dispUI(){const R=$('#dispRows'),N=$('#dispNote');if(!R)return;const ex=DISP.map((d,i)=>[d,i]).filter(([d])=>!d.primary).slice(0,3);
- const k=ex.map(([d,i])=>d.id+':'+d.px+':'+i).join()+'#'+CVS.map(c=>c.id+c.name).join()+'#'+[...OUTW].map(([c,o])=>c.id+'>'+o.d.id).join()+'#'+(SD?1:0)+WEBDENY;
- if(R.__k!==k){R.__k=k;R.innerHTML=ex.map(([d,i])=>{const on=[...OUTW].find(([c,o])=>String(o.d.id)===String(d.id)),cs=on?on[0]:(R.__pick&&R.__pick[d.id]&&CVS.find(c=>c.id==R.__pick[d.id]))||CVS[cc];
+ const k=ex.map(([d,i])=>d.id+':'+d.px+':'+i).join()+'#'+CVS.map(c=>c.id+c.name).join()+'#'+[...OUTW].map(([k,o])=>o.c.id+'>'+k).join()+'#'+(SD?1:0)+WEBDENY;
+ if(R.__k!==k){R.__k=k;R.innerHTML=ex.map(([d,i])=>{const on=OUTW.get(String(d.id)),cs=on?on.c:(R.__pick&&R.__pick[d.id]&&CVS.find(c=>c.id==R.__pick[d.id]))||CVS[cc];
   return `<div class="row" style="align-items:center">${on?`<button data-a="dispoff" data-v="${esc(String(d.id))}" class="live">Release Display ${i+1}</button>`:`<button data-a="dispon" data-v="${esc(String(d.id))}">Take over Display ${i+1}</button>`}<span style="color:var(--mu);font-size:12px">${d.px[0]}×${d.px[1]}${d.label?' · '+esc(d.label):''}</span>${CVS.length>1?`<label style="font-size:12px">Canvas <select data-dispcv="${esc(String(d.id))}"${on?' disabled':''}>${CVS.map(c=>`<option value="${c.id}"${c===cs?' selected':''}>${esc(c.name)}</option>`).join('')}</select></label>`:''}</div>`}).join('')+
   (!DESK&&WEBMS()&&!SD?`<div class="row">${B('dispfind','Find displays')}</div>`:'')}
- let t='';if(DESK)t=ex.length?'Each button sends a canvas full screen to that display, pixel for pixel from the top-left. Esc on the display releases it.':'Only one display is connected. Connect a 2nd, 3rd or 4th display (HDMI / DisplayPort) and it appears here.';
+ let t='';if(DESK)t=ex.length?'Each button sends a canvas full screen to that display, pixel for pixel from the top-left. Several displays can show the same canvas. Esc on the display releases it.':'Only one display is connected. Connect a 2nd, 3rd or 4th display (HDMI / DisplayPort) and it appears here.';
  else if(!WEBMS())t='Taking over a display needs the TileSmith desktop app, or TileSmith opened in Chrome or Edge on a computer. This browser or preview cannot reach other displays.';
  else if(WEBDENY)t='The browser did not allow access to other displays. Allow "Window management" for this site in the browser settings, then press Find displays.';
  else if(!SD)t='Press Find displays and allow window management; Chrome or Edge then lists the 2nd, 3rd and 4th displays. Allow pop-ups for TileSmith too.';
  else t=ex.length?'Each button opens the canvas on that display; click once on the display to fill it. Esc on the display releases it.':'Only one display is connected. Connect a 2nd, 3rd or 4th display and it appears here.';
  if(N&&N.textContent!==t)N.textContent=t}
-function outUI(){dispUI();const bx=$('#outBox');if(bx)bx.style.display=DESK||window.__outTest||(WEBMS()&&SD)?'':'none';const sel=$('#outSel'),n=$('#outNote');if(!sel||!CVS[cc])return;const c=CVS[cc],k=DISP.map(d=>d.id+':'+d.px+':'+d.main).join()+'#'+c.id;
- if(sel.__k!==k){sel.innerHTML='<option value="">Off</option>'+DISP.map((d,i)=>`<option value="${d.id}">${esc(dispName(d,i))}</option>`).join('');sel.__k=k}
- const v=OUTW.has(c)?String(OUTW.get(c).d.id):'';if(sel.value!==v)sel.value=v;let t='';
- if(!DISP.length)t='No displays found.';else if(v){const d=OUTW.get(c).d,[W,H]=d.px;
-  t=(W<S.cw||H<S.ch?`⚠ This display is ${W}×${H}, smaller than the ${S.cw}×${S.ch} canvas, so the right or bottom is cut off. `:W>S.cw||H>S.ch?`The canvas sits at the top-left; the rest of the ${W}×${H} output is black. `:'The canvas fills this display exactly. ')+
-   (d.scale!=1?`The system scales this display to ${Math.round(d.scale*100)}%; TileSmith draws in device pixels so every canvas pixel is still one output pixel. `:'')+(d.main?'This is the display TileSmith is on: the output covers it. ':'')+'Esc on the output closes it.'}
- else t='Pick the display (HDMI / DisplayPort) that feeds the processor. Each canvas can go to its own display, drawn pixel for pixel from the top-left.';if(n.textContent!==t)n.textContent=t}
+function outUI(){dispUI();const bx=$('#outBox');if(bx)bx.style.display=DESK||window.__outTest||(WEBMS()&&SD)?'':'none';const sel=$('#outSel'),n=$('#outNote');if(!sel||!CVS[cc])return;const c=CVS[cc],k=DISP.map(d=>d.id+':'+d.px+':'+d.main).join()+'#'+c.id+'#'+[...OUTW].map(([k,o])=>o.c.id+'>'+k).join()+'#'+CVS.map(c=>c.name).join();
+ if(sel.__k!==k){sel.innerHTML=DISP.map((d,i)=>{const o=OUTW.get(String(d.id)),oth=o&&o.c!==c?` <span style="color:var(--mu)">(now showing ${esc(o.c.name)})</span>`:'';
+  return `<label class="chk" style="font-size:12px"><input type="checkbox" data-outd="${esc(String(d.id))}"${o&&o.c===c?' checked':''}>${esc(dispName(d,i))}${oth}</label>`}).join('');sel.__k=k}
+ const on=outsOf(c).map(o=>o.d);let t='';
+ if(!DISP.length)t='No displays found.';else if(on.length){const one=on.length==1;
+  t=on.map(d=>{const[W,H]=d.px,p=one?'':`Display ${DISP.indexOf(d)+1}: `;
+   return p+(W<S.cw||H<S.ch?`⚠ This display is ${W}×${H}, smaller than the ${S.cw}×${S.ch} canvas, so the right or bottom is cut off. `:W>S.cw||H>S.ch?`The canvas sits at the top-left; the rest of the ${W}×${H} output is black. `:'The canvas fills this display exactly. ')+
+    (d.scale!=1?`The system scales this display to ${Math.round(d.scale*100)}%; TileSmith draws in device pixels so every canvas pixel is still one output pixel. `:'')+(d.main?'This is the display TileSmith is on: the output covers it. ':'')}).join('')+'Esc on an output closes it.'}
+ else t='Tick each display (HDMI / DisplayPort) that feeds a processor. A canvas can go to several displays at once, drawn pixel for pixel from the top-left; a display shows one canvas.';if(n.textContent!==t)n.textContent=t}
 // ---------- processor config (experimental). NovaStar: NovaLCT screen connection file (.scr). The layout follows the open-source
 // decoder in sarakusha/novastar (MIT, read from NovaLCT): "DSCI" header, DVI info, screen info (Standard screens of cabinet regions:
 // sending card, port, order on the cable, position, size) and screen adjust info, each with a 16-bit byte-sum checksum.
@@ -2140,7 +2144,7 @@ function tick(now){if(LOOPREC)return;const dt=Math.min(.1,Math.max(0,(now-lastSt
  const per=now-lastRen>=250,fr=forceRen;forceRen=false;let did=false;
  eachCv(()=>{fit_if();step(dt);dvdStep(dt);const need=fr||forceRen||per||busyNow(now)||c1&&walls.some(w=>w.pat=='cycle')||c2&&walls.some(w=>w.pat=='tileshade-cycle');forceRen=false;
   if(need){const a=performance.now();render();ema('render',performance.now()-a);PERF.frames++;gen++;did=true}if(OUTW.size)outDraw(CVS[cc])});
- if(OUTW.size)for(const c of OUTW.keys())if(!CVS.includes(c))outClose(c);
+ if(OUTW.size)for(const[k,o]of[...OUTW])if(!CVS.includes(o.c))outClose(k);
  if(did){RG++;lastRen=now}}
 function loop(){requestAnimationFrame(loop);try{const now=performance.now();
  if(!OC.on||REC){const F=1000/60;if(now>=nextT-F*.25){tick(now);nextT+=F;if(nextT<now)nextT=now+F}}
@@ -2194,7 +2198,7 @@ addEventListener('keydown',e=>{const t=e.target,tx=t&&(t.tagName=='TEXTAREA'||t.
 function newCanvasAsk(){let o=$('#newc');if(o)o.remove();o=document.createElement('div');o.id='newc';o.style.cssText='position:fixed;inset:0;z-index:99998;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center';
  o.innerHTML='<div role="dialog" aria-modal="true" aria-label="New Project" style="background:var(--pn,#1c1c1c);color:var(--tx,#eee);border:1px solid #555;border-radius:10px;padding:18px;max-width:420px;margin:16px"><h3 style="margin:0 0 8px">Start a new project?</h3><p style="margin:0 0 14px;font-size:14px">This erases every wall, wiring, half tile, pattern and setting (including output, label and video options) and starts from a blank canvas. You can bring it back with Undo.</p><div class="row" style="justify-content:flex-end"><button data-n="0">Cancel</button><button data-n="1" style="border-color:#e5484d;color:#e5484d">Erase everything</button></div></div>';
  document.body.appendChild(o);o.addEventListener('click',e=>{const b=e.target.closest('button[data-n]');if(!b&&e.target!==o)return;o.remove();if(b&&b.dataset.n=='1')newCanvas()});o.querySelector('button').focus()}
-function newCanvas(){stopMarking();document.querySelectorAll('#left details').forEach(d=>d.open=false);for(const k in S)if(!SKIP.includes(k))S[k]=cl(S_DEF[k]);S.patImg=null;S.boxImg=null;walls=[wallFromS()];cur=0;crew=defCrew();logoImg=null;dvdImg=null;wiring=false;pwiring=false;halfEdit=false;goneEdit=false;for(const c of [...OUTW.keys()])outClose(c);CVS=[cvFromGlobals('Canvas 1')];cc=0;
+function newCanvas(){stopMarking();document.querySelectorAll('#left details').forEach(d=>d.open=false);for(const k in S)if(!SKIP.includes(k))S[k]=cl(S_DEF[k]);S.patImg=null;S.boxImg=null;walls=[wallFromS()];cur=0;crew=defCrew();logoImg=null;dvdImg=null;wiring=false;pwiring=false;halfEdit=false;goneEdit=false;for(const k of [...OUTW.keys()])outClose(k);CVS=[cvFromGlobals('Canvas 1')];cc=0;
  showAll();crewUI();sync();fit_if();fit();saveSoon();setTimeout(()=>unCheck('New Project'),0)}
 function stopMarking(){halfEdit=false}
 // ---------- Save / Open project: one .tilesmith file (JSON) with everything, including uploaded logos, patterns, DVD image and the crew
