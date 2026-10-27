@@ -4,6 +4,19 @@
 
 Pre production software for LED walls. Engineering specs, cable labels, pixel maps and test patterns with some fun animation for vidiots. Yes it is vibe coded.
 
+## Project status
+
+**Status:** Waiting on testing and data from a live system
+**Waiting on:** Callum (testing NovaStar export; getting Brompton project data from a working system with live tiles)
+**Last updated:** 2026-10-27
+
+### Task list
+
+- [ ] Review and merge PR #4 (Hide/Show Engineering Data button on the far right of the toolbar)
+- [ ] Test NovaStar `.scr` file export
+- [ ] Get Brompton project files and data from a working system with live tiles
+- [ ] Resume reverse engineering Brompton project files once that data is in hand (blocked on the item above)
+
 ## Videos
 
 > **Note:** these videos show a very early version of TileSmith. The app has changed a lot since they were filmed.
