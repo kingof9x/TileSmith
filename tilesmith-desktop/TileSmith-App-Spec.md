@@ -1,6 +1,6 @@
 # TileSmith 3.5 - app specification for building a clone
 
-Generated 2026-10-25 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-10-28 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -82,7 +82,7 @@ Visibility rules:
 
 ### 3.2 Top bar
 
-Buttons: **New Project**, **Save**, **Open**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Data**, **Power**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**, **Engineering data**, **ⓘ Info**, **Report a bug / feedback**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
+Buttons: **New Project**, **Save**, **Open**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Data**, **Power**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**, **ⓘ Info**, **Report a bug / feedback**, **Hide Engineering Data**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
 moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Start NDI®" toggles NDI; while
 live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout" (Windows) or "Start Syphon" (Mac)
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
@@ -94,8 +94,8 @@ Right after "Center canvas", "Data" and "Power" toggle `S.showData`/`S.showPow` 
 "Show power runs on the canvas" checkboxes in Engineering) and get a `tgon` CSS class (accent-coloured border/text) while on;
 turning either off also exits its tile-by-tile wiring edit mode if it was active.
 The last item in the bar is a full-width `.bar-split` row (`justify-content:space-between`, always wraps onto its own line):
-"Engineering data" sits at its left end and a nested group with "ⓘ Info" and "Report a bug / feedback" sits at its right end.
-"Engineering data" toggles `S.hideEng`; while true, `#app` gets a `no-eng` class that sets `#right{display:none}` and, at
+a nested group with "ⓘ Info" and "Report a bug / feedback" sits at its left end and "Hide Engineering Data" sits at its right end.
+That button reads "Hide Engineering Data" while the panel is shown and "Show Engineering Data" while it is hidden; it toggles `S.hideEng`; while true, `#app` gets a `no-eng` class that sets `#right{display:none}` and, at
 widths over 900 px, collapses that grid column to 0 so the viewport expands to fill the freed space, same as the panel being
 hidden on mobile. The button gets the `tgon` class (and is highlighted) while the panel is shown, and is itself hidden below
 900 px, since the phone layout already collapses the panel under its own `<details id="engD">` disclosure. "Report a bug /
@@ -240,7 +240,7 @@ dialog) deletes the state and reloads.
 | `cd` | true | Show crew details editor and name tags. |
 | `play` | true | Build animation playing (not saved). |
 | `font` | JetBrains Mono | UI font: JetBrains Mono (default), OpenDyslexic, or Current (the original Barlow-based stack). Set from Preferences in the Info popup; applies to the app chrome via --font-ui, not to canvas-drawn text. |
-| `hideEng` | false | Hide the Engineering data panel entirely. Toggled from the Engineering data button in the top bar (desktop only). |
+| `hideEng` | false | Hide the Engineering data panel entirely. Toggled from the Hide / Show Engineering Data button in the top bar (desktop only). |
 
 ### 4.2 Per-wall settings
 
