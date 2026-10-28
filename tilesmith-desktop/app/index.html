@@ -49,6 +49,7 @@ main{container-type:inline-size;position:relative}#halfStop{position:absolute;le
 .bar-split{width:100%;display:flex;justify-content:space-between;align-items:center;gap:6px}.bar-split>span{display:flex;gap:6px;flex-wrap:wrap}
 #bugCv{display:block;max-width:100%;max-height:60vh;touch-action:none;cursor:crosshair;background:#000}
 #bugWrap{border:1px solid var(--ln);border-radius:6px;overflow:auto;max-height:60vh;line-height:0}
+@media (pointer:fine){#bugCv.tall{max-height:none}} /* a tall screenshot scrolls at full width instead of shrinking */
 #bugTools{align-items:center;gap:8px;margin:8px 0}#bugTools input[type=range]{width:90px;accent-color:var(--ac)}#bugTools input[type=color]{width:36px;height:28px;padding:0;border:1px solid var(--ln);border-radius:4px;background:none}
 #bugDesc{width:100%;box-sizing:border-box;font:inherit;resize:vertical}
 @media(max-width:900px){#app{grid-template-columns:1fr;grid-template-rows:none;height:auto}main{height:70vh;order:3}#left{order:1;padding-bottom:4px;height:auto}#right{order:2;padding-top:0;height:auto;border-left:0}aside{border:0;overflow-y:visible}[data-a=engtog]{display:none}.bar-split{justify-content:flex-end}#engD>summary{font-size:13px}#engD>summary h1{display:inline;font-size:inherit;margin:0;color:inherit}}
@@ -1896,19 +1897,28 @@ addEventListener('keydown',e=>{if(e.key=='Escape'){showAbout(0);hideBugReport();
 // Report a bug / feedback: screenshot + markup + mailto
 let bugImg=null,bugStrokes=[],bugDraw=null;
 // The screenshot covers the whole app, so the user can mark up panels and the toolbar as well as the wall.
-// Desktop asks Electron for the window; mobile and the browser rebuild the page as an image (bugSnap).
+// The page is rebuilt as an image (bugSnap), made tall enough that the side panels and the Engineering data show in full
+// even when they're scrolled or every section is open. Desktop falls back to Electron's window capture.
 function bugLoad(src){return new Promise((res,rej)=>{const im=new Image();im.onload=()=>{const cv=document.createElement('canvas');cv.width=im.naturalWidth;cv.height=im.naturalHeight;cv.getContext('2d').drawImage(im,0,0);res(cv)};im.onerror=()=>rej(new Error('image did not load'));im.src=src})}
 async function bugSnap(){
- const W=innerWidth,H=innerHeight,k=Math.min(2,devicePixelRatio||1),root=document.documentElement,doc=root.cloneNode(true);
- const src=root.querySelectorAll('*'),dst=doc.querySelectorAll('*');
+ const W=innerWidth,k=Math.min(2,devicePixelRatio||1),root=document.documentElement,doc=root.cloneNode(true);
+ const src=root.querySelectorAll('*'),dst=doc.querySelectorAll('*'),grow=new Set();let H=Math.max(innerHeight,root.scrollHeight);
+ // panels that run to the bottom of the window grow with the image, so it gets as tall as the longest one needs
+ // (the viewport column keeps its on-screen height; only the panels grow)
+ const keep=new Map();
+ for(const a of src){const r=a.getBoundingClientRect();if(r.bottom<innerHeight-2)continue;const oy=getComputedStyle(a).overflowY;
+  if(a.scrollHeight>a.clientHeight+1&&/auto|scroll/.test(oy)){grow.add(a);H=Math.max(H,innerHeight+a.scrollHeight-a.clientHeight)}
+  else if(oy=='hidden'||oy=='clip')keep.set(a,r.height)}
+ H=Math.min(H,8000);
  for(let i=0;i<src.length;i++){const a=src[i],b=dst[i];
-  if(a.tagName=='CANVAS'){const im=document.createElement('img');for(const at of a.attributes)im.setAttribute(at.name,at.value);const cs=getComputedStyle(a);im.style.width=cs.width;im.style.height=cs.height;
+  if(a.tagName=='CANVAS'){const im=document.createElement('img');for(const at of a.attributes)im.setAttribute(at.name,at.value);const cs=getComputedStyle(a);im.style.setProperty('width',cs.width,'important');im.style.setProperty('height',cs.height,'important');im.style.flex='none';
    try{im.src=a.width&&a.height?a.toDataURL():''}catch(e){}b.replaceWith(im);continue}
   if(a.tagName=='SCRIPT'){b.remove();continue}
   if(a.tagName=='INPUT'){if(a.type=='checkbox'||a.type=='radio'){if(a.checked)b.setAttribute('checked','');else b.removeAttribute('checked')}else if(a.type!='file')b.setAttribute('value',a.value)}
   else if(a.tagName=='TEXTAREA')b.textContent=a.value;
   else if(a.tagName=='SELECT')[...a.options].forEach((o,j)=>{if(o.selected)b.options[j].setAttribute('selected','');else b.options[j].removeAttribute('selected')});
-  if(a.scrollTop||a.scrollLeft)for(const c of b.children)c.style.transform='translate('+-a.scrollLeft+'px,'+-a.scrollTop+'px)'; // keep scrolled panels where they are
+  if(keep.has(a)){b.style.setProperty('height',keep.get(a)+'px','important');b.style.alignSelf='start'}
+  if(!grow.has(a)&&(a.scrollTop||a.scrollLeft))for(const c of b.children)c.style.transform='translate('+-a.scrollLeft+'px,'+-a.scrollTop+'px)'; // keep scrolled panels where they are
  }
  doc.style.width=W+'px';doc.style.height=H+'px';doc.style.overflow='hidden';
  const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.round(W*k)+'" height="'+Math.round(H*k)+'" viewBox="0 0 '+W+' '+H+'"><foreignObject x="0" y="0" width="'+W+'" height="'+H+'">'+new XMLSerializer().serializeToString(doc)+'</foreignObject></svg>';
@@ -1917,8 +1927,9 @@ async function bugSnap(){
  return cv;
 }
 async function bugCapture(){
+ try{return await bugSnap()}catch(err){}
  if(DESK){try{return await bugLoad(await require('electron').ipcRenderer.invoke('ts-capture'))}catch(err){}}
- try{return await bugSnap()}catch(err){/* fall back to the wall canvas below */}
+ // last resort: just the wall canvas
  const cv=document.createElement('canvas');cv.width=M.width;cv.height=M.height;cv.getContext('2d').drawImage(M,0,0);
  return cv;
 }
@@ -1928,7 +1939,7 @@ function bugPos(e){const cv=$('#bugCv'),r=cv.getBoundingClientRect();return[(e.c
 async function showBugReport(){
  let img;try{img=await bugCapture()}catch(err){toast('Could not capture a screenshot: '+(err&&err.message||err));return}
  bugImg=img;bugStrokes=[];bugDraw=null;
- const cv=$('#bugCv');cv.width=img.width;cv.height=img.height;bugRedraw();
+ const cv=$('#bugCv');cv.width=img.width;cv.height=img.height;cv.classList.toggle('tall',img.height>img.width);bugRedraw();
  $('#bugDesc').value='';$('#bugrpt').classList.add('on');$('#bugDesc').focus();
 }
 function hideBugReport(){const o=$('#bugrpt');if(!o.classList.contains('on'))return;o.classList.remove('on');bugImg=null;bugStrokes=[];bugDraw=null;const b=document.querySelector('[data-a=bugrpt]');b&&b.focus()}
