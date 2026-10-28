@@ -21,6 +21,8 @@ ipcMain.handle('ts-displays', (e) => {
   return screen.getAllDisplays().map((d) => ({ id: d.id, label: d.label || '', bounds: d.bounds, scale: d.scaleFactor,
     px: [Math.round(d.bounds.width * d.scaleFactor), Math.round(d.bounds.height * d.scaleFactor)], main: d.id === here, primary: d.id === screen.getPrimaryDisplay().id }));
 });
+// Report a bug: a screenshot of the whole app window (panels, toolbar and canvases), not just the wall canvas
+ipcMain.handle('ts-capture', async (e) => (await e.sender.capturePage()).toDataURL());
 // an output window: borderless and full screen on the display named in its frame name ("tsout:<display id>:<canvas>")
 const outDisplay = (name) => { const m = /^tsout:([^:]+):/.exec(name || ''); return m ? screen.getAllDisplays().find((d) => String(d.id) === m[1]) : null; };
 
