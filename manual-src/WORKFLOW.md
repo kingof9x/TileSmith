@@ -67,6 +67,16 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
   primary + red return flags, wall flag = wall shadeC; default sheet Avery 5163; power phase B is now orange.
   TODO before package: add to HISTORY, mention in mobile manual / kit docs if wanted, refresh WIP backup + git repo.
 
+- Power to the distro (user request 2026-10-31, plan "TileSmith: closing the gap with LED Raster Designer", Phase 1):
+  power factor (S.pf) and design load (S.pload/ptyp/pmeas); Distros submenu (S.dists) with system, rating, outputs and
+  Socapex leg map; automatic patch of every cable (all canvases) to distro outputs (S.pcab); per-circuit phases and leg
+  amps as phasor sums (legSum), neutral, imbalance; Balance (rotation only, never worse) and Rebalance after wiring
+  changes (S.autoBal); power tray under the viewport (drag or click to patch, swap, unpatch, per-leg preview, tiles
+  highlighted on the viewport); shared circuits 2fer/3fer (S.pshare); phase colours and "1-3 C" badges on the canvas
+  (S.phaseView, top bar Phase); labels carry distro and phase; Engineering + PDF "Power distribution" section. State sv 24.
+  Not yet: mixed voltages on one distro (one circuit voltage per project for now). Test: tests/phase_test.py (ALL OK).
+  Manual: chapter 12 new sections; spec: section 11 + KEYDESC. NOT yet checked against a real distro meter by the user.
+
 ## GitHub (2026-10-14)
 - Private repository prepared for the user (they publish it from GitHub Desktop or connect GitHub so Claude can push).
   Layout: repo root = README.md, .gitignore, .gitattributes, tilesmith-desktop/, manual-src/ (same layout as
