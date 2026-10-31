@@ -29,7 +29,7 @@ KEYDESC = {
  'proc': 'LED processor model (or None). Gates all data/port features.', 'fps': 'Processor frame rate in Hz (affects pixels per port).',
  'bpc': 'Processor bit depth (8, 10, 12).', 'ull': 'Brompton Ultra Low Latency (halves port capacity).', 'ppx': 'Pixels per port in use (from spec, editable).',
  'pports': 'Ports per processor / sending card (editable).', 'ret': 'Count a return port (R#) for every primary port.', 'showData': 'Draw data paths on the canvas.',
- 'pdist': 'Power distribution ticked. Gates all power features.', 'pdt': 'Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)". Choosing Edison sets pvolt 120 and pamps 15.', 'pwall': 'Edison only: plugs per wall circuit (0-100, default 0 = no wall-circuit check).', 'pwallA': 'Edison only: wall circuit breaker in amps (1-400, default 20).', 'gx': 'Wall key: how far (px) the top-left of the wall\'s real tiles sits right of the full tile grid. Set by the app, not the user; ox/oy are the canvas position of those tiles.', 'gy': 'Wall key: like gx, downwards (a converted top row makes it half a tile).', 'lblPow': 'Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only".', 'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
+ 'pdist': 'Power distribution ticked. Gates all power features.', 'pf': 'Power factor 0.5-1 (default 1). Usable watts per circuit = V x A x (0.8) x PF; amps everywhere = W / (V x PF).', 'pload': 'Design load for distro and leg totals: Max (spec) | Typical (% of max) | Measured (W per tile). Circuits are always checked at max.', 'ptyp': 'Typical design load in % of each tile\'s max watts (1-100, default 40).', 'pmeas': 'Measured design load in watts per tile (0-5000; 0 = use max; never above a tile\'s max).', 'dists': 'Distros: [{id, name, sys (120/208 V 3-phase wye | 127/220 V 3-phase wye | 230/400 V 3-phase wye | 120/240 V split phase | Single phase), amps per leg, soca, l2130, l1430, edison (output counts), map (Socapex leg map, default ABCABC)}], at most 12.', 'pcab': 'Power patch: "canvas index:cable number" -> {d: distro id (\'\' = left unpatched on purpose), o: output key (soca1, l21302, edison3 ...), r: leg rotation 0-2}.', 'pshare': 'Shared circuits (2fer / 3fer): [canvas index, [wall, run], [wall, run](, [wall, run])].', 'autoBal': 'Rebalance every distro after every wiring change.', 'phaseView': 'Colour power runs by phase (A white, B amber, C blue) and label them "1-1 A" when distros exist.', 'trayOpen': 'Power tray under the viewport expanded.', 'pdt': 'Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)". Choosing Edison sets pvolt 120 and pamps 15.', 'pwall': 'Edison only: plugs per wall circuit (0-100, default 0 = no wall-circuit check).', 'pwallA': 'Edison only: wall circuit breaker in amps (1-400, default 20).', 'gx': 'Wall key: how far (px) the top-left of the wall\'s real tiles sits right of the full tile grid. Set by the app, not the user; ox/oy are the canvas position of those tiles.', 'gy': 'Wall key: like gx, downwards (a converted top row makes it half a tile).', 'lblPow': 'Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only".', 'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
  'pamps': 'Breaker size in amps (1-400).', 'derate': 'Load circuits to 80% (continuous load rule).', 'showPow': 'Draw power runs on the canvas.',
  'resSl': 'Resolume XML slice mode: One slice per LED wall | One slice per tile.', 'loop': 'Restart the build animation continuously.', 'loopHold': 'Seconds to pause before restarting (0-600).',
  'ndiName': 'NDI source name (default TileSmith-LED-Out).', 'ndiFps': 'NDI frame rate (see NDI).', 'ndiIdle': 'Save CPU: when nothing moves, send about 4 frames per second instead of the full rate.',
@@ -439,7 +439,7 @@ Tick **Power distribution** to enable and choose the Distribution cable (setting
 "One 120 V 20 A circuit loaded to 80% supplies 1,920 W, enough for 12 tiles of ... at 150 W max each."
 
 Circuits are numbered k = 1, 2, ... across walls; with n circuits per cable (Socapex 6, L14-30 2, L21-30 3) circuit k is on cable ceil(k/n) as leg (k-1) mod n (legs 1-6 for Socapex, X,Y for
-L14-30, X,Y,Z for L21-30); labels cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ... No phase is assigned (the PDU does that).
+L14-30, X,Y,Z for L21-30); labels cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ... Without distros no phase is assigned.
 powerCON to Edison (n = 1, no PDU): every circuit is its own cable and is labelled just k (1, 2, 3 ...); cables needed = circuits, no spares. Selecting it sets pvolt 120 and pamps 15. Edison shows two extra
 fields, "Edison plugs per wall circuit (0 = do not check)" (pwall) and "Wall circuit breaker (A)" (pwallA). With pwall > 0, plug k is on wall circuit ceil(k / pwall); its load in amps is watts / pvolt, summed per wall circuit and
 compared with pwallA x (0.8 if "Load circuits to 80%"). Engineering rows: "Edison plugs needed", "Peak load per plug" ("plug 3 9.4 A"), and with pwall > 0 "Wall circuits needed", "Peak load per wall circuit" ("(over)" after any
@@ -451,6 +451,52 @@ usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "Th
 
 Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
 Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "cable 1 24.0 A · cable 2 12.0 A" (sum of circuit watts / V per cable), Over capacity.
+
+**Power factor and design load**: usable watts per circuit = V x A x (0.8 if derated) x pf, so tiles per circuit drop
+at pf < 1 (16 -> 15 for 120 W tiles at 120 V 20 A, pf 0.95). Every amp figure is W / (V x pf). The design load (pload: Max,
+Typical ptyp % of max, or Measured pmeas W per tile capped at the tile's max) scales distro and leg totals only; circuits
+are always checked at max watts. Engineering adds "Design load" and "Design load power".
+
+**Distros** (submenu Engineering > Power > Distros, shown with Power distribution on): a list of distros (S.dists), each a
+card with name, System, Rating per leg (A), Socapex leg map (6 letters A/B/C, default ABCABC), and the number of Socapex,
+L21-30, L14-30 and Edison outputs, then leg bars (amber line at 80% of the rating when derated), Neutral, Imbalance and the
+cable count, and Balance / Remove distro buttons; then Add distro, "Rebalance after every wiring change" (autoBal) and
+"Colour power runs by phase on the canvas" (phaseView). Cables (all canvases; key "canvas:cable") are patched in S.pcab;
+any cable without a valid output is patched automatically to the first free output of its type (distro order), and
+cables that do not fit stay unpatched (Engineering warns "Cables not patched").
+Phases: a circuit at the distro's line-to-line voltage (within 6%: 208 on 120/208, 220 on 127/220, 400 on 230/400, 240 on
+120/240) takes two phases (p, p+1); otherwise one. Base phase of leg i: Socapex = map[i], L21-30 X/Y/Z = A/B/C, L14-30
+X/Y = A/B, Edison = A; phase = (base + r) mod n, n = 3 (3-phase), 2 (split phase) or 1 (single phase, always A). Auto
+patch gives Edison output j rotation (j-1) mod n.
+Leg amps (legSum): phases at 0, -120 and +120 degrees (split phase 0 and 180). A line-to-neutral current I adds I at its
+phase angle to its line and to the neutral; a line-to-line current I flows at the angle of V_p - V_q, added to line p
+and subtracted from line q. Leg = |line phasor|, Neutral = |neutral phasor| (shown when circuits are line to neutral),
+Imbalance = (max leg - mean) / mean, over capacity when a leg > rating x (0.8 if derated). Checks: 10 A on AB, BC and CA
+-> 17.3 A per line; 24 / 18 / 12 A line to neutral -> neutral 10.4 A.
+Balance (per distro, or Balance in the tray for all): only each cable's rotation r changes (outputs and circuit order
+stay). Heaviest cable first, each takes the r that gives the lowest (highest leg, neutral, sum of squared legs), then
+up to 6 passes of single-cable changes; the result is kept only if it is strictly better than before.
+Engineering section "Power distribution" (after Entire canvas; also one section at the end of the PDF spec): Design load,
+Design load power, Cables not patched, then per distro a heading row and System, Voltage warning when pvolt matches
+neither voltage, Leg A/B/C "40.0 A · 40% of rating", Neutral, Imbalance, Outputs used, Cables, Over capacity.
+
+**Power tray** (#ptray, under the viewport, shown while distros exist): bar with "Power tray", a green "every cable
+patched" or red "n cables not patched" flag, a hint, Balance and Hide/Show; then one card per distro with a slot per
+output of the current cable type (other output types summarised in one line) and a "Not patched" box. A slot holds the
+cable chip (name, walls, amps, and one chip per circuit "1-3 C 14.0" bordered in its phase colour) and an x to unpatch.
+Drag a chip onto a slot (HTML5 drag and drop) or click the chip, then the slot. Dropping on a taken slot swaps the two
+cables; a slot of another type refuses with a message. While dragged or picked, the cable's tiles are highlighted on the
+viewport (not on the output) and each slot shows what it would add per leg ("+A 12.0 B 12.0 A").
+
+**Shared circuits** (Power wiring > Shared circuits): pick two or three runs ("Wall · run n") and Share one circuit. The
+runs keep their own chains but take the first run's circuit number; later numbers close up, so circuits used drops.
+The circuit is over capacity when the runs together exceed the usable watts; adding such a share is refused unless one
+of the walls uses Manual power wiring. Labels show "1-3a", "1-3b" and "2fer on 1-3".
+
+**Phase on canvas and labels**: with phaseView and a patched cable, a run is drawn in its phase colour (A #ffffff, B
+#f59e0b, C #3b82f6; over capacity stays red) and its badge reads "1-3 C" (two letters for line to line). Circuit labels
+add "<distro> phase C" to the cable line and print in the phase colour (A #222222, B #f59e0b, C #2563c9) with
+"PHASE C · <wall>" as the flag text. Top bar "Phase" (shown while distros exist) toggles phaseView.
 
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 {d['POWC']} by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
