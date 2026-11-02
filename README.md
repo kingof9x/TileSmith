@@ -184,11 +184,10 @@ no Spout or Syphon there; NDI® needs the runtime installed), and attaches them 
 **Status:** Waiting on developer  
 **Waiting on:** Developer: testing NovaStar export; Brompton data from a live system  
 **Notes:** LED wall pixel-map and engineering tool. Open PR #4.  
-**Last updated:** 2026-10-28
+**Last updated:** 2026-11-02
 
 ### Task list
 
-- [x] Review and merge PR #4 (Hide/Show Engineering Data button on the far right of the toolbar)
 - [ ] Test NovaStar .scr file export
 - [ ] Get Brompton project files and data from a working system with live tiles
 - [ ] Resume reverse engineering Brompton project files once that data is in hand (blocked)
