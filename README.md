@@ -181,8 +181,8 @@ no Spout or Syphon there; NDI® needs the runtime installed), and attaches them 
 
 ## Project status
 
-**Status:** Waiting on Callum  
-**Waiting on:** Callum: testing NovaStar export; Brompton data from a live system  
+**Status:** Waiting on developer  
+**Waiting on:** Developer: testing NovaStar export; Brompton data from a live system  
 **Notes:** LED wall pixel-map and engineering tool. Open PR #4.  
 **Last updated:** 2026-10-28
 
