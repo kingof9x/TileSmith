@@ -46,7 +46,7 @@ async def main():
         # regression: back to Socapex
         await pg.evaluate("()=>{S.pdt='Socapex (6 circuits per cable)';S.lblWhat='Power only';S.lblPow='Cable and circuit labels';sync()}"); await pg.wait_for_timeout(150)
         r = await pg.evaluate("()=>({n:powerPlan().flat().length,cab:powerTotals(powerPlan()).cables,labels:labelList().length,ed:getComputedStyle(document.querySelector('#edW')).display,lp:getComputedStyle(document.querySelector('#lblPowW')).display,first:labelList()[0][0].big,rows:powRowsCanvas(powerPlan()).map(x=>x[0])})")
-        print('SOCAPEX again', json.dumps(r)[:400]); ok &= r['labels'] == r['n'] + r['cab'] and r['ed'] == 'none' and r['lp'] != 'none' and r['first'] == '1' and 'Socapex cables' in r['rows'] and 'Peak load per cable' in r['rows']
+        print('SOCAPEX again', json.dumps(r)[:400]); ok &= r['labels'] == r['n'] + r['cab'] and r['ed'] == 'none' and r['lp'] != 'none' and r['first'] == '1' and 'Socapex cables' in r['rows'] and 'Peak amps per phase, each cable' in r['rows']
         print('page errors', errs); ok &= not errs; await b.close()
     print('ALL OK' if ok else 'FAILED')
 asyncio.run(main())

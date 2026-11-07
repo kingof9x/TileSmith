@@ -450,7 +450,15 @@ path), capacity t, plus the power link limit; on half-tile layouts by each piece
 usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "This circuit is full (12 tiles)."
 
 Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
-Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "cable 1 24.0 A · cable 2 12.0 A" (sum of circuit watts / V per cable), Over capacity.
+Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak amps per phase, each cable "cable 1: A 32.0 · B 32.0 · C 32.0 A" (circuit amps = watts / V; circuits land A, B, C
+repeating within a cable, so Socapex 1 and 4 on A, 2 and 5 on B, 3 and 6 on C; L14-30 X, Y on the two legs A, B; a 208 V circuit,
+or 240 V on L14-30, is line to line and counts its full current on two phases: circuit i on PHN[i%3] and PHN[(i+1)%3]),
+Peak amps per phase, all cables (with "busiest n% above average"), on 3-phase cables Balanced 3-phase current @V_LL (total watts /
+(V_LL x sqrt 3); V_LL = 208 for 120 V, 400 for 230 V, the circuit voltage itself for 208 V), Over capacity, and one "Check power
+settings" warning row for each problem from powWarn(): breaker above the connector's rating per circuit (Socapex 20 A, L14-30 and
+L21-30 30 A, powerCON/Edison 20 A), a voltage the connector is not made for (Socapex 100-240, L14-30 110/120/240, L21-30
+110/120/208, Edison 100-120), or an Edison wall circuit breaker above 20 A. The same warnings show in red under the circuit
+note in the Power distribution settings.
 
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 {d['POWC']} by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
