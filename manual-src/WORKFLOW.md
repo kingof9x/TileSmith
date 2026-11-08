@@ -81,6 +81,11 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
   balanced 3-phase current (cPhases/svcVLL); powWarn() flags a breaker above the connector rating or a voltage the connector
   is not made for. Test: tests/phase_test.py (ALL OK); edison_test.py updated.
 
+- Distros and phase balance (user picked "Distro list in Power panel", demo approved 2026-11-08; demo at
+  project-files/demos/distro-demo.html): S.dist / w.pdis / S.ptail, distUI, distTotals, distBalance, posSet. One distribution
+  cable type per project as before (the demo let each wall pick its own; not built yet). Distro totals are per canvas.
+  Test: tests/distro_test.py (ALL OK). labels_test.py prints PROBLEMS on main too (LAYOUT x FLAG x WALL grid), not from this.
+
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
   (mock-ups in /mnt/user-data/outputs/tilesmith-phone-layout-options.png). Tablets use the desktop layout.
