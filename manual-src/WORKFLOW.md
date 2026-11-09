@@ -85,6 +85,12 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Staging copy: /home/claude/tilesmith (first commit "TileSmith 3.3"). Once it is on GitHub, commit each round of
   changes there (with the attribution trailers) as well as refreshing the WIP backup. Repository URL: (not known yet).
 
+- Power/data math fixes from the LED Raster Designer review (2026-11-07): HELIOS Jr / 8K now read Megapixel's published
+  output port capacity table (PTAB.helios1g, HELIOS User Guide v26.04.0 App. K.15; 401,000 px at 12-bit 60 Hz, was 425,000
+  linear and up to 22% high); "Peak load per cable" replaced by amps per phase per cable, per phase for all cables and the
+  balanced 3-phase current (cPhases/svcVLL); powWarn() flags a breaker above the connector rating or a voltage the connector
+  is not made for. Test: tests/phase_test.py (ALL OK); edison_test.py updated.
+
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
   (mock-ups in /mnt/user-data/outputs/tilesmith-phone-layout-options.png). Tablets use the desktop layout.

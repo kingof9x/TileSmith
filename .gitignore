@@ -36,3 +36,9 @@ __pycache__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Claude Code local settings: "Yes, and don't ask again" saves approved
+# commands here verbatim. Never commit this file.
+# REMINDER: never put passwords, API keys or tokens directly in a command
+# you approve with "don't ask again". Use environment variables instead.
+.claude/settings.local.json
