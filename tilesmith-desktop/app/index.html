@@ -427,7 +427,7 @@ function cvUI(){if(CVX)return;const L=$('#cvList'),ctl=$('#cvCtl');if(!L||!ctl||
   L.querySelector(`[data-slot="${cc}"]`).appendChild(ctl);L.__k=key}
  L.querySelectorAll('[data-cvs]').forEach(sm=>{const i=+sm.dataset.cvs,c=CVS[i];if(!c)return;const n=sm.querySelector('.cvn'),z=sm.querySelector('.cvz'),zt=`${i==cc?S.cw:c.cw}×${i==cc?S.ch:c.ch}${i==cc&&CVS.length>1?' · selected':''}`;
   if(n.textContent!==c.name)n.textContent=c.name;if(z.textContent!==zt)z.textContent=zt});
- outUI();const n=$('#cvName');if(n&&n!==document.activeElement&&n.value!==CVS[cc].name)n.value=CVS[cc].name;const d=document.querySelector('[data-a=cvdel]');if(d)d.disabled=CVS.length<2}
+ outUI();const n=$('#cvName');if(n&&n!==document.activeElement&&n.value!==CVS[cc].name)n.value=CVS[cc].name;document.querySelectorAll('[data-a=cvdel]').forEach(d=>{d.disabled=CVS.length<2;d.title=CVS.length<2?'There is only one canvas':'Remove '+CVS[cc].name})}
 // the Test pattern controls appear in the canvas menu and under Animation Options: one set of controls, moved into whichever is opened
 function tpPlace(){const c=$('#tpCtl');if(!c)return;const sl=[...document.querySelectorAll('.tpSlot')],open=sl.filter(x=>x.closest('details').open),want=open.find(x=>x.dataset.tp===tpPlace.last)||open[0]||sl.find(x=>x.contains(c))||sl[0];
  if(want&&!want.contains(c))want.appendChild(c);sl.forEach(x=>{const a=x.parentNode.querySelector('.tpAway');if(a)a.style.display=x.contains(c)?'none':''})}
@@ -510,7 +510,7 @@ const SUB=(t,h,open,cls)=>`<details class="subd${cls?' '+cls:''}"><summary>${t}<
 function sect(h){const q=h.split('<h2>');return q[0]+q.slice(1).map(p=>{const i=p.indexOf('</h2>');return `<details><summary>${p.slice(0,i)}</summary><div class="sec">${p.slice(i+5)}</div></details>`}).join('')}
 function build(){
 $('#left').innerHTML=sect(`<h1>TileSmith <span style="font-size:11px;font-weight:600;color:var(--am)">v3.5</span></h1><div style="color:var(--mu)">LED Wall Pixel Map &amp; Test Pattern Generator</div>
-<h2>Canvases</h2><div id="cvList"></div><div class="row">${B('cvadd','Add canvas')}</div>
+<h2>Canvases</h2><div id="cvList"></div><div class="row">${B('cvadd','Add canvas')}${B('cvdel','Remove selected canvas')}</div>
 <div id="cvCtl"><div class="g"><label class="w">Canvas name<input type="text" id="cvName" maxlength="40"></label></div><div class="row">${B('cvdup','Duplicate canvas')}${B('cvdel','Remove canvas')}</div><div style="color:var(--mu);font-size:12px">Each canvas is its own output (its own NDI®, Spout / Syphon source, PNG, PDF raster page and video). Click a canvas in the viewport or its name here to select it.</div>
 <div class="g">${F('cw','Width px')}${F('ch','Height px')}</div>
 <div id="outBox" class="desk-only"><div style="color:var(--mu);font-size:12px">Send this canvas to displays</div><div id="outSel" class="row" style="flex-direction:column;align-items:flex-start"></div><div id="outNote" style="font-size:12px;color:var(--mu)"></div></div>
