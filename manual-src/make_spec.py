@@ -460,22 +460,6 @@ L21-30 30 A, powerCON/Edison 20 A), a voltage the connector is not made for (Soc
 110/120/208, Edison 100-120), or an Edison wall circuit breaker above 20 A. The same warnings show in red under the circuit
 note in the Power distribution settings.
 
-**Distros** (S.dist, project-wide list; w.pdis per LED wall, 0 = none; S.ptail balance positions): each distro {id, name,
-sys (DSYS: us3 = US 120/208 V 3-phase, 3 phases, voltages 110/120/208; us1 = US 120/240 V split phase, 2 phases, 110/120/240;
-eu3 = EU / UK 230/400 V 3-phase, 220/230/240), main (A per phase), r100 (100% rated breakers), outs (outputs of the chosen
-distribution cable)}. Shown in #distBox under the power settings (hidden for powerCON to Edison) with + Add distro (the first
-distro takes every wall on every canvas), Remove (its walls go to the first remaining distro), and per card the amps per phase
-against the usable main (main x 0.8 on a US system without r100), outputs used / available, warnings, and Balance / Reset when a
-cable on it is part filled. The wall's distro is picked in "Distro for this LED wall" at the top of Power wiring. With distros in
-use every wall's first circuit starts a new cable (k jumps to the next multiple of the cable size), so a cable never feeds two
-distros. Circuit k sits at position cPos(k) in its cable: (k-1) mod n, or S.ptail['canvas|cable'][j] for the j-th used circuit
-when that list is valid for the cable (same length, distinct, in range); circuit labels (cLeg) and phases (cPhases, on
-min(cable phases, system phases)) follow it. Balance searches every choice of positions for the part-filled cables of that
-distro (up to 300,000 tries) for the lowest busiest phase. Warnings: voltage not in the system's list, a 3-phase cable on a
-split-phase distro, more cables than outputs, a phase over the usable main. Engineering rows per distro with walls: a heading
-with its name, System, Main breaker, <cable> outputs used, Peak amps per phase, LED walls, then "Check distro" warning rows;
-"Not on a distro" lists wired walls without one. Wall rows add "Distro".
-
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 {d['POWC']} by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
 square at the last tile. When a wall shows both data and power: data runs at (centre x - 0.2 tile w, centre y), power
