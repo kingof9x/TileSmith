@@ -266,6 +266,17 @@ const P={ // wmm,hmm,pxw,pxh,pitch,kg,wmax,depth
 'Absen A27 1.4 (A2714)':[610,343,416,234,1.46,8.5,97,61],
 'Absen A27 1.2 (A2712)':[610,343,480,270,1.27,8.5,97,61],
 'Absen KL3':[640,480,208,156,3.07,7.8,166,60],
+// Absen, added 2026-11-09 from Absen's own spec sheets (max watts per panel = Absen's max W/m² × panel area, rounded):
+// Saturn SA brochure (4Wall copy), PR series brochure + PR1.9 (Brompton) V20231113 (4Wall copies), PL1.9 Pro V10 V20221201,
+// PL2.9 Lite V10 V20200424 (preliminary), PL3.9 V10 V20221201, KL1.5 II V20230427, A2715 V3 V20230612, NX2.5 V20230306 (Full Compass copies).
+'Absen Saturn SA2.6':[500,500,192,192,2.6,5.5,128,70],'Absen Saturn SA2.6 1000×500':[1000,500,384,192,2.6,9.5,255,70],
+'Absen Saturn SA3.9':[500,500,128,128,3.906,5.5,160,70],'Absen Saturn SA3.9 1000×500':[1000,500,256,128,3.906,9.5,320,70],
+'Absen PR1.9':[500,500,256,256,1.953,9.5,143,93],
+'Absen PR2.5':[500,500,200,200,2.5,9.5,150,93],'Absen PR2.5 500×1000':[500,1000,200,400,2.5,13.5,300,93],
+'Absen PR3.9':[500,500,128,128,3.906,9.5,150,93],'Absen PR3.9 500×1000':[500,1000,128,256,3.906,13.5,300,93],
+'Absen PR5.2':[500,500,96,96,5.208,9.5,145,93],'Absen PR5.2 500×1000':[500,1000,96,192,5.208,13.5,290,93],
+'Absen Polaris PL1.9 Pro V10':[500,500,256,256,1.953,9,180,88],'Absen Polaris PL2.9 Lite':[500,500,168,168,2.97,7.6,135,87],'Absen Polaris PL3.9 V10':[500,500,128,128,3.906,7.7,135,88],
+'Absen KL1.5 II':[640,360,416,234,1.53,6,106,65],'Absen A27 1.5 (A2715 V3)':[610,343,384,216,1.58,5,113,44.5],'Absen NX2.5':[960,540,384,216,2.5,10.4,233,43.5],
 'Unilumin UpadIV 1.9':[500,500,256,256,1.953,6.3,120,70.1],
 'Unilumin UpadIV 1.9 MIP':[500,500,256,256,1.953,6.3,80,70.1],
 'Unilumin UpadIV 2.6 (8 scan)':[500,500,192,192,2.604,6.3,165,70.1],
@@ -369,7 +380,7 @@ const PEST={};
 ['1.56 M4','1.9 Lite','1.9 Pro','2.3 Lite','2.6 Lite','2.6 Pro','2.8 Lite','3.4 Lite','3.4 Pro'].forEach(k=>PEST['INFiLED Deep Black DB'+k]=['resolution','weight','max power','depth']);
 // Models that also come as a half tile: full preset -> [half preset, 'h' = half height (top/bottom) | 'w' = half width (left/right)]
 // ROE: every model that has a half panel (500×500 or 600×600) in its series
-const HALF={'Owl Vision Black Owl 3.9 500×1000':['Owl Vision Black Owl 3.9','h'],'ROE Carbon CB3':['ROE Carbon CB3 Half','h'],'ROE Carbon CB5':['ROE Carbon CB5 Half','h'],'ROE Carbon CB8':['ROE Carbon CB8 Half','h'],'ROE Black Quartz BQ3.9':['ROE Black Quartz BQ3.9 Half','h'],'ROE Black Quartz BQ4.6':['ROE Black Quartz BQ4.6 Half','h'],'ROE Black Quartz BQ6.2':['ROE Black Quartz BQ6.2 Half','h'],'ROE Carbon MkII CB3':['ROE Carbon MkII CB3 Half','h'],'ROE Carbon MkII CB5':['ROE Carbon MkII CB5 Half','h'],'ROE Carbon MkII CB8':['ROE Carbon MkII CB8 Half','h'],'ROE Graphite GP1.9 (4 in 1)':['ROE Graphite GP1.9 (4 in 1) Half','h'],'ROE Graphite GP2.6 (4 in 1)':['ROE Graphite GP2.6 (4 in 1) Half','h'],'ROE Graphite GP2.6':['ROE Graphite GP2.6 Half','h'],'ROE Graphite GP3.1':['ROE Graphite GP3.1 Half','h'],'ROE Graphite GP3.9':['ROE Graphite GP3.9 Half','h'],'ROE Jasper JA2.6':['ROE Jasper JA2.6 Half','h'],'ROE Jasper JA3.9':['ROE Jasper JA3.9 Half','h'],'ROE Jet JT2.2':['ROE Jet JT2.2 Half','h'],'ROE Jet JT2.6':['ROE Jet JT2.6 Half','h'],'ROE Jet JT3.1':['ROE Jet JT3.1 Half','h'],'ROE Jet JT3.9':['ROE Jet JT3.9 Half','h'],'ROE Meru MR1.9':['ROE Meru MR1.9 Half','h'],'ROE Meru MR2.6':['ROE Meru MR2.6 Half','h'],'ROE Carbon CB8-Transparent':['ROE Carbon CB8-Transparent Half','h'],
+const HALF={'Absen PR2.5 500×1000':['Absen PR2.5','h'],'Absen PR3.9 500×1000':['Absen PR3.9','h'],'Absen PR5.2 500×1000':['Absen PR5.2','h'],'Owl Vision Black Owl 3.9 500×1000':['Owl Vision Black Owl 3.9','h'],'ROE Carbon CB3':['ROE Carbon CB3 Half','h'],'ROE Carbon CB5':['ROE Carbon CB5 Half','h'],'ROE Carbon CB8':['ROE Carbon CB8 Half','h'],'ROE Black Quartz BQ3.9':['ROE Black Quartz BQ3.9 Half','h'],'ROE Black Quartz BQ4.6':['ROE Black Quartz BQ4.6 Half','h'],'ROE Black Quartz BQ6.2':['ROE Black Quartz BQ6.2 Half','h'],'ROE Carbon MkII CB3':['ROE Carbon MkII CB3 Half','h'],'ROE Carbon MkII CB5':['ROE Carbon MkII CB5 Half','h'],'ROE Carbon MkII CB8':['ROE Carbon MkII CB8 Half','h'],'ROE Graphite GP1.9 (4 in 1)':['ROE Graphite GP1.9 (4 in 1) Half','h'],'ROE Graphite GP2.6 (4 in 1)':['ROE Graphite GP2.6 (4 in 1) Half','h'],'ROE Graphite GP2.6':['ROE Graphite GP2.6 Half','h'],'ROE Graphite GP3.1':['ROE Graphite GP3.1 Half','h'],'ROE Graphite GP3.9':['ROE Graphite GP3.9 Half','h'],'ROE Jasper JA2.6':['ROE Jasper JA2.6 Half','h'],'ROE Jasper JA3.9':['ROE Jasper JA3.9 Half','h'],'ROE Jet JT2.2':['ROE Jet JT2.2 Half','h'],'ROE Jet JT2.6':['ROE Jet JT2.6 Half','h'],'ROE Jet JT3.1':['ROE Jet JT3.1 Half','h'],'ROE Jet JT3.9':['ROE Jet JT3.9 Half','h'],'ROE Meru MR1.9':['ROE Meru MR1.9 Half','h'],'ROE Meru MR2.6':['ROE Meru MR2.6 Half','h'],'ROE Carbon CB8-Transparent':['ROE Carbon CB8-Transparent Half','h'],
  'YES TECH MU 2.6 500×1000':['YES TECH MU 2.6','h'],'YES TECH MU 3.9 500×1000':['YES TECH MU 3.9','h'],'YES TECH MU 4.8 500×1000':['YES TECH MU 4.8','h'],
  'YES TECH MU 2.9 outdoor 500×1000':['YES TECH MU 2.9 outdoor','h'],'YES TECH MU 3.9 outdoor 500×1000':['YES TECH MU 3.9 outdoor','h'],
  'YES TECH MT II 3.9-7.8 1000×500':['YES TECH MT II 3.9-7.8 500×500','w']};

@@ -86,6 +86,10 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
   cable type per project as before (the demo let each wall pick its own; not built yet). Distro totals are per canvas.
   Test: tests/distro_test.py (ALL OK). labels_test.py prints PROBLEMS on main too (LAYOUT x FLAG x WALL grid), not from this.
 
+- Absen tiles (user request 2026-11-09): 17 added to P from Absen spec sheets (Saturn SA2.6/SA3.9 in 500×500 and 1000×500,
+  PR1.9/2.5/3.9/5.2 incl. 500×1000 with HALF links, PL1.9 Pro V10, PL2.9 Lite, PL3.9 V10, KL1.5 II, A2715 V3, NX2.5); max W =
+  max W/m² × area. absen.com is behind a bot check, so sheets came from dealer copies (4Wall, Full Compass). Test: tests/absen_test.py.
+
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
   (mock-ups in /mnt/user-data/outputs/tilesmith-phone-layout-options.png). Tablets use the desktop layout.
