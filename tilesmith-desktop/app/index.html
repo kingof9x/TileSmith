@@ -395,7 +395,7 @@ const LBL={'Avery 5160 (30 per US Letter sheet)':{pw:215.9,ph:279.4,w:66.675,h:2
 'Label roll 62 x 29 mm (one per page)':{pw:62,ph:29,w:62,h:29,c:1,r:1,x:0,y:0,gx:0,gy:0,roll:1},
 'Wrap-around strip 100 x 30 mm (one per page)':{pw:100,ph:30,w:100,h:30,c:1,r:1,x:0,y:0,gx:0,gy:0,roll:1},
 'Custom label roll (one per page)':{roll:1,custom:1}};
-const TSTY=['Classic','Character pack'];
+const TSTY=['Classic','Hand-drawn','Backlit','Character pack'];
 const HAIR=['#2b1d14','#4a3020','#6b4a2b','#14100c','#0f0f0f','#1c1410'];
 const defCrew=()=>[['Marcus','#8d5524'],['Elena','#e0ac69'],['David','#f1c27d'],['Chen','#ffdbac'],['Priya','#c68642'],['Malik','#5c3a21']].map((c,i)=>[c[0],c[1],null,HAIR[i]]);
 let crew=defCrew();
@@ -579,7 +579,7 @@ ${F('dvdArea','Bounce inside','select',['Each LED wall','Whole canvas'],'w')}${F
 ${F('dvdCorner','Corner hit chance <b id="dvdCv"></b>','range','min=0 max=100 step=1','w')}${F('dvdTint','Change color on each bounce','check')}
 <div id="dvdCornerNote" class="w" style="color:var(--mu);font-size:12px">How often the logo lands exactly in a corner. At 100% about 45 of every 100 bounces are corners; at 0% the logo is steered so it never touches one.</div><div id="dvdStat" class="w" style="font-size:12px"></div>${F('dvdLoop','Perfect loop (repeats exactly, for video)','check')}<div id="dvdLoopBox" class="g w">${F('dvdLoopLen','Loop length (s)','number','min=4 max=600 step=1')}${F('dvdLoopCorners','Include corner hits','check')}<div class="w" style="color:var(--mu);font-size:12px">The logo ends exactly where, and in the colour, it started. Speed is adjusted slightly so the loop closes. The loop video shows the walls fully built, holds moving patterns and Scroll still so it repeats seamlessly, and uses the Format chosen under Video export (60 fps).</div><div class="w desk-only" style="color:var(--mu);font-size:12px">To save the loop as a video, tick <b>DVD logo</b> under Video export and press Export video.</div></div></div>`)}
 ${SUB('LED build',`<div class="row" id="bctl">${B('rs','Start')}${B('bstop','Stop')}${B('brst','Reset')}${B('pp','Pause')}</div><div style="color:var(--mu);font-size:12px">Start builds from the first tile. Stop ends the build and shows the finished walls. Reset clears the walls. Play / Pause freezes the build and carries on from the same spot.</div><div class="g">${F('loop','Loop build continuously','check')}${F('loopHold','Pause before restart (s)','number','min=0 max=600 step=0.5','w')}${F('speed','Speed 0.25–5×','range','min=0.25 max=5 step=0.25','w')}</div>
-${SUB('Technician',`<div class="g">${F('tstyle','Character style','select',TSTY,'w')}<div id="pkBox" class="w" style="display:none"><label class="w">Character pack<select data-k="tpack" id="pkSel"></select></label><div class="row"><label style="display:inline-flex;align-items:center;gap:6px"><span class="btn" style="cursor:pointer">Load character pack…</span><input type="file" id="pkf" accept=".zip,.png,.json" multiple style="display:none"></label>${B('pkdel','Delete pack')}</div><div id="pkNote" style="color:var(--mu);font-size:12px"></div></div>${F('hat','Hard hat','select',[['#ffcc00','Yellow'],['#ffffff','White'],['#2563ff','Blue'],['#ff7a00','Orange']])}${F('vest','Vest','select',[['#b6ff00','Lime green'],['#ff6a00','Orange'],['#f5e800','Yellow']])}${F('logo','Vest logo text','text','','w')}<label class="w">Upload logo (PNG/SVG/JPG)<input type="file" id="lf" accept="image/*"></label></div>
+${SUB('Technician',`<div class="g">${F('tstyle','Character style','select',TSTY,'w')}<div id="crewNote" class="w" style="display:none;color:var(--mu);font-size:12px"></div><div id="pkBox" class="w" style="display:none"><label class="w">Character pack<select data-k="tpack" id="pkSel"></select></label><div class="row"><label style="display:inline-flex;align-items:center;gap:6px"><span class="btn" style="cursor:pointer">Load character pack…</span><input type="file" id="pkf" accept=".zip,.png,.json" multiple style="display:none"></label>${B('pkdel','Delete pack')}</div><div id="pkNote" style="color:var(--mu);font-size:12px"></div></div>${F('hat','Hard hat','select',[['#ffcc00','Yellow'],['#ffffff','White'],['#2563ff','Blue'],['#ff7a00','Orange']])}${F('vest','Vest','select',[['#b6ff00','Lime green'],['#ff6a00','Orange'],['#f5e800','Yellow']])}${F('logo','Vest logo text','text','','w')}<label class="w">Upload logo (PNG/SVG/JPG)<input type="file" id="lf" accept="image/*"></label></div>
 ${F('cd','Crew details & name tags','check')}<div id="crew"></div>`)}`)}
 ${SUB('Video export',`<div class="g">${F('vLed','LED build (blank intro, the build, final hold)','check')}<span class="w desk-only">${F('vDvd','DVD logo (one perfect loop)','check')}</span></div><div id="vdvdNote" class="desk-only" style="color:#e5a000;font-size:12px"></div><div class="g">${F('vIntro','Blank intro (s)')}${F('vHold','Final hold (s)')}${F('vCodec','Format','select',Object.keys(VCODEC),'w desk-only')}${F('hapFmt','HAP type','select',['hap','hap_alpha','hap_q'],'w desk-only')}</div><div id="vcn" class="desk-only" style="color:var(--mu);font-size:12px"></div><div class="mob-only" style="color:var(--mu)">This device records the video as H.264 MP4 with its own encoder, in real time: keep TileSmith open while it records (the screen stays on). When it finishes, pick where to save or send it (Files, Photos, Drive, AirDrop, e-mail…). Video = intro + live build + hold.<br>Estimated length: <b id="vestm" style="color:var(--tx)"></b></div><div class="desk-only" style="color:var(--mu)">Saves the video (60 fps, desktop app) to your Videos folder (Windows) or Movies folder (Mac), in a TileSmith subfolder. Video = intro + live build + hold. Build time follows tile count and Speed (under LED build); with several walls the slowest wall sets the length. With both boxes ticked you get two files, the LED build first and then the DVD logo loop.<br>Estimated length: <b id="vest" style="color:var(--tx)"></b></div><div class="row">${B('rec','Export video')}</div><div id="vexps" style="font-size:12px;color:var(--mu)"></div>`)}
 <h2>Output options</h2><div id="dispBox"><div style="font-weight:600;font-size:12px">Take over a display</div><div id="dispRows" class="sec"></div><div id="dispNote" style="font-size:12px;color:var(--mu)"></div></div>
@@ -993,7 +993,7 @@ function pkForProject(){const o={},ids=new Set([S.tpack,...crew.map(c=>c[4])].fi
 function pkFromProject(o){if(!o||!o.pk||typeof o.pk!='object')return;for(const id in o.pk){const x=o.pk[id];if(!x||typeof x.files!='object'||!/^[\w-]+$/.test(id)||PK.has(id))continue;
  const files={};for(const k in x.files){const q=pkPath(k+'.png');if(q&&typeof x.files[k]=='string'&&x.files[k].startsWith('data:image/png;base64,'))files[q[0]+'/'+q[1]]=x.files[k]}
  const r={id,name:String(x.name||'Character').slice(0,40),files,json:x.json&&typeof x.json=='object'?x.json:{},added:+x.added||Date.now()};PK.set(id,r);PKDB.put(r).catch(()=>{})}}
-function pkUI(){const sig=S.tstyle+'|'+S.tpack;if(pkUI.sig!==undefined&&pkUI.sig!==sig){pkUI.sig=sig;try{crewUI()}catch(e){}}pkUI.sig=sig;const box=$('#pkBox');if(!box)return;box.style.display=S.tstyle=='Character pack'?'':'none';const sel=$('#pkSel');if(!sel)return;
+function pkUI(){try{CX.want()}catch(e){}const sig=S.tstyle+'|'+S.tpack;if(pkUI.sig!==undefined&&pkUI.sig!==sig){pkUI.sig=sig;try{crewUI()}catch(e){}}pkUI.sig=sig;const box=$('#pkBox');if(!box)return;box.style.display=S.tstyle=='Character pack'?'':'none';const sel=$('#pkSel');if(!sel)return;
  const all=[...PK.values()],opts=all.filter(r=>r.builtin).concat(all.filter(r=>!r.builtin).sort((a,b)=>a.name.localeCompare(b.name)));const key=opts.map(r=>r.id+r.name).join('|');
  if(sel.dataset.u!==key){sel.innerHTML=(opts.length?'':'<option value="">No packs loaded yet</option>')+opts.map(r=>`<option value="${r.id}">${esc(r.name)}</option>`).join('');sel.dataset.u=key}
  if(pkReady&&!PK.has(S.tpack)&&opts.length)S.tpack=opts[0].id;if(PK.has(S.tpack))pkLoad(S.tpack);crew.forEach(c=>{if(c[4]&&PK.has(c[4]))pkLoad(c[4])});sel.value=PK.has(S.tpack)?S.tpack:(opts[0]?opts[0].id:'');const d=document.querySelector('[data-a=pkdel]');if(d)d.style.display=PK.has(S.tpack)&&!PK.get(S.tpack).builtin?'':'none';
@@ -1561,7 +1561,7 @@ sims.forEach((sm,wi)=>{const w=walls[wi];if(!w||!sm.sp.length)return;c.save();c.
 // inside the wall (body reaches ~1.05x its size above the feet, ~0.3x behind and ~0.5x in front when carrying),
 // stands inside it, walks on and off through the wall's own edge, and is clipped to the wall rectangle.
 function techBox(w,H){const L0=w.ox,R0=w.ox+wW(w),T0=w.oy,B0=w.oy+wH(w),sz=Math.max(6,Math.min(w.th*2.4,H*.42,(B0-T0)/1.05,(R0-L0)/.85));return{L0,R0,T0,B0,sz,cs:Math.min(1,sz/(w.th*2.4),.45*sz/w.tw)}}
-function drawWallTech(c,w,sm,W,H){const N=tN(w);if(!N)return;const k=Math.min(sm.i,N-1),RC=bseq(w)[k],tw=RC.w,th=RC.h,{L0,R0,T0,B0,sz,cs}=techBox(w,H),
+function drawWallTech(c,w,sm,W,H){if((S.tstyle=='Hand-drawn'||S.tstyle=='Backlit')&&CX.draw(c,w,sm,W,H))return;const N=tN(w);if(!N)return;const k=Math.min(sm.i,N-1),RC=bseq(w)[k],tw=RC.w,th=RC.h,{L0,R0,T0,B0,sz,cs}=techBox(w,H),
 sx=L0+RC.x+tw/2,cy=T0+RC.y+th/2,sy=T0+RC.y+th-w.th*.05,p=Math.min(1,sm.t/D[sm.ph]),eF=/right/i.test(w.corner)?-1:1,
 lo=L0+.31*sz,hi=R0-.31*sz,fits=v=>v>=lo&&v<=hi,gap=.05*sz,pref=sx-eF*(tw/2+gap),alt=sx+eF*(tw/2+gap),
 xs=fits(pref)?pref:fits(alt)?alt:(lo>hi?(L0+R0)/2:Math.max(lo,Math.min(hi,pref))),sF=sx>xs+1?1:sx<xs-1?-1:eF,
@@ -1585,6 +1585,261 @@ if(showTile)cab(c,tx,ty,{tw,th},ts);
 let hands=null;if(showTile){const hw=tw*ts/2,top=ty-th*ts/2,ins=Math.min(.045*sz,hw*.45,th*ts*.45),j=sm.ph=='lock'?Math.sin(sm.t*40)*.006*sz:0;hands=[[tx-hw+ins,top+ins+j],[tx+hw-ins,top+ins-j]]}
 drawTech(c,x,yy,sz,{th:ang,mv,ph:sm.ph,p,prog:k/Math.max(1,N),ix:crew.length&&sm.m>=0?sm.m%crew.length:0,g:x/(sz*.2),u,m,carry,lock:sm.ph=='lock',shake:Math.sin(sm.t*40),hands});
 c.restore()}
+// ---------- crew styles: Hand-drawn (realistic Rocketbox workers, motion-captured walk, inked in a shader) and Backlit (a dark
+// figure against the lit wall, rim-lit, reflective tape catching the light). Both pose one 3D skeleton per frame from the build
+// step; Classic and Character pack are drawn by drawTech above. Hand-drawn needs WebGL and the files in app/crew (loaded the
+// first time it is picked); until they are ready, or where WebGL is missing, Classic is drawn instead.
+const CX=(()=>{'use strict';
+const PI=Math.PI,TAU=PI*2;
+const rgb=h=>{const n=parseInt(h.slice(1),16);return[n>>16,n>>8&255,n&255]},hex=a=>'#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const MC=new Map(),mix=(a,b,t)=>{const k=a+b+t;let v=MC.get(k);if(!v){const x=rgb(a),y=rgb(b);v=hex(x.map((q,i)=>q+(y[i]-q)*t));if(MC.size>4000)MC.clear();MC.set(k,v)}return v},lt=(c,t)=>mix(c,'#ffffff',t),dk=(c,t)=>mix(c,'#000000',t);
+// vectors: x along the wall, y up, z out of the wall towards the audience. Units: 1 = the technician's height.
+const V=(x,y,z)=>({x,y,z}),add=(a,b)=>V(a.x+b.x,a.y+b.y,a.z+b.z),sub=(a,b)=>V(a.x-b.x,a.y-b.y,a.z-b.z),mul=(a,k)=>V(a.x*k,a.y*k,a.z*k),dot=(a,b)=>a.x*b.x+a.y*b.y+a.z*b.z,len=a=>Math.hypot(a.x,a.y,a.z),
+ lerp=(a,b,t)=>a+(b-a)*t,lerp3=(a,b,t)=>V(lerp(a.x,b.x,t),lerp(a.y,b.y,t),lerp(a.z,b.z,t)),cl=(v,a,b)=>Math.max(a,Math.min(b,v)),ss=q=>{q=cl(q,0,1);return q*q*(3-2*q)},
+ angL=(a,b,t)=>{let d=(b-a)%TAU;if(d>PI)d-=TAU;if(d<-PI)d+=TAU;return a+d*t};
+// yaw 0 faces the audience, +90 deg faces along +x, 180 deg faces the wall. loc(forward, up, right-hand side)
+const loc=(f,y,s,psi)=>V(f*Math.sin(psi)-s*Math.cos(psi),y,f*Math.cos(psi)+s*Math.sin(psi));
+function ik(Sx,T,l1,l2,pole){let d=sub(T,Sx),L=len(d);const mx=(l1+l2)*.999;if(L>mx){d=mul(d,mx/L);L=mx}L=Math.max(L,Math.abs(l1-l2)+1e-4);const u=mul(d,1/(len(d)||1)),a=(l1*l1-l2*l2+L*L)/(2*L),h=Math.sqrt(Math.max(0,l1*l1-a*a));
+ let pp=sub(pole,mul(u,dot(pole,u)));const pl=len(pp);pp=pl>1e-5?mul(pp,1/pl):V(0,0,0);return{j:add(Sx,add(mul(u,a),mul(pp,h))),e:add(Sx,mul(u,L))}}
+// each crew member gets a slightly different body: height, shoulders, hips, hair
+const BUILDS=[{h:1,w:1.04,hip:1,pony:0},{h:.94,w:.9,hip:1.04,pony:1},{h:1.02,w:1,hip:.98,pony:0},{h:.97,w:.96,hip:1,pony:0},{h:.92,w:.88,hip:1.05,pony:1},{h:1.04,w:1.08,hip:1,pony:0}];
+const bdOf=i=>BUILDS[((i%BUILDS.length)+BUILDS.length)%BUILDS.length];
+// ---------- the skeleton. Both styles draw from these joints.
+const K0={UA:.165,FA:.15,TH:.245,SH:.245,hip:.53,ank:.04,sp:.285,shW:.118,hipW:.052};
+function solve(o){const K=o.K||K0,UA=K.UA,FA=K.FA,TH=K.TH,SH=K.SH,LEG=TH+SH-.002,psi=o.psi,phi=o.phi||0,L=o.step||0,lift=o.lift==null?1:o.lift,amp=o.amp||0,cr=o.crouch||0,lean=o.lean||0,spread=o.spread||0,bd=o.bd||BUILDS[0],
+ wk=Math.min(1,L/.2),a0=.55*L,pf=Math.min(1,L/.3),J={psi,bd,ix:o.ix||0,expr:o.expr||''};
+ // feet: on the ground for 60% of the cycle (so they never slide), then swing forward
+ const foot=(s,c)=>{c=((c%1)+1)%1;let f,y=0,p=0;
+  if(c<.6){const u=c/.6;f=a0-1.2*L*u;if(u<.12)p=-.3*(1-u/.12)*pf;if(u>.7){const q=(u-.7)/.3;p=.75*q*q*pf;y=.03*q*q*pf}}
+  else{const u=(c-.6)/.4,e=.5-.5*Math.cos(PI*u);f=a0-1.2*L+1.2*L*e;y=lift*((.03+.14*L)*Math.sin(PI*u)+(1-u)*(1-u)*.03*pf);p=(.75*(1-u)*(1-u)*(1-u)-.3*u*u*u)*pf*Math.max(lift,0)}
+  return{f,y,p,s}};
+ const F=[foot(-1,phi/TAU),foot(1,phi/TAU+.5)];
+ const ds=Math.max(0,K.hip-(K.ank+Math.sqrt(Math.max(0,LEG*LEG-a0*a0))*.99)),hipY=K.hip-cr-(.004+ds*(.5+.5*Math.cos(2*phi)))*wk,
+  sway=-.016*Math.sin(phi-.1*PI)*wk,tp=.13*Math.cos(phi-PI)*wk,tc=-.1*Math.cos(phi-PI)*wk*(o.hands?.3:1);
+ const P=loc(-cr*.55,hipY,sway,psi),sp=loc(Math.sin(lean),Math.cos(lean),0,psi);J.P=P;J.sp=sp;J.yawP=psi+tp;J.yawC=psi+tc;J.lean=lean;
+ J.C=add(P,mul(sp,K.sp));J.N=add(P,mul(sp,K.sp+.04));
+ const hp=o.headPitch||0;J.yawH=psi+(o.headYaw||0);J.hp=hp;J.Hc=add(add(J.N,mul(sp,.045)),add(V(0,.03-Math.abs(hp)*.012,0),loc(.01-hp*.035,0,0,J.yawH)));
+ J.hip=[];J.kn=[];J.an=[];J.heel=[];J.toe=[];J.sh=[];J.el=[];J.wr=[];J.hd=[];
+ for(let i=0;i<2;i++){const s=i?1:-1,ft=F[i],fy=psi-s*.14,cp=Math.cos(ft.p),sn=Math.sin(ft.p);
+  let A=loc(ft.f,Math.max(K.ank+ft.y,-(-.115*sn-.04*cp),-(.035*sn-.04*cp)),s*(.045*bd.hip+spread),psi);
+  const H=add(P,loc(0,0,s*K.hipW*bd.hip,J.yawP)),d=sub(A,H),dl=len(d);if(dl>LEG)A=add(H,mul(d,LEG/dl));
+  const r=ik(H,A,TH,SH,loc(1,.1,s*.18,psi));J.hip[i]=H;J.kn[i]=r.j;J.an[i]=A;
+  const pt=(u,v)=>add(A,add(mul(loc(1,0,0,fy),u*cp+v*sn),V(0,-u*sn+v*cp,0)));J.heel[i]=pt(-.035,-.04);J.toe[i]=pt(.115,-.04);J['fy'+i]=fy;J['fp'+i]=ft.p;
+  // arms: swing opposite the legs, or reach for a target
+  const Sh=add(add(J.C,mul(sp,-.012)),loc(0,0,s*K.shW*bd.w,J.yawC)),sw=Math.cos(phi-PI)*wk*amp*-s,a=.42*sw+lean*.3,e=.2+.3*Math.max(0,sw)+.12*wk*amp,
+   El=add(Sh,mul(loc(Math.sin(a),-Math.cos(a),s*.1,J.yawC),UA/Math.hypot(1,.1))),Wr0=add(El,mul(loc(Math.sin(a+e),-Math.cos(a+e),s*.02,J.yawC),FA));
+  const hT=o.hands&&o.hands[i];let El2=El,Wr=Wr0;
+  if(hT&&hT.w>0){const T2=lerp3(Wr0,hT.t,hT.w),q=ik(Sh,T2,UA,FA,loc(-.5,-1,s*.7,J.yawC));El2=q.j;Wr=q.e}
+  J.sh[i]=Sh;J.el[i]=El2;J.wr[i]=Wr;J['grip'+i]=hT?hT.w:0;const fd=sub(Wr,El2),fl=len(fd)||1;J.hd[i]=add(Wr,mul(fd,.07/fl))}
+ return J}
+// ---------- where the technician is and what the body is doing at this moment of the build (same steps and timing as Classic)
+const ZW=-.23;
+function pose(w,sm,H,style){const N=tN(w),k=Math.min(sm.i,N-1),RC=bseq(w)[k],tb=techBox(w,H),L0=tb.L0,R0=tb.R0,T0=tb.T0,B0=tb.B0,tw=RC.w,th=RC.h,
+ ix=crew.length&&sm.m>=0?sm.m%crew.length:0,m=crew.length&&sm.m>=0?crew[ix]:['','#e0ac69',null,'#2b1d14'],bd=bdOf(ix),
+ base=Math.max(6,Math.min(tb.sz,(B0-T0)/1.12)),sz=base*(style=='Hand-drawn'?RBM[rbOf(ix)].h:bd.h),cs=Math.min(1,base/(w.th*2.4),.45*base/w.tw),
+ sx=L0+RC.x+tw/2,cy=T0+RC.y+th/2,eF=/right/i.test(w.corner)?-1:1,lo=L0+.3*sz,hi=R0-.3*sz,xs=lo>hi?(L0+R0)/2:cl(sx-eF*.07*sz,lo,hi),off=eF>0?L0-.55*sz:R0+.55*sz,
+ ground=B0-.03*base,yy=Math.min(ground,Math.max(T0+1.1*base,Math.min(ground,T0+RC.y+th+.8*base))),p=Math.min(1,sm.t/D[sm.ph]),wy=eF*1.36,dx=(sx-xs)/sz,ty0=(yy-cy)/sz,psiW=Math.atan2(dx,ZW),
+ hw=tw/2/sz,hh=th/2/sz,crF=y=>cl((.56-y)*.85,0,.3),dist=Math.abs(xs-off)/sz;
+ let walk=null,x=xs,o={psi:wy,bd,ix,expr:sm.ph=='place'||sm.ph=='lock'?'focus':sm.ph=='walkout'&&p>.28?'happy':''},tile=null;
+ const carryAt=psi=>loc(.215,.645,0,psi),
+  hands=(tc,yaw,sc,cr,w0,w1)=>{const g=Math.min(hw*sc-.012,.165),gy=cl(.78-cr-tc.y,-(hh*sc-.03),hh*sc-.03)*.8,rt=loc(0,0,1,yaw),pull=loc(.02,0,0,yaw+PI);
+   return[{t:add(add(tc,mul(rt,-g)),add(V(0,gy,0),pull)),w:w0},{t:add(add(tc,mul(rt,g)),add(V(0,gy,0),pull)),w:w1}]};
+ if(sm.ph=='walkin'||sm.ph=='move'){const tau=((sm.ph=='walkin'?0:D.walkin)+sm.t)/(D.walkin+D.move),E=1-Math.pow(1-Math.min(1,tau),1.7);x=off+(xs-off)*E;
+  const n=cl(Math.round(dist/.31),2,12),Ls=dist/n,rem=Math.abs(xs-x)/sz;o.step=Ls;o.phi=.6*PI-PI*rem/Ls;o.lift=Math.min(1,rem/(.5*Ls));o.lean=-.05;o.headYaw=-eF*.3;
+  walk={w:Math.min(1,rem/.22),dist:dist-rem};const tc=add(carryAt(wy),V(0,-.012*Math.cos(2*o.phi)*o.lift,0));tile={c:tc,yaw:wy,s:cs};o.hands=hands(tc,wy,cs,0,1,1)}
+ else if(sm.ph=='place'){const psi=angL(wy,psiW,ss(p/.45)),kq=ss((p-.3)/.7),c0=carryAt(psi),slot=V(dx,ty0,ZW),tc=lerp3(c0,slot,kq);tc.y+=Math.sin(PI*kq)*.03;
+  const sc=cs+(1-cs)*kq,yaw=angL(psi,PI,kq),cr=crF(tc.y)*Math.min(1,kq*1.6);o.psi=psi;o.crouch=cr;o.lean=-.05*(1-kq)+kq*(.1+1.15*cr);o.spread=.035*kq;o.headPitch=cl((tc.y-.93+cr)*.9,-.5,.4)*kq;
+  tile={c:tc,yaw,s:sc};o.hands=hands(tc,yaw,sc,cr,1,1)}
+ else if(sm.ph=='lock'){const slot=V(dx,ty0,ZW),cr0=crF(ty0),rel=ss((p-.72)/.28),cr=cr0*(1-.45*rel),li=eF>0?0:1;
+  o.psi=psiW;o.crouch=cr;o.lean=.1+1.15*cr+.035*Math.sin(PI*cl((p-.25)/.4,0,1));o.spread=.035;o.headPitch=cl((ty0-.93+cr)*.9,-.5,.4)*(1-rel);
+  tile={c:slot,yaw:PI,s:1,slot:true};o.hands=hands(slot,PI,1,cr,1-rel,1-rel);
+  // one hand leaves the edge, goes to the lock on the top edge and turns it
+  const g=ss(p/.3),tw2=ss((p-.3)/.3),h=o.hands[li],lk=V(h.t.x,Math.min(ty0+hh-.045,.8-cr+.1)-tw2*.04,h.t.z);h.t=lerp3(h.t,lk,g);h.t.z+=Math.sin(tw2*PI)*.02}
+ else if(sm.ph=='walkout'){const cr0=crF(ty0)*.55,up=ss(p/.25),xw=-eF*1.36,q=Math.max(0,(p-.2)/.8);x=xs+(off-xs)*Math.pow(q,1.7);
+  const n=cl(Math.round(dist/.33),2,12),Ls=dist/n,tr=Math.abs(x-xs)/sz;o.psi=angL(psiW,xw,ss((p-.04)/.4));o.crouch=cr0*(1-up);o.lean=(.1+1.15*cr0)*(1-up)*.6;o.spread=.035*(1-up);
+  o.step=Ls*Math.min(1,p/.25);o.phi=.6*PI+PI*tr/Ls;o.lift=Math.min(1,tr/(.3*Ls));o.amp=Math.min(1,p/.35);o.headYaw=eF*.3*ss((p-.3)/.3);walk={w:ss((p-.22)/.22),dist:tr}}
+ return{x,yy,sz,base,o,tile,m,ix,bd,tw,th,L0,R0,T0,B0,ground,walk}}
+// ---------- the work platform the tech stands on for rows out of reach
+function drawDeck(c,q){const{L0,R0,T0,B0,ground,yy}=q,b=q.base;if(yy>ground-3)return;const t=.03*b,top=yy+.004*b;c.save();
+ c.strokeStyle='#4a545f';c.lineWidth=Math.max(2,.016*b);c.lineCap='round';const xs=[L0+.05*(R0-L0),(L0+R0)/2,R0-.05*(R0-L0)];
+ xs.forEach(x=>{c.beginPath();c.moveTo(x,top+t);c.lineTo(x,B0);c.stroke()});c.lineWidth=Math.max(1,.008*b);c.strokeStyle='#3a434d';
+ for(let i=0;i<2;i++){c.beginPath();c.moveTo(xs[i],top+t);c.lineTo(xs[i+1],B0);c.moveTo(xs[i+1],top+t);c.lineTo(xs[i],B0);c.stroke()}
+ c.fillStyle='#7b8691';c.fillRect(L0,top,R0-L0,t);c.fillStyle='#aab4bd';c.fillRect(L0,top,R0-L0,t*.22);c.fillStyle='#39414a';c.fillRect(L0,top+t*.78,R0-L0,t*.22);
+ c.fillStyle='rgba(0,0,0,.3)';for(let x=L0+.12*b;x<R0;x+=.24*b)c.fillRect(x,top+t*.22,1.5,t*.56);c.restore()}
+// ---------- the tile being carried (a box seen from any side)
+function drawTile2(c,cx,cy,tw,th,yaw,flat){const wx=-Math.cos(yaw),wz=Math.sin(yaw),nx=-Math.sin(yaw),nz=-Math.cos(yaw),d=.13*Math.min(tw,th),fw=tw*Math.abs(wx),sw=d*Math.abs(nx),front=nz>0,
+ fx=cx+(front?1:-1)*nx*d/2,sxc=cx+(wz>=0?1:-1)*wx*tw/2,y=cy-th/2,k=Math.min(tw,th)/192;
+ if(sw>.6){c.fillStyle=flat?'#07090c':'#3b424b';c.fillRect(sxc-sw/2,y,sw,th);if(!flat){c.fillStyle='#596370';c.fillRect(sxc-sw/2,y,sw,3*k);c.fillStyle='#e8c11c';c.fillRect(sxc-sw/2,y+th*.2,sw,5*k);c.fillRect(sxc-sw/2,y+th*.8-5*k,sw,5*k)}}
+ if(fw>.6){const x=fx-fw/2;if(front){c.fillStyle=flat?'#090c10':'#171c23';c.fillRect(x,y,fw,th);if(!flat){c.strokeStyle='rgba(255,255,255,.05)';c.lineWidth=1;for(let i=1;i<4;i++){c.beginPath();c.moveTo(x+fw*i/4,y);c.lineTo(x+fw*i/4,y+th);c.moveTo(x,y+th*i/4);c.lineTo(x+fw,y+th*i/4);c.stroke()}}
+   c.strokeStyle=flat?'#232b33':'#8ea0b0';c.lineWidth=Math.max(1,2*k);c.strokeRect(x,y,fw,th)}
+  else{c.fillStyle=flat?'#07090c':'#2b3139';c.fillRect(x,y,fw,th);if(!flat){c.strokeStyle='#48525d';c.lineWidth=Math.max(1,5*k);c.strokeRect(x+fw*.1,y+th*.1,fw*.8,th*.8);c.beginPath();c.moveTo(x+fw*.1,y+th*.1);c.lineTo(x+fw*.9,y+th*.9);c.moveTo(x+fw*.9,y+th*.1);c.lineTo(x+fw*.1,y+th*.9);c.stroke();
+    c.fillStyle='#14181d';c.fillRect(x+fw*.32,y+th*.4,fw*.36,th*.2);c.fillStyle='#0b0d10';c.fillRect(x+fw*.2,y+th*.2,fw*.6,6*k);c.fillRect(x+fw*.2,y+th*.8-6*k,fw*.6,6*k)}c.strokeStyle=flat?'#1a2026':'#6f7c88';c.lineWidth=Math.max(1,2*k);c.strokeRect(x,y,fw,th)}}}
+// ---------- Backlit: the figure in stage-light colours (Canvas 2D)
+function palette(m){const t=(col,k)=>mix(col,'#05070a',k);
+ return{flat:1,skin:t(m[1]||'#e0ac69',.74),hair:t(m[3]||'#2b1d14',.6),shirt:t('#3d4756',.86),pants:t('#262d3a',.84),boot:t('#6a4a2c',.86),sole:'#030405',glove:t('#aeb4bb',.78),
+  vest:t(S.vest,.62),hat:t(S.hat,.5),band:'#f2f8ff',logo:'rgba(235,245,255,.82)',tagBg:'#39424c',tagTx:'#0a0d10'}}
+function limb(c,a,b,ra,rb,col){const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy),g=Math.atan2(dy,dx);c.beginPath();if(L<.01){c.arc(a[0],a[1],Math.max(ra,rb),0,TAU)}else{c.arc(a[0],a[1],ra,g+PI/2,g-PI/2);c.arc(b[0],b[1],rb,g-PI/2,g+PI/2)}c.closePath();c.fillStyle=col;c.fill()}
+const TOR=[[-.14,.07,.07],[-.03,.094,.078],[.22,.082,.066],[.5,.093,.072],[.8,.108,.075],[.97,.118,.062],[1.07,.085,.05],[1.14,.036,.036]];
+function drawFig(c,J,X0,Y0,sz,m,pal,tile){const P=v=>[X0+v.x*sz,Y0-v.y*sz],bd=J.bd,parts=[],u=k=>k*sz;
+ // torso cross-section at a height t (0 = hips, 1 = shoulders)
+ const lev=t=>{let i=0;while(i<TOR.length-2&&t>TOR[i+1][0])i++;const A=TOR[i],B=TOR[i+1],f=cl((t-A[0])/(B[0]-A[0]),0,1),sc=t>.4?bd.w:lerp(bd.hip,bd.w,cl(t/.4,0,1)),a=lerp(A[1],B[1],f)*sc,b=lerp(A[2],B[2],f),yaw=lerp(J.yawP,J.yawC,cl(t,0,1));return{a,b,yaw,c:add(J.P,mul(J.sp,t*.285))}},
+  ext=(t,g)=>{const l=lev(t),w=Math.hypot(l.a*Math.cos(l.yaw),l.b*Math.sin(l.yaw))+(g||0),p=P(l.c);return[p[0]-w*sz,p[0]+w*sz,p[1]]},
+  surf=(t,al,g)=>{const l=lev(t),sa=Math.sin(al),ca=Math.cos(al),o=add(loc(0,0,(l.a+(g||0))*sa,l.yaw),loc((l.b+(g||0))*ca,0,0,l.yaw)),nx=sa/l.a,nf=ca/l.b,nl=Math.hypot(nx,nf),nz=(nx*Math.sin(l.yaw)+nf*Math.cos(l.yaw))/nl,p=P(add(l.c,o));return{x:p[0],y:p[1],nz}},
+  shape=(ts,g)=>{const E=ts.map(t=>ext(t,g));c.beginPath();c.moveTo(E[0][0],E[0][2]);for(let i=1;i<E.length;i++)c.lineTo(E[i][0],E[i][2]);for(let i=E.length-1;i>=0;i--)c.lineTo(E[i][1],E[i][2]);c.closePath();return E};
+ for(let i=0;i<2;i++){const H=P(J.hip[i]),K=P(J.kn[i]),A=P(J.an[i]),he=P(J.heel[i]),to=P(J.toe[i]);
+  parts.push({z:(J.hip[i].z+J.kn[i].z+J.an[i].z)/3-.02,d(){const up=[(A[0]*1.2+he[0]*.8)/2,(A[1]+he[1])/2+u(.004)],tc=[lerp(he[0],to[0],.86),lerp(he[1],to[1],.86)-u(.02)];
+   limb(c,[he[0],he[1]-u(.016)],tc,u(.03),u(.024),pal.boot);limb(c,A,up,u(.034),u(.032),pal.boot);c.strokeStyle=pal.sole;c.lineWidth=u(.013);c.lineCap='round';c.beginPath();c.moveTo(he[0],he[1]-u(.004));c.lineTo(to[0],to[1]-u(.004));c.stroke();
+   limb(c,K,A,u(.05),u(.038),pal.pants);limb(c,H,K,u(.07*bd.hip),u(.052),pal.pants)}})}
+ for(let i=0;i<2;i++){const Sh=P(J.sh[i]),E=P(J.el[i]),Wr=P(J.wr[i]),Hd=P(J.hd[i]),sl=[lerp(Sh[0],E[0],.6),lerp(Sh[1],E[1],.6)];
+  parts.push({z:(J.sh[i].z+J.el[i].z*1.5+J.wr[i].z*1.5)/4+(J.wr[i].z>J.P.z?.03:-.03),d(){limb(c,E,Wr,u(.037),u(.029),pal.skin);limb(c,Sh,E,u(.043),u(.038),pal.skin);limb(c,Sh,sl,u(.05),u(.046),pal.shirt);
+   limb(c,Wr,Hd,u(.031),u(.025),pal.glove)}})}
+ parts.push({z:J.P.z,d(){
+  shape([-.14,-.03,.1,.22,.3]);c.fillStyle=pal.pants;c.fill();
+  shape([.2,.5,.8,.97,1.07,1.14]);c.fillStyle=pal.shirt;c.fill();
+  const b0=ext(.2),b1=ext(.26);c.fillStyle=pal.pants;c.beginPath();c.moveTo(b0[0],b0[2]);c.lineTo(b0[1],b0[2]);c.lineTo(b1[1],b1[2]);c.lineTo(b1[0],b1[2]);c.fill();
+  // hi-vis vest with its reflective tape
+  shape([.27,.5,.8,.97,1.05],.007);c.fillStyle=pal.vest;c.fill();c.save();c.clip();
+  const band=(t0,t1)=>{const a=ext(t0,.01),b=ext(t1,.01);c.beginPath();c.moveTo(a[0],a[2]);c.lineTo(a[1],a[2]);c.lineTo(b[1],b[2]);c.lineTo(b[0],b[2]);c.closePath();c.fillStyle=pal.band;c.fill()};
+  band(.33,.4);band(.47,.54);
+  for(const al of[.7,-.7,PI-.7,PI+.7]){const pts=[];let nzs=0;for(let k=0;k<=6;k++){const q=surf(.54+k*.085,al,.008);pts.push(q);nzs+=q.nz}nzs/=7;if(nzs<.06)continue;c.strokeStyle=pal.band;c.lineWidth=u(.026)*Math.max(.3,nzs);c.lineCap='butt';c.beginPath();pts.forEach((q,k)=>k?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y));c.stroke()}
+  const fr=surf(.9,0,.008);if(fr.nz>.1){const f2=surf(1.06,0,.008),f3=surf(.3,0,.008),wv=u(.034)*fr.nz;c.fillStyle=pal.shirt;c.beginPath();c.moveTo(f2.x-wv,f2.y);c.lineTo(f2.x+wv,f2.y);c.lineTo(fr.x,fr.y+u(.035));c.fill();c.strokeStyle='#020304';c.lineWidth=Math.max(1,u(.005));c.beginPath();c.moveTo(fr.x,fr.y+u(.03));c.lineTo(f3.x,f3.y);c.stroke()}
+  // logo on the back (the app's Vest logo text or uploaded logo)
+  const bk=surf(.74,PI,.008);if(bk.nz>.15){c.save();c.translate(bk.x,bk.y);c.scale(bk.nz,1);const mw=u(.128*bd.w);
+   if(logoImg&&logoImg.width){const im=logoImg,k=Math.min(mw/im.width,u(.075)/im.height);c.globalAlpha=.75;c.drawImage(im,-im.width*k/2,-im.height*k/2,im.width*k,im.height*k)}
+   else if(S.logo){c.fillStyle=pal.logo;c.textAlign='center';c.textBaseline='middle';let fs=u(.04);c.font=`700 ${fs}px Barlow,sans-serif`;const w0=c.measureText(S.logo).width;if(w0>mw){fs*=mw/w0;c.font=`700 ${fs}px Barlow,sans-serif`}c.fillText(S.logo,0,0)}c.restore()}
+  c.restore();
+  // name tag on a lanyard (the app's Crew details option)
+  if(S.cd&&m[0]){const tg=surf(.69,-.5,.012);if(tg.nz>.3){const w=u(.085)*tg.nz,h=u(.055),n1=surf(1.08,.35,.004),n2=surf(1.08,-.35,.004);c.strokeStyle='#2c3640';c.lineWidth=Math.max(1,u(.006));c.beginPath();c.moveTo(n1.x,n1.y);c.lineTo(tg.x,tg.y-h/2);c.lineTo(n2.x,n2.y);c.stroke();
+   c.fillStyle=pal.tagBg;c.fillRect(tg.x-w/2,tg.y-h/2,w,h);c.fillStyle='#22303a';c.fillRect(tg.x-w/2,tg.y-h/2,w,h*.26);c.fillStyle=pal.tagTx;c.textAlign='center';c.textBaseline='middle';c.font=`700 ${h*.42}px Barlow,sans-serif`;c.fillText(m[0],tg.x,tg.y+h*.16,w*.92)}}}});
+ // head, hair, hard hat
+ parts.push({z:J.Hc.z+.09,d(){const yh=J.yawH,fx=Math.sin(yh),fzh=Math.cos(yh),rx=-Math.cos(yh),rz=Math.sin(yh),h=P(J.Hc),hx=h[0],hy=h[1]-J.hp*u(.012),w=u(Math.hypot(.05*rx,.063*fx)),nk=P(add(J.P,mul(J.sp,.3))),pony=bd.pony;
+  const tail=()=>limb(c,[hx-fx*u(.05),hy+u(.012)],[hx-fx*u(.075),hy+u(.1)],u(.022),u(.012),pal.hair);
+  limb(c,nk,[hx-fx*u(.008),hy+u(.03)],u(.034),u(.03),pal.skin);
+  if(pony&&fzh>=0)tail();
+  c.fillStyle=pal.hair;c.beginPath();c.ellipse(hx-fx*u(.007),hy-u(.004),w+u(.004),u(.071),0,0,TAU);c.fill();
+  const fr=fzh>=0?w*(.56+.44*fzh):w*.56*cl((fzh+.62)/.62,0,1);
+  if(fr>.5){const fcx=hx+Math.sign(fx||1)*(w-fr)*(Math.abs(fx)>.02?1:0),fcy=hy+u(.006);c.save();c.beginPath();c.ellipse(fcx,fcy,fr,u(.069),0,0,TAU);c.fillStyle=pal.skin;c.fill();c.restore()}
+  for(const s of[1,-1]){if(s*rz>.2){c.fillStyle=pal.skin;c.beginPath();c.ellipse(hx+s*rx*u(.05)-fx*u(.008),hy+u(.01),u(.011),u(.019),0,0,TAU);c.fill()}}
+  if(pony&&fzh<0)tail();
+  const yb=hy-u(.02),dx=hx-fx*u(.006),rw=w+u(.015);c.beginPath();c.ellipse(dx,yb,rw,u(.066),0,PI,TAU);c.closePath();c.fillStyle=pal.hat;c.fill();
+  c.beginPath();c.ellipse(hx+fx*u(.03),yb,rw+u(.004)+u(.022)*Math.abs(fx),u(.0095),0,0,TAU);c.fill()}});
+ if(tile)parts.push({z:tile.c.z,d(){drawTile2(c,X0+tile.c.x*sz,Y0-tile.c.y*sz,tile.tw*tile.s,tile.th*tile.s,tile.yaw,true)}});
+ parts.sort((a,b)=>a.z-b.z);parts.forEach(q=>q.d())}
+const mkCv=(w,h)=>{const e=document.createElement('canvas');e.width=w;e.height=h;return e},bk=v=>Math.max(128,Math.ceil(v/128)*128);
+let FB=null,RB=null;
+// the dark figure is drawn off screen, then a thin rim of wall light goes round it (strongest on top, where the wall is brightest)
+function drawBacklit(c,J,X0,Y0,sz,m,tile){const bw=Math.ceil(2.6*sz),bh=Math.ceil(1.75*sz),bx=Math.floor(X0-1.3*sz),by=Math.floor(Y0-1.6*sz);
+ if(!FB||FB.width<bw||FB.height<bh||FB.width>bk(bw)*2){FB=mkCv(bk(bw),bk(bh));RB=mkCv(FB.width,FB.height)}const f=FB.getContext('2d'),r=RB.getContext('2d');
+ f.clearRect(0,0,bw,bh);drawFig(f,J,X0-bx,Y0-by,sz,m,palette(m),tile);
+ r.globalCompositeOperation='source-over';r.clearRect(0,0,bw,bh);r.drawImage(FB,0,0,bw,bh,0,0,bw,bh);r.globalCompositeOperation='source-in';r.fillStyle='#bfeef2';r.fillRect(0,0,bw,bh);
+ const e=Math.max(1,sz*.006);c.save();for(const[ox,oy,al]of[[-e,0,.3],[e,0,.3],[0,-e*1.5,.75],[-e*.7,-e,.35],[e*.7,-e,.35]]){c.globalAlpha=al;c.drawImage(RB,0,0,bw,bh,bx+ox,by+oy,bw,bh)}c.globalAlpha=1;c.drawImage(FB,0,0,bw,bh,bx,by,bw,bh);c.restore()}
+// ---------- Hand-drawn: Microsoft Rocketbox avatars (MIT licence) posed from the skeleton, the walk blended in from motion capture,
+// rendered with three.js and redrawn by a shader: inked outlines, colour flattened into bands, hatched shadows, a slight line wobble
+const RBM=[{name:'Man',f:'m08',walk:'m_walk',h:1},{name:'Woman',f:'f01',walk:'f_walk',h:.94}],RBDEF=[0,1,0,0,1,0],rbOf=ix=>RBDEF[ix%RBDEF.length];
+let LIB=0;// 0 not asked for, 1 loading, 2 ready, -1 failed
+function libs(){if(LIB)return LIB==2;LIB=1;const L=['three.min.js','fflate.min.js','FBXLoader.js','rb-assets.js'];
+ // three.js and fflate are UMD files: with Node integration on (desktop) they would go to module.exports instead of window, so hide those while they load
+ const hid={};for(const k of['module','exports','define'])if(k in window){hid[k]=window[k];try{window[k]=undefined}catch(e){}}
+ const back=()=>{for(const k in hid)try{window[k]=hid[k]}catch(e){}};
+ const one=i=>{if(i>=L.length){back();LIB=window.THREE&&THREE.FBXLoader&&window.fflate&&window.TSCREW?2:-1;if(LIB<0)console.warn('Hand-drawn crew: files did not load');forceRen=true;crewNote();return}
+  const s=document.createElement('script');s.src='crew/'+L[i];s.onload=()=>one(i+1);s.onerror=()=>{back();LIB=-1;console.warn('Hand-drawn crew: could not load crew/'+L[i]);forceRen=true;crewNote()};document.head.appendChild(s)};
+ one(0);crewNote();return false}
+let RK=null;
+const b64buf=d=>{const b=atob(d),u=new Uint8Array(b.length);for(let i=0;i<b.length;i++)u[i]=b.charCodeAt(i);return u.buffer};
+function initRB(){if(RK)return RK;if(!libs())return null;RK={ok:false,models:RBM.map(()=>({state:'idle'}))};const T3=window.THREE;
+ try{const cv=mkCv(128,128),R=new T3.WebGLRenderer({canvas:cv,alpha:true,antialias:false,preserveDrawingBuffer:true});R.setClearColor(0,0);
+  const sc=new T3.Scene(),cam=new T3.OrthographicCamera(-1,1,1,-1,10,1400);cam.position.set(0,0,700);const dl=new T3.DirectionalLight(0xffffff,.95);dl.position.set(-1.4,1.8,2);sc.add(dl,new T3.HemisphereLight(0xffffff,0xa0a6b8,.8));
+  const fs=`uniform sampler2D tC,tN,tD;uniform vec2 px;uniform float seed;varying vec2 vUv;
+float h(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float n2(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(h(i),h(i+vec2(1,0)),f.x),mix(h(i+vec2(0,1)),h(i+vec2(1,1)),f.x),f.y);}
+float lum(vec3 c){return dot(c,vec3(.299,.587,.114));}
+void main(){vec2 uv=vUv+vec2(n2(vUv/px/17.6+seed)-.5,n2(vUv/px/17.6+seed+37.)-.5)*px*2.4;vec4 c=texture2D(tC,uv);float d0=texture2D(tD,uv).x,l0=lum(c.rgb),dd=0.,nn=0.,ll=0.,aa=c.a;vec3 n0=texture2D(tN,uv).xyz;
+ for(int i=0;i<8;i++){float a=float(i)*.7854;vec2 o=vec2(cos(a),sin(a))*px*(mod(float(i),2.)<.5?1.25:2.1);vec4 cc=texture2D(tC,uv+o);dd=max(dd,abs(texture2D(tD,uv+o).x-d0));nn=max(nn,length(texture2D(tN,uv+o).xyz-n0));ll=max(ll,abs(lum(cc.rgb)-l0));aa=max(aa,cc.a);}
+ float e=clamp(smoothstep(.004,.012,dd)+smoothstep(.55,1.05,nn)*.9+smoothstep(.2,.42,ll)*.75,0.,1.);
+ float lb=pow(l0,.72),q=floor(lb*5.+.5)/5.*.82+.18;vec3 col=c.rgb*q/max(l0,.03);col=clamp(mix(vec3(lum(col)),col,1.04),0.,1.);
+ float ht=step(.5,fract((gl_FragCoord.x+gl_FragCoord.y)/4.5))*(1.-step(.4,q))*.22;col*=1.-ht;col*=.93+.11*n2(gl_FragCoord.xy*.6+seed);
+ col=mix(col,vec3(.09,.07,.13),e);float al=max(c.a,e*aa);gl_FragColor=vec4(col*al,al);}`;
+  const pm=new T3.ShaderMaterial({uniforms:{tC:{value:null},tN:{value:null},tD:{value:null},px:{value:new T3.Vector2(1/128,1/128)},seed:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}',fragmentShader:fs,transparent:true,depthTest:false,depthWrite:false}),
+   ps=new T3.Scene(),pc=new T3.OrthographicCamera(-1,1,1,-1,0,1);ps.add(new T3.Mesh(new T3.PlaneGeometry(2,2),pm));
+  const lam=c=>new T3.MeshLambertMaterial({color:new T3.Color(c).convertSRGBToLinear()}),tg=new T3.Group(),tb=new T3.Mesh(new T3.BoxGeometry(1,1,1),[lam('#4a525c'),lam('#4a525c'),lam('#6a7480'),lam('#4a525c'),lam('#232a33'),lam('#3a424c')]);tg.add(tb);
+  const bar=new T3.Mesh(new T3.BoxGeometry(.6,.04,.3),lam('#15181c'));bar.position.set(0,.3,-.5);const bar2=bar.clone();bar2.position.y=-.3;const box=new T3.Mesh(new T3.BoxGeometry(.36,.2,.25),lam('#1d2228'));box.position.z=-.5;tg.add(bar,bar2,box);sc.add(tg);
+  Object.assign(RK,{ok:true,R,cv,rw:0,rh:0,rtC:null,rtN:null,sc,cam,pm,ps,pc,T3,tile:tg,nm:new T3.MeshNormalMaterial()})}catch(e){console.warn('Hand-drawn crew: WebGL did not start',e)}crewNote();return RK}
+// render targets follow the size of the box round the figure, in steps of 128 px so they are rarely remade
+function rbSize(w,h){const k=RK,T3=k.T3;if(k.rw==w&&k.rh==h)return;k.rw=w;k.rh=h;if(k.rtC){k.rtC.depthTexture.dispose();k.rtC.dispose();k.rtN.dispose()}
+ k.rtC=new T3.WebGLRenderTarget(w,h);k.rtC.depthTexture=new T3.DepthTexture(w,h);k.rtC.texture.encoding=T3.sRGBEncoding;k.rtN=new T3.WebGLRenderTarget(w,h);
+ k.R.setSize(w,h,false);const U=k.pm.uniforms;U.tC.value=k.rtC.texture;U.tN.value=k.rtN.texture;U.tD.value=k.rtC.depthTexture;U.px.value.set(1/w,1/h)}
+function loadRB(k){const v=initRB();if(!v||!v.ok)return;const M=v.models[k];if(M.state!='idle')return;M.state='loading';const{T3}=v,mg=new T3.LoadingManager(),tl=new T3.TextureLoader(),A=window.TSCREW;
+ mg.addHandler(/\.tga$/i,{load:(u,cb)=>{const n=decodeURIComponent(u).split(/[\\/]/).pop().replace(/\.tga$/i,'').toLowerCase(),src=A.tex[n];if(!src)return new T3.Texture();const t=tl.load(src,x=>{forceRen=true;cb&&cb(x)});t.encoding=T3.sRGBEncoding;return t},setPath(){return this}});
+ const ld=new T3.FBXLoader(mg),done=()=>{forceRen=true;crewNote();const n=v.models.findIndex(x=>x.state=='idle');if(n>=0&&!v.models.some(x=>x.state=='loading'))loadRB(n)};
+ // parse after a frame so picking the style never freezes the screen before the first draw
+ setTimeout(()=>{try{rbSetup(M,ld.parse(b64buf(A[RBM[k].f]),''),ld.parse(b64buf(A[RBM[k].walk]),''),RBM[k]);M.state='ready'}catch(e){console.warn('Hand-drawn crew',e);M.state='fail'}done()},30)}
+function getRB(k){const v=initRB();if(!v||!v.ok)return null;const M=v.models[k];if(M.state=='idle'&&!v.models.some(x=>x.state=='loading'))loadRB(k);return M.state=='ready'?M:null}
+const RBB=['Pelvis','Spine','Spine1','Spine2','Neck','Head','L_Clavicle','L_UpperArm','L_Forearm','L_Hand','R_Clavicle','R_UpperArm','R_Forearm','R_Hand','L_Thigh','L_Calf','L_Foot','L_Toe0','R_Thigh','R_Calf','R_Foot','R_Toe0'];
+function rbSetup(M,g,wg,cfg){const{T3,sc}=RK;M.cfg=cfg;M.g=g;sc.add(g);g.visible=false;const all=[];g.traverse(o=>{if(o.isLight)o.visible=false;if(o.isBone)all.push(o);if(o.isMesh){o.frustumCulled=false;if(!/hipoly/i.test(o.name))o.visible=false;
+   o.material=(Array.isArray(o.material)?o.material:[o.material]).map(m=>{const n=new T3.MeshLambertMaterial({map:m.map||null});n.name=m.name;return n});M.mesh=o}});
+ g.updateMatrixWorld(true);const b={root:g.getObjectByName('Bip01')};RBB.forEach(n=>b[n]=g.getObjectByName('Bip01_'+n));M.b=b;M.all=all;M.restL=all.map(o=>o.quaternion.clone());M.restW=new Map();M.restP=new Map();
+ all.forEach(o=>{M.restW.set(o,o.getWorldQuaternion(new T3.Quaternion()));M.restP.set(o,o.getWorldPosition(new T3.Vector3()))});const P=n=>M.restP.get(b[n]),d=(x,y)=>P(x).distanceTo(P(y)),H=P('Head').y+19;M.H=H;M.rootRest=b.root.position.clone();
+ const lm=P('L_Thigh').clone().add(P('R_Thigh')).multiplyScalar(.5);M.hipOff=M.restP.get(b.root).clone().sub(lm);
+ M.K={hip:lm.y/H,TH:d('L_Thigh','L_Calf')/H,SH:d('L_Calf','L_Foot')/H,ank:P('L_Foot').y/H,hipW:Math.abs(P('L_Thigh').x)/H,shW:Math.abs(P('L_UpperArm').x)/H,sp:(P('L_UpperArm').y-lm.y)/H,UA:d('L_UpperArm','L_Forearm')/H,FA:d('L_Forearm','L_Hand')/H};
+ M.L={ua:d('L_UpperArm','L_Forearm'),fa:d('L_Forearm','L_Hand'),th:d('L_Thigh','L_Calf'),sh:d('L_Calf','L_Foot')};
+ const dir=(x,y)=>{const v=P(y).clone().sub(P(x)).normalize();return V(v.x,v.y,v.z)};M.rd={L_UpperArm:dir('L_UpperArm','L_Forearm'),L_Forearm:dir('L_Forearm','L_Hand'),R_UpperArm:dir('R_UpperArm','R_Forearm'),R_Forearm:dir('R_Forearm','R_Hand'),L_Thigh:dir('L_Thigh','L_Calf'),L_Calf:dir('L_Calf','L_Foot'),R_Thigh:dir('R_Thigh','R_Calf'),R_Calf:dir('R_Calf','R_Foot')};
+ // the motion-captured walk: keep rotations and the hips' bob and sway, drop the forward travel (the build decides where the technician is)
+ const clip=wg.animations[0],names=new Set(all.map(o=>o.name)),pt=clip.tracks.find(k=>k.name=='Bip01.position');M.dur=clip.duration;M.stride=pt?pt.values[pt.values.length-1]-pt.values[2]:120;
+ if(pt)for(let i=0;i<pt.times.length;i++)pt.values[i*3+2]-=pt.values[2]+M.stride*pt.times[i]/M.dur;
+ clip.tracks=clip.tracks.filter(k=>{const n=k.name.split('.')[0];return names.has(n)&&(/quaternion$/.test(k.name)||k.name=='Bip01.position')});M.mixer=new T3.AnimationMixer(g);M.mixer.clipAction(clip).play();M.mixer.setTime(0);
+ M.snap=all.map(()=>new T3.Quaternion())}
+function rbPose(M,J,X0,Y0,sz,m,tile,walk){const{T3}=RK,{b,H,L,all}=M,s=sz/H,xo=X0/s,q=(yaw,pitch)=>new T3.Quaternion().setFromEuler(new T3.Euler(pitch,yaw,0,'YXZ')),tq=new T3.Quaternion(),
+  tm=v=>V(xo+v.x*H,v.y*H,v.z*H),setW=(o,D2)=>{o.parent.getWorldQuaternion(tq).invert();o.quaternion.copy(tq.multiply(D2).multiply(M.restW.get(o)));o.updateWorldMatrix(false,false)},
+  basis=(a1,a2)=>{const x=new T3.Vector3(a1.x,a1.y,a1.z).normalize(),y=new T3.Vector3(a2.x,a2.y,a2.z);y.addScaledVector(x,-y.dot(x)).normalize();return new T3.Matrix4().makeBasis(x,y,new T3.Vector3().crossVectors(x,y))},
+  aim=(d,h,r1,r2)=>new T3.Quaternion().setFromRotationMatrix(basis(d,h).multiply(basis(r1,r2).transpose())),crs=(a,b2)=>V(a.y*b2.z-a.z*b2.y,a.z*b2.x-a.x*b2.z,a.x*b2.y-a.y*b2.x),Z=V(0,0,1),wpos=o=>{const p=o.getWorldPosition(new T3.Vector3());return V(p.x,p.y,p.z)};
+ RK.models.forEach(x=>{if(x.g)x.g.visible=x==M});all.forEach((o,i)=>o.quaternion.copy(M.restL[i]));
+ const P=tm(J.P),Qh=q(J.yawP,J.lean*.35),Qc=q(J.yawC,J.lean),Qd=q(J.yawH,J.lean*.25-J.hp*.7),ho=M.hipOff.clone().applyQuaternion(Qh),root=b.root;root.parent.updateWorldMatrix(true,false);root.position.set(P.x+ho.x,P.y+ho.y,P.z+ho.z);
+ setW(root,Qh);b.Pelvis.updateWorldMatrix(false,false);setW(b.Spine,Qh.clone().slerp(Qc,.4));setW(b.Spine1,Qh.clone().slerp(Qc,.8));setW(b.Spine2,Qc);setW(b.Neck,Qc.clone().slerp(Qd,.5));setW(b.Head,Qd);
+ const left=loc(0,0,-1,J.psi),arms=wt=>{for(let i=0;i<2;i++){const sd=i?'R_':'L_',w=wt?wt[i]:1;if(w<=0)continue;const cl2=b[sd+'Clavicle'];if(!wt)setW(cl2,Qc);const ua=b[sd+'UpperArm'],la=b[sd+'Forearm'],Sp=wpos(ua),r=ik(Sp,tm(J.wr[i]),L.ua,L.fa,loc(-.5,-1,(i?1:-1)*.7,J.yawC)),d1=sub(r.j,Sp),d2=sub(r.e,r.j);let hg=crs(d1,d2);if(len(hg)<1e-6)hg=crs(d1,V(0,-1,0));
+    const r1=M.rd[sd+'UpperArm'],r2=M.rd[sd+'Forearm'],A1=aim(d1,hg,r1,crs(r1,Z)),A2=aim(d2,hg,r2,crs(r2,Z));if(w<1){const cu=ua.getWorldQuaternion(new T3.Quaternion()),cf=la.getWorldQuaternion(new T3.Quaternion());setW(ua,A1);const tu=ua.getWorldQuaternion(new T3.Quaternion());setW(la,A2);const tf=la.getWorldQuaternion(new T3.Quaternion());
+     ua.parent.getWorldQuaternion(tq).invert();ua.quaternion.copy(tq.multiply(cu.slerp(tu,w)));ua.updateWorldMatrix(false,false);la.parent.getWorldQuaternion(tq).invert();la.quaternion.copy(tq.multiply(cf.slerp(tf,w)));la.updateWorldMatrix(false,false)}else{setW(ua,A1);setW(la,A2)}b[sd+'Hand'].updateWorldMatrix(false,true)}};
+ arms(null);
+ for(let i=0;i<2;i++){const sd=i?'R_':'L_',ul=b[sd+'Thigh'],ll=b[sd+'Calf'],ft=b[sd+'Foot'],Hp=wpos(ul),g=ik(Hp,tm(J.an[i]),L.th,L.sh,loc(1,.1,(i?1:-1)*.18,J.psi)),e1=sub(g.j,Hp),e2=sub(g.e,g.j);let kg=crs(e1,e2);if(len(kg)<1e-6||dot(kg,left)<0)kg=left;
+  const r1=M.rd[sd+'Thigh'],r2=M.rd[sd+'Calf'];setW(ul,aim(e1,kg,r1,crs(Z,r1)));setW(ll,aim(e2,kg,r2,crs(Z,r2)));setW(ft,q(J['fy'+i],J['fp'+i]))}
+ // blend in the motion-captured walk, timed to the distance covered so the feet do not slide
+ const w=walk?walk.w:0;if(w>0){const pr=root.position.clone();all.forEach((o,i)=>M.snap[i].copy(o.quaternion));M.mixer.setTime((((walk.dist*H/M.stride)*M.dur)%M.dur+M.dur)%M.dur);
+  const hq=new T3.Quaternion().setFromAxisAngle(new T3.Vector3(0,1,0),J.psi),cp=root.position.clone().sub(M.rootRest).applyQuaternion(hq);root.quaternion.premultiply(hq);root.position.set(xo+cp.x,M.rootRest.y+cp.y,cp.z).lerp(pr,1-w);
+  all.forEach((o,i)=>{const c=o.quaternion.clone();o.quaternion.copy(M.snap[i]).slerp(c,w)});M.g.updateMatrixWorld(true);if(J.grip0>0||J.grip1>0)arms([J.grip0,J.grip1])}
+ M.g.updateMatrixWorld(true);
+ const tl=RK.tile;tl.visible=!!tile;if(tile){const tc=tm(tile.c);tl.position.set(tc.x,tc.y,tc.z);tl.rotation.set(0,tile.yaw+PI,0);tl.scale.set(tile.tw*tile.s/s,tile.th*tile.s/s,.13*Math.min(tile.tw,tile.th)*tile.s/s)}
+ for(const mt of M.mesh.material){if(/helmet/.test(mt.name)&&mt.userData.hat!=S.hat){mt.userData.hat=S.hat;mt.color.copy(new T3.Color(S.hat).convertSRGBToLinear())}
+  if(/head/.test(mt.name)){const k=rgb(m[1]||'#f1c27d'),r=[241,194,125];mt.color.setRGB(...k.map((v,i)=>Math.pow(Math.min(1,v/r[i]),2.2)))}
+  // the hi-vis vest is painted into the clothing texture: find its yellow and repaint it in the chosen vest colour
+  if(/body/.test(mt.name)&&mt.map&&mt.map.image&&(mt.userData.src||mt.map.image.complete)){const U=mt.userData;if(!U.src){U.src=mt.map.image;U.cv=mkCv(U.src.naturalWidth||1024,U.src.naturalHeight||1024);const nt=new T3.CanvasTexture(U.cv);nt.encoding=T3.sRGBEncoding;nt.flipY=mt.map.flipY;mt.map=nt;mt.needsUpdate=true;U.sig=''}
+   if(U.sig!=S.vest){U.sig=S.vest;const c=U.cv.getContext('2d',{willReadFrequently:true});c.drawImage(U.src,0,0,U.cv.width,U.cv.height);const im=c.getImageData(0,0,U.cv.width,U.cv.height),D2=im.data,t=rgb(S.vest),tm2=Math.max(...t);
+    for(let i=0;i<D2.length;i+=4){const r=D2[i],g=D2[i+1],b2=D2[i+2],mx=Math.max(r,g,b2),mn=Math.min(r,g,b2);if(mx<90||mx-mn<mx*.62||b2>mn+8||g<r*.8||g>r*1.12)continue;const v=mx/235;D2[i]=Math.min(255,t[0]*v*255/tm2);D2[i+1]=Math.min(255,t[1]*v*255/tm2);D2[i+2]=Math.min(255,t[2]*v*255/tm2)}
+    c.putImageData(im,0,0);mt.map.needsUpdate=true}}}
+ // render only the box round the figure (not the whole LED canvas), at most 1400 px across
+ const bw=2.5*sz,bh=1.75*sz,bx=Math.floor(X0-1.25*sz),by=Math.floor(Y0-1.65*sz),kq=Math.min(1,1400/bw),RW=bk(bw*kq),RH=bk(bh*kq),cw=RW/kq,ch=RH/kq;rbSize(RW,RH);
+ const{R,cam,rtC,rtN,sc,pm,ps,pc,nm}=RK;cam.left=bx/s;cam.right=(bx+cw)/s;cam.top=(Y0-by)/s;cam.bottom=(Y0-by-ch)/s;cam.updateProjectionMatrix();
+ R.setRenderTarget(rtC);R.setClearColor(0,0);R.clear();R.render(sc,cam);sc.overrideMaterial=nm;R.setRenderTarget(rtN);R.setClearColor(0x8080ff,1);R.clear();R.render(sc,cam);sc.overrideMaterial=null;R.setRenderTarget(null);R.setClearColor(0,0);R.clear();pm.uniforms.seed.value=Math.floor(T*9)*7.31;R.render(ps,pc);
+ return{bx,by,cw,ch,RW,RH}}
+// ---------- one wall's technician in the Hand-drawn or Backlit style. Returns false when the caller should draw Classic instead.
+function draw(c,w,sm,W,H){const N=tN(w);if(!N)return true;const style=S.tstyle,q=pose(w,sm,H,style);let M=null;
+ if(style=='Hand-drawn'){M=getRB(rbOf(q.ix));if(!M)return false;q.o.K=M.K;q.o.bd={h:1,w:1,hip:1,pony:0}}
+ const J=solve(q.o),T0=q.tile,tile=T0&&{c:T0.c,yaw:T0.yaw,s:T0.s,tw:q.tw,th:q.th};
+ c.save();c.beginPath();c.rect(q.L0,q.T0,q.R0-q.L0,q.B0-q.T0);c.clip();drawDeck(c,q);
+ // once the tile sits in its slot it belongs to the wall and is drawn under the technician
+ let tl=tile;if(tile&&T0.slot){drawTile2(c,q.x+tile.c.x*q.sz,q.yy-tile.c.y*q.sz,tile.tw,tile.th,PI,style=='Backlit');tl=null}
+ if(M){c.fillStyle='rgba(20,14,40,.4)';c.beginPath();c.ellipse(q.x,q.yy+q.sz*.004,q.sz*.17,q.sz*.016,0,0,TAU);c.fill();const r=rbPose(M,J,q.x,q.yy,q.sz,q.m,tl,q.walk);c.drawImage(RK.cv,0,0,r.RW,r.RH,r.bx,r.by,r.cw,r.ch)}
+ else drawBacklit(c,J,q.x,q.yy,q.sz,q.m,tl);
+ c.restore();return true}
+// ---------- the note under Character style: what the chosen style needs and whether it is ready
+function crewNote(){const e=document.getElementById('crewNote');if(!e)return;const st=S.tstyle;let t='';
+ if(st=='Hand-drawn'){t=LIB<0?'The Hand-drawn crew files are missing (app/crew), so the Classic crew is shown.':RK&&!RK.ok?'This device could not start WebGL, so the Classic crew is shown.':
+   RK&&RK.ok&&RK.models.some(x=>x.state=='fail')?'A Hand-drawn character could not load, so the Classic crew is shown for it.':
+   LIB==1||RK&&RK.models.some(x=>x.state!='ready')?'Loading the Hand-drawn crew…':'';
+  t=(t?t+' ':'')+'Realistic workers from Microsoft Rocketbox (MIT licence), drawn with ink lines and flat colour.'}
+ else if(st=='Backlit')t='A dark figure against the lit wall, with the reflective tape catching the light.';
+ if(e.textContent!==t)e.textContent=t;e.style.display=t?'':'none'}
+// start loading as soon as Hand-drawn is picked, before the first build
+function want(){if(S.tstyle=='Hand-drawn'){const v=initRB();if(v&&v.ok){getRB(0)}}crewNote()}
+return{draw,want,crewNote,solve,_rk:()=>RK,_lib:()=>LIB}})();
 function vpDraw(){const r=vp.getBoundingClientRect(),d=devicePixelRatio||1;if(vp.width!=r.width*d||vp.height!=r.height*d){vp.width=r.width*d;vp.height=r.height*d}
 const c=vc,z=V.z;c.setTransform(d,0,0,d,0,0);c.clearRect(0,0,r.width,r.height);
 const CL=CVS.length>1?cvLay():null,CA=CL&&CL[cc];
