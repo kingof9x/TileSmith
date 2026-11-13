@@ -506,6 +506,17 @@ of the walls uses Manual power wiring. Labels show "1-3a", "1-3b" and "2fer on 1
 add "<distro> phase C" to the cable line and print in the phase colour (A #222222, B #f59e0b, C #2563c9) with
 "PHASE C · <wall>" as the flag text. Top bar "Phase" (shown while distros exist) toggles phaseView.
 
+**Show binder** (submenu Engineering > Show binder; top bar "Export binder" = exportPDF(true)): S.bShow, S.bVenue, S.bDate
+(text), S.spT (spare tiles %, 0-100, default 5), S.spC (spare cables per length, 0-20, default 1). The binder PDF is: cover
+(show name, venue, load-in, walls and tile counts, processor, power, page count), contents (section -> first page, filled in
+last), the full raster page(s), one landscape page per wall (the wall cropped from the canvas drawn with data and power runs
+forced on, then wallRows + cable home runs in two columns; "More figures for this wall are in the spec sheet." when they do
+not fit), the pull sheet (pullItems(): Video = tiles per model, half tiles separately, spare = ceil(n x spT%), processors
+needed; Data = etherCON per length (Cable lengths on) or home-run count "length not set", jumpers spare max(spC, spT%);
+Power = cables per length or count, breakouts, jumpers, each distro; Labels = label sheets; columns NEED SPARE TOTAL and tick
+boxes PULLED LOADED BACK; footer "Pulled by / Checked by / Returned by"), then the spec sheet and labels exactly as Export PDF.
+File name "<show name>-binder-YYYYMMDD.pdf". Export PDF itself is unchanged.
+
 **Cable lengths** (submenu Engineering > Cable lengths; S.cabOn, default off): per wall cdD / cdP (distance from processor /
 distro, in S.cunit, 0-3000, defaults 25 / 15) and cin (Bottom left | Bottom centre | Bottom right | Top left | Top centre |
 Top right); global cunit (m | ft; switching converts every wall's distances and swaps the default cable lists), cslack (% per
