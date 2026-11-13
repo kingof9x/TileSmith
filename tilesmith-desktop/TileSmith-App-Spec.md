@@ -234,8 +234,7 @@ dialog) deletes the state and reloads.
 | `lblSkip` | 1 | First label position to use on a sheet (skips used labels). |
 | `hat` | #ffcc00 | Technician hard hat colour. |
 | `vest` | #b6ff00 | Technician vest colour. |
-| `tstyle` | Classic | Technician character style: Classic or Character pack. |
-| `tpack` | builtin-khalid | Selected character pack (id in the on-device pack library). |
+| `tstyle` | Classic | Technician character style: Classic, Hand-drawn or Backlit. |
 | `logo` | TILESMITH | Vest logo text. |
 | `cd` | true | Show crew details editor and name tags. |
 | `play` | true | Build animation playing (not saved). |
@@ -276,8 +275,9 @@ dialog) deletes the state and reloads.
 | `boxText` |  | Centre box text. |
 | `boxCol` | #ffffff | Centre box text colour. |
 | `boxImg` | null | Centre box logo image. |
-| `corner` | Top-left | Build start corner (Tech starts at): Top-left \| Top-right \| Bottom-left \| Bottom-right. |
-| `dir` | Horizontal | Tile placement order: Horizontal (row at a time) \| Vertical. |
+| `corner` | Top-left | Build start corner (LED build › Start corner): Top-left \| Top-right \| Bottom-left \| Bottom-right. |
+| `dir` | Horizontal | Build direction: Horizontal (row by row) \| Vertical (column by column). Ignored when flown. |
+| `bmode` | Ground stack | Build mode: Ground stack \| Flown from motors (top row first; each row hung at floor level, then the wall is raised a row). |
 | `wmode` | None | Data wiring pattern: None \| Snake \| Linear \| Manual. |
 | `wcorner` | Top-left | Data wiring start corner. |
 | `wdir` | Horizontal | Data wiring direction: Horizontal \| Vertical. |
