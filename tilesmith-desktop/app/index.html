@@ -385,7 +385,7 @@ const HALF={'Absen PR2.5 500×1000':['Absen PR2.5','h'],'Absen PR3.9 500×1000':
  'YES TECH MU 2.9 outdoor 500×1000':['YES TECH MU 2.9 outdoor','h'],'YES TECH MU 3.9 outdoor 500×1000':['YES TECH MU 3.9 outdoor','h'],
  'YES TECH MT II 3.9-7.8 1000×500':['YES TECH MT II 3.9-7.8 500×500','w']};
 const R={'1080p Full HD':[1920,1080],'4K UHD':[3840,2160],'2K DCI':[2048,1080],'4K DCI':[4096,2160],'720p HD':[1280,720],'32:9 Banner':[3840,1080]};
-const S={cw:1920,ch:1080,ox:0,oy:0,cols:6,rows:4,preset:'Unilumin UpadIV 2.6',tw:192,th:192,wmm:500,hmm:500,dmm:70,kg:6.3,wmax:120,pitch:2.6,
+const S={cabOn:false,cdD:25,cdP:15,cin:'Bottom left',cunit:'m',cslack:10,clenD:'1, 3, 5, 10, 15, 20, 30, 50',clenP:'1, 3, 5, 10, 15, 25',cw:1920,ch:1080,ox:0,oy:0,cols:6,rows:4,preset:'Unilumin UpadIV 2.6',tw:192,th:192,wmm:500,hmm:500,dmm:70,kg:6.3,wmax:120,pitch:2.6,
 bc:'#22d3ee',bt:3,rcfg:'',pat:'tileshade',tpos:true,half:[],gone:[],lay:{},gx:0,gy:0,ids:true,addr:false,mm:false,speed:1,dvdOn:false,dvdSrc:'TileSmith logo',dvdText:'TILESMITH',dvdArea:'Each LED wall',dvdSize:20,dvdSpeed:1,dvdCorner:10,dvdTint:true,dvdLoop:false,dvdLoopLen:30,dvdLoopCorners:true,rcard:'any',procAll:false,vIntro:5,vHold:10,vLed:true,vDvd:false,vCodec:'HAP (.mov)',hapFmt:'hap',name:'LED Wall',corner:'Top-left',dir:'Horizontal',wmode:'None',wcorner:'Top-left',wdir:'Horizontal',wfill:'Fewest ports',wman:[],pmode:'None',pcorner:'Top-left',pwdir:'Horizontal',pfill:'Fewest circuits',plink:0,pman:[],proc:'None',fps:60,bpc:8,ull:false,ppx:0,pports:0,ret:true,showData:true,pdist:false,pvolt:120,pamps:20,derate:true,showPow:true,resSl:'One slice per LED wall',pfit:'Stretch to wall',pdir:'none',pspd:1,patImg:null,loop:false,loopHold:3,shadeC:'#3f8080',boxMode:'Nothing',boxText:'',boxCol:'#ffffff',boxImg:null,
 ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblPow:'Cable and circuit labels',pdt:'Socapex (6 circuits per cable)',pwall:0,pwallA:20,lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',tstyle:'Classic',tpack:'',logo:'TILESMITH',cd:true,play:true,font:'JetBrains Mono',hideEng:false,pf:1,pload:'Max (spec)',ptyp:40,pmeas:0,dists:[],pcab:{},pshare:[],autoBal:false,phaseView:true,trayOpen:true};
 const FONTS={'JetBrains Mono':"'JetBrains Mono',ui-monospace,monospace",'OpenDyslexic':"'OpenDyslexic',sans-serif",'Current':"Barlow,system-ui,sans-serif"};
@@ -402,7 +402,7 @@ let crew=defCrew();
 let logoImg=null,sims=[],loopW=0,crewNext=0,V={z:1,x:0,y:0};
 const esc=v=>String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 // ---------- LED walls (each wall has its own position, array, tile model, test pattern and build order)
-const WK=['half','gone','lay','gx','gy','name','ox','oy','cols','rows','preset','rcfg','tw','th','wmm','hmm','dmm','kg','wmax','pitch','pat','pfit','pdir','pspd','shadeC','patImg','boxMode','boxText','boxCol','boxImg','corner','dir','wmode','wcorner','wdir','wfill','wman','pmode','pcorner','pwdir','pfill','plink','pman'];
+const WK=['half','gone','lay','gx','gy','name','ox','oy','cols','rows','preset','rcfg','tw','th','wmm','hmm','dmm','kg','wmax','pitch','pat','pfit','pdir','pspd','shadeC','patImg','boxMode','boxText','boxCol','boxImg','corner','dir','wmode','wcorner','wdir','wfill','wman','pmode','pcorner','pwdir','pfill','plink','pman','cdD','cdP','cin'];
 const wallFromS=()=>{const w={};WK.forEach(k=>w[k]=Array.isArray(S[k])?JSON.parse(JSON.stringify(S[k])):S[k]);return w};
 let walls=[wallFromS()],cur=0;
 // ---------- several canvases. Each canvas is its own output raster with its own walls. The globals (S.cw/S.ch, walls, cur, sims,
@@ -572,6 +572,9 @@ ${SUB('Power wiring <span class="wn"></span>',`<div id="pwireBox"><div class="g"
 <div id="pautoBox"><div style="color:var(--mu);font-size:12px">Power flow: pick the start corner and direction. Green is the first tile, red the last.</div><div id="ppat" class="wpat" role="group" aria-label="Power flow pattern"></div><div id="ppatl" style="font-size:12px"></div><div class="g">${F('pfill','Wiring preference','select',PFILL,'w')}</div><div id="pfilln" style="color:var(--mu);font-size:12px"></div></div>
 <div id="pmanBox"><div style="color:var(--mu);font-size:12px">Click Wire tiles, then click tiles or drag across them in the viewport, in power-link order. Drag back over a tile to take it off. A circuit stops accepting tiles when it is full.</div><div class="row">${B('pedit','Wire tiles')}${B('pnew','New circuit')}${B('pundo','Undo')}${B('pclr','Clear')}</div><div id="pmsg" class="bad" style="font-size:12px"></div></div>
 <div id="pstat" style="color:var(--mu);font-size:12px"></div><div id="shareBox"></div></div>`,1)}</div>`,1)}
+${SUB('Cable lengths',`${F('cabOn','Work out cable lengths and a pack list','check')}<div id="cabBox"><div style="color:var(--mu);font-size:12px">For the selected LED wall: how far the cables travel to the wall and where they arrive. Each run adds the climb along the wall to its first tile (no diagonals) and the slack, then is rounded up to a cable you own. Longer runs are joined from several cables.</div>
+<div class="g">${F('cdD','<span>Processor to wall (<span class="cu">m</span>)</span>','number','min=0 max=3000 step=0.5')}${F('cdP','<span>Distro to wall (<span class="cu">m</span>)</span>','number','min=0 max=3000 step=0.5')}</div>${F('cin','Cables arrive at','select',CIN,'w')}
+<div class="g">${F('cunit','Units','select',[['m','Metres'],['ft','Feet']])}${F('cslack','Slack per run (%)','number','min=0 max=100')}</div>${F('clenD','<span>Data cable lengths you own (<span class="cu">m</span>)</span>','text','','w')}${F('clenP','<span>Power cable lengths you own (<span class="cu">m</span>)</span>','text','','w')}<div id="cabNote" style="color:var(--mu);font-size:12px"></div></div>`)}
 <h2>Animation Options</h2>${SUB('Test pattern <span class="wn"></span>','<div class="tpSlot" data-tp="anim"></div><div class="tpAway" style="font-size:12px;color:var(--mu)">Open in the canvas menu › Test pattern.</div>')}
 ${SUB('DVD screensaver',`${F('dvdOn','Bounce a logo around the screen','check')}
 <div id="dvdBox" class="g">${F('dvdSrc','Logo','select',['TileSmith logo','Text','Uploaded image'],'w')}${F('dvdText','Logo text','text','','w')}<label class="w" id="dvdUp">Upload logo (PNG/SVG/JPG)<input type="file" id="dvdf" accept="image/*"></label>
@@ -600,6 +603,7 @@ function sync(){storeWall();procRefresh();tileRefresh();rcUI();pkUI();cvUI();doc
 $('#crew').style.display=S.cd?'':'none';$('#den').textContent=Math.round(1e6/S.pitch**2).toLocaleString()+' px/m²';{const b=buildSecs(),t=S.vIntro+b+S.vHold,m=Math.floor(t/60),q=Math.round(t%60);const tx=m+':'+String(q).padStart(2,'0')+'  (build '+Math.round(b)+' s)';['#vest','#vestm'].forEach(k=>{const e=$(k);if(e)e.textContent=tx})}
 $('#typ').textContent=Math.round(S.wmax*.4)+' W';wallsUI();uiVis();info();distUI(DSX);shareUI();trayUI(DSX);if(trayPick)trayPreview(trayPick)}
 function uiVis(){const on=procOn(),m=PROC[S.proc],hide=(id,h)=>{const e=$('#'+id);if(e)e.style.display=h?'none':''},plan=portPlan();lblVis();
+{hide('cabBox',!S.cabOn);document.querySelectorAll('.cu').forEach(e=>{if(e.textContent!==cU())e.textContent=cU()});const n=$('#cabNote');if(n){const t=S.cabOn&&!procOn()&&!pdOn()?'Pick a processor or a power distribution first; there are no runs to measure yet.':'';if(n.textContent!==t)n.textContent=t}}
 {const b=document.querySelector('[data-a=pp]');if(b){const t=S.play?'Pause':'Play';if(b.textContent!==t)b.textContent=t}const n=$('#vdvdNote');if(n){const t=S.vDvd&&!(S.dvdOn&&S.dvdLoop)?'DVD logo needs "Bounce a logo around the screen" and "Perfect loop" turned on in DVD screensaver.':'';if(n.textContent!==t)n.textContent=t}}
 {const b=document.querySelector('[data-a=gedit]');if(b){b.textContent=goneEdit?'Stop removing':'Remove tiles';b.setAttribute('aria-pressed',goneEdit)}const g=pieces(S).ng,ms=layOn(S)?`${tN(S)} tiles on the half-tile layout.`:g?`${g} tile${g>1?'s':''} removed; ${tN(S)} left.`:'All tiles in place.',ge=$('#gmsg');if(ge&&ge.textContent!==ms)ge.textContent=ms}
 {const h=halfOf(S);hide('halfBox',!h);if(!h)halfEdit=false;else{const q=P[h[0]],hh=h[1]=='h',n1=hh?'top half':'left half',n2=hh?'bottom half':'right half',
@@ -654,11 +658,11 @@ const allDone=()=>sims.every(x=>x.done);
 function buildSecs(){return Math.max(0,...walls.map((w,i)=>(i*STAG+tN(w)*4.8)/(S.speed*RATES[i%RATES.length])))}
 function setAll(k,v){S[k]=v;}
 function applyPreset(){const p=P[S.preset];if(!p)return;[S.wmm,S.hmm,S.tw,S.th,S.pitch,S.kg,S.wmax,S.dmm]=p}
-const LIM={lblW:[20,300],lblH:[10,300],lblCopies:[1,4],lblSkip:[1,500],cw:[16,8192],ch:[16,8192],ox:[-20000,20000],oy:[-20000,20000],cols:[1,64],rows:[1,64],tw:[8,2048],th:[8,2048],pitch:[.1,50],wmm:[10,3000],hmm:[10,3000],dmm:[1,1000],kg:[.1,500],wmax:[1,5000],bt:[1,8],pspd:[0,3],vIntro:[0,60],vHold:[0,120],speed:[.25,5],ppx:[0,50000000],pports:[1,1000],pamps:[1,400],pwall:[0,100],pwallA:[1,400],plink:[0,500],loopHold:[0,600],dvdSize:[5,60],dvdSpeed:[.25,3],dvdCorner:[0,100],dvdLoopLen:[4,600],pf:[.5,1],ptyp:[1,100],pmeas:[0,5000]};
+const LIM={lblW:[20,300],lblH:[10,300],lblCopies:[1,4],lblSkip:[1,500],cw:[16,8192],ch:[16,8192],ox:[-20000,20000],oy:[-20000,20000],cols:[1,64],rows:[1,64],tw:[8,2048],th:[8,2048],pitch:[.1,50],wmm:[10,3000],hmm:[10,3000],dmm:[1,1000],kg:[.1,500],wmax:[1,5000],bt:[1,8],pspd:[0,3],vIntro:[0,60],vHold:[0,120],speed:[.25,5],ppx:[0,50000000],pports:[1,1000],pamps:[1,400],pwall:[0,100],pwallA:[1,400],plink:[0,500],loopHold:[0,600],dvdSize:[5,60],dvdSpeed:[.25,3],dvdCorner:[0,100],dvdLoopLen:[4,600],pf:[.5,1],ptyp:[1,100],pmeas:[0,5000],cdD:[0,3000],cdP:[0,3000],cslack:[0,100]};
 const HEAVY=['cw','ch','cols','rows','tw','th'];
 function applyKey(t){const k=t.dataset.k;if(!k)return;let v;
 if(t.type=='checkbox')v=t.checked;else if(t.type=='number'||t.type=='range'){v=+t.value;if(t.value===''||!isFinite(v))return;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}else{v=t.value;if(t.tagName=='SELECT'&&typeof S[k]=='number')v=+v}
-S[k]=v;if(k=='pdt'&&PD().one){S.pvolt=PD().volt;S.pamps=PD().amps}if(k=='preset')applyPreset();if(['tw','th','wmm','hmm','pitch','kg','wmax','dmm'].includes(k))utAuto();if(!HALF[S.preset])halfEdit=false;
+if(k=='cunit'&&v!=S.cunit)cUnitSwap(S.cunit,v);S[k]=v;if(k=='pdt'&&PD().one){S.pvolt=PD().volt;S.pamps=PD().amps}if(k=='preset')applyPreset();if(['tw','th','wmm','hmm','pitch','kg','wmax','dmm'].includes(k))utAuto();if(!HALF[S.preset])halfEdit=false;
 if(['proc','fps','bpc','ull'].includes(k))applySpec();if(k=='wmode'&&v!='Manual')wiring=false;if(k=='showData'&&!v)wiring=false;if(k=='pmode'&&v!='Manual'||k=='showPow'&&!v||k=='pdist'&&!v)pwiring=false;
 storeWall();if(['cols','rows','tw','th','preset','corner','dir'].includes(k))showAll();
 if(k=='loop'&&v&&allDone()&&!REC){reset();S.play=true}
@@ -1530,7 +1534,7 @@ walls.forEach((w,wi)=>{const sm=sims[wi]||{done:true,inst:0,sp:[]},PW=pieces(w),
  if(cnt>0&&isShade(w.pat)&&!scrolls(w)){c.save();litClip();c.translate(ox,oy);shadeFooter(c,w,wW(w),wH(w));c.restore()}
 // where the paths run: through the tile centres, or, when a wall shows both, data left of centre and power right of
  // centre and a little lower, so runs along a row do not sit on top of each other (and stay clear of the tile IDs)
- const both=(PLAN[wi]||[]).length>0&&(PPL[wi]||[]).length>0,DP=e=>{const[x,y,R]=CC(e);return[x-(both?R.w*.2:0),y]},PP=e=>{const[x,y,R]=CC(e);return both?[x+R.w*.2,y+R.h*.2]:[x,y]};
+ const CAB=cabOn(),both=(PLAN[wi]||[]).length>0&&(PPL[wi]||[]).length>0,DP=e=>{const[x,y,R]=CC(e);return[x-(both?R.w*.2:0),y]},PP=e=>{const[x,y,R]=CC(e);return both?[x+R.w*.2,y+R.h*.2]:[x,y]};
  if(S.showData&&procOn()){const R0=Math.max(7,Math.min(tw,th)/7),lw=Math.max(2,Math.min(tw,th)/30);c.lineJoin='round';
   (PLAN[wi]||[]).forEach(pt=>{const col=pt.over?'#ff3b3b':PC[(pt.p-1)%PC.length],T=pt.tiles;c.lineWidth=lw;
    for(let k=1;k<T.length;k++){if(!lit(T[k-1])||!lit(T[k]))continue;const[px,py]=DP(T[k-1]),[x,y]=DP(T[k]);
@@ -1539,7 +1543,7 @@ walls.forEach((w,wi)=>{const sm=sims[wi]||{done:true,inst:0,sp:[]},PW=pieces(w),
    const badge=(t,lab,ret,dx)=>{if(!lit(t))return;const[x0,y]=DP(t),x=x0+dx;c.lineWidth=Math.max(2,R0/5);c.strokeStyle=col;c.fillStyle=ret?'#111':col;
     c.beginPath();if(ret)c.roundRect(x-R0,y-R0,2*R0,2*R0,R0*.3);else c.arc(x,y,R0,0,7);c.fill();if(ret)c.stroke();
     c.fillStyle=ret?col:'#000';c.font=`800 ${R0*.95}px sans-serif`;c.textAlign='center';c.textBaseline='middle';c.fillText(lab,x,y+R0*.05,R0*1.8)};
-   const d=T.length==1?R0*1.15:0;badge(T[0],'P'+pt.p,false,-d);badge(T[T.length-1],'R'+pt.p,true,d)})}
+   const d=T.length==1?R0*1.15:0;badge(T[0],'P'+pt.p,false,-d);badge(T[T.length-1],'R'+pt.p,true,d);if(CAB&&lit(T[0])){const[x,y]=DP(T[0]);cabTag(c,x-d,y+R0*1.25,cFmt(cToU(cRunM(w,T[0]))),col,R0*.8)}})}
  if(PPL.length){const R1=Math.max(7,Math.min(tw,th)/8),lw2=Math.max(2,Math.min(tw,th)/36),P2=PP;
   // with data paths on the same wall, power is white on a black casing: data paths use bright colours from all round
   // the colour wheel, so a neutral is the one thing that always contrasts with them (over-capacity stays red)
@@ -1550,7 +1554,7 @@ walls.forEach((w,wi)=>{const sm=sims[wi]||{done:true,inst:0,sp:[]},PW=pieces(w),
    if(lit(E1)&&T2.length>1){const[x,y]=P2(E1);if(both){c.fillStyle='#000';c.fillRect(x-R1*.5,y-R1*.5,R1,R1)}c.fillStyle=col;c.fillRect(x-R1*.35,y-R1*.35,R1*.7,R1*.7)}
    if(lit(E0)){const[x,y]=P2(E0),lab=ph?cLabel(ci.k)+' '+phTxt(ph):String(ci.k)+(ci.share?'abc'[ci.sidx]:'');c.font=`800 ${R1*.95}px sans-serif`;const pad=R1*.35,bW=R1*.7,gap=R1*.12,tW=c.measureText(lab).width,bw=pad*2+bW+gap+tW,x0=x-bw/2;
     c.fillStyle='#111';c.strokeStyle=col;c.lineWidth=Math.max(2,R1/5);c.beginPath();c.roundRect(x0,y-R1*.75,bw,R1*1.5,R1*.35);c.fill();c.stroke();
-    c.fillStyle=col;bolt(c,x0+pad+bW/2,y,R1*1.05);c.textAlign='left';c.textBaseline='middle';c.fillText(lab,x0+pad+bW+gap,y+R1*.05)}
+    c.fillStyle=col;bolt(c,x0+pad+bW/2,y,R1*1.05);c.textAlign='left';c.textBaseline='middle';c.fillText(lab,x0+pad+bW+gap,y+R1*.05);if(CAB)cabTag(c,x,y+R1*1.45,cFmt(cToU(cRunM(w,E0,1))),col,R1*.75)}
    c.restore()})}
  if(!sm.done&&sm.ph!='wait')busy.push(wi);
 });
@@ -1866,6 +1870,44 @@ function wst(w){const P2=pieces(w),N=P2.list.length,pw=wW(w),ph=wH(w),mw=pw/w.tw
  P2.list.forEach(p=>{px+=p.w*p.h;A+=p.sp.m2;kg+=p.sp.kg;W+=p.sp.W});
  return{N,nh:P2.nh,ng:P2.ng,pw,ph,px,mw,mh,A,kg,pk:W/1000}}
 const ft=x=>(x*3.28084).toFixed(2),kw=v=>v.toFixed(2)+' kW',amp=(kW,v)=>(kW*1000/v/(S.pf||1)).toFixed(1)+' A';
+// ---------- cable lengths (Engineering › Cable lengths). Each wall has a distance from the processor (cdD) and from the distro (cdP)
+// to the point where its cables arrive (cin, a corner or the middle of the top or bottom edge), in S.cunit. A run is that distance
+// plus the climb along the wall to its first tile (no diagonals), plus S.cslack %, rounded up to a cable the user owns (clenD /
+// clenP); a run longer than the longest cable is joined from several. Return lines (R#) start at the last tile. A multi-circuit
+// cable (Socapex, L21-30, ...) is measured to the farthest first tile among its circuits, as its breakout hangs at the wall.
+const CIN=['Bottom left','Bottom centre','Bottom right','Top left','Top centre','Top right'],CLDEF={m:['1, 3, 5, 10, 15, 20, 30, 50','1, 3, 5, 10, 15, 25'],ft:['3, 10, 15, 25, 50, 75, 100, 150','5, 10, 25, 50, 75, 100']},FTM=3.28084;
+const cabOn=()=>!!S.cabOn&&(procOn()||pdOn()),cU=()=>S.cunit=='ft'?'ft':'m',cM=v=>cU()=='ft'?v/FTM:v,cToU=m=>cU()=='ft'?m*FTM:m,cFmt=v=>(Math.round(v*10)/10)+' '+cU();
+function cLens(t){return[...new Set(String(t||'').split(/[\s,;]+/).map(Number).filter(x=>x>0&&x<1e5))].sort((a,b)=>a-b).slice(0,30)}
+function cPick(L,st){if(!st.length||!(L>=0))return[];const out=[],mx=st[st.length-1];let r=L;while(r>mx+1e-9&&out.length<99){out.push(mx);r-=mx}out.push(st.find(x=>x>=r-1e-9));return out}
+function cUnitSwap(a,b){const f=b=='ft'?FTM:1/FTM,cv=t=>cLens(t).map(x=>Math.round(x*f*2)/2).join(', ');storeWall();
+ allWalls().forEach(w=>{w.cdD=Math.round(w.cdD*f*10)/10;w.cdP=Math.round(w.cdP*f*10)/10});S.cdD=walls[cur].cdD;S.cdP=walls[cur].cdP;
+ const d=CLDEF[a]||CLDEF.m,e=CLDEF[b]||CLDEF.m;S.clenD=S.clenD==d[0]?e[0]:cv(S.clenD);S.clenP=S.clenP==d[1]?e[1]:cv(S.clenP)}
+function cEntry(w){const s=wst(w),i=Math.max(0,CIN.indexOf(w.cin));return{x:[0,.5,1][i%3]*s.mw,y:i<3?s.mh:0}}
+function cClimb(w,e){const p=pieceOf(w,e);if(!p)return 0;const E=cEntry(w),x=(p.x+p.w/2)/w.tw*w.wmm/1000,y=(p.y+p.h/2)/w.th*w.hmm/1000;return Math.abs(x-E.x)+Math.abs(y-E.y)}
+// the run from the processor or distro to tile e of wall w, in metres, slack included
+const cRunM=(w,e,pow)=>(cM(pow?w.cdP:w.cdD)+cClimb(w,e))*(1+(S.cslack||0)/100);
+// every run on this canvas: {kind:'d' data | 'r' return | 'p' power, id, wi, m (metres), cab (cables to pull, in S.cunit)}
+function cabRuns(plan,pplan){const out=[],stD=cLens(S.clenD),stP=cLens(S.clenP),add=(kind,id,wi,m)=>out.push({kind,id,wi,m,cab:cPick(cToU(m),kind=='p'?stP:stD)});
+ let jd=0,jp=0;plan=plan||(procOn()?portPlan():[]);pplan=pplan||(pdOn()?powerPlan():[]);
+ plan.forEach((runs,wi)=>{const w=walls[wi];(runs||[]).forEach(pt=>{const T=pt.tiles,n=T.length;jd+=n-1;add('d','P'+pt.p,wi,cRunM(w,T[0]));if(S.ret)add('r','R'+pt.p,wi,cRunM(w,T[n-1]))})});
+ const d=PD(),by=new Map;pplan.forEach((runs,wi)=>{const w=walls[wi];(runs||[]).forEach(ci=>{jp+=ci.tiles.length-1;const g=d.one?ci.k:cCab(ci.k),m=cRunM(w,ci.tiles[0],1),b=by.get(g);if(!b||m>b.m)by.set(g,{wi,m})})});
+ [...by.keys()].sort((a,b)=>a-b).forEach(g=>{const b=by.get(g);add('p',d.one?'Circuit '+g:d.name+' '+g,b.wi,b.m)});
+ out.jd=jd;out.jp=jp;out.cables=d.one?0:by.size;return out}
+const cabTxt=c=>c.length?c.join('+')+' '+cU():'no cable';
+function cabRows(R){const r=[],cnt=k=>{const o={};R.filter(x=>k.includes(x.kind)).forEach(x=>x.cab.forEach(c=>o[c]=(o[c]||0)+1));return Object.keys(o).sort((a,b)=>a-b).map(c=>`${o[c]} × ${c} ${cU()}`).join(' · ')},
+  sum=k=>R.filter(x=>k.includes(x.kind)).reduce((a,x)=>a+x.cab.reduce((p,q)=>p+q,0),0),nd=R.filter(x=>x.kind!='p').length,np=R.filter(x=>x.kind=='p').length;
+ if(nd){r.push(['Data cables',cnt('dr')||'-']);if(!cLens(S.clenD).length)r.push(['Data cables','Add the data cable lengths you own','warn']);r.push(['Data jumpers (tile to tile)',R.jd])}
+ if(np){r.push([(PD().one?'Power':PD().name)+' cables',cnt('p')||'-']);if(!cLens(S.clenP).length)r.push(['Power cables','Add the power cable lengths you own','warn']);if(R.cables)r.push([PD().name+' breakouts',R.cables]);r.push(['Power jumpers (tile to tile)',R.jp])}
+ if(nd||np)r.push(['Cable on the truck',[nd?'data '+cFmt(sum('dr')):'',np?'power '+cFmt(sum('p')):''].filter(Boolean).join(' · ')]);
+ const j=R.filter(x=>x.cab.length>1);if(j.length)r.push(['Runs made of joined cables',j.map(x=>`${x.id} (${cabTxt(x.cab)})`).join(' · ')]);
+ const far=R.filter(x=>x.kind!='p'&&x.m>100);if(far.length)r.push(['Over 100 m',`Copper Ethernet stops at 100 m. Use fibre for ${far.map(x=>x.id).join(', ')}.`,'warn']);
+ if(!nd&&!np)r.push(['Cables','Wire the walls for data or power first']);return r}
+// the home-run length under a run's start badge on the canvas
+function cabTag(c,x,y,t,col,f){c.save();c.font=`700 ${f}px sans-serif`;const tw=c.measureText(t).width+f*.6;c.fillStyle='rgba(0,0,0,.72)';c.beginPath();c.roundRect(x-tw/2,y-f*.65,tw,f*1.3,f*.3);c.fill();c.fillStyle=col;c.textAlign='center';c.textBaseline='middle';c.fillText(t,x,y+f*.05);c.restore()}
+function cabWallRows(R,wi){const r=[],w=walls[wi],m=R.filter(x=>x.wi==wi);if(!m.length)return r;
+ r.push(['Cables arrive at',`${w.cin}, ${cFmt(w.cdD)} from the processor, ${cFmt(w.cdP)} from the distro`]);
+ const ln=k=>m.filter(x=>k.includes(x.kind)).map(x=>`${x.id} ${cFmt(cToU(x.m))} → ${cabTxt(x.cab)}`).join(' · ');
+ if(m.some(x=>x.kind!='p'))r.push(['Data home runs',ln('dr')]);if(m.some(x=>x.kind=='p'))r.push(['Power home runs',ln('p')]);return r}
 function powRowsCanvas(plan){const T=powerTotals(plan),need=walls.reduce((a,w)=>{const t=tpcW(w);return a+(t>0?Math.ceil(wst(w).pk*1000/w.wmax/t-1e-9):Infinity)},0);
  const r=[['Power distribution',S.pdt],['Circuit',`${S.pvolt} V · ${S.pamps} A${S.derate?' · loaded to 80%':''}${(S.pf||1)<1?' · power factor '+S.pf.toFixed(2):''} = ${Math.round(circW()).toLocaleString()} W usable`],
   ['Circuits used',T.n?T.n:'Not wired'],['Min. circuits if every circuit is full',isFinite(need)?need:'A tile exceeds one circuit']];
@@ -1906,7 +1948,7 @@ const w=walls[cur],s=wst(w),fits=w.ox>=0&&w.oy>=0&&w.ox+s.pw<=S.cw&&w.oy+s.ph<=S
 const ov=walls.filter((o,i)=>i!=cur&&o.ox<w.ox+s.pw&&w.ox<o.ox+wW(o)&&o.oy<w.oy+s.ph&&w.oy<o.oy+wH(o)).map(o=>o.name);
 $('#cov').innerHTML=(fits?'<span class="ok">✔ Wall fits inside canvas</span>':'<span class="bad">✖ Wall extends beyond raster: '+[w.ox<0&&'left',w.oy<0&&'top',w.ox+s.pw>S.cw&&'right by '+(w.ox+s.pw-S.cw)+'px',w.oy+s.ph>S.ch&&'bottom by '+(w.oy+s.ph-S.ch)+'px'].filter(Boolean).join(', ')+'</span>')+(ov.length?'<br><span class="bad">✖ Overlaps '+esc(ov.join(', '))+'</span>':'');
 const sec=(k,title,rows)=>`<details data-eng="${k}"${engOpen[k]===false?'':' open'}><summary>${esc(title)}</summary><table>${trs(rows)}</table></details>`;
-const mob=matchMedia('(max-width:900px)').matches,h0='<h1>Engineering data</h1>'+sec('canvas',CVS.length>1?'Entire canvas: '+CVS[cc].name:'Entire canvas',canvasRows().concat(procOn()?procRowsCanvas(plan):[],pdOn()?powRowsCanvas(pplan):[]))+(DSX.on?sec('dist','Power distribution',dsRows(DSX)):'')+sec('tiles','LED Tiles',tileRows())+walls.map((x,i)=>sec('w'+i,x.name||'Wall '+(i+1),wallRows(x,plan[i]||[],pplan[i]||[]))).join('');
+const CR=cabOn()?cabRuns(plan,pplan):null,mob=matchMedia('(max-width:900px)').matches,h0='<h1>Engineering data</h1>'+sec('canvas',CVS.length>1?'Entire canvas: '+CVS[cc].name:'Entire canvas',canvasRows().concat(procOn()?procRowsCanvas(plan):[],pdOn()?powRowsCanvas(pplan):[]))+(DSX.on?sec('dist','Power distribution',dsRows(DSX)):'')+(CR?sec('cab','Cable pack list',cabRows(CR)):'')+sec('tiles','LED Tiles',tileRows())+walls.map((x,i)=>sec('w'+i,x.name||'Wall '+(i+1),wallRows(x,plan[i]||[],pplan[i]||[]).concat(CR?cabWallRows(CR,i):[]))).join('');
 const h=mob?`<details id="engD" class="mob"${ENGOPEN?' open':''}><summary>Engineering data</summary><div class="sec">${h0.replace('<h1>Engineering data</h1>','')}</div></details>`:h0;const R=$('#right');if(R.__h!==h){R.innerHTML=h;R.__h=h}}
 const gcd=(a,b)=>b?gcd(b,a%b):a;
 
@@ -2027,7 +2069,8 @@ function pdfBuild(pages){const E=new TextEncoder(),ch=[],off=[];let len=0;const 
 function pdfWrap(t,f,bold,maxW){const words=String(t).split(/\s+/),L=[];let cur='';const fit=w=>pdfW(w,f,bold)<=maxW;
  words.forEach(w=>{let x=cur?cur+' '+w:w;if(fit(x)){cur=x;return}if(cur)L.push(cur);cur=w;while(!fit(cur)&&cur.length>1){let i=cur.length-1;while(i>1&&!fit(cur.slice(0,i)))i--;L.push(cur.slice(0,i));cur=cur.slice(i)}});if(cur||!L.length)L.push(cur);return L}
 function specSections(){const plan=procOn()?portPlan():walls.map(()=>[]),pplan=pdOn()?powerPlan():walls.map(()=>[]);
- return[['Entire canvas',canvasRows().concat(procOn()?procRowsCanvas(plan):[],pdOn()?powRowsCanvas(pplan):[])]].concat(walls.map((w,i)=>[w.name||'Wall '+(i+1),wallRows(w,plan[i]||[],pplan[i]||[])]))}
+ const CR=cabOn()?cabRuns(plan,pplan):null;
+ return[['Entire canvas',canvasRows().concat(procOn()?procRowsCanvas(plan):[],pdOn()?powRowsCanvas(pplan):[])]].concat(CR?[['Cable pack list',cabRows(CR)]]:[],walls.map((w,i)=>[w.name||'Wall '+(i+1),wallRows(w,plan[i]||[],pplan[i]||[]).concat(CR?cabWallRows(CR,i):[])]))}
 const pdfLetter=()=>/(^|[-_])(US|CA|MX|PH|CL|CO|VE|GT|CR|PA|DO|PR)$/i.test(navigator.language||'en-US');
 function lblPanelPdf(pg,x,pw,h,o,tr,ink){const st=Math.max(0,LBLFLG.indexOf(S.lblFlag)),pad=Math.min(1.5,h*.06),B=[];let T={x:pad,y:pad,w:pw-2*pad,h:h-2*pad};
  const fl=S.lblColor&&!o.plain&&!x.fill?{c:x.col,t:x.ft,s:x.fs}:null,wl=S.lblColor&&!o.plain&&x.wallOn?{c:x.wall.col,t:x.wall.name,s:'W'+(x.wall.i+1)}:null,it=[fl,wl].filter(Boolean),n=it.length;
