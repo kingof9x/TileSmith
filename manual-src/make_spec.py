@@ -506,6 +506,18 @@ of the walls uses Manual power wiring. Labels show "1-3a", "1-3b" and "2fer on 1
 add "<distro> phase C" to the cable line and print in the phase colour (A #222222, B #f59e0b, C #2563c9) with
 "PHASE C · <wall>" as the flag text. Top bar "Phase" (shown while distros exist) toggles phaseView.
 
+**Cable lengths** (submenu Engineering > Cable lengths; S.cabOn, default off): per wall cdD / cdP (distance from processor /
+distro, in S.cunit, 0-3000, defaults 25 / 15) and cin (Bottom left | Bottom centre | Bottom right | Top left | Top centre |
+Top right); global cunit (m | ft; switching converts every wall's distances and swaps the default cable lists), cslack (% per
+run, default 10), clenD / clenP (comma-separated lengths owned; defaults m: "1, 3, 5, 10, 15, 20, 30, 50" / "1, 3, 5, 10, 15,
+25"; ft: "3, 10, 15, 25, 50, 75, 100, 150" / "5, 10, 25, 50, 75, 100"). Run = (distance + |x - entry x| + |y - entry y| to the
+centre of the first tile, in m) x (1 + slack); returns R# start at the last tile; a multi-circuit cable is measured to the
+farthest first tile of its circuits, Edison/powerCON per circuit. Cables: the shortest owned length that reaches; longer runs
+take the longest length repeatedly plus the shortest that covers the rest ("50+20 m"). Engineering and the PDF get a "Cable
+pack list" section (counts per length, jumpers = tiles - 1 per run, breakouts, total, joined runs, warn when a data run is
+over 100 m) and per-wall "Cables arrive at" / "Data home runs" / "Power home runs" rows. The canvas shows each run's length
+in a dark pill under its P# / power start badge.
+
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 {d['POWC']} by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
 square at the last tile. When a wall shows both data and power: data runs at (centre x - 0.2 tile w, centre y), power

@@ -399,7 +399,8 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <li>Peak and typical power, and the peak current at the circuit voltage once Power distribution is ticked.</li>
 <li>With Power distribution ticked: circuit size, tiles per circuit, circuits used, the fewest circuits possible, cables and spare circuits, peak load per cable, circuits over capacity and tiles without power.</li>
 <li>With distros: a <b>Power distribution</b> section with the design load, cables not patched, and for each distro its system, the amps and percentage of the rating on each leg, the neutral, the imbalance, the outputs used and any leg over capacity.</li>
-<li>With a processor: pixels per port, tiles per port, ports used (with returns), processors or cards needed, and any ports over capacity.</li></ul>
+<li>With a processor: pixels per port, tiles per port, ports used (with returns), processors or cards needed, and any ports over capacity.</li>
+<li>With <b>Cable lengths</b> ticked (Engineering › Cable lengths): a <b>Cable pack list</b> with how many data and power cables of each length you own to pull, tile-to-tile jumpers, breakouts, the total cable, runs made of joined cables and any data run over 100 m (use fibre). Each wall's section lists its home runs. Set, for each wall, how far it is from the processor and the distro and where the cables arrive (a corner or the middle of the top or bottom edge); every run adds the climb along the wall to its first tile and the slack, and is rounded up to the shortest cable you own that reaches. The length of each run is also shown under its start badge on the canvas.</li></ul>
 <p><b>Export PDF</b> in the top bar puts the same figures in the spec sheet part of its PDF.</p></div>{img('engineering')}</div></section>
 
 <section class="chap"><h1>14. Technician and crew</h1><div class="side"><div>
