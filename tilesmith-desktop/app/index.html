@@ -632,10 +632,11 @@ ${SUB('DVD screensaver',`${F('dvdOn','Bounce a logo around the screen','check')}
 ${F('dvdArea','Bounce inside','select',['Each LED wall','Whole canvas'],'w')}${F('dvdSize','Logo size <b id="dvdSv"></b>','range','min=5 max=60 step=1','w')}${F('dvdSpeed','Bounce speed <b id="dvdPv"></b>','range','min=0.25 max=3 step=0.25','w')}
 ${F('dvdCorner','Corner hit chance <b id="dvdCv"></b>','range','min=0 max=100 step=1','w')}${F('dvdTint','Change color on each bounce','check')}
 <div id="dvdCornerNote" class="w" style="color:var(--mu);font-size:12px">How often the logo lands exactly in a corner. At 100% about 45 of every 100 bounces are corners; at 0% the logo is steered so it never touches one.</div><div id="dvdStat" class="w" style="font-size:12px"></div>${F('dvdLoop','Perfect loop (repeats exactly, for video)','check')}<div id="dvdLoopBox" class="g w">${F('dvdLoopLen','Loop length (s)','number','min=4 max=600 step=1')}${F('dvdLoopCorners','Include corner hits','check')}<div class="w" style="color:var(--mu);font-size:12px">The logo ends exactly where, and in the colour, it started. Speed is adjusted slightly so the loop closes. The loop video shows the walls fully built, holds moving patterns and Scroll still so it repeats seamlessly, and uses the Format chosen under Video export (60 fps).</div><div class="w desk-only" style="color:var(--mu);font-size:12px">To save the loop as a video, tick <b>DVD logo</b> under Video export and press Export video.</div></div></div>`)}
-${SUB('Tile faults <span class="wn"></span>',`${F('glOn','Show tile faults','check')}<div id="glBox"><div class="g">${F('glType','Fault','select',GLT.concat([GLMIX]),'w')}${F('glPick','Faulty tiles','select',['Tiles I pick','Random'],'w')}</div><div id="glDesc" style="color:var(--mu);font-size:12px"></div>
+${SUB('Tile faults <span class="wn"></span>',`<div id="glBox"><div class="g">${F('glType','Fault','select',GLT.concat([GLMIX]),'w')}${F('glPick','Faulty tiles','select',['Tiles I pick','Random'],'w')}</div><div id="glDesc" style="color:var(--mu);font-size:12px"></div>
 <div id="glPickBox"><div style="color:var(--mu);font-size:12px">Click Pick tiles, then click tiles in the viewport to make them faulty or take the fault away. Drag to do the same to every tile you cross.</div><div class="row">${B('gledit','Pick tiles')}${B('glclr','Clear picked tiles')}</div></div>
 <div id="glRndBox"><div class="g">${F('glN','How many tiles','number','min=1 max=200 step=1')}</div><div class="row">${B('glrnd','New random tiles')}</div></div>
-<div id="glStat" style="font-size:12px"></div><div class="row">${B('glfix','Fix glitch')}</div><div style="color:var(--mu);font-size:12px">Fix glitch sends two technicians: one pops the faulty tile out and lowers it on a rope, the other brings a working tile and puts it in. When every tile is fixed the faults switch off; turn them on again to replay.</div></div>`)}
+<div class="w" style="font-weight:600;font-size:12px;margin-top:4px">Technicians</div><div class="g">${F('tstyle','Character style','select',TSTY.filter(x=>x!='Character pack'),'w')}${F('hat','Hard hat','select',[['#ffcc00','Yellow'],['#ffffff','White'],['#2563ff','Blue'],['#ff7a00','Orange']])}${F('vest','Vest','select',[['#b6ff00','Lime green'],['#ff6a00','Orange'],['#f5e800','Yellow']])}${F('logo','Vest logo text','text','','w')}<label class="w">Upload vest logo (PNG/SVG/JPG)<input type="file" id="lf2" accept="image/*"></label>${F('cd','Crew details & name tags','check')}</div><div style="color:var(--mu);font-size:12px">These are the same technician settings as under LED build, so changing them here changes them there too.</div>
+<div id="glStat" style="font-size:12px"></div><div class="row">${B('glgo','Start tile faults')}${B('glfix','Fix glitch')}</div><div style="color:var(--mu);font-size:12px">Choose the fault and the tiles, then press Start tile faults. Fix glitch sends two technicians: one climbs the back of the wall, pops the faulty tile out and lowers it on a rope; the other swaps it for a working tile and carries the broken one away; the first pulls the new tile up and puts it in. When every tile is fixed the faults stop; press Start again to replay.</div></div>`)}
 ${SUB('LED build',`<div class="row" id="bctl">${B('rs','Start')}${B('bstop','Stop')}${B('brst','Reset')}${B('pp','Pause')}</div><div style="color:var(--mu);font-size:12px">Start builds from the first tile. Stop ends the build and shows the finished walls. Reset clears the walls. Play / Pause freezes the build and carries on from the same spot.</div><div class="g">${F('loop','Loop build continuously','check')}${F('loopHold','Pause before restart (s)','number','min=0 max=600 step=0.5','w')}${F('speed','Speed 0.25–5×','range','min=0.25 max=5 step=0.25','w')}</div>
 ${SUB('Technician',`<div class="g">${F('tstyle','Character style','select',TSTY,'w')}<div id="crewNote" class="w" style="display:none;color:var(--mu);font-size:12px"></div><div id="pkBox" class="w" style="display:none"><label class="w">Character pack<select data-k="tpack" id="pkSel"></select></label><div class="row"><label style="display:inline-flex;align-items:center;gap:6px"><span class="btn" style="cursor:pointer">Load character pack…</span><input type="file" id="pkf" accept=".zip,.png,.json" multiple style="display:none"></label>${B('pkdel','Delete pack')}</div><div id="pkNote" style="color:var(--mu);font-size:12px"></div></div>${F('hat','Hard hat','select',[['#ffcc00','Yellow'],['#ffffff','White'],['#2563ff','Blue'],['#ff7a00','Orange']])}${F('vest','Vest','select',[['#b6ff00','Lime green'],['#ff6a00','Orange'],['#f5e800','Yellow']])}${F('logo','Vest logo text','text','','w')}<label class="w">Upload logo (PNG/SVG/JPG)<input type="file" id="lf" accept="image/*"></label></div>
 ${F('cd','Crew details & name tags','check')}<div id="crew"></div>`)}`)}
@@ -651,19 +652,19 @@ ${F('lblLayout','Wrap layout','select',['Two identical panels','Flag fold-over (
 <div id="lblStat" style="font-size:12px;color:var(--mu);margin:6px 0"></div>
 <div class="row">${MOBILE?B('lbl','Save label sheet'):B('lbl','Print labels')}</div>
 <div style="color:var(--mu);font-size:12px">${MOBILE?'The label sheet is saved as a web page: open it in a browser and print it at 100% scale (no "fit to page").':'Print at 100% scale (turn off "fit to page") so the labels line up with the sheet.'} Each label is a wrap-around strip: it wraps around the cable and sticks to itself. Each label shows the cable name, which end it is, what it plugs into and where the other end goes.</div></div>`);
-$('#bar').innerHTML=B('newc','New Project')+B('psave','Save')+B('popen','Open')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('fit','Show entire canvas')+B('ctr','Center canvas')+B('dwtog','Data')+B('pwtog','Power')+B('phtog','Phase')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('pdf','Export PDF')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+B('bldgo','Start LED Build')+B('dvdgo','Start DVD Screensaver')+'<label id="zbox">Zoom <input type="range" id="zsl" min="-2" max="4" step="0.01" value="0" aria-label="Zoom"></label>'+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>'+`<div class="bar-split"><span>${B('about','ⓘ Info')}${B('bugrpt','Report a bug / feedback')}</span>${B('engtog','Hide Engineering Data')}</div>`;
+$('#bar').innerHTML=B('newc','New Project')+B('psave','Save')+B('popen','Open')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('fit','Show entire canvas')+B('ctr','Center canvas')+B('dwtog','Data')+B('pwtog','Power')+B('phtog','Phase')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('pdf','Export PDF')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+B('bldgo','Start LED Build')+B('dvdgo','Start DVD Screensaver')+B('glgo','Start Tile Faults')+'<label id="zbox">Zoom <input type="range" id="zsl" min="-2" max="4" step="0.01" value="0" aria-label="Zoom"></label>'+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>'+`<div class="bar-split"><span>${B('about','ⓘ Info')}${B('bugrpt','Report a bug / feedback')}</span>${B('engtog','Hide Engineering Data')}</div>`;
 if(!$('#opf')){const i=document.createElement('input');i.type='file';i.id='opf';i.accept='.tilesmith,.json,application/json';i.hidden=true;document.body.appendChild(i)}
 sync();crewUI();}
 function sync(){storeWall();procRefresh();tileRefresh();rcUI();pkUI();cvUI();document.documentElement.style.setProperty('--font-ui',FONTS[S.font]||FONTS['JetBrains Mono']);$('#app').classList.toggle('no-eng',!!S.hideEng);document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
 $('#crew').style.display=S.cd?'':'none';$('#den').textContent=Math.round(1e6/S.pitch**2).toLocaleString()+' px/m²';{const b=buildSecs(),t=S.vIntro+b+S.vHold,m=Math.floor(t/60),q=Math.round(t%60);const tx=m+':'+String(q).padStart(2,'0')+'  (build '+Math.round(b)+' s)';['#vest','#vestm'].forEach(k=>{const e=$(k);if(e)e.textContent=tx})}
 $('#typ').textContent=Math.round(S.wmax*.4)+' W';wallsUI();uiVis();info();distUI(DSX);shareUI();trayUI(DSX);if(trayPick)trayPreview(trayPick)}
 function uiVis(){const on=procOn(),m=PROC[S.proc],hide=(id,h)=>{const e=$('#'+id);if(e)e.style.display=h?'none':''},plan=portPlan();lblVis();
-  {const on=S.glOn,pk=S.glPick!='Random',n=glCount(),rp=glRepAny(),top=($('#bar').offsetHeight+10)+'px';if(!on)glEdit=false;hide('glBox',!on);hide('glPickBox',!pk);hide('glRndBox',pk);
+  {const on=S.glOn,pk=S.glPick!='Random',n=glCount(),rp=glRepAny(),top=($('#bar').offsetHeight+10)+'px';hide('glPickBox',!pk);hide('glRndBox',pk);
    const ds=$('#glDesc'),dt=S.glType==GLMIX?'Each faulty tile gets its own fault, picked at random.':GLD[GLT.indexOf(S.glType)]||'';if(ds&&ds.textContent!==tr(dt))ds.textContent=dt;
    const b=document.querySelector('[data-a=gledit]');if(b){const t=glEdit?'Stop picking':'Pick tiles';if(b.textContent!==tr(t))b.textContent=t;b.setAttribute('aria-pressed',glEdit)}
    const gs=$('#glStop');if(gs){gs.hidden=!glEdit;gs.style.top=top}const gf=$('#glFixF');if(gf){gf.hidden=!(on&&n>0&&!rp&&!glEdit);gf.style.top=top}
-   const fb=document.querySelector('[data-a=glfix]');if(fb){fb.disabled=!(n>0&&!rp);const t=rp?'Fixing…':'Fix glitch';if(fb.textContent!==tr(t))fb.textContent=t}
-   const st=$('#glStat'),mine=glList(S===walls[cur]?S:walls[cur]).length,t=!on?'':rp?'Technicians are swapping the faulty tiles.':n?`${n} faulty tile${n>1?'s':''} on this canvas${walls.length>1?` (${mine} on ${S.name||'this wall'})`:''}.`:pk?'No faulty tiles yet. Click Pick tiles, then click tiles in the viewport.':'No faulty tiles. Click New random tiles.';if(st&&st.textContent!==tr(t))st.textContent=t}
+   const fb=document.querySelector('[data-a=glfix]');if(fb){fb.disabled=!(on&&n>0&&!rp);const t=rp?'Fixing…':'Fix glitch';if(fb.textContent!==tr(t))fb.textContent=t}
+   const st=$('#glStat'),mine=glList(S===walls[cur]?S:walls[cur]).length,t=!on?(pk?(()=>{const k=walls.reduce((a,w)=>a+glArr(w).length,0);return k?`${k} tile${k>1?'s':''} picked. Press Start tile faults.`:'No tiles picked yet. Click Pick tiles, then click tiles in the viewport.'})():`Start tile faults picks ${S.glN} random tile${S.glN>1?'s':''}.`):rp?'Technicians are swapping the faulty tiles.':n?`${n} faulty tile${n>1?'s':''} on this canvas${walls.length>1?` (${mine} on ${S.name||'this wall'})`:''}.`:pk?'No faulty tiles yet. Click Pick tiles, then click tiles in the viewport.':'No faulty tiles. Click New random tiles.';if(st&&st.textContent!==tr(t))st.textContent=t}
 {hide('cabBox',!S.cabOn);document.querySelectorAll('.cu').forEach(e=>{if(e.textContent!==tr(cU()))e.textContent=cU()});const n=$('#cabNote');if(n){const t=S.cabOn&&!procOn()&&!pdOn()?'Pick a processor or a power distribution first; there are no runs to measure yet.':'';if(n.textContent!==tr(t))n.textContent=t}}
 {const b=document.querySelector('[data-a=pp]');if(b){const t=S.play?'Pause':'Play';if(b.textContent!==tr(t))b.textContent=t}const n=$('#vdvdNote');if(n){const t=S.vDvd&&!(S.dvdOn&&S.dvdLoop)?'DVD logo needs "Bounce a logo around the screen" and "Perfect loop" turned on in DVD screensaver.':'';if(n.textContent!==tr(t))n.textContent=t}}
 {const b=document.querySelector('[data-a=gedit]');if(b){b.textContent=goneEdit?'Stop removing':'Remove tiles';b.setAttribute('aria-pressed',goneEdit)}const g=pieces(S).ng,ms=layOn(S)?`${tN(S)} tiles on the half-tile layout.`:g?`${g} tile${g>1?'s':''} removed; ${tN(S)} left.`:'All tiles in place.',ge=$('#gmsg');if(ge&&ge.textContent!==tr(ms))ge.textContent=ms}
@@ -744,7 +745,7 @@ if(t.id=='bxf'){const f=t.files[0];if(f)loadImgFile(f,2048,'image/png',im=>{im._
 if(t.id=='pf'){const f=t.files[0];if(f)loadImgFile(f,8192,'image/png',im=>{im.__id=++imgId;S.patImg=im;S.pat='custom';sync();saveSoon()});return}
 if(t.dataset.face!==undefined){const f=t.files[0],ix=+t.dataset.face;if(f)loadImgFile(f,256,'image/jpeg',im=>{crew[ix][2]=im;crewUI();saveSoon()});return}
 if(t.dataset.c){crew[t.dataset.c][t.dataset.f]=t.value;if(t.dataset.f=='4'){crewUI();saveSoon()}return}
-if(t.id=='lf'){const f=t.files[0];if(f)loadImgFile(f,512,'image/png',im=>{logoImg=im;saveSoon()});return}
+if(t.id=='lf'||t.id=='lf2'){const f=t.files[0];if(f)loadImgFile(f,512,'image/png',im=>{logoImg=im;saveSoon()});return}
 if(t.dataset&&t.dataset.dk){const i=+t.dataset.di,d=S.dists&&S.dists[i];if(!d)return;let v=t.value;if(t.dataset.dk=='map'){v=v.toUpperCase().replace(/[^ABC]/g,'');if(v.length!=6)return}if(t.type=='number'){if(v===''||!isFinite(+v))return;v=+v}d[t.dataset.dk]=v;S.dists[i]=dsSan(d,i);sync();return}
 if(t.id=='shA'||t.id=='shB'||t.id=='shC')return;
 if(t.type=='number'&&HEAVY.includes(t.dataset.k))return;applyKey(t);sync();});
@@ -768,7 +769,7 @@ const a=t.dataset.a;if(!a)return;const v=t.dataset.v,cw=S.cw,ch=S.ch;
 ({undom(){const t=e.target.closest('button'),m=$('#undom'),o=m.hidden;ddClose();if(o){unUI();const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-260))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');const f=m.querySelector('button:not([disabled])');if(f)f.focus()}},undo(){ddClose();if(v)unUndo(+v)},redo(){ddClose();unRedo()},ctr(){const r=vp.getBoundingClientRect();V.x=(r.width-S.cw*V.z)/2;V.y=(r.height-S.ch*V.z)/2},newc(){newCanvasAsk()},res(){[S.cw,S.ch]=R[v]},match(){fitCanvas()},wadd(){addWall(false)},pspec(){applySpec()},npat(){nextPattern()},hrowb(){halfRow('bottom')},hrowt(){halfRow('top')},hedit(){halfEdit=!halfEdit&&!!halfOf(S);if(halfEdit){wiring=false;pwiring=false;goneEdit=false}},gedit(){goneEdit=!goneEdit;if(goneEdit){wiring=false;pwiring=false;halfEdit=false;glEdit=false}},gclr(){restoreAll()},hclr(){S.half=[];S.lay={};storeWall();showAll();sync()},dvdexp(){dvdExportLoop()},rxml(){if(v)S.resSl=v;ddClose();exportRes()},rxmlm(){const m=$('#rxmlm'),o=m.hidden;ddClose();if(o){const br=t.getBoundingClientRect();m.style.left=Math.max(4,Math.min(br.left,innerWidth-200))+'px';m.style.top=br.bottom+'px';m.hidden=false;t.setAttribute('aria-expanded','true');m.querySelector('button').focus()}},wedit(){wiring=!wiring;if(wiring){S.showData=true;pwiring=false;halfEdit=false;goneEdit=false}wireMsg(wiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},wnew(){if(!Array.isArray(S.wman))S.wman=[];const l=S.wman[S.wman.length-1];if(!l||l.length)S.wman.push([]);wireMsg('')},wundo(){const m=S.wman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();wireMsg('')},wclr(){S.wman=[];wireMsg('')},pedit(){pwiring=!pwiring;if(pwiring){S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg(pwiring?'Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.':'')},pnew(){if(!Array.isArray(S.pman))S.pman=[];const l=S.pman[S.pman.length-1];if(!l||l.length)S.pman.push([]);pwMsg('')},pundo(){const m=S.pman||[];while(m.length&&!m[m.length-1].length)m.pop();if(m.length)m[m.length-1].pop();pwMsg('')},pclr(){S.pman=[];pwMsg('')},wdup(){addWall(true)},wdel(){delWall()},
 al(){S.ox=v[0]=='c'||v=='tc'||v=='bc'?Math.round((cw-WW())/2):0;S.oy=v=='c'?Math.round((ch-WH())/2):v[0]=='b'?ch-WH():0;if(v=='tl'||v=='bl')S.ox=0},
 arr(){[S.cols,S.rows]=v.split('x').map(Number);showAll()},
-pp(){S.play=!S.play},gledit(){glEdit=!glEdit;if(glEdit){goneEdit=false;wiring=false;pwiring=false;halfEdit=false;if(!S.glOn){S.glOn=true;glOnChange(true)}}},glclr(){S.glk=[];storeWall();glReset()},glrnd(){if(!S.glOn){S.glOn=true;glOnChange(true)}else{glReset();glRoll()}},glfix(){glFix()},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},rcdel(){rcDel()},dispfind(){dispList(true)},dispon(){const d=DISP.find(x=>String(x.id)===v);if(!d)return;outClose(v);const s=document.querySelector(`[data-dispcv="${CSS.escape(v)}"]`),c=(s&&CVS.find(x=>String(x.id)===s.value))||CVS[cc];outOpen(c,d.id);cvUI()},dispoff(){outClose(v);cvUI()},bldgo(){if(barBuilding()){eachCv(()=>showAll());S.play=false}else{eachCv(()=>reset());S.play=true}},dvdgo(){S.dvdOn=!S.dvdOn;storeWall();sync();saveSoon()},pkdel(){pkDel()},pcfg(){exportConfig()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
+pp(){S.play=!S.play},gledit(){glEdit=!glEdit;if(glEdit){goneEdit=false;wiring=false;pwiring=false;halfEdit=false}},glgo(){glGo()},glclr(){S.glk=[];storeWall();glReset()},glrnd(){glReset();glRoll()},glfix(){glFix()},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},rcdel(){rcDel()},dispfind(){dispList(true)},dispon(){const d=DISP.find(x=>String(x.id)===v);if(!d)return;outClose(v);const s=document.querySelector(`[data-dispcv="${CSS.escape(v)}"]`),c=(s&&CVS.find(x=>String(x.id)===s.value))||CVS[cc];outOpen(c,d.id);cvUI()},dispoff(){outClose(v);cvUI()},bldgo(){if(barBuilding()){eachCv(()=>showAll());S.play=false}else{eachCv(()=>reset());S.play=true}},dvdgo(){S.dvdOn=!S.dvdOn;storeWall();sync();saveSoon()},pkdel(){pkDel()},pcfg(){exportConfig()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
 about(){showAbout(1)},bugrpt(){showBugReport()},dwtog(){S.showData=!S.showData;if(!S.showData)wiring=false;storeWall();sync();saveSoon()},pwtog(){S.showPow=!S.showPow;if(!S.showPow)pwiring=false;storeWall();sync();saveSoon()},phtog(){S.phaseView=!S.phaseView;sync();saveSoon()},engtog(){S.hideEng=!S.hideEng;sync();saveSoon()},ndi(){toggleNdi()},share(){toggleShare()},png(){eachCv(()=>{const m=M,n=`tilesmith-canvas${cvTag()}.png`;m.toBlob(b=>dl(b,n))})},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
 add(){crew.push(['Tech '+(crew.length+1),'#e0ac69',null,HAIR[crew.length%HAIR.length]]);crewUI()},rcrew(){crew=defCrew();crewUI()}}[a])();
 sync();fit_if();});
@@ -1909,73 +1910,73 @@ function crewNote(){const e=document.getElementById('crewNote');if(!e)return;con
 // start loading as soon as Hand-drawn is picked, before the first build
 function want(){if(S.tstyle=='Hand-drawn'){const v=initRB();if(v&&v.ok){getRB(0)}}crewNote()}
 
-// ---------- tile repair (Tile faults › Fix glitch): technician A unlocks the faulty tile, pulls it out and lowers it to the
-// floor on a rope; technician B brings a working tile from the other side, puts it in and locks it; then both walk off.
-// Times in seconds at Speed 1. repScene gives both figures as skeleton parameters (tech heights from the feet, like pose)
-const RD={ain:1.9,unl:.8,pull:.9,shift:1,lower:2.4,bin:1.9,place:.8,lock:.6,out:1.7};
-const RT=(()=>{const a1=RD.ain,a2=a1+RD.unl,a3=a2+RD.pull,a4=a3+RD.shift,a5=a4+RD.lower,b0=a3+.3,b1=b0+RD.bin,b2=b1+RD.place,b3=b2+RD.lock,o0=Math.max(a5,b3)+.3;return{a1,a2,a3,a4,a5,b0,b1,b2,b3,o0,end:o0+RD.out}})();
-function repGeo(w,key,H){const RC=pieces(w).by.get(key);if(!RC)return null;const tb=techBox(w,H),L0=tb.L0,R0=tb.R0,T0=tb.T0,B0=tb.B0,tw=RC.w,th=RC.h,
- base=Math.max(6,Math.min(tb.sz,(B0-T0)/1.12)),cs=Math.min(1,base/(w.th*2.4),.45*base/w.tw),sx=L0+RC.x+tw/2,cy=T0+RC.y+th/2,
- // A comes in from the side with more room, so there is space to step aside and lower the old tile; B from the other side
- eF=sx-L0>=R0-sx?1:-1,lo=L0+.3*base,hi=R0-.3*base,C=v=>lo>hi?(L0+R0)/2:cl(v,lo,hi),xs=C(sx-eF*.07*base),xb=C(sx+eF*.07*base),xa=C(xs-eF*.42*base),
- hwT=tw*cs/2,xd=cl(xa-eF*.28*base,L0+hwT+2,Math.max(L0+hwT+2,R0-hwT-2)),ground=B0-.03*base,yy=Math.min(ground,Math.max(T0+1.1*base,Math.min(ground,T0+RC.y+th+.8*base)));
- return{RC,L0,R0,T0,B0,tw,th,base,cs,sx,cy,eF,xs,xb,xa,xd,ground,yy,offA:eF>0?L0-.55*base:R0+.55*base,offB:eF>0?R0+.55*base:L0-.55*base,gty:ground-th*cs/2}}
 const carryAt=psi=>loc(.215,.645,0,psi);
 function rpHands(tc,yaw,sc,cr,hw,hh,w0,w1){const g=Math.min(hw*sc-.012,.165),gy=cl(.78-cr-tc.y,-(hh*sc-.03),hh*sc-.03)*.8,rt=loc(0,0,1,yaw),pull=loc(.02,0,0,yaw+PI);
  return[{t:add(add(tc,mul(rt,-g)),add(V(0,gy,0),pull)),w:w0},{t:add(add(tc,mul(rt,g)),add(V(0,gy,0),pull)),w:w1}]}
-// walking from x0 to x1 (screen px), E = how far along (0..1). stop: comes to rest at x1; otherwise starts from standing at x0
 function gait(o,x0,x1,E,sz,stop){const dist=Math.abs(x1-x0)/sz,n=cl(Math.round(dist/.31),2,12),Ls=Math.max(.05,dist/n),x=x0+(x1-x0)*E,d=Math.abs(x-x0)/sz,rem=dist-d;o.step=Ls;
  if(stop){o.phi=.6*PI-PI*rem/Ls;o.lift=Math.min(1,rem/(.5*Ls));return{x,walk:{w:Math.min(1,rem/.22),dist:d}}}
  o.phi=.6*PI+PI*d/Ls;o.lift=Math.min(1,d/(.3*Ls));return{x,walk:{w:ss(d/.22),dist:d}}}
 const crF=y=>cl((.56-y)*.85,0,.3);
-function actA(G,t,sz){const T=RT,eF=G.eF,wy=eF*1.36,back=-eF*1.36,dx=(G.sx-G.xs)/sz,ty0=(G.yy-G.cy)/sz,psiW=Math.atan2(dx,ZW),hw=G.tw/2/sz,hh=G.th/2/sz,cs=G.cs,slot=V(dx,ty0,ZW),
- o={psi:wy,expr:''};let x=G.xs,tile=null,walk=null,rope=null,hang=null;
- if(t<T.a1){const E=1-Math.pow(1-t/RD.ain,1.7),g=gait(o,G.offA,G.xs,E,sz,1);x=g.x;walk=g.walk;o.amp=1;o.headYaw=-eF*.3}
- else if(t<T.a2){// unlock: crouch to the tile, one hand turns the lock on the top edge, then both hands take the edges
-  const p=(t-T.a1)/RD.unl,k=ss(p/.3),cr=crF(ty0)*k,li=eF>0?0:1,g=ss((p-.2)/.2)*(1-ss((p-.65)/.25)),tw2=ss((p-.35)/.25);o.psi=angL(wy,psiW,k);o.crouch=cr;o.lean=(.1+1.15*cr)*k;o.spread=.035*k;
-  o.headPitch=cl((ty0-.93+cr)*.9,-.5,.4)*k;o.expr='focus';o.hands=rpHands(slot,PI,1,cr,hw,hh,k,k);const h=o.hands[li],lk=V(h.t.x,Math.min(ty0+hh-.045,.8-cr+.1)+tw2*.04,h.t.z);h.t=lerp3(h.t,lk,g);h.t.z+=Math.sin(tw2*PI)*.02*g}
- else if(t<T.a3){// pull it out of the wall and turn to carry it away from the slot
-  const p=(t-T.a2)/RD.pull,kq=1-ss(p/.75),psi=angL(psiW,back,ss((p-.45)/.55)),tc=lerp3(carryAt(psi),slot,kq);tc.z+=Math.sin(PI*kq)*.06;
-  const sc=cs+(1-cs)*kq,yaw=angL(psi,PI,kq),cr=crF(tc.y)*Math.min(1,kq*1.6);o.psi=psi;o.crouch=cr;o.lean=kq*(.1+1.15*cr);o.spread=.035*kq;o.headPitch=cl((tc.y-.93+cr)*.9,-.5,.4)*kq;o.expr='focus';
-  tile={c:tc,yaw,s:sc};o.hands=rpHands(tc,yaw,sc,cr,hw,hh,1,1)}
- else if(t<T.a4){const p=(t-T.a3)/RD.shift,g=gait(o,G.xs,G.xa,ss(p),sz,1);x=g.x;walk=g.walk;o.psi=back;const tc=add(carryAt(back),V(0,-.012*Math.cos(2*o.phi)*o.lift,0));tile={c:tc,yaw:back,s:cs};o.hands=rpHands(tc,back,cs,0,hw,hh,1,1)}
- else if(t<T.o0){// lower it on the rope, hand over hand, beside the deck; it lands on the floor
-  x=G.xa;const p=Math.min(1,(t-T.a4)/RD.lower),k0=ss(p/.18),drop=ss((p-.18)/.82),dxd=(G.xd-x)/sz,gy=(G.yy-G.gty)/sz,top=.62-hh*cs-.05,
-   hx=dxd*.55,osc=drop>0&&drop<1?Math.sin(drop*PI*8):0,down=ss((t-T.a5)/.5);
-  o.psi=angL(back,-eF*.85,ss(p/.2));o.lean=.14*(1-down);o.headPitch=-.25*drop*(1-down);o.expr='focus';
-  const c0=carryAt(back),c1=V(dxd,lerp(top,gy,drop),.16),tc=k0<1?lerp3(c0,V(dxd,top,.16),k0):c1;
-  const yaw=angL(back,PI,k0)+(drop>0&&drop<1?Math.sin(t*3.3)*.25*(1-drop):0);
-  if(k0<1){tile={c:tc,yaw,s:cs};o.hands=rpHands(tc,yaw,cs,0,hw,hh,1-k0*.6,1-k0*.6)}
-  else{hang={c:tc,yaw,s:cs};const hy=.66-.18*down;o.hands=[{t:V(hx-.02*eF,hy+.07*osc,.17),w:1-down*.5},{t:V(hx+.02*eF,hy-.07*osc,.15),w:1-down*.5}];rope=true}}
- else{const p=(t-T.o0)/RD.out,g=gait(o,G.xa,G.offA,Math.pow(p,1.5),sz,0);x=g.x;walk=g.walk;o.psi=angL(-eF*.85,back,ss(p/.25));o.amp=Math.min(1,p/.35);o.expr='happy'}
- return{x,o,tile,walk,rope,hang}}
-function actB(G,t,sz){const T=RT,eF=G.eF,wy=-eF*1.36,dx=(G.sx-G.xb)/sz,ty0=(G.yy-G.cy)/sz,psiW=Math.atan2(dx,ZW),hw=G.tw/2/sz,hh=G.th/2/sz,cs=G.cs,slot=V(dx,ty0,ZW),o={psi:wy,expr:''};let x=G.xb,tile=null,walk=null;
- if(t<T.b0)return null;
- if(t<T.b1){const E=1-Math.pow(1-(t-T.b0)/RD.bin,1.7),g=gait(o,G.offB,G.xb,E,sz,1);x=g.x;walk=g.walk;o.lean=-.05;o.headYaw=eF*.3;const tc=add(carryAt(wy),V(0,-.012*Math.cos(2*o.phi)*o.lift,0));tile={c:tc,yaw:wy,s:cs};o.hands=rpHands(tc,wy,cs,0,hw,hh,1,1)}
- else if(t<T.b2){const p=(t-T.b1)/RD.place,psi=angL(wy,psiW,ss(p/.45)),kq=ss((p-.3)/.7),tc=lerp3(carryAt(psi),slot,kq);tc.y+=Math.sin(PI*kq)*.03;
-  const sc=cs+(1-cs)*kq,yaw=angL(psi,PI,kq),cr=crF(tc.y)*Math.min(1,kq*1.6);o.psi=psi;o.crouch=cr;o.lean=-.05*(1-kq)+kq*(.1+1.15*cr);o.spread=.035*kq;o.headPitch=cl((tc.y-.93+cr)*.9,-.5,.4)*kq;o.expr='focus';
-  tile={c:tc,yaw,s:sc};o.hands=rpHands(tc,yaw,sc,cr,hw,hh,1,1)}
- else if(t<T.b3){const p=(t-T.b2)/RD.lock,cr0=crF(ty0),rel=ss((p-.72)/.28),cr=cr0*(1-.45*rel),li=eF>0?1:0;o.psi=psiW;o.crouch=cr;o.lean=.1+1.15*cr+.035*Math.sin(PI*cl((p-.25)/.4,0,1));o.spread=.035;
-  o.headPitch=cl((ty0-.93+cr)*.9,-.5,.4)*(1-rel);o.expr='focus';tile={c:slot,yaw:PI,s:1,slot:true};o.hands=rpHands(slot,PI,1,cr,hw,hh,1-rel,1-rel);
-  const g=ss(p/.3),tw2=ss((p-.3)/.3),h=o.hands[li],lk=V(h.t.x,Math.min(ty0+hh-.045,.8-cr+.1)-tw2*.04,h.t.z);h.t=lerp3(h.t,lk,g);h.t.z+=Math.sin(tw2*PI)*.02}
- else if(t<T.o0){const p=(t-T.b3)/.4;o.psi=angL(psiW,-eF*.5,ss(p));o.expr='happy'}
- else{const p=(t-T.o0)/RD.out,g=gait(o,G.xb,G.offB,Math.pow(p,1.5),sz,0);x=g.x;walk=g.walk;o.psi=angL(-eF*.5,eF*1.36,ss(p/.25));o.amp=Math.min(1,p/.35);o.expr='happy'}
- return{x,o,tile,walk}}
-// both figures of one repair at time R.t: positions, skeleton parameters, the tile on the rope and the old tile on the floor
-function repScene(w,R,H,style){const G=repGeo(w,R.key,H);if(!G)return null;const C=crew.length,mk=(j,f)=>{const ix=C?j%C:0,m=C?crew[ix]:['','#e0ac69',null,'#2b1d14'],bd=bdOf(ix),
-  sz=G.base*(style=='Hand-drawn'?RBM[rbOf(ix)].h:style=='Backlit'?bd.h:1),a=f(G,R.t,sz);if(!a)return null;a.o.bd=bd;a.o.ix=ix;return Object.assign(a,{ix,m,bd,sz,yy:G.yy,tw:G.tw,th:G.th})};
- const A=mk(R.a,actA),B=mk(R.b,actB),t=R.t,oldA=t>=RT.a5?1-ss((t-RT.o0-RD.out*.45)/(RD.out*.5)):0;
- let hang=A&&A.hang?{x:A.x+A.hang.c.x*A.sz,y:G.yy-A.hang.c.y*A.sz,yaw:A.hang.yaw,s:A.hang.s}:null;
- if(!hang&&oldA>0)hang={x:G.xd,y:G.gty,yaw:PI,s:G.cs,al:oldA};
- return{G,A,B,hang,deck:{L0:G.L0,R0:G.R0,T0:G.T0,B0:G.B0,ground:G.ground,yy:G.yy,base:G.base},hole:t>=RT.a2&&t<RT.b3,fixAt:RT.b3,end:RT.end}}
-// draw one figure in the Hand-drawn or Backlit style; returns the solved joints, or null when it must be drawn as Classic
+// ---------- tile repair (Tile faults › Fix glitch), the way a crew swaps a tile on a hung wall: technician A walks behind
+// the wall and climbs the back, pops the faulty tile out to the front and lowers it to the floor on a rope; technician B
+// brings a working tile, moves the rope from the broken tile to the new one and carries the broken one away; A pulls the
+// new tile up, seats it in the slot and locks it, then climbs down and walks off. Times in seconds at Speed 1.
+const RT={ain:0,behind:1.6,climb:2.2,pop:3.6,low:4.4,bin:4.8,set:6.6,hook:7.4,swap:7.9,pick:8.4,raise:8.6,bout:9.2,pull:10.6,lock:11.3,b3:11.9,down:11.9,aout:12.9,walk:13.4,bend:11,end:15};
+function repGeo(w,key,H){const RC=pieces(w).by.get(key);if(!RC)return null;const tb=techBox(w,H),L0=tb.L0,R0=tb.R0,T0=tb.T0,B0=tb.B0,tw=RC.w,th=RC.h,
+ base=Math.max(6,Math.min(tb.sz,(B0-T0)/1.12)),cs=Math.min(1,base/(w.th*2.4),.45*base/w.tw),sx=L0+RC.x+tw/2,cy=T0+RC.y+th/2,
+ // B comes in from the side with more room (the new tile goes down on that side of the old one); A from the other side
+ eB=sx-L0>=R0-sx?1:-1,lo=L0+.3*base,hi=R0-.3*base,C=v=>lo>hi?(L0+R0)/2:cl(v,lo,hi),floor=B0-.03*base,fy=B0-th/2,
+ xn=cl(sx-eB*tw*1.08,L0+tw/2,R0-tw/2);
+ return{RC,L0,R0,T0,B0,tw,th,base,cs,sx,cy,eB,floor,fy,xn,xb:C((sx+xn)/2-eB*.08*base),xa:C(sx+eB*(tw*.5+.3*base)),
+  offA:eB>0?R0+.55*base:L0-.55*base,offB:eB>0?L0-.55*base:R0+.55*base}}
+const seg=(t,a,b)=>cl((t-a)/(b-a),0,1);
+// A: on the floor at the start and end; in between behind the wall, seen only through the empty slot
+function actA(G,t,sz){const eA=-G.eB,wy=eA*1.36,o={psi:wy,expr:''};let x=G.xa,yy=G.floor,walk=null,mode='floor',al=1,rope=null;
+ if(t<RT.behind){const E=1-Math.pow(1-t/RT.behind,1.7),g=gait(o,G.offA,G.xa,E,sz,1);x=g.x;walk=g.walk;o.amp=1;o.headYaw=-eA*.3}
+ else if(t<RT.climb){const p=seg(t,RT.behind,RT.climb);o.psi=angL(wy,PI,ss(p/.5));al=1-ss((p-.35)/.65)}
+ else if(t<RT.aout){if(t<RT.pop||t>=RT.b3)return null;
+  // in the slot: facing the audience, chest at the tile, hands on the tile or on the rope
+  mode='hole';x=G.sx;yy=G.cy+.78*sz;o.psi=0;o.expr='focus';const ty=(yy-G.cy)/sz,hw=Math.min(G.tw/2/sz-.02,.16),edge=(z,dy)=>[{t:V(-hw,ty+dy,z),w:1},{t:V(hw,ty+dy,z),w:1}];
+  if(t<RT.low){const p=seg(t,RT.pop,RT.low);o.hands=edge(.12+.22*ss(p),.06-.1*ss(p));o.lean=.12*ss(p)}
+  else if(t<RT.raise+.1&&t>=RT.set||t<RT.set&&t>=RT.low){const p=seg(t,RT.low,RT.set),mv=p>0&&p<1?Math.sin(p*PI*8):0;o.hands=[{t:V(-.03,ty-.12+.06*mv,.3),w:1},{t:V(.03,ty-.12-.06*mv,.28),w:1}];o.headPitch=-.3;rope=1}
+  else if(t<RT.raise){o.hands=[{t:V(-.03,ty-.14,.3),w:1},{t:V(.03,ty-.16,.28),w:1}];o.headPitch=-.3;rope=1}
+  else if(t<RT.pull){const p=seg(t,RT.raise,RT.pull),mv=p>0&&p<1?Math.sin(p*PI*8):0;o.hands=[{t:V(-.03,ty-.12-.06*mv,.3),w:1},{t:V(.03,ty-.12+.06*mv,.28),w:1}];o.headPitch=-.3*(1-p);rope=1}
+  else if(t<RT.lock){const p=seg(t,RT.pull,RT.lock);o.hands=edge(.34-.22*ss(p),-.04+.1*ss(p))}
+  else{const p=seg(t,RT.lock,RT.b3);o.hands=edge(.12,.06);o.hands[0].t=lerp3(o.hands[0].t,V(-hw*.3,ty+G.th/2/sz-.03,.1),ss(p/.4)*(1-ss((p-.7)/.3)))}}
+ else if(t<RT.walk){const p=seg(t,RT.aout,RT.walk);al=ss(p);o.psi=angL(PI,-wy,ss(p))}
+ else{const p=seg(t,RT.walk,RT.end),g=gait(o,G.xa,G.offA,Math.pow(p,1.5),sz,0);x=g.x;walk=g.walk;o.psi=-wy;o.amp=Math.min(1,p/.35);o.expr='happy'}
+ return{x,yy,o,walk,mode,al,rope,tile:null}}
+// B: on the floor, brings the new tile, swaps the rope over and takes the broken tile away
+function actB(G,t,sz){if(t<RT.bin||t>=RT.end)return null;const eB=G.eB,wy=eB*1.36,o={psi:wy,expr:''},x0=G.xb,cs=G.cs,hw=G.tw/2/sz,hh=G.th/2/sz,
+ floorT=xx=>V((xx-x0)/sz,(G.floor-G.fy)/sz,ZW+.05),psiAt=xx=>Math.atan2((xx-x0)/sz,ZW);let x=x0,walk=null,tile=null;
+ if(t<RT.set){const E=1-Math.pow(1-seg(t,RT.bin,RT.set),1.7),g=gait(o,G.offB,x0,E,sz,1);x=g.x;walk=g.walk;o.lean=-.05;const tc=add(carryAt(wy),V(0,-.012*Math.cos(2*o.phi)*o.lift,0));tile={c:tc,yaw:wy,s:cs};o.hands=rpHands(tc,wy,cs,0,hw,hh,1,1)}
+ else if(t<RT.hook){const p=seg(t,RT.set,RT.hook),pw=psiAt(G.xn),psi=angL(wy,pw,ss(p/.4)),kq=ss((p-.25)/.75),tc=lerp3(carryAt(psi),floorT(G.xn),kq),sc=cs+(1-cs)*kq,yaw=angL(psi,PI,kq),cr=crF(tc.y)*Math.min(1,kq*1.6);
+  o.psi=psi;o.crouch=cr;o.lean=kq*(.1+1.15*cr);o.spread=.035*kq;o.headPitch=cl((tc.y-.93+cr)*.9,-.5,.4)*kq;o.expr='focus';tile={c:tc,yaw,s:sc};o.hands=rpHands(tc,yaw,sc,cr,hw,hh,1,1)}
+ else if(t<RT.pick){// moves the rope's hook from the broken tile to the new one
+  const p=seg(t,RT.hook,RT.pick),a=floorT(G.sx),b=floorT(G.xn),top=v=>add(v,V(0,hh,.04)),k=ss((p-.3)/.4),h=lerp3(top(a),top(b),k);h.y+=Math.sin(PI*k)*.08;
+  const cr=crF(a.y)*.9;o.psi=angL(psiAt(G.xn),psiAt((G.sx+G.xn)/2),ss(p/.3));o.crouch=cr;o.lean=.1+1.15*cr;o.spread=.035;o.expr='focus';o.headPitch=-.3;o.hands=[{t:h,w:1},{t:add(h,V(.03,.02,0)),w:1}]}
+ else if(t<RT.bout){const p=seg(t,RT.pick,RT.bout),kq=1-ss(p/.75),psi=angL(psiAt(G.sx),-wy,ss((p-.5)/.5)),tc=lerp3(carryAt(psi),floorT(G.sx),kq),sc=cs+(1-cs)*kq,yaw=angL(psi,PI,kq),cr=crF(tc.y)*Math.min(1,kq*1.6);
+  o.psi=psi;o.crouch=cr;o.lean=kq*(.1+1.15*cr);o.spread=.035*kq;o.expr='focus';tile={c:tc,yaw,s:sc};o.hands=rpHands(tc,yaw,sc,cr,hw,hh,1,1)}
+ else{const p=seg(t,RT.bout,RT.end-.5),g=gait(o,x0,G.offB,Math.pow(p,1.5),sz,0);x=g.x;walk=g.walk;o.psi=-wy;const tc=add(carryAt(-wy),V(0,-.012*Math.cos(2*o.phi)*o.lift,0));tile={c:tc,yaw:-wy,s:cs};o.hands=rpHands(tc,-wy,cs,0,hw,hh,1,1);if(p>=1)return null}
+ return{x,yy:G.floor,o,walk,mode:'floor',al:1,tile}}
+// everything drawn for one repair at time R.t: both figures, the loose tiles (screen px) and the rope
+function repScene(w,R,H,style){const G=repGeo(w,R.key,H);if(!G)return null;const C=crew.length,t=R.t,mk=(j,f)=>{const ix=C?j%C:0,m=C?crew[ix]:['','#e0ac69',null,'#2b1d14'],bd=bdOf(ix),
+  sz=G.base*(style=='Hand-drawn'?RBM[rbOf(ix)].h:style=='Backlit'?bd.h:1),a=f(G,t,sz);if(!a)return null;a.o.bd=bd;a.o.ix=ix;return Object.assign(a,{ix,m,bd,sz,tw:G.tw,th:G.th})};
+ const A=mk(R.a,actA),B=mk(R.b,actB),tiles=[],sw=(a,b)=>Math.sin(t*3.2)*.18*Math.sin(PI*cl(a,0,1))*(b||1);let hook=null;
+ // the broken tile: pops out of the slot, goes down on the rope, waits on the floor until B picks it up
+ if(t>=RT.pop&&t<RT.pick){const p=seg(t,RT.pop,RT.low),q=seg(t,RT.low,RT.set),e=ss(q),y=lerp(G.cy+G.th*.06*ss(p),G.fy,e);tiles.push({x:G.sx,y,s:1+.04*ss(p)*(1-e),yaw:PI+sw(q)});if(t<RT.swap)hook=[G.sx,y-G.th/2]}
+ // the new tile: set down by B, then up on the rope and back into the slot (drawn as a tile until it is locked)
+ if(t>=RT.hook&&t<RT.b3){const q=seg(t,RT.raise,RT.pull),e=ss(q),p=seg(t,RT.pull,RT.lock),x=lerp(G.xn,G.sx,ss(q/.35)),y=t<RT.pull?lerp(G.fy,G.cy+G.th*.06,e):lerp(G.cy+G.th*.06,G.cy,ss(p));
+  tiles.push({x,y,s:t<RT.pull?1+.04*e:1+.04*(1-ss(p)),yaw:PI+sw(q),slot:t>=RT.pull});if(t>=RT.swap&&t<RT.pull)hook=[x,y-G.th/2]}
+ if(B&&B.o.hands&&t>=RT.hook&&t<RT.pick)hook=null;
+ return{G,A,B,tiles,hook,hole:t>=RT.pop&&t<RT.b3,bhook:t>=RT.hook&&t<RT.pick}}
 function drawActor(c,a,style){const o=Object.assign({},a.o);let M=null;
  if(style=='Hand-drawn'){M=getRB(rbOf(a.ix));if(!M)return null;o.K=M.K;o.bd={h:1,w:1,hip:1,pony:0}}
  const J=solve(o),tl=a.tile&&!a.tile.slot?{c:a.tile.c,yaw:a.tile.yaw,s:a.tile.s,tw:a.tw,th:a.th}:null;
  if(M){c.fillStyle='rgba(20,14,40,.4)';c.beginPath();c.ellipse(a.x,a.yy+a.sz*.004,a.sz*.17,a.sz*.016,0,0,TAU);c.fill();const r=rbPose(M,J,a.x,a.yy,a.sz,a.m,tl,a.walk);c.drawImage(RK.cv,0,0,r.RW,r.RH,r.bx,r.by,r.cw,r.ch)}
  else drawBacklit(c,J,a.x,a.yy,a.sz,a.m,tl);
  return J}
-return{draw,want,crewNote,solve,RT,repScene,drawActor,drawDeck,drawTile2,_rk:()=>RK,_lib:()=>LIB}})();
+return{draw,want,crewNote,solve,RT,repScene,drawActor,drawTile2,_rk:()=>RK,_lib:()=>LIB}})();
 // ---------- Tile faults: simulate real LED tile failures on chosen or random tiles (Animation Options › Tile faults), and
 // Fix glitch, where two technicians swap the faulty tile for a working one. Faulty tiles are kept per wall in glk as
 // [tile key, own fault for Random mix]; a repaired tile stays fixed until the faults are turned off and on again.
@@ -1989,7 +1990,7 @@ function glChain(w,wi,p,kind){const out=new Set([p.key]);
  if(pdOn()){const ci=(powerPlan()[wi]||[]).find(c=>c.tiles.some(e=>elKey(e)==p.key));if(ci){ci.tiles.forEach(e=>out.add(elKey(e)));return out}}
  pieces(w).list.forEach(q=>{if(q.c==p.c)out.add(q.key)});return out}
 // draws the faults over the wall's picture (they are part of what the LED wall shows, so they go to every output)
-function glDraw(c,w,wi,inst,ox,oy){const L=glList(w),R=REP.get(w),hole=!!R&&R.t>=CX.RT.a2&&R.t<CX.RT.b3;if(!L.length&&!hole)return;const dark=new Set,Tq=T;c.save();
+function glDraw(c,w,wi,inst,ox,oy){const L=glList(w),R=REP.get(w),hole=!!R&&R.t>=CX.RT.pop&&R.t<CX.RT.b3;if(!L.length&&!hole)return;const dark=new Set,Tq=T;c.save();
  L.forEach(f=>{if(f.t==4||f.t==11)glChain(w,wi,f.p,f.t==4?'data':'power').forEach(k=>dark.add(k))});
  const blk=(x,y,a,b)=>{c.fillStyle='#000';c.fillRect(x,y,a,b)};
  pieces(w).list.forEach(p=>{if(dark.has(p.key)&&inst.has(p.key))blk(ox+p.x,oy+p.y,p.w,p.h)});
@@ -2023,7 +2024,9 @@ function glRoll(){storeWall();eachCv(()=>{const all=[];walls.forEach((w,wi)=>{w.
   for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]]}
   all.slice(0,Math.max(1,S.glN|0)).forEach(([wi,k])=>walls[wi].glk.push([k,glRT()]));walls.forEach(w=>GLFIX.delete(w))});loadWall(cur);GLRN++;GLFRZ.clear();forceRen=true}
 function glReset(){eachCv(()=>walls.forEach(w=>{REP.delete(w);GLFIX.delete(w)}));GLRN++;GLFRZ.clear();forceRen=true}
-function glOnChange(v){glReset();if(!v)glEdit=false;else if(S.glPick=='Random')glRoll()}
+function glOnChange(v){glReset();if(v&&S.glPick=='Random')glRoll()}
+// Start / Stop tile faults (panel and toolbar), like Start LED Build and Start DVD Screensaver
+function glGo(){if(S.glOn){S.glOn=false;glOnChange(false)}else{storeWall();if(S.glPick!='Random'&&!walls.some(w=>glArr(w).length)){toast('Pick the faulty tiles first: click Pick tiles under Tile faults, then click tiles in the viewport.',5000);return}glEdit=false;S.glOn=true;glOnChange(true)}sync();saveSoon()}
 // Fix glitch: each wall with faults gets two technicians, who swap its faulty tiles one after another
 function glFix(){if(!S.glOn)return;let any=false,busy=false;eachCv(()=>{if(!allDone())busy=true});if(busy){toast('Let the LED build finish (or press Stop) before fixing tiles.',4000);return}
  glEdit=false;eachCv(()=>walls.forEach((w,wi)=>{if(REP.has(w))return;const L=glList(w).sort((a,b)=>a.p.b-b.p.b);if(!L.length)return;any=true;const k=crewNext+wi*2;REP.set(w,{q:L.map(f=>f.p.key),i:0,key:L[0].p.key,t:0,a:k,b:k+1,sc:null});crewNext+=2}));
@@ -2035,19 +2038,28 @@ function glStep(dt){let fin=false;walls.forEach((w,wi)=>{const R=REP.get(w);if(!
  // when the last tile is fixed the faults switch off; turning them on again brings the same faults back
  if(fin){let left=false;eachCv(()=>{if(walls.some(w=>REP.has(w)||glList(w).length))left=true});if(!left){S.glOn=false;glReset();setTimeout(()=>{sync();saveSoon()},0)}}}
 // the two technicians of a repair, in the chosen character style
-function repDraw(c,w,R,W,H){const st=S.tstyle,cx3=st=='Hand-drawn'||st=='Backlit',sc=CX.repScene(w,R,H,st);R.sc=sc;if(!sc)return;const G=sc.G;
- c.save();c.beginPath();c.rect(G.L0,G.T0,G.R0-G.L0,G.B0-G.T0);c.clip();CX.drawDeck(c,sc.deck);
- const P=(a,v)=>[a.x+v.x*a.sz,a.yy-v.y*a.sz],tile2=(x,y,yaw,s,al)=>{c.save();if(al!=null)c.globalAlpha=al;if(cx3)CX.drawTile2(c,x,y,G.tw*s,G.th*s,yaw,st=='Backlit');else cab(c,x,y,{tw:G.tw,th:G.th},s);c.restore()};
- // the new tile sitting in its slot while it is locked belongs to the wall, under the figures
- if(sc.B&&sc.B.tile&&sc.B.tile.slot){const[x,y]=P(sc.B,sc.B.tile.c);tile2(x,y,PI_,1)}
- const classic=a=>{let hands=null;if(a.o.hands&&a.o.hands.some(h=>h.w>.4))hands=a.o.hands.map(h=>P(a,h.t));
-  if(a.tile&&!a.tile.slot){const[x,y]=P(a,a.tile.c);tile2(x,y,a.tile.yaw,a.tile.s)}
-  const ps=a.o.psi;drawTech(c,a.x,a.yy,a.sz,{th:Math.atan2(Math.cos(ps),Math.sin(ps)),mv:a.walk?a.walk.w:0,ph:'move',p:0,prog:0,ix:a.ix,g:a.x/(a.sz*.2),u:0,m:a.m,carry:false,lock:false,shake:0,hands});return null};
- let JA=null;for(const a of[sc.A,sc.B]){if(!a)continue;let J=cx3?CX.drawActor(c,a,st):null;if(cx3&&!J)classic(a);else if(!cx3)classic(a);if(a===sc.A)JA=J}
- if(sc.hang){const h=sc.hang;tile2(h.x,h.y,h.yaw,h.s,h.al);
-  if(sc.A&&sc.A.rope){const a=sc.A,hd=JA?[0,1].map(i=>P(a,JA.hd[i])):a.o.hands.map(q=>P(a,q.t)),tx=(hd[0][0]+hd[1][0])/2,ty=(hd[0][1]+hd[1][1])/2,top=h.y-G.th*h.s/2;
-   c.strokeStyle=st=='Backlit'?'#2a2f36':'#c9a96a';c.lineWidth=Math.max(1.2,a.sz*.007);c.lineCap='round';c.beginPath();c.moveTo(Math.min(hd[0][0],hd[1][0]),Math.min(hd[0][1],hd[1][1]));c.lineTo(tx,ty);c.lineTo(h.x,top);c.stroke();
-   c.fillStyle=c.strokeStyle;c.beginPath();c.arc(h.x,top,Math.max(1.5,a.sz*.008),0,TAU_);c.fill()}}
+function repDraw(c,w,R,W,H){const st=S.tstyle,cx3=st=='Hand-drawn'||st=='Backlit',sc=CX.repScene(w,R,H,st);if(!sc)return;const G=sc.G;
+ c.save();c.beginPath();c.rect(G.L0,G.T0,G.R0-G.L0,G.B0-G.T0);c.clip();
+ const P=(a,v)=>[a.x+v.x*a.sz,a.yy-v.y*a.sz],tile2=(x,y,yaw,s)=>{if(cx3)CX.drawTile2(c,x,y,G.tw*s,G.th*s,yaw,st=='Backlit');else cab(c,x,y,{tw:G.tw,th:G.th},s)},
+  fig=a=>{c.save();if(a.al<1)c.globalAlpha=Math.max(0,a.al);let J=cx3?CX.drawActor(c,a,st):null;
+   if(!J){let hands=null;if(a.o.hands&&a.o.hands.some(h=>h.w>.4))hands=a.o.hands.map(h=>P(a,h.t));if(a.tile){const[x,y]=P(a,a.tile.c);tile2(x,y,a.tile.yaw,a.tile.s)}
+    const ps=a.o.psi;drawTech(c,a.x,a.yy,a.sz,{th:Math.atan2(Math.cos(ps),Math.sin(ps)),mv:a.walk?a.walk.w:0,ph:'move',p:0,prog:0,ix:a.ix,g:a.x/(a.sz*.2),u:0,m:a.m,carry:false,lock:false,shake:0,hands})}
+   c.restore();return J};
+ // A behind the wall, seen through the empty slot, in the shadow of the wall
+ let ropeTop=null;const A=sc.A,RC=G.RC,hx=G.L0+RC.x,hy=G.T0+RC.y;
+ if(A&&A.mode=='hole'){c.save();c.beginPath();c.rect(hx,hy,G.tw,G.th);c.clip();c.fillStyle='#07090c';c.fillRect(hx,hy,G.tw,G.th);
+  c.fillStyle='#1d232b';c.fillRect(hx,hy+G.th*.08,G.tw,G.th*.05);c.fillRect(hx,hy+G.th*.87,G.tw,G.th*.05);
+  const J=fig(A);c.fillStyle='rgba(0,0,0,.28)';c.fillRect(hx,hy,G.tw,G.th);c.restore();
+  if(A.rope&&A.o.hands){const hd=J?[0,1].map(i=>P(A,J.hd[i])):A.o.hands.map(q=>P(A,q.t));ropeTop=[(hd[0][0]+hd[1][0])/2,(hd[0][1]+hd[1][1])/2]}}
+ // tiles on the rope or on the floor, then the rope over them
+ sc.tiles.forEach(q=>tile2(q.x,q.y,q.yaw,q.s));
+ if(A&&A.mode=='floor')fig(A);
+ let J2=null;if(sc.B)J2=fig(sc.B);
+ let end=sc.hook;if(sc.bhook&&sc.B&&sc.B.o.hands){const b=sc.B;end=J2?P(b,J2.hd[0]):P(b,b.o.hands[0].t)}
+ if(ropeTop&&end){c.strokeStyle=st=='Backlit'?'#3a414a':'#c9a96a';c.lineWidth=Math.max(1.2,G.base*.007);c.lineCap='round';c.beginPath();c.moveTo(ropeTop[0],ropeTop[1]);
+  // a little slack in the rope while B moves the hook
+  if(sc.bhook)c.quadraticCurveTo((ropeTop[0]+end[0])/2,(ropeTop[1]+end[1])/2+G.th*.4,end[0],end[1]);else c.lineTo(end[0],end[1]);c.stroke();
+  c.fillStyle=c.strokeStyle;c.beginPath();c.arc(end[0],end[1],Math.max(1.5,G.base*.008),0,TAU_);c.fill()}
  c.restore()}
 
 function vpDraw(){const r=vp.getBoundingClientRect(),d=devicePixelRatio||1;if(vp.width!=r.width*d||vp.height!=r.height*d){vp.width=r.width*d;vp.height=r.height*d}
@@ -2070,7 +2082,8 @@ if(CL){c.font='600 12px Barlow,"Segoe UI",Arial,sans-serif';c.textBaseline='bott
 const zt=Math.round(z*100)+'%',ze=$('#zl');if(ze&&ze.textContent!==tr(zt))ze.textContent=zt;
 {const zs=$('#zsl');if(zs&&document.activeElement!==zs){const v=Math.log2(z/fitZ()).toFixed(2);if(zs.value!==v)zs.value=v}
  const bb=document.querySelector('[data-a=bldgo]'),bt=barBuilding()?'Stop LED Build':'Start LED Build';if(bb&&bb.textContent!==tr(bt))bb.textContent=bt;
- const db=document.querySelector('[data-a=dvdgo]'),dt=S.dvdOn?'Stop DVD Screensaver':'Start DVD Screensaver';if(db&&db.textContent!==tr(dt))db.textContent=dt}}
+ const db=document.querySelector('[data-a=dvdgo]'),dt=S.dvdOn?'Stop DVD Screensaver':'Start DVD Screensaver';if(db&&db.textContent!==tr(dt))db.textContent=dt;
+ document.querySelectorAll('[data-a=glgo]').forEach(b=>{const t=S.glOn?(b.closest('#bar')?'Stop Tile Faults':'Stop tile faults'):(b.closest('#bar')?'Start Tile Faults':'Start tile faults');if(b.textContent!==tr(t))b.textContent=t})}}
 const barBuilding=()=>S.play&&CVS.some((c,i)=>i==cc?!allDone():c.sims&&c.sims.some(x=>!x.done));
 let ENGOPEN=false;document.addEventListener('toggle',e=>{if(e.target&&e.target.id=='engD')ENGOPEN=e.target.open},true);
 function wst(w){const P2=pieces(w),N=P2.list.length,pw=wW(w),ph=wH(w),mw=pw/w.tw*w.wmm/1000,mh=ph/w.th*w.hmm/1000;let px=0,A=0,kg=0,W=0;
