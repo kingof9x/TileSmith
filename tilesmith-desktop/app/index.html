@@ -385,7 +385,7 @@ const HALF={'Absen PR2.5 500×1000':['Absen PR2.5','h'],'Absen PR3.9 500×1000':
  'YES TECH MU 2.9 outdoor 500×1000':['YES TECH MU 2.9 outdoor','h'],'YES TECH MU 3.9 outdoor 500×1000':['YES TECH MU 3.9 outdoor','h'],
  'YES TECH MT II 3.9-7.8 1000×500':['YES TECH MT II 3.9-7.8 500×500','w']};
 const R={'1080p Full HD':[1920,1080],'4K UHD':[3840,2160],'2K DCI':[2048,1080],'4K DCI':[4096,2160],'720p HD':[1280,720],'32:9 Banner':[3840,1080]};
-const S={cabOn:false,cdD:25,cdP:15,cin:'Bottom left',cunit:'m',cslack:10,clenD:'1, 3, 5, 10, 15, 20, 30, 50',clenP:'1, 3, 5, 10, 15, 25',cw:1920,ch:1080,ox:0,oy:0,cols:6,rows:4,preset:'Unilumin UpadIV 2.6',tw:192,th:192,wmm:500,hmm:500,dmm:70,kg:6.3,wmax:120,pitch:2.6,
+const S={bShow:'',bVenue:'',bDate:'',spT:5,spC:1,cabOn:false,cdD:25,cdP:15,cin:'Bottom left',cunit:'m',cslack:10,clenD:'1, 3, 5, 10, 15, 20, 30, 50',clenP:'1, 3, 5, 10, 15, 25',cw:1920,ch:1080,ox:0,oy:0,cols:6,rows:4,preset:'Unilumin UpadIV 2.6',tw:192,th:192,wmm:500,hmm:500,dmm:70,kg:6.3,wmax:120,pitch:2.6,
 bc:'#22d3ee',bt:3,rcfg:'',pat:'tileshade',tpos:true,half:[],gone:[],lay:{},gx:0,gy:0,ids:true,addr:false,mm:false,speed:1,dvdOn:false,dvdSrc:'TileSmith logo',dvdText:'TILESMITH',dvdArea:'Each LED wall',dvdSize:20,dvdSpeed:1,dvdCorner:10,dvdTint:true,dvdLoop:false,dvdLoopLen:30,dvdLoopCorners:true,rcard:'any',procAll:false,vIntro:5,vHold:10,vLed:true,vDvd:false,vCodec:'HAP (.mov)',hapFmt:'hap',name:'LED Wall',corner:'Top-left',dir:'Horizontal',wmode:'None',wcorner:'Top-left',wdir:'Horizontal',wfill:'Fewest ports',wman:[],pmode:'None',pcorner:'Top-left',pwdir:'Horizontal',pfill:'Fewest circuits',plink:0,pman:[],proc:'None',fps:60,bpc:8,ull:false,ppx:0,pports:0,ret:true,showData:true,pdist:false,pvolt:120,pamps:20,derate:true,showPow:true,resSl:'One slice per LED wall',pfit:'Stretch to wall',pdir:'none',pspd:1,patImg:null,loop:false,loopHold:3,shadeC:'#3f8080',boxMode:'Nothing',boxText:'',boxCol:'#ffffff',boxImg:null,
 ndiName:'TileSmith-LED-Out',ndiFps:60,ndiIdle:false,shName:'TileSmith',shFps:60,shIdle:true,shGpu:'Automatic',lblWhat:'Data and power',lblPow:'Cable and circuit labels',pdt:'Socapex (6 circuits per cable)',pwall:0,pwallA:20,lblSize:'Avery 5163 (10 per US Letter sheet)',lblLayout:'Two identical panels',lblFlag:'Big end blocks',lblWall:'Wall-shade block + name (several walls only)',lblW:62,lblH:29,lblCopies:1,lblColor:true,lblJump:false,lblKeep:true,lblSkip:1,hat:'#ffcc00',vest:'#b6ff00',tstyle:'Classic',tpack:'',logo:'TILESMITH',cd:true,play:true,font:'JetBrains Mono',hideEng:false,pf:1,pload:'Max (spec)',ptyp:40,pmeas:0,dists:[],pcab:{},pshare:[],autoBal:false,phaseView:true,trayOpen:true};
 const FONTS={'JetBrains Mono':"'JetBrains Mono',ui-monospace,monospace",'OpenDyslexic':"'OpenDyslexic',sans-serif",'Current':"Barlow,system-ui,sans-serif"};
@@ -575,6 +575,9 @@ ${SUB('Power wiring <span class="wn"></span>',`<div id="pwireBox"><div class="g"
 ${SUB('Cable lengths',`${F('cabOn','Work out cable lengths and a pack list','check')}<div id="cabBox"><div style="color:var(--mu);font-size:12px">For the selected LED wall: how far the cables travel to the wall and where they arrive. Each run adds the climb along the wall to its first tile (no diagonals) and the slack, then is rounded up to a cable you own. Longer runs are joined from several cables.</div>
 <div class="g">${F('cdD','<span>Processor to wall (<span class="cu">m</span>)</span>','number','min=0 max=3000 step=0.5')}${F('cdP','<span>Distro to wall (<span class="cu">m</span>)</span>','number','min=0 max=3000 step=0.5')}</div>${F('cin','Cables arrive at','select',CIN,'w')}
 <div class="g">${F('cunit','Units','select',[['m','Metres'],['ft','Feet']])}${F('cslack','Slack per run (%)','number','min=0 max=100')}</div>${F('clenD','<span>Data cable lengths you own (<span class="cu">m</span>)</span>','text','','w')}${F('clenP','<span>Power cable lengths you own (<span class="cu">m</span>)</span>','text','','w')}<div id="cabNote" style="color:var(--mu);font-size:12px"></div></div>`)}
+${SUB('Show binder',`<div style="color:var(--mu);font-size:12px">Export binder makes one PDF for the show folder: a cover, contents, the canvas, a page for each LED wall with its data and power runs, a pull sheet of everything to take, the spec sheet and the cable labels.</div>
+${F('bShow','Show name','text','maxlength=80','w')}<div class="g">${F('bVenue','Venue','text','maxlength=80')}${F('bDate','Load-in','text','maxlength=40')}</div>
+<div class="g">${F('spT','Spare tiles (%)','number','min=0 max=100')}${F('spC','Spare cables per length','number','min=0 max=20')}</div><div style="color:var(--mu);font-size:12px">Spares are rounded up and listed in their own column on the pull sheet. Turn on Cable lengths to list cables by length.</div><div class="row">${B('binder','Export binder')}</div>`)}
 <h2>Animation Options</h2>${SUB('Test pattern <span class="wn"></span>','<div class="tpSlot" data-tp="anim"></div><div class="tpAway" style="font-size:12px;color:var(--mu)">Open in the canvas menu › Test pattern.</div>')}
 ${SUB('DVD screensaver',`${F('dvdOn','Bounce a logo around the screen','check')}
 <div id="dvdBox" class="g">${F('dvdSrc','Logo','select',['TileSmith logo','Text','Uploaded image'],'w')}${F('dvdText','Logo text','text','','w')}<label class="w" id="dvdUp">Upload logo (PNG/SVG/JPG)<input type="file" id="dvdf" accept="image/*"></label>
@@ -596,7 +599,7 @@ ${F('lblLayout','Wrap layout','select',['Two identical panels','Flag fold-over (
 <div id="lblStat" style="font-size:12px;color:var(--mu);margin:6px 0"></div>
 <div class="row">${MOBILE?B('lbl','Save label sheet'):B('lbl','Print labels')}</div>
 <div style="color:var(--mu);font-size:12px">${MOBILE?'The label sheet is saved as a web page: open it in a browser and print it at 100% scale (no "fit to page").':'Print at 100% scale (turn off "fit to page") so the labels line up with the sheet.'} Each label is a wrap-around strip: it wraps around the cable and sticks to itself. Each label shows the cable name, which end it is, what it plugs into and where the other end goes.</div></div>`);
-$('#bar').innerHTML=B('newc','New Project')+B('psave','Save')+B('popen','Open')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('fit','Show entire canvas')+B('ctr','Center canvas')+B('dwtog','Data')+B('pwtog','Power')+B('phtog','Phase')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('pdf','Export PDF')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+B('bldgo','Start LED Build')+B('dvdgo','Start DVD Screensaver')+'<label id="zbox">Zoom <input type="range" id="zsl" min="-2" max="4" step="0.01" value="0" aria-label="Zoom"></label>'+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>'+`<div class="bar-split"><span>${B('about','ⓘ Info')}${B('bugrpt','Report a bug / feedback')}</span>${B('engtog','Hide Engineering Data')}</div>`;
+$('#bar').innerHTML=B('newc','New Project')+B('psave','Save')+B('popen','Open')+`<span class="dd"><button data-a="undom" aria-haspopup="menu" aria-expanded="false" title="Nothing to undo yet">Undo ▾</button><div class="ddm" id="undom" role="menu" hidden></div></span>`+B('fit','Show entire canvas')+B('ctr','Center canvas')+B('dwtog','Data')+B('pwtog','Power')+B('phtog','Phase')+B('npat','Next pattern')+B('ndi','Start NDI®').replace('<button','<button class="desk-only"')+`<button class="desk-only" data-a="share" data-v="" id="shBtn"${SH_OK?'':' style="display:none"'}>Start ${SHN}</button>`+B('png','Export PNG')+B('pdf','Export PDF')+B('binder','Export binder')+`<span class="dd"><button data-a="rxmlm" aria-haspopup="menu" aria-expanded="false">Resolume XML ▾</button><div class="ddm" id="rxmlm" role="menu" hidden>${['One slice per LED wall','One slice per tile'].map(o=>`<button role="menuitem" data-a="rxml" data-v="${o}">${o}</button>`).join('')}</div></span>`+B('bldgo','Start LED Build')+B('dvdgo','Start DVD Screensaver')+'<label id="zbox">Zoom <input type="range" id="zsl" min="-2" max="4" step="0.01" value="0" aria-label="Zoom"></label>'+'<span id="recs" style="color:#e5484d"></span><span id="zl" style="color:var(--mu)"></span><span id="fpsl" style="color:var(--mu)" title="Frames the master canvas draws per second. It only redraws while something moves."></span>'+`<div class="bar-split"><span>${B('about','ⓘ Info')}${B('bugrpt','Report a bug / feedback')}</span>${B('engtog','Hide Engineering Data')}</div>`;
 if(!$('#opf')){const i=document.createElement('input');i.type='file';i.id='opf';i.accept='.tilesmith,.json,application/json';i.hidden=true;document.body.appendChild(i)}
 sync();crewUI();}
 function sync(){storeWall();procRefresh();tileRefresh();rcUI();pkUI();cvUI();document.documentElement.style.setProperty('--font-ui',FONTS[S.font]||FONTS['JetBrains Mono']);$('#app').classList.toggle('no-eng',!!S.hideEng);document.querySelectorAll('[data-k]').forEach(e=>{if(!e.dataset.k||e.type=='file'||(e===document.activeElement&&(e.type=='number'||e.type=='text')))return;const v=S[e.dataset.k];e.type=='checkbox'?e.checked=v:e.value=v})
@@ -658,7 +661,7 @@ const allDone=()=>sims.every(x=>x.done);
 function buildSecs(){return Math.max(0,...walls.map((w,i)=>(i*STAG+tN(w)*4.8)/(S.speed*RATES[i%RATES.length])))}
 function setAll(k,v){S[k]=v;}
 function applyPreset(){const p=P[S.preset];if(!p)return;[S.wmm,S.hmm,S.tw,S.th,S.pitch,S.kg,S.wmax,S.dmm]=p}
-const LIM={lblW:[20,300],lblH:[10,300],lblCopies:[1,4],lblSkip:[1,500],cw:[16,8192],ch:[16,8192],ox:[-20000,20000],oy:[-20000,20000],cols:[1,64],rows:[1,64],tw:[8,2048],th:[8,2048],pitch:[.1,50],wmm:[10,3000],hmm:[10,3000],dmm:[1,1000],kg:[.1,500],wmax:[1,5000],bt:[1,8],pspd:[0,3],vIntro:[0,60],vHold:[0,120],speed:[.25,5],ppx:[0,50000000],pports:[1,1000],pamps:[1,400],pwall:[0,100],pwallA:[1,400],plink:[0,500],loopHold:[0,600],dvdSize:[5,60],dvdSpeed:[.25,3],dvdCorner:[0,100],dvdLoopLen:[4,600],pf:[.5,1],ptyp:[1,100],pmeas:[0,5000],cdD:[0,3000],cdP:[0,3000],cslack:[0,100]};
+const LIM={lblW:[20,300],lblH:[10,300],lblCopies:[1,4],lblSkip:[1,500],cw:[16,8192],ch:[16,8192],ox:[-20000,20000],oy:[-20000,20000],cols:[1,64],rows:[1,64],tw:[8,2048],th:[8,2048],pitch:[.1,50],wmm:[10,3000],hmm:[10,3000],dmm:[1,1000],kg:[.1,500],wmax:[1,5000],bt:[1,8],pspd:[0,3],vIntro:[0,60],vHold:[0,120],speed:[.25,5],ppx:[0,50000000],pports:[1,1000],pamps:[1,400],pwall:[0,100],pwallA:[1,400],plink:[0,500],loopHold:[0,600],dvdSize:[5,60],dvdSpeed:[.25,3],dvdCorner:[0,100],dvdLoopLen:[4,600],pf:[.5,1],ptyp:[1,100],pmeas:[0,5000],cdD:[0,3000],cdP:[0,3000],cslack:[0,100],spT:[0,100],spC:[0,20]};
 const HEAVY=['cw','ch','cols','rows','tw','th'];
 function applyKey(t){const k=t.dataset.k;if(!k)return;let v;
 if(t.type=='checkbox')v=t.checked;else if(t.type=='number'||t.type=='range'){v=+t.value;if(t.value===''||!isFinite(v))return;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}else{v=t.value;if(t.tagName=='SELECT'&&typeof S[k]=='number')v=+v}
@@ -708,7 +711,7 @@ const a=t.dataset.a;if(!a)return;const v=t.dataset.v,cw=S.cw,ch=S.ch;
 al(){S.ox=v[0]=='c'||v=='tc'||v=='bc'?Math.round((cw-WW())/2):0;S.oy=v=='c'?Math.round((ch-WH())/2):v[0]=='b'?ch-WH():0;if(v=='tl'||v=='bl')S.ox=0},
 arr(){[S.cols,S.rows]=v.split('x').map(Number);showAll()},
 pp(){S.play=!S.play},rs(){eachCv(()=>reset());S.play=true},bstop(){S.play=false;eachCv(()=>showAll())},brst(){eachCv(()=>reset());S.play=false},cvadd(){cvAdd(false)},cvdup(){cvAdd(true)},cvdel(){cvDel()},psave(){saveProject()},rcdel(){rcDel()},dispfind(){dispList(true)},dispon(){const d=DISP.find(x=>String(x.id)===v);if(!d)return;outClose(v);const s=document.querySelector(`[data-dispcv="${CSS.escape(v)}"]`),c=(s&&CVS.find(x=>String(x.id)===s.value))||CVS[cc];outOpen(c,d.id);cvUI()},dispoff(){outClose(v);cvUI()},bldgo(){if(barBuilding()){eachCv(()=>showAll());S.play=false}else{eachCv(()=>reset());S.play=true}},dvdgo(){S.dvdOn=!S.dvdOn;storeWall();sync();saveSoon()},pkdel(){pkDel()},pcfg(){exportConfig()},utsave(){utSaveCur()},utdel(){utDelCur()},popen(){$('#opf').click()},fit,
-about(){showAbout(1)},bugrpt(){showBugReport()},dwtog(){S.showData=!S.showData;if(!S.showData)wiring=false;storeWall();sync();saveSoon()},pwtog(){S.showPow=!S.showPow;if(!S.showPow)pwiring=false;storeWall();sync();saveSoon()},phtog(){S.phaseView=!S.phaseView;sync();saveSoon()},engtog(){S.hideEng=!S.hideEng;sync();saveSoon()},ndi(){toggleNdi()},share(){toggleShare()},png(){eachCv(()=>{const m=M,n=`tilesmith-canvas${cvTag()}.png`;m.toBlob(b=>dl(b,n))})},lbl(){printLabels()},pdf(){exportPDF()},rec(){exportVideos()},
+about(){showAbout(1)},bugrpt(){showBugReport()},dwtog(){S.showData=!S.showData;if(!S.showData)wiring=false;storeWall();sync();saveSoon()},pwtog(){S.showPow=!S.showPow;if(!S.showPow)pwiring=false;storeWall();sync();saveSoon()},phtog(){S.phaseView=!S.phaseView;sync();saveSoon()},engtog(){S.hideEng=!S.hideEng;sync();saveSoon()},ndi(){toggleNdi()},share(){toggleShare()},png(){eachCv(()=>{const m=M,n=`tilesmith-canvas${cvTag()}.png`;m.toBlob(b=>dl(b,n))})},lbl(){printLabels()},pdf(){exportPDF()},binder(){exportPDF(true)},rec(){exportVideos()},
 add(){crew.push(['Tech '+(crew.length+1),'#e0ac69',null,HAIR[crew.length%HAIR.length]]);crewUI()},rcrew(){crew=defCrew();crewUI()}}[a])();
 sync();fit_if();});
 function fit_if(){if(M.width!=S.cw||M.height!=S.ch){if(REC&&!CVX)endRec(false);M.width=S.cw;M.height=S.ch;if(!CVX)fit();forceRen=true}}
@@ -2093,13 +2096,69 @@ function lblPanelPdf(pg,x,pw,h,o,tr,ink){const st=Math.max(0,LBLFLG.indexOf(S.lb
   {const a=P(tx,base(y,tgf*1.15,tgf)),wd=pdfW(dk+' ',tgf,1),r=th(0)*Math.PI/180;pg.text(dk,a[0],a[1],tgf,1,ink,th(0));pg.text(x.tag,a[0]+Math.cos(r)*wd,a[1]-Math.sin(r)*wd,tgf,0,ink,th(0))}
   y+=tgf*1.15;const bf=clampW(x.big,bigF,1);put(x.big,bf,1,y,bigF*1.05);y+=bigF*1.05;
   x.lines.forEach(t=>{const f=clampW(t,fit(t,lf),0);put(t,f,0,y,lf*1.25);y+=lf*1.25})}}
-async function exportPDF(){storeWall();toast('Building the PDF…',2500);await new Promise(r=>setTimeout(r,30));
- try{const pages=[],lt=pdfLetter(),PW=lt?612:595.28,PH=lt?792:841.89,mg=36,dt=new Date(),stamp=dt.toLocaleString();
+// ---------- show binder (Export binder): exportPDF(true) adds a cover, contents, a page per LED wall and a pull sheet.
+// pullItems(): everything to take, over every canvas: [[department, [[item, need, spare]]]]. Spares: S.spT % of tiles and
+// jumpers (rounded up), S.spC per cable length, breakouts and home-run cables. Cables are listed by length when Cable lengths is on.
+function pullItems(){const sT=S.spT||0,sC=S.spC||0,sp=n=>n>0?Math.ceil(n*sT/100-1e-9):0,V=new Map,add=(k,n)=>V.set(k,(V.get(k)||0)+n),cab={d:{},p:{}};
+ let proc=0,jd=0,jp=0,brk=0,dHome=0,pHome=0,lbl=0,byLen=false,pn='';
+ eachCv(()=>{walls.forEach(w=>{let f=0,h=0;pieces(w).list.forEach(p=>p.half?h++:f++);if(f)add(w.preset,f);if(h)add(w.preset+' (half tile)',h)});
+  const plan=procOn()?portPlan():walls.map(()=>[]),pplan=pdOn()?powerPlan():walls.map(()=>[]),all=plan.flat(),pp=pplan.flat();
+  if(all.length){const m=PROC[S.proc],phys=all.length*(S.ret?2:1),px=walls.reduce((a,w)=>a+wst(w).px,0);proc+=Math.max(1,Math.ceil(phys/Math.max(1,S.pports)),m.max?Math.ceil(px/m.max):1)}
+  if(pp.length)pn=PD().one?'powerCON to Edison':PD().name;
+  if(cabOn()){byLen=true;const R=cabRuns(plan,pplan);R.forEach(x=>x.cab.forEach(c=>{const o=cab[x.kind=='p'?'p':'d'];o[c]=(o[c]||0)+1}));jd+=R.jd;jp+=R.jp;brk+=R.cables}
+  else{dHome+=all.length*(S.ret?2:1);jd+=all.reduce((a,x)=>a+x.tiles.length-1,0);jp+=pp.reduce((a,x)=>a+x.tiles.length-1,0);if(pp.length){const T=powerTotals(pplan);pHome+=PD().one?T.n:T.cables;if(!PD().one)brk+=T.cables}}
+  if(lblHas().on)lbl+=labelPages(labelList()).length});
+ const vid=[...V].map(([k,n])=>[k+' tile',n,sp(n)]);if(proc)vid.push([S.proc,proc,0]);
+ const lens=(o,nm)=>Object.keys(o).sort((a,b)=>a-b).map(c=>[`${nm} ${c} ${cU()}`,o[c],sC]),data=[],pow=[];
+ if(byLen)data.push(...lens(cab.d,'Data cable (etherCON)'));else if(dHome)data.push(['Data home-run cable (etherCON), length not set',dHome,sC]);if(jd)data.push(['Data jumper, tile to tile',jd,Math.max(sC,sp(jd))]);
+ if(byLen)pow.push(...lens(cab.p,pn+' cable'));else if(pHome)pow.push([pn+' cable, length not set',pHome,sC]);if(brk)pow.push([pn+' breakout',brk,sC]);if(jp)pow.push(['Power jumper, tile to tile',jp,Math.max(sC,sp(jp))]);
+ (S.pdist&&Array.isArray(S.dists)?S.dists:[]).forEach(d=>pow.push([`Distro: ${d.name||'Distro'} (${d.sys||''})`,1,0]));
+ return[['Video',vid],['Data',data],['Power',pow],['Labels',lbl?[[`Cable label sheets, ${S.lblSize}`,lbl,0]]:[]]].filter(d=>d[1].length)}
+const bSub=()=>{let w=0,t=0;eachCv(()=>{w+=walls.length;walls.forEach(x=>t+=pieces(x).list.length)});return[S.bVenue,S.bDate?'load-in '+S.bDate:'',`${w} LED wall${w==1?'':'s'}`,`${t} tiles`].filter(Boolean).join(' · ')};
+// pull sheet pages (portrait): one table per department with Need / Spare / Total and boxes to tick
+function pullPages(pages,PW,PH,mg){const D=pullItems(),cw=42,nx=PW-mg-cw*6,H=['NEED','SPARE','TOTAL','PULLED','LOADED','BACK'];let pg=null,y=0;
+ const np=()=>{pg=new PdfPage(PW,PH);pages.push(pg);y=mg;pg.text((S.bShow||'TileSmith')+': pull sheet',mg,y+14,16,1,'#000');pg.text(bSub(),mg,y+28,8.5,0,'#555');y+=42},
+  hd=d=>{pg.rect(mg,y,PW-2*mg,15,'#222222');pg.text(d.toUpperCase(),mg+5,y+10.5,8.5,1,'#fff');H.forEach((t,i)=>pg.text(t,nx+cw*i+cw-4-pdfW(t,7,1),y+10.5,7,1,'#fff'));y+=15};
+ np();D.forEach(([d,rows])=>{if(y+34>PH-mg-30)np();hd(d);
+  rows.forEach(([n,q,sp])=>{const L=pdfWrap(n,8.5,0,nx-mg-10),h=L.length*11+5;if(y+h>PH-mg-30){np();hd(d)}
+   L.forEach((t,i)=>pg.text(t,mg+5,y+11*(i+1),8.5,0,'#000'));[q,sp||'',q+sp].forEach((v,i)=>{const t=String(v);pg.text(t,nx+cw*i+cw-4-pdfW(t,8.5,i==2),y+11,8.5,i==2,'#000')});
+   for(let i=3;i<6;i++)pg.rect(nx+cw*i+cw/2-4.5,y+3.5,9,9,null,'#333333',.6);pg.line(mg,y+h,PW-mg,y+h,'#cccccc',.4);y+=h});y+=10});
+ if(!D.length){pg.text('Nothing to pull yet: add LED walls first.',mg,y+12,10,0,'#000');y+=20}
+ pg.line(mg,PH-mg-14,PW-mg,PH-mg-14,'#999999',.5);pg.text('Pulled by ______________   Checked by ______________   Returned by ______________',mg,PH-mg,8.5,0,'#555')}
+// label/value rows from x to x+w, from y down to maxY; returns the new y, or -1 when they did not all fit
+function pdfRows(pg,rows,x,y,w,maxY,fs){const lw=Math.min(170,w*.38),lh=fs*1.3;for(const r of rows){if(r[2]=='head'){if(y+lh*2>maxY)return-1;pg.text(r[0],x+2,y+lh,fs+1,1,'#0a6f80');y+=lh+4;continue}
+  const wn=r[2]=='warn',A=pdfWrap(r[0],fs,wn,lw-6),B2=pdfWrap(r[1],fs,wn,w-lw-6),n=Math.max(A.length,B2.length),h=n*lh+3;if(y+h>maxY)return-1;if(wn)pg.rect(x,y,w,h-1,'#ffd400');
+  A.forEach((t,i)=>pg.text(t,x+2,y+lh*(i+1)-1,fs,wn,'#000'));B2.forEach((t,i)=>pg.text(t,x+lw+4,y+lh*(i+1)-1,fs,wn,'#000'));pg.line(x,y+h-1,x+w,y+h-1,'#cccccc',.3);y+=h}return y}
+// a page per LED wall (landscape): the wall cropped from the canvas with data and power runs drawn, then its figures
+function wallPages(pages,PW,PH,mg){eachCv(ci=>{const keep=[S.showData,S.showPow];S.showData=procOn();S.showPow=pdOn();render();
+  const plan=procOn()?portPlan():walls.map(()=>[]),pplan=pdOn()?powerPlan():walls.map(()=>[]),CR=cabOn()?cabRuns(plan,pplan):null;
+  walls.forEach((w,wi)=>{const pg=new PdfPage(PH,PW),st=wst(w),nm=w.name||'Wall '+(wi+1);pages.push(pg);
+   pg.text(nm+(CVS.length>1?' ('+CVS[ci].name+')':''),mg,mg+12,15,1,'#000');pg.text(`${w.cols} × ${w.rows} ${w.preset} · ${st.mw.toFixed(2)} × ${st.mh.toFixed(2)} m · ${st.pw} × ${st.ph} px at X ${w.ox}, Y ${w.oy}`,mg,mg+25,8.5,0,'#555');
+   const x0=Math.max(0,w.ox),y0=Math.max(0,w.oy),x1=Math.min(M.width,w.ox+st.pw),y1=Math.min(M.height,w.oy+st.ph),bw=PH-2*mg,bh=(PW-2*mg)*.58;let top=mg+34;
+   if(x1>x0&&y1>y0){const sw=x1-x0,sh=y1-y0,sc=Math.min(bw/sw,bh/sh),k=Math.min(1,2400/Math.max(sw,sh)),cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(sw*k));cv.height=Math.max(1,Math.round(sh*k));
+    cv.getContext('2d').drawImage(M,x0,y0,sw,sh,0,0,cv.width,cv.height);const u=cv.toDataURL('image/jpeg',.9),bin=atob(u.slice(u.indexOf(',')+1)),b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
+    const iw=sw*sc,ih=sh*sc,ix=(PH-iw)/2;pg.img={w:cv.width,h:cv.height,b};pg.o.push(`q ${pdfN(iw)} 0 0 ${pdfN(ih)} ${pdfN(ix)} ${pdfN(PW-top-ih)} cm /Im1 Do Q`);pg.rect(ix,top,iw,ih,null,'#888888',.5);top+=ih+10}
+   else{pg.text('This wall is outside the canvas, so there is no picture of it.',mg,top+12,9,0,'#555');top+=22}
+   const rows=wallRows(w,plan[wi]||[],pplan[wi]||[]).concat(CR?cabWallRows(CR,wi):[]),half=Math.ceil(rows.length/2),cw2=(PH-2*mg-16)/2,maxY=PW-mg-12;
+   const a=pdfRows(pg,rows.slice(0,half),mg,top,cw2,maxY,7.5),b2=pdfRows(pg,rows.slice(half),mg+cw2+16,top,cw2,maxY,7.5);
+   if(a<0||b2<0)pg.text('More figures for this wall are in the spec sheet.',mg,PW-mg,8,1,'#a05a00')})
+  S.showData=keep[0];S.showPow=keep[1];render()})}
+// cover and contents of the binder, drawn last so the contents know every page number
+function binderFront(cv,ct,toc,n,PW,PH,mg,stamp){const L=[];let w=0,t=0;eachCv(ci=>{walls.forEach((x,i)=>{w++;const n2=pieces(x).list.length;t+=n2;L.push(`${x.name||'Wall '+(i+1)}${CVS.length>1?' ('+CVS[ci].name+')':''}: ${x.cols} × ${x.rows} ${x.preset}, ${n2} tiles`)})});
+ let y=PH*.3;pdfWrap(S.bShow||'LED wall binder',30,1,PW-2*mg).forEach(s=>{cv.text(s,mg,y,30,1,'#000');y+=36});
+ [S.bVenue,S.bDate?'Load-in '+S.bDate:''].filter(Boolean).forEach(s=>{cv.text(s,mg,y+4,14,0,'#333');y+=20});y+=16;cv.line(mg,y,PW-mg,y,'#0a6f80',1.5);y+=22;
+ cv.text(`${w} LED wall${w==1?'':'s'} · ${t} tiles`,mg,y,11,1,'#000');y+=18;L.slice(0,24).forEach(s=>{cv.text(s,mg,y,9.5,0,'#333');y+=13});if(L.length>24){cv.text(`… and ${L.length-24} more`,mg,y,9.5,0,'#333');y+=13}
+ y+=8;if(procOn())cv.text('Processor: '+S.proc,mg,y,9.5,0,'#333'),y+=13;if(pdOn())cv.text(`Power: ${S.pdt}, ${S.pvolt} V ${S.pamps} A`,mg,y,9.5,0,'#333');
+ cv.text(`Made with TileSmith · ${stamp} · ${n} pages`,mg,PH-mg,8.5,0,'#777');
+ ct.text('Contents',mg,mg+20,20,1,'#000');let yy=mg+56;toc.forEach(([s,p])=>{ct.text(s,mg,yy,12,0,'#000');const q=String(p);ct.text(q,PW-mg-pdfW(q,12,0),yy,12,0,'#000');ct.line(mg+pdfW(s,12,0)+6,yy,PW-mg-pdfW(q,12,0)-6,yy,'#bbbbbb',.5,1.5);yy+=22})}
+async function exportPDF(binder){storeWall();toast('Building the PDF…',2500);await new Promise(r=>setTimeout(r,30));
+ try{const pages=[],lt=pdfLetter(),PW=lt?612:595.28,PH=lt?792:841.89,mg=36,dt=new Date(),stamp=dt.toLocaleString(),toc=[],mark=t=>toc.push([t,pages.length+1]);
+  if(binder){pages.push(new PdfPage(PW,PH),new PdfPage(PW,PH));mark(CVS.length>1?'Canvases':'Canvas')}
   // 1. the full raster
   eachCv(ci=>{const pg=new PdfPage(PH,PW),W=PH-2*mg,Hh=PW-2*mg-34,sc=Math.min(W/M.width,Hh/M.height),iw=M.width*sc,ih=M.height*sc,x0=(PH-iw)/2,y0=mg+22;
    pg.text('TileSmith - full raster'+(CVS.length>1?' - '+CVS[ci].name:''),mg,mg+10,14,1,'#000');pg.text(`${S.cw} x ${S.ch} px, ${walls.length} wall${walls.length==1?'':'s'}, ${stamp}`,mg,mg+22,8.5,0,'#555');
    const u=M.toDataURL('image/jpeg',.92),bin=atob(u.slice(u.indexOf(',')+1)),b=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);
-   pg.img={w:M.width,h:M.height,b};pg.o.push(`q ${pdfN(iw)} 0 0 ${pdfN(ih)} ${pdfN(x0)} ${pdfN(PW-(y0+14)-ih)} cm /Im1 Do Q`);pg.rect(x0,y0+14,iw,ih,null,'#888',.5);pages.push(pg)});const NR=pages.length;
+   pg.img={w:M.width,h:M.height,b};pg.o.push(`q ${pdfN(iw)} 0 0 ${pdfN(ih)} ${pdfN(x0)} ${pdfN(PW-(y0+14)-ih)} cm /Im1 Do Q`);pg.rect(x0,y0+14,iw,ih,null,'#888',.5);pages.push(pg)});if(binder){mark('LED walls');wallPages(pages,PW,PH,mg);mark('Pull sheet');pullPages(pages,PW,PH,mg);mark('Spec sheet')}const NR=pages.length;
   // 2. the spec sheet
   {const lw=190,vw=PW-2*mg-lw-10,fs=8.5,lh=11;let pg=null,y=0;const np=()=>{pg=new PdfPage(PW,PH);pages.push(pg);y=mg;if(pages.length==NR+1){pg.text('TileSmith - LED Wall Spec',mg,y+12,16,1,'#000');pg.text(stamp,mg,y+25,8.5,0,'#555');y+=38}};np();
    const SEC=[['LED Tiles',tileRows()]];eachCv(ci=>specSections().forEach(([t,r])=>SEC.push([(CVS.length>1?CVS[ci].name+': ':'')+t,r])));if(dsOn())SEC.push(['Power distribution',dsRows(dsState())]);SEC.forEach(([title,rows])=>{if(y+40>PH-mg)np();pg.rect(mg,y,PW-2*mg,17,'#dfe8ea');pg.text(title,mg+5,y+12,11,1,'#000');y+=21;
@@ -2108,7 +2167,7 @@ async function exportPDF(){storeWall();toast('Building the PDF…',2500);await n
      A.forEach((t,i)=>pg.text(t,mg+4,y+lh*(i+1)-1+1,fs,wn,'#000'));V.forEach((t,i)=>pg.text(t,mg+lw+6,y+lh*(i+1),fs,wn,'#000'));pg.line(mg,y+hh-1,PW-mg,y+hh-1,'#cccccc',.4);y+=hh});y+=8})}
   // 3. the cable labels, one PDF page per label sheet, sized like the label sheet itself
   let LL=[];eachCv(()=>{if(lblHas().on)LL=LL.concat(labelList())});
-  if(LL.length){const L=LL,g=lblGeom(),lay=Math.max(0,LBLLAY.indexOf(S.lblLayout)),K=72/25.4;
+  if(LL.length){if(binder)mark('Cable labels');const L=LL,g=lblGeom(),lay=Math.max(0,LBLLAY.indexOf(S.lblLayout)),K=72/25.4;
    labelPages(L).forEach(cells=>{const pg=new PdfPage(g.pw,g.ph,K);pages.push(pg);
     cells.forEach((x,i)=>{if(!x)return;const c=i%g.c,r=Math.floor(i/g.c),left=g.x+c*(g.w+g.gx),top=g.y+r*(g.h+g.gy),W=g.w,H=g.h,fill=x.fill&&S.lblColor,ink=fill?lblInk(x.col):'#000';
      pg.clip(left,top,W,H);if(fill)pg.rect(left,top,W,H,x.col);else if(x.tint)pg.rect(left,top,W,H,lblTint(x.wall.col));
@@ -2116,7 +2175,8 @@ async function exportPDF(){storeWall();toast('Building the PDF…',2500);await n
      if(lay==2){const t=Math.min(W*.2,H*1.1);pn(0,t,{textless:1});pn(t,W-2*t,{plain:1});pn(W-t,t,{textless:1,mirror:1})}
      else{pn(0,W/2,{});pn(W/2,W/2,{mirror:lay==0},lay==1);pg.line(left+W/2,top,left+W/2,top+H,'#888888',.2,1)}
      pg.unclip()})})}
-  const name=`TileSmith-${S.cw}x${S.ch}-${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,'0')}${String(dt.getDate()).padStart(2,'0')}.pdf`;
+  if(binder)binderFront(pages[0],pages[1],toc,pages.length,PW,PH,mg,stamp);
+  const ymd=`${dt.getFullYear()}${String(dt.getMonth()+1).padStart(2,'0')}${String(dt.getDate()).padStart(2,'0')}`,name=binder?`${(S.bShow||'TileSmith').replace(/[^\w-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,40)||'TileSmith'}-binder-${ymd}.pdf`:`TileSmith-${S.cw}x${S.ch}-${ymd}.pdf`;
   dl(new Blob([pdfBuild(pages)],{type:'application/pdf'}),name);if(!MOBILE)toast(`Saved ${name} (${pages.length} page${pages.length==1?'':'s'}).`,4000)
  }catch(e){console.error(e);toast('Could not build the PDF: '+(e&&e.message||e),7000)}}
 // ---------- send a canvas to a display (desktop app): a borderless full-screen window on that display, opened from this page so the
