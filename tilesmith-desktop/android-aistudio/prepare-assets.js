@@ -17,5 +17,8 @@ fs.rmSync(out, { recursive: true, force: true });
 fs.mkdirSync(out, { recursive: true });
 fs.writeFileSync(path.join(out, 'index.html'), html);
 fs.copyFileSync(path.join(here, 'webview-bridge.js'), path.join(out, 'webview-bridge.js'));
+// the Hand-drawn crew files (three.js and the Rocketbox characters), loaded by the page only when that style is picked
+const crew = path.join(here, '..', 'app', 'crew');
+if (fs.existsSync(crew)) fs.cpSync(crew, path.join(out, 'crew'), { recursive: true });
 const v = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || 'TileSmith';
 console.log(`[ok] ${out} is ready: ${v} (${Math.round(html.length / 1024)} KB) + webview-bridge.js`);

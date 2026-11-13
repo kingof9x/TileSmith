@@ -45,5 +45,9 @@ If you reuse that code under the GPL, replace the technician's artwork and name 
 - Syphon framework and node-syphon (bin/mac/syphon), BSD / MIT licences (licence files in that folder).
 - ffmpeg, if installed or bundled, under its own licence (LGPL/GPL depending on the build).
 - Electron, Capacitor, koffi and other npm packages, under their own licences.
+- Hand-drawn crew (app/crew): Microsoft Rocketbox avatars and their motion-captured walk animations,
+  (c) Microsoft Corporation, MIT licence (https://github.com/microsoft/Microsoft-Rocketbox); three.js r147 with its
+  FBXLoader, (c) three.js authors, MIT licence; fflate by Arjun Barrameda, MIT licence. The Rocketbox people are not
+  the TileSmith technician artwork described in section 2.
 
 Each third-party component keeps its own licence and copyright.
