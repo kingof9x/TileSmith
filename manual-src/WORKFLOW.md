@@ -115,6 +115,11 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
   (map + list per wall, optional sticker per tile on the label sheet) and a Cabinet IDs section in the binder.
   Test: manual-src/tests/cabid_test.py; binder_test.py follows the new pages. make_spec.py already fails on main (keys from
   earlier features have no KEYDESC); labels/bugreport/outputopts/charpack/techstyle tests fail on main too.
+- Layered pixel map export (LRD feature, 2026-11-14; demo /mnt/project-files/demos/layered-export-demo.html): top bar Export layers ▾
+  → Layered SVG… / Layered PSD…, dialog with a layer checklist (Background, Test pattern, Tile grid, Tile labels, Data paths, Power paths).
+  render() takes a layer filter (LYR) and wall filter (LYW); SVG vector layers via a stand-in 2D context (svgRec), PSD by a hand-written
+  RLE writer (lyrPSD). Grouping S.lyrGrp A/B/C all work; the user kept A (by layer type). Test: manual-src/tests/layers_test.py
+  (needs Pillow). Not yet opened in real Photoshop / Illustrator by the user.
 
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
