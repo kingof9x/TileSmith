@@ -2129,7 +2129,10 @@ const GLT=['Dead tile','Flicker','Colour channel out','Stuck pixels','Data chain
 const GLD=['The tile\'s power supply or fuse failed: it goes black while the rest of the wall keeps running.','A loose power or data connector: the tile cuts in and out at random.','A colour driver chip or ribbon pin failed: the tile loses red, green or blue.','Single LEDs failed on, off or stuck at one colour.','A data cable or receiving card failed: this tile and every tile after it on the same port go black. Uses the data wiring when a processor is picked, otherwise the rest of the row.','One of the tile\'s LED modules failed: a quarter of the tile goes dark.','Wrong receiving card settings after a swap: the picture on the tile comes out in jumbled blocks.','The receiving card hung: the tile holds its last frame while the rest of the wall moves (shows on moving patterns).','A tile from a different batch, or one that lost its calibration: dimmer and slightly green.','A row driver failed: bands of rows drop out or flicker.','A bad ribbon cable or failing receiving card: coloured pixels fizz across the tile.','The breaker tripped on one power circuit: every tile on it goes dark. Uses the power wiring when a distribution is set up, otherwise the tile\'s column.'];
 let glEdit=false;const REP=new WeakMap(),GLFIX=new WeakMap(),GLFRZ=new Map();let GLRN=0;
 const glArr=w=>Array.isArray(w.glk)?w.glk.filter(q=>Array.isArray(q)&&typeof q[0]=='string'):[];
-const glRT=()=>Math.floor(Math.random()*GLT.length);
+// Random mix: a random fault, never the same one twice in a row; glDeck gives n faults that don't repeat until all 12 are used
+let GLLAST=-1;
+function glRT(){const n=GLT.length,l=GLLAST;let t=Math.floor(Math.random()*(l<0?n:n-1));if(l>=0&&t>=l)t++;return GLLAST=t}
+function glDeck(k){const n=GLT.length,out=[];while(out.length<k){const d=[...Array(n).keys()];for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]]}const l=out.length?out[out.length-1]:GLLAST;if(d[0]===l)[d[0],d[n-1]]=[d[n-1],d[0]];out.push(...d)}out.length=k;if(k)GLLAST=out[k-1];return out}
 const glFixed=w=>{let s=GLFIX.get(w);if(!s){s=new Set;GLFIX.set(w,s)}return s};
 const glH=(a,b)=>{const v=Math.sin(a*127.1+b*311.7)*43758.5453;return v-Math.floor(v)};
 const glSeed=k=>{let h=7;for(let i=0;i<k.length;i++)h=(h*31+k.charCodeAt(i))%9973;return h};
@@ -2468,7 +2471,7 @@ function uiVis(){const on=procOn(),m=PROC[S.proc],hide=(id,h)=>{const e=$('#'+id
    const b=document.querySelector('[data-a=gledit]');if(b){const t=glEdit?'Stop picking':'Pick tiles';if(b.textContent!==tr(t))b.textContent=t;b.setAttribute('aria-pressed',glEdit)}
    const gs=$('#glStop');if(gs){gs.hidden=!glEdit;gs.style.top=top}const gf=$('#glFixF');if(gf){gf.hidden=!(on&&n>0&&!rp&&!glEdit);gf.style.top=top}
    const fb=document.querySelector('[data-a=glfix]');if(fb){fb.disabled=!(on&&n>0&&!rp);const t=rp?'Fixing…':'Fix glitch';if(fb.textContent!==tr(t))fb.textContent=t}
-   const st=$('#glStat'),mine=glList(S===walls[cur]?S:walls[cur]).length,t=!on?(pk?(()=>{const k=walls.reduce((a,w)=>a+glArr(w).length,0);return k?`${k} tile${k>1?'s':''} picked. Press Start tile faults.`:'No tiles picked yet. Click Pick tiles, then click tiles in the viewport.'})():`Start tile faults picks ${S.glN} random tile${S.glN>1?'s':''}.`):rp?'Technicians are swapping the faulty tiles.':n?`${n} faulty tile${n>1?'s':''} on this canvas${walls.length>1?` (${mine} on ${S.name||'this wall'})`:''}.`:pk?'No faulty tiles yet. Click Pick tiles, then click tiles in the viewport.':'No faulty tiles. Click New random tiles.';if(st&&st.textContent!==tr(t))st.textContent=t}
+   const st=$('#glStat'),mine=glList(S===walls[cur]?S:walls[cur]).length,t=!on?(pk?(()=>{const k=walls.reduce((a,w)=>a+glArr(w).length,0);return k?`${k} tile${k>1?'s':''} picked. Press Start tile faults.`:'No tiles picked yet. Click Pick tiles, then click tiles in the viewport.'})():`Start tile faults picks ${S.glN} random tile${S.glN>1?'s':''}.`):rp?'Technicians are swapping the faulty tiles.':n?`${n} faulty tile${n>1?'s':''} on this canvas${walls.length>1?` (${mine} on ${S.name||'this wall'})`:''}.`+glNames():pk?'No faulty tiles yet. Click Pick tiles, then click tiles in the viewport.':'No faulty tiles. Click New random tiles.';if(st&&st.textContent!==tr(t))st.textContent=t}
 {hide('cabBox',!S.cabOn);hide('gearBox',!S.gOn);document.querySelectorAll('.cu').forEach(e=>{if(e.textContent!==tr(cU()))e.textContent=cU()});const n=$('#cabNote');if(n){const t=S.cabOn&&!procOn()&&!pdOn()?'Pick a processor or a power distribution first; there are no runs to measure yet.':'';if(n.textContent!==tr(t))n.textContent=t}}
 {const b=document.querySelector('[data-a=pp]');if(b){const t=S.play?'Pause':'Play';if(b.textContent!==tr(t))b.textContent=t}const n=$('#vdvdNote');if(n){const t=S.vDvd&&!(S.dvdOn&&S.dvdLoop)?'DVD logo needs "Bounce a logo around the screen" and "Perfect loop" turned on in DVD screensaver.':'';if(n.textContent!==tr(t))n.textContent=t}}
 {const b=document.querySelector('[data-a=gedit]');if(b){b.textContent=goneEdit?'Stop removing':'Remove tiles';b.setAttribute('aria-pressed',goneEdit)}const g=pieces(S).ng,ms=layOn(S)?`${tN(S)} tiles on the half-tile layout.`:g?`${g} tile${g>1?'s':''} removed; ${tN(S)} left.`:'All tiles in place.',ge=$('#gmsg');if(ge&&ge.textContent!==tr(ms))ge.textContent=ms}
@@ -3791,6 +3794,8 @@ return{draw,want,crewNote,solve,RT,rtOf,repScene,drawActor,drawTile2,_rk:()=>RK,
 // [tile key, own fault for Random mix]; a repaired tile stays fixed until the faults are turned off and on again.
 // the faults showing on a wall now: [{p: tile, t: fault number, s: seed}]
 function glList(w){if(!S.glOn)return[];const P2=pieces(w),fx=GLFIX.get(w),mix=S.glType==GLMIX,ft=GLT.indexOf(S.glType);return glArr(w).map(q=>{const p=P2.by.get(q[0]);if(!p||fx&&fx.has(q[0]))return null;return{p,t:mix?((q[1]|0)%GLT.length+GLT.length)%GLT.length:Math.max(0,ft),s:glSeed(q[0])}}).filter(Boolean)}
+// Random mix: which faults are showing, for the status line under Tile faults
+function glNames(){if(S.glType!=GLMIX)return'';const c=new Map;walls.forEach(w=>glList(w===walls[cur]?S:w).forEach(f=>c.set(GLT[f.t],(c.get(GLT[f.t])||0)+1)));const a=[...c].map(([k,v])=>v>1?k+' ×'+v:k);return a.length?' Faults: '+a.slice(0,4).join(', ')+(a.length>4?` and ${a.length-4} more`:'')+'.':''}
 function glCount(){return walls.reduce((a,w)=>a+glList(w).length,0)}
 // tiles that go dark with a data or power fault: this tile and the ones after it on its data port, or every tile on its circuit
 function glChain(w,wi,p,kind){const out=new Set([p.key]);
@@ -3831,7 +3836,7 @@ function glDrag(e,how){const w=walls[cur],d=drag,[x,y]=toCv(e),x0=d.wx==null?x:d
 // random faulty tiles: How many tiles, spread over the walls of each canvas
 function glRoll(){storeWall();eachCv(()=>{const all=[];walls.forEach((w,wi)=>{w.glk=[];pieces(w).list.forEach(p=>all.push([wi,p.key]))});
   for(let i=all.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[all[i],all[j]]=[all[j],all[i]]}
-  all.slice(0,Math.max(1,S.glN|0)).forEach(([wi,k])=>walls[wi].glk.push([k,glRT()]));walls.forEach(w=>GLFIX.delete(w))});loadWall(cur);GLRN++;GLFRZ.clear();forceRen=true}
+  const pk=all.slice(0,Math.max(1,S.glN|0)),ty=glDeck(pk.length);pk.forEach(([wi,k],i)=>walls[wi].glk.push([k,ty[i]]));walls.forEach(w=>GLFIX.delete(w))});loadWall(cur);GLRN++;GLFRZ.clear();forceRen=true}
 function glReset(){eachCv(()=>walls.forEach(w=>{REP.delete(w);GLFIX.delete(w)}));GLRN++;GLFRZ.clear();forceRen=true}
 function glOnChange(v){glReset();if(v&&S.glPick=='Random')glRoll()}
 // Start / Stop tile faults (panel and toolbar), like Start LED Build and Start DVD Screensaver
