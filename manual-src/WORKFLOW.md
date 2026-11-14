@@ -55,6 +55,8 @@ PR steps for every thread:
 2. Right before asking Callum "is this ready to submit?", and again right before opening the PR:
    `git fetch origin main && git merge origin/main` (merge, never rebase or force-push), fix any conflict by keeping both
    sides, then run your feature's test and tests/lists_test.py.
+   A branch started before this layout (TR etc. still on one long line) merges main once with
+   `python3 manual-src/tools/regroup_merge.py "Your feature"` right after the conflicting `git merge origin/main`.
 3. Once the PR is open, watch it. When another PR lands on main, merge main into yours the same way and push, without
    being asked, and tell Callum in one line.
 
