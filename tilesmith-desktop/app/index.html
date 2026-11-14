@@ -638,7 +638,7 @@ ${SUB('Tile faults <span class="wn"></span>',`<div id="glBox"><div class="g">${F
 <div id="glPickBox"><div style="color:var(--mu);font-size:12px">Click Pick tiles, then click tiles in the viewport to make them faulty or take the fault away. Drag to do the same to every tile you cross.</div><div class="row">${B('gledit','Pick tiles')}${B('glclr','Clear picked tiles')}</div></div>
 <div id="glRndBox"><div class="g">${F('glN','How many tiles','number','min=1 max=200 step=1')}</div><div class="row">${B('glrnd','New random tiles')}</div></div>
 <div style="color:var(--mu);font-size:12px">Technician style, hard hat, vest, logo and crew details are under Technicians, below.</div>
-<div id="glStat" style="font-size:12px"></div><div class="row">${B('glgo','Start tile faults')}${B('glfix','Fix glitch')}</div><div style="color:var(--mu);font-size:12px">Choose the fault and the tiles, then press Start tile faults. Fix glitch sends two technicians: one, hidden behind the wall, appears in the gap when the faulty tile pops out and lowers it on a rope; the other swaps it for a working tile and carries the broken one away; the first pulls the new tile up and puts it in. When every tile is fixed the faults stop; press Start again to replay.</div></div>`)}
+<div id="glStat" style="font-size:12px"></div><div class="row">${B('glgo','Start tile faults')}${B('glfix','Fix glitch')}</div><div style="color:var(--mu);font-size:12px">Choose the fault and the tiles, then press Start tile faults. Fix glitch sends two technicians: one, hidden behind the wall, appears in the gap when the faulty tile pops out. A tile the floor technician can reach is handed down and the new one handed up; a higher tile is lowered on a rope; the other swaps it for a working tile and carries the broken one away; the first pulls the new tile up and puts it in. When every tile is fixed the faults stop; press Start again to replay.</div></div>`)}
 ${SUB('Technicians',`<div class="g">${F('tstyle','Character style','select',TSTY,'w')}<div id="crewNote" class="w" style="display:none;color:var(--mu);font-size:12px"></div><div id="pkBox" class="w" style="display:none"><label class="w">Character pack<select data-k="tpack" id="pkSel"></select></label><div class="row"><label style="display:inline-flex;align-items:center;gap:6px"><span class="btn" style="cursor:pointer">Load character pack…</span><input type="file" id="pkf" accept=".zip,.png,.json" multiple style="display:none"></label>${B('pkdel','Delete pack')}</div><div id="pkNote" style="color:var(--mu);font-size:12px"></div></div>${F('hat','Hard hat','select',[['#ffcc00','Yellow'],['#ffffff','White'],['#2563ff','Blue'],['#ff7a00','Orange']])}${F('vest','Vest','select',[['#b6ff00','Lime green'],['#ff6a00','Orange'],['#f5e800','Yellow']])}${F('logo','Vest logo text','text','','w')}<label class="w">Upload logo (PNG/SVG/JPG)<input type="file" id="lf" accept="image/*"></label></div>
 ${F('cd','Crew details & name tags','check')}<div id="crew"></div>`)}
 ${SUB('Video export',`<div class="g">${F('vLed','LED build (blank intro, the build, final hold)','check')}<span class="w desk-only">${F('vDvd','DVD logo (one perfect loop)','check')}</span></div><div id="vdvdNote" class="desk-only" style="color:#e5a000;font-size:12px"></div><div class="g">${F('vIntro','Blank intro (s)')}${F('vHold','Final hold (s)')}${F('vCodec','Format','select',Object.keys(VCODEC),'w desk-only')}${F('hapFmt','HAP type','select',['hap','hap_alpha','hap_q'],'w desk-only')}</div><div id="vcn" class="desk-only" style="color:var(--mu);font-size:12px"></div><div class="mob-only" style="color:var(--mu)">This device records the video as H.264 MP4 with its own encoder, in real time: keep TileSmith open while it records (the screen stays on). When it finishes, pick where to save or send it (Files, Photos, Drive, AirDrop, e-mail…). Video = intro + live build + hold.<br>Estimated length: <b id="vestm" style="color:var(--tx)"></b></div><div class="desk-only" style="color:var(--mu)">Saves the video (60 fps, desktop app) to your Videos folder (Windows) or Movies folder (Mac), in a TileSmith subfolder. Video = intro + live build + hold. Build time follows tile count and Speed (under LED build); with several walls the slowest wall sets the length. With both boxes ticked you get two files, the LED build first and then the DVD logo loop.<br>Estimated length: <b id="vest" style="color:var(--tx)"></b></div><div class="row">${B('rec','Export video')}</div><div id="vexps" style="font-size:12px;color:var(--mu)"></div>`)}
@@ -1922,29 +1922,66 @@ const crF=y=>cl((.56-y)*.85,0,.3);
 // the wall and climbs the back, pops the faulty tile out to the front and lowers it to the floor on a rope; technician B
 // brings a working tile, moves the rope from the broken tile to the new one and carries the broken one away; A pulls the
 // new tile up, seats it in the slot and locks it, then climbs down and walks off. Times in seconds at Speed 1.
-const RT={pop:1,low:1.8,bin:2.2,set:4,hook:4.8,swap:5.3,pick:5.8,raise:6,bout:6.6,pull:8,lock:8.7,b3:9.3,end:12.4};
+const RT_={pop:1,low:1.8,bin:2.2,set:4,hook:4.8,swap:5.3,pick:5.8,raise:6,bout:6.6,pull:8,lock:8.7,b3:9.3,end:12.4};
+// a tile B can reach from the floor needs no rope: B sets the new tile down, A pops the faulty one out and hands it down,
+// B puts it down and hands the new one up, A pulls it in and locks it, B carries the faulty one away
+const HT={bin:0,set:1.8,put:2.6,pop:2.6,out:3.3,take:3.5,low:3.8,down:5.0,back:5.5,lift:5.9,up:7.0,pull:7.2,lock:7.9,b3:8.5,pick:8.6,bout:9.6,end:13};
+const RT=RT_,rtOf=R=>R&&R.hand?HT:RT;
 function repGeo(w,key,H){const RC=pieces(w).by.get(key);if(!RC)return null;const tb=techBox(w,H),L0=tb.L0,R0=tb.R0,T0=tb.T0,B0=tb.B0,tw=RC.w,th=RC.h,
  base=Math.max(6,Math.min(tb.sz,(B0-T0)/1.12)),cs=Math.min(1,base/(w.th*2.4),.45*base/w.tw),sx=L0+RC.x+tw/2,cy=T0+RC.y+th/2,
  // B comes in from the side with more room (the new tile goes down on that side of the old one); A from the other side
  eB=sx-L0>=R0-sx?1:-1,lo=L0+.3*base,hi=R0-.3*base,C=v=>lo>hi?(L0+R0)/2:cl(v,lo,hi),floor=B0-.03*base,fy=B0-th/2,
- xn=cl(sx-eB*tw*1.08,L0+tw/2,R0-tw/2);
- return{RC,L0,R0,T0,B0,tw,th,base,cs,sx,cy,eB,floor,fy,xn,xb:C((sx+xn)/2-eB*.08*base),xa:C(sx+eB*(tw*.5+.3*base)),
+ xn=cl(sx-eB*tw*1.08,L0+tw/2,R0-tw/2),hand=floor-cy<=base,bot=fy-cy<th*.5,xd0=xn-eB*tw*1.08,xd=!bot?sx:xd0>=L0+tw/2&&xd0<=R0-tw/2?xd0:cl(sx+eB*tw*1.08,L0+tw/2,R0-tw/2);
+ return{RC,L0,R0,T0,B0,tw,th,base,cs,sx,cy,eB,floor,fy,xn,hand,bot,xd,xb:C((sx+xn)/2-eB*.08*base),xa:C(sx+eB*(tw*.5+.3*base)),
   offA:eB>0?R0+.55*base:L0-.55*base,offB:eB>0?L0-.55*base:R0+.55*base}}
 const seg=(t,a,b)=>cl((t-a)/(b-a),0,1);
 // A: on the floor at the start and end; in between behind the wall, seen only through the empty slot
-function actA(G,t,sz){if(t<RT.pop||t>=RT.b3)return null;const o={psi:0,expr:''};let x=G.sx,yy=G.floor,walk=null,mode='hole',al=1,rope=null;
+function actA(G,t,sz){const RT=G.hand?HT:RT_;if(t<RT.pop||t>=RT.b3)return null;const o={psi:0,expr:''};let x=G.sx,yy=G.floor,walk=null,mode='hole',al=1,rope=null;
  {
   // in the slot: facing the audience, chest at the tile, hands on the tile or on the rope
   mode='hole';x=G.sx;yy=G.cy+.78*sz;o.psi=0;o.expr='focus';const ty=(yy-G.cy)/sz,hw=Math.min(G.tw/2/sz-.02,.16),edge=(z,dy)=>[{t:V(-hw,ty+dy,z),w:1},{t:V(hw,ty+dy,z),w:1}];
-  if(t<RT.low){const p=seg(t,RT.pop,RT.low);o.hands=edge(.12+.22*ss(p),.06-.1*ss(p));o.lean=.12*ss(p)}
+  if(G.hand&&t<RT.pull){// pushes the tile out, holds it while B takes it, lets go, then reaches for the new one
+   if(t<RT.out){const p=seg(t,RT.pop,RT.out);o.hands=edge(.12+.22*ss(p),.06-.1*ss(p));o.lean=.12*ss(p)}
+   else if(t<RT.low)o.hands=edge(.34,-.04),o.lean=.12;
+   else if(t<RT.up-.5){const p=ss(seg(t,RT.low,RT.low+.6));o.hands=edge(.34-.22*p,-.04+.04*p);o.headPitch=-.25*p;o.lean=.12*(1-p)}
+   else{const p=ss(seg(t,RT.up-.5,RT.pull));o.hands=edge(.12+.22*p,-.04*p);o.headPitch=-.25*(1-p);o.lean=.12*p}}
+  else if(t<RT.low){const p=seg(t,RT.pop,RT.low);o.hands=edge(.12+.22*ss(p),.06-.1*ss(p));o.lean=.12*ss(p)}
   else if(t<RT.raise+.1&&t>=RT.set||t<RT.set&&t>=RT.low){const p=seg(t,RT.low,RT.set),mv=p>0&&p<1?Math.sin(p*PI*8):0;o.hands=[{t:V(-.03,ty-.12+.06*mv,.3),w:1},{t:V(.03,ty-.12-.06*mv,.28),w:1}];o.headPitch=-.3;rope=1}
   else if(t<RT.raise){o.hands=[{t:V(-.03,ty-.14,.3),w:1},{t:V(.03,ty-.16,.28),w:1}];o.headPitch=-.3;rope=1}
   else if(t<RT.pull){const p=seg(t,RT.raise,RT.pull),mv=p>0&&p<1?Math.sin(p*PI*8):0;o.hands=[{t:V(-.03,ty-.12-.06*mv,.3),w:1},{t:V(.03,ty-.12+.06*mv,.28),w:1}];o.headPitch=-.3*(1-p);rope=1}
   else if(t<RT.lock){const p=seg(t,RT.pull,RT.lock);o.hands=edge(.34-.22*ss(p),-.04+.1*ss(p))}
   else{const p=seg(t,RT.lock,RT.b3);o.hands=edge(.12,.06);o.hands[0].t=lerp3(o.hands[0].t,V(-hw*.3,ty+G.th/2/sz-.03,.1),ss(p/.4)*(1-ss((p-.7)/.3)))}}
  return{x,yy,o,walk,mode,al,rope,tile:null}}
+// B without a rope: the faulty tile comes down by hand and the new one goes up by hand
+function actBh(G,t,sz){const T=HT;if(t<T.bin||t>=T.end)return null;const eB=G.eB,wy=eB*1.36,o={psi:wy,expr:''},x0=G.xb,cs=G.cs,hw=G.tw/2/sz,hh=G.th/2/sz,
+ // on the bottom row the faulty tile can't go down under its own slot, so B steps aside to put it down (x1) and back
+ x1=G.bot?cl((G.xn+G.xd)/2,G.L0+.3*G.base,G.R0-.3*G.base):x0,dw=Math.sign(x1-x0)*1.36,
+ floorT=(xx,xc)=>V((xx-xc)/sz,(G.floor-G.fy)/sz,ZW+.05),slotT=V((G.sx-x0)/sz,(G.floor-G.cy-G.th*.06)/sz,ZW+.05),psiAt=(xx,xc)=>Math.atan2((xx-xc)/sz,ZW);let x=x0,walk=null,tile=null;
+ const hold=(tc,psi,sc,k,wt)=>{const cr=crF(tc.y)*k;o.psi=psi;o.crouch=cr;o.lean=k*(.1+1.15*cr);o.spread=.035*k;o.headPitch=cl((tc.y-.93+cr)*.9,-.5,.4)*k;o.expr='focus';o.hands=rpHands(tc,PI,sc,cr,hw,hh,wt,wt)},
+  carry=psi=>{const tc=add(carryAt(psi),V(0,-.012*Math.cos(2*(o.phi||0))*(o.lift||0),0));tile={c:tc,yaw:psi,s:cs};o.hands=rpHands(tc,psi,cs,0,hw,hh,1,1)},
+  // set a tile down on the floor at xx (k 0 = carried, 1 = on the floor), or pick it up (k from 1 to 0)
+  floorPut=(xx,xc,psi0,k)=>{const psi=angL(psi0,psiAt(xx,xc),ss(Math.min(1,k*2.5))),kq=ss((k-.25)/.75),tc=lerp3(carryAt(psi),floorT(xx,xc),kq),sc=cs+(1-cs)*kq,yaw=angL(psi,PI,kq),cr=crF(tc.y)*Math.min(1,kq*1.6);
+   o.psi=psi;o.crouch=cr;o.lean=kq*(.1+1.15*cr);o.spread=.035*kq;o.headPitch=cl((tc.y-.93+cr)*.9,-.5,.4)*kq;o.expr='focus';tile={c:tc,yaw,s:sc};o.hands=rpHands(tc,yaw,sc,cr,hw,hh,1,1)};
+ if(t<T.set){const E=1-Math.pow(1-seg(t,T.bin,T.set),1.7),g=gait(o,G.offB,x0,E,sz,1);x=g.x;walk=g.walk;o.lean=-.05;carry(wy)}
+ else if(t<T.put)floorPut(G.xn,x0,wy,seg(t,T.set,T.put));
+ else if(t<T.take){const p=seg(t,T.put,T.take);hold(slotT,angL(psiAt(G.xn,x0),psiAt(G.sx,x0),ss(p/.5)),1.04,1,ss((p-.3)/.7))}
+ else if(t<T.down){
+  if(!G.bot){const p=ss(seg(t,T.low,T.down)),tc=lerp3(slotT,floorT(G.xd,x0),p),sc=lerp(1.04,1,p);hold(tc,psiAt(G.sx,x0),sc,1,1);tile={c:tc,yaw:PI,s:sc}}
+  else{const m1=T.low+.35,m2=T.down-.45;
+   if(t<m1){const p=ss(seg(t,T.low,m1)),psi=angL(psiAt(G.sx,x0),dw,p),tc=lerp3(slotT,carryAt(psi),p),sc=lerp(1.04,cs,p),yaw=angL(PI,psi,p);o.psi=psi;o.expr='focus';tile={c:tc,yaw,s:sc};o.hands=rpHands(tc,yaw,sc,0,hw,hh,1,1)}
+   else if(t<m2){const g=gait(o,x0,x1,seg(t,m1,m2),sz,1);x=g.x;walk=g.walk;o.psi=dw;carry(dw)}
+   else{x=x1;floorPut(G.xd,x1,dw,seg(t,m2,T.down))}}}
+ else if(t<T.back){if(G.bot){const g=gait(o,x1,x0,seg(t,T.down,T.back),sz,1);x=g.x;walk=g.walk;o.psi=-dw}else{const p=seg(t,T.down,T.back);o.psi=angL(psiAt(G.xd,x0),psiAt(G.xn,x0),ss(p))}}
+ else if(t<T.lift){const p=seg(t,T.back,T.lift);hold(floorT(G.xn,x0),psiAt(G.xn,x0),1,ss(p/.6),ss((p-.4)/.6))}
+ else if(t<T.pull){const p=ss(seg(t,T.lift,T.up)),tc=lerp3(floorT(G.xn,x0),slotT,p),sc=lerp(1,1.04,p);hold(tc,angL(psiAt(G.xn,x0),psiAt(G.sx,x0),p),sc,1,1);tile={c:tc,yaw:PI,s:sc}}
+ else if(t<T.pick){const p=seg(t,T.pull,T.lock);if(p<1)hold(slotT,psiAt(G.sx,x0),1.04,1-ss(p),1-ss(p/.5));else{o.psi=psiAt(G.sx,x0);o.headPitch=.2;o.expr='happy'}}
+ else{const wk=G.bot?.45:0,m=T.pick+wk;
+  if(t<m){const g=gait(o,x0,x1,seg(t,T.pick,m),sz,1);x=g.x;walk=g.walk;o.psi=dw}
+  else if(t<T.bout+wk){x=x1;floorPut(G.xd,x1,-wy,1-seg(t,m,T.bout+wk))}
+  else{const p=seg(t,T.bout+wk,T.end-.5),g=gait(o,x1,G.offB,Math.pow(p,1.5),sz,0);x=g.x;walk=g.walk;o.psi=-wy;carry(-wy);if(p>=1)return null}}
+ return{x,yy:G.floor,o,walk,mode:'floor',al:1,tile}}
 // B: on the floor, brings the new tile, swaps the rope over and takes the broken tile away
-function actB(G,t,sz){if(t<RT.bin||t>=RT.end)return null;const eB=G.eB,wy=eB*1.36,o={psi:wy,expr:''},x0=G.xb,cs=G.cs,hw=G.tw/2/sz,hh=G.th/2/sz,
+function actB(G,t,sz){if(G.hand)return actBh(G,t,sz);if(t<RT.bin||t>=RT.end)return null;const eB=G.eB,wy=eB*1.36,o={psi:wy,expr:''},x0=G.xb,cs=G.cs,hw=G.tw/2/sz,hh=G.th/2/sz,
  floorT=xx=>V((xx-x0)/sz,(G.floor-G.fy)/sz,ZW+.05),psiAt=xx=>Math.atan2((xx-x0)/sz,ZW);let x=x0,walk=null,tile=null;
  if(t<RT.set){const E=1-Math.pow(1-seg(t,RT.bin,RT.set),1.7),g=gait(o,G.offB,x0,E,sz,1);x=g.x;walk=g.walk;o.lean=-.05;const tc=add(carryAt(wy),V(0,-.012*Math.cos(2*o.phi)*o.lift,0));tile={c:tc,yaw:wy,s:cs};o.hands=rpHands(tc,wy,cs,0,hw,hh,1,1)}
  else if(t<RT.hook){const p=seg(t,RT.set,RT.hook),pw=psiAt(G.xn),psi=angL(wy,pw,ss(p/.4)),kq=ss((p-.25)/.75),tc=lerp3(carryAt(psi),floorT(G.xn),kq),sc=cs+(1-cs)*kq,yaw=angL(psi,PI,kq),cr=crF(tc.y)*Math.min(1,kq*1.6);
@@ -1960,6 +1997,13 @@ function actB(G,t,sz){if(t<RT.bin||t>=RT.end)return null;const eB=G.eB,wy=eB*1.3
 function repScene(w,R,H,style){const G=repGeo(w,R.key,H);if(!G)return null;const C=crew.length,t=R.t,mk=(j,f)=>{const ix=C?j%C:0,m=C?crew[ix]:['','#e0ac69',null,'#2b1d14'],bd=bdOf(ix),
   sz=G.base*(style=='Hand-drawn'?RBM[rbOf(ix)].h:style=='Backlit'?bd.h:1),a=f(G,t,sz);if(!a)return null;a.o.bd=bd;a.o.ix=ix;return Object.assign(a,{ix,m,bd,sz,tw:G.tw,th:G.th})};
  const A=mk(R.a,actA),B=mk(R.b,actB),tiles=[],sw=(a,b)=>Math.sin(t*3.2)*.18*Math.sin(PI*cl(a,0,1))*(b||1);let hook=null;
+ R.hand=G.hand;
+ if(G.hand){const T=HT;
+  if(t>=T.pop&&t<T.take){const p=ss(seg(t,T.pop,T.out));tiles.push({x:G.sx,y:G.cy+G.th*.06*p,s:1+.04*p,yaw:PI})}
+  if(t>=T.down&&t<T.pick+(G.bot?.45:0))tiles.push({x:G.xd,y:G.fy,s:1,yaw:PI});
+  if(t>=T.put&&t<T.lift)tiles.push({x:G.xn,y:G.fy,s:1,yaw:PI});
+  if(t>=T.pull&&t<T.b3){const p=ss(seg(t,T.pull,T.lock));tiles.push({x:G.sx,y:G.cy+G.th*.06*(1-p),s:1+.04*(1-p),yaw:PI,slot:true})}
+  return{G,A,B,tiles,hook:null,hole:t>=T.pop&&t<T.b3,bhook:false}}
  // the broken tile: pops out of the slot, goes down on the rope, waits on the floor until B picks it up
  if(t>=RT.pop&&t<RT.pick){const p=seg(t,RT.pop,RT.low),q=seg(t,RT.low,RT.set),e=ss(q),y=lerp(G.cy+G.th*.06*ss(p),G.fy,e);tiles.push({x:G.sx,y,s:1+.04*ss(p)*(1-e),yaw:PI+sw(q)});if(t<RT.swap)hook=[G.sx,y-G.th/2]}
  // the new tile: set down by B, then up on the rope and back into the slot (drawn as a tile until it is locked)
@@ -1973,7 +2017,7 @@ function drawActor(c,a,style){const o=Object.assign({},a.o);let M=null;
  if(M){c.fillStyle='rgba(20,14,40,.4)';c.beginPath();c.ellipse(a.x,a.yy+a.sz*.004,a.sz*.17,a.sz*.016,0,0,TAU);c.fill();const r=rbPose(M,J,a.x,a.yy,a.sz,a.m,tl,a.walk);c.drawImage(RK.cv,0,0,r.RW,r.RH,r.bx,r.by,r.cw,r.ch)}
  else drawBacklit(c,J,a.x,a.yy,a.sz,a.m,tl);
  return J}
-return{draw,want,crewNote,solve,RT,repScene,drawActor,drawTile2,_rk:()=>RK,_lib:()=>LIB}})();
+return{draw,want,crewNote,solve,RT,rtOf,repScene,drawActor,drawTile2,_rk:()=>RK,_lib:()=>LIB}})();
 // ---------- Tile faults: simulate real LED tile failures on chosen or random tiles (Animation Options › Tile faults), and
 // Fix glitch, where two technicians swap the faulty tile for a working one. Faulty tiles are kept per wall in glk as
 // [tile key, own fault for Random mix]; a repaired tile stays fixed until the faults are turned off and on again.
@@ -1987,7 +2031,7 @@ function glChain(w,wi,p,kind){const out=new Set([p.key]);
  if(pdOn()){const ci=(powerPlan()[wi]||[]).find(c=>c.tiles.some(e=>elKey(e)==p.key));if(ci){ci.tiles.forEach(e=>out.add(elKey(e)));return out}}
  pieces(w).list.forEach(q=>{if(q.c==p.c)out.add(q.key)});return out}
 // draws the faults over the wall's picture (they are part of what the LED wall shows, so they go to every output)
-function glDraw(c,w,wi,inst,ox,oy){const L=glList(w),R=REP.get(w),hole=!!R&&R.t>=CX.RT.pop&&R.t<CX.RT.b3;if(!L.length&&!hole)return;const dark=new Set,Tq=T;c.save();
+function glDraw(c,w,wi,inst,ox,oy){const L=glList(w),R=REP.get(w),hole=!!R&&R.t>=CX.rtOf(R).pop&&R.t<CX.rtOf(R).b3;if(!L.length&&!hole)return;const dark=new Set,Tq=T;c.save();
  L.forEach(f=>{if(f.t==4||f.t==11)glChain(w,wi,f.p,f.t==4?'data':'power').forEach(k=>dark.add(k))});
  const blk=(x,y,a,b)=>{c.fillStyle='#000';c.fillRect(x,y,a,b)};
  pieces(w).list.forEach(p=>{if(dark.has(p.key)&&inst.has(p.key))blk(ox+p.x,oy+p.y,p.w,p.h)});
@@ -2029,8 +2073,8 @@ function glFix(){if(!S.glOn)return;let any=false,busy=false;eachCv(()=>{if(!allD
  glEdit=false;eachCv(()=>walls.forEach((w,wi)=>{if(REP.has(w))return;const L=glList(w).sort((a,b)=>a.p.b-b.p.b);if(!L.length)return;any=true;const k=crewNext+wi*2;REP.set(w,{q:L.map(f=>f.p.key),i:0,key:L[0].p.key,t:0,a:k,b:k+1,sc:null});crewNext+=2}));
  if(any)forceRen=true}
 function glStep(dt){let fin=false;walls.forEach((w,wi)=>{const R=REP.get(w);if(!R)return;R.t+=dt*S.speed;
- if(!R.fixed&&R.t>=CX.RT.b3){R.fixed=true;glFixed(w).add(R.key);const p=pieces(w).by.get(R.key),sm=sims[wi];if(p&&sm)sm.sp.push({t:0,i:p.b})}
- if(R.t<CX.RT.end)return;const L=new Set(glList(w).map(f=>f.p.key)),nx=R.q.slice(R.i+1).find(k=>L.has(k));
+ if(!R.fixed&&R.t>=CX.rtOf(R).b3){R.fixed=true;glFixed(w).add(R.key);const p=pieces(w).by.get(R.key),sm=sims[wi];if(p&&sm)sm.sp.push({t:0,i:p.b})}
+ if(R.t<CX.rtOf(R).end)return;const L=new Set(glList(w).map(f=>f.p.key)),nx=R.q.slice(R.i+1).find(k=>L.has(k));
  if(nx){R.i=R.q.indexOf(nx);R.key=nx;R.t=0;R.fixed=false;R.a+=2;R.b+=2}else{REP.delete(w);fin=true}});
  // when the last tile is fixed the faults switch off; turning them on again brings the same faults back
  if(fin){let left=false;eachCv(()=>{if(walls.some(w=>REP.has(w)||glList(w).length))left=true});if(!left){S.glOn=false;glReset();setTimeout(()=>{sync();saveSoon()},0)}}}
