@@ -506,6 +506,17 @@ of the walls uses Manual power wiring. Labels show "1-3a", "1-3b" and "2fer on 1
 add "<distro> phase C" to the cable line and print in the phase colour (A #222222, B #f59e0b, C #2563c9) with
 "PHASE C · <wall>" as the flag text. Top bar "Phase" (shown while distros exist) toggles phaseView.
 
+**Rigging** (submenu Engineering > Rigging; S.rigOn, default off): hang method = per-wall bmode ('Ground stack' | 'Flown from
+motors' | 'Flown from truss'; the LED build treats both flown modes the same). Per wall: rbw (bumper width in tiles 1-4, default
+2), rbkg (9), rpts (pickups per bumper 1-2, default 2), rwll (hoist rating kg, 500), tsec (truss lengths owned, "1, 2, 3"), tkgm
+(truss kg/m, 8), thn (hoists on the truss, 3), tex (extra truss each side m, 0.5), rgbw (ground base width, 2), rgkg (14). S.rparts
+= {{tile model: [[part, qty, per (tile | column | row | wall | hoist point), kg each]]}}. rigCalc(w): bumpers = ceil(cols / rbw);
+motors: hoist points = bumpers x rpts; truss: span = wall width + 2 x tex from the longest sections that fit, hoists = thn,
+slings and shackles per pickup; ground: bases = ceil(cols / rgbw). Parts counted ceil(qty x count); per hoist point parts are
+skipped on a ground stack. Rows: hang method, bumpers/bases, truss, hoists, load per pickup, rigging weight, total weight,
+load per hoist (total / hoists) with a warning over rwll, and "Planning figures only". The pull sheet gets a Rigging
+department (parts per tile get the tile spare %).
+
 **Show binder** (submenu Engineering > Show binder; top bar "Export binder" = exportPDF(true)): S.bShow, S.bVenue, S.bDate
 (text), S.spT (spare tiles %, 0-100, default 5), S.spC (spare cables per length, 0-20, default 1). The binder PDF is: cover
 (show name, venue, load-in, walls and tile counts, processor, power, page count), contents (section -> first page, filled in
