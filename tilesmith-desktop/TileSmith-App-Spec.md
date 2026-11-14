@@ -1,6 +1,6 @@
-# TileSmith 3.5 - app specification for building a clone
+# TileSmith 3.6 - app specification for building a clone
 
-Generated 2026-10-28 from TileSmith v3.5 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-11-14 from TileSmith v3.6 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -17,7 +17,7 @@ TileSmith is a pixel-mapping and test-pattern tool for LED video walls, used by 
   planned automatically or by hand and are drawn on the canvas.
 - An animated **technician** builds each wall tile by tile, for live display or video.
 - The canvas is sent live as an **NDI®** video source, shared with other programs on the same computer through
-  **Spout** (Windows) or **Syphon** (Mac), and can be recorded to video, exported as PNG, a PDF (full raster, spec sheet and cable labels) or
+  **Spout** (Windows) or **Syphon** (Mac), and can be recorded to video, exported as PNG, layered SVG or PSD, a PDF (full raster, spec sheet and cable labels) or
   a Resolume Arena Advanced Output preset.
 
 Everything runs offline in one HTML page (vanilla JS + Canvas 2D). The desktop build wraps it in Electron and adds
@@ -39,7 +39,7 @@ Mac (Syphon.framework via node-syphon) and video export (via ffmpeg). All settin
 
 Desktop: three columns. Left panel (settings, 350 px), centre (top bar + viewport), right panel (engineering, 310 px).
 Below 900 px wide the columns stack. Colours: dark UI (`--bg`, `--pn` panel, `--ac` teal accent #22a0ac-ish, `--am`
-amber for the version). Header: "TileSmith v3.5" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
+amber for the version). Header: "TileSmith v3.6" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
 
 ### 3.1 Left panel sections and submenus (in order)
 
@@ -58,13 +58,20 @@ the selected wall.
 - **Engineering**
   - LED processor
     - Data wiring
+  - Cabinet IDs
   - Power
+    - Distros
     - Power wiring
+  - Cable lengths
+  - Rigging
+  - Locations
+  - Show binder
 - **Animation Options**
   - Test pattern
   - DVD screensaver
   - LED build
-    - Technician
+  - Tile faults
+  - Technicians
   - Video export
 - **Output options**
   - NDI® options
@@ -82,8 +89,8 @@ Visibility rules:
 
 ### 3.2 Top bar
 
-Buttons: **New Project**, **Save**, **Open**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Data**, **Power**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**, **ⓘ Info**, **Report a bug / feedback**, **Hide Engineering Data**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
-moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Start NDI®" toggles NDI; while
+Buttons: **New Project**, **Save**, **Open**, **Undo ▾**, **Show entire canvas**, **Center canvas**, **Data**, **Power**, **Phase**, **Next pattern**, **Start NDI®**, **Start Spout / Syphon**, **Export PNG**, **Export PDF**, **Export binder**, **Export layers ▾**, **Resolume XML ▾**, **Start LED Build**, **Start DVD Screensaver**, **Start Tile Faults**, **ⓘ Info**, **Report a bug / feedback**, **Hide Engineering Data**. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
+moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Export layers ▾" is a drop-down (Layered SVG… / Layered PSD…). "Start NDI®" toggles NDI; while
 live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout" (Windows) or "Start Syphon" (Mac)
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
 desktop build made without the Spout/Syphon files. Short messages (NDI started/stopped/errors, Resolume saved, Next
@@ -151,6 +158,12 @@ goes to the output.
 
 Collapsible "Entire canvas" section then one section per wall, as two-column tables (label, value). Rows in section 9.
 
+### 3.5 Language
+The UI is written in English. TR maps each English text to [Español, Português (Brasil)]; tr() looks texts up with
+whitespace collapsed and trAll() translates the page's text (elements marked data-notr are skipped).
+Info > Preferences > Language (select[data-lang]) picks English, Español or Português (Brasil); the choice is kept in
+localStorage "tilesmith-lang", and the first launch follows navigator.language.
+
 ## 4. Data model and saved settings
 
 Global settings live in one object `S`. Per-wall settings (keys marked "per wall") are copied between `S` and the
@@ -199,7 +212,7 @@ dialog) deletes the state and reloads.
 | `ull` | false | Brompton Ultra Low Latency (halves port capacity). |
 | `ppx` | 0 | Pixels per port in use (from spec, editable). |
 | `pports` | 1 | Ports per processor / sending card (editable). |
-| `ret` | true | Count a return port (R#) for every primary port. |
+| `ret` | true | Old global Return lines switch (no UI now); only seeds wred for walls in old projects. |
 | `showData` | true | Draw data paths on the canvas. |
 | `pdist` | false | Power distribution ticked. Gates all power features. |
 | `pvolt` | 120 | Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V. |
@@ -234,10 +247,55 @@ dialog) deletes the state and reloads.
 | `lblSkip` | 1 | First label position to use on a sheet (skips used labels). |
 | `hat` | #ffcc00 | Technician hard hat colour. |
 | `vest` | #b6ff00 | Technician vest colour. |
-| `tstyle` | Classic | Technician character style: Classic, Hand-drawn or Backlit. |
+| `tstyle` | Classic | Technician character style: Classic \| Hand-drawn (Rocketbox workers rendered with three.js and an ink shader; files in app/crew, loaded only when picked; Classic is drawn without WebGL) \| Backlit (dark Canvas 2D figure with a rim of wall light and reflective tape). |
 | `logo` | TILESMITH | Vest logo text. |
 | `cd` | true | Show crew details editor and name tags. |
 | `play` | true | Build animation playing (not saved). |
+| `bShow` |  | Export binder / pull sheet: show name, printed on every page title and used in the file name. |
+| `bVenue` |  | Export binder: venue, printed under the title. |
+| `bDate` |  | Export binder: load-in date (free text), printed under the title. |
+| `spT` | 5 | Pull sheet spares: extra tiles as % of the tiles in use (0-100, rounded up). |
+| `spC` | 1 | Pull sheet spares: extra cables per cable length (0-20). |
+| `cidFmt` | Processor : port : tile (1:P2:07) | Cabinet ID style: "Processor : port : tile (1:P2:07)" or "Port - tile (P12-07, as on the cable labels)". |
+| `cidStk` | false | Cabinet ID sheet: add one sticker per tile on the label sheet. |
+| `cabOn` | false | Engineering > Cable lengths ticked: work out every data and power run and list the cables to take (needs a processor or power distribution). |
+| `cunit` | m | Cable length units: m \| ft. Changing it converts the distances, limits and owned lengths. |
+| `cslack` | 10 | Slack added to every run in % (0-100). |
+| `clenD` | 1, 3, 5, 10, 15, 20, 30, 50 | Data cable lengths you own, comma separated, in cunit. |
+| `clenP` | 1, 3, 5, 10, 15, 25 | Power cable lengths you own, comma separated, in cunit. |
+| `fibLim` | 90 | Copper limit in cunit (default 90 m / 295 ft); Auto walls with a longer data run go over fibre. |
+| `fibBox` | 10 | Ports per fibre breakout box at the wall: 4 \| 10 \| 16. |
+| `fibNat` | false | Processor has fibre outputs, so no converter is needed at the processor. |
+| `fibTr` | opticalCON QUAD | Fibre trunk type: opticalCON DUO (1 breakout box per trunk) \| opticalCON QUAD (2 boxes per trunk). |
+| `fibLen` | 50, 100, 150, 300 | Fibre trunk lengths you own, comma separated, in cunit. |
+| `fibTail` | 1, 3, 5, 10 | Copper tail lengths you own (breakout box to the first tile), comma separated, in cunit. |
+| `lyrFmt` | svg | Export layers format last used: svg \| psd. |
+| `lyrOff` | [] | Layers unticked in the Export layers dialog (bg, pat, grid, lab, data, pow). |
+| `lyrGrp` | A | Export layers grouping: A by kind (default) \| B folder per wall \| C folder per kind with a layer per wall. |
+| `zones` | [] | Zones: [{id, name, c (colour)}] in pull sheet order, at most 20 (see Zones). |
+| `zHide` | [] | Zone ids whose walls are hidden in the viewport only. |
+| `zProc` | 0 | Zone of the processor (0 = no zone). |
+| `pf` | 1 | Power factor 0.5-1 (default 1). Usable watts per circuit = V x A x (0.8) x PF; amps everywhere = W / (V x PF). |
+| `pload` | Max (spec) | Design load for distro and leg totals: Max (spec) \| Typical (% of max) \| Measured (W per tile). Circuits are always checked at max. |
+| `ptyp` | 40 | Typical design load in % of each tile's max watts (1-100, default 40). |
+| `pmeas` | 0 | Measured design load in watts per tile (0-5000; 0 = use max; never above a tile's max). |
+| `dists` | [] | Distros: [{id, name, sys (120/208 V 3-phase wye \| 127/220 V 3-phase wye \| 230/400 V 3-phase wye \| 120/240 V split phase \| Single phase), amps per leg, soca, l2130, l1430, edison (output counts), map (Socapex leg map, default ABCABC)}], at most 12. |
+| `pcab` | {} | Power patch: "canvas index:cable number" -> {d: distro id ('' = left unpatched on purpose), o: output key (soca1, l21302, edison3 ...), r: leg rotation 0-2}. |
+| `pshare` | [] | Shared circuits (2fer / 3fer): [canvas index, [wall, run], [wall, run](, [wall, run])]. |
+| `autoBal` | false | Rebalance every distro after every wiring change. |
+| `phaseView` | true | Colour power runs by phase (A white, B amber, C blue) and label them "1-1 A" when distros exist. |
+| `trayOpen` | true | Power tray under the viewport expanded. |
+| `gOn` | false | Limit the plan to the gear on hand (gProc, gTr, gBox): walls step down from their method, in priority order, with the reason shown. |
+| `gProc` | 2 | Processors on hand (0-50). |
+| `gTr` | 2 | Fibre trunks on hand (0-50). |
+| `gBox` | 2 | Fibre breakout boxes on hand (0-50). |
+| `rlink` | true | Backup processors need a link / sync cable (added to the pull sheet and drawn in the signal path). |
+| `rigOn` | false | Engineering > Rigging ticked: work out bumpers, truss, ground bases and hoist loads for every wall and add them to the pull sheet. Loads assume the weight is shared evenly (planning figures only). |
+| `rparts` | {} | Rigging parts rules per tile model: {model: [[name, qty, per (tile \| column \| row \| wall \| hoist point), kg]]}, at most 40 rows each. |
+| `glOn` | false | Tile faults running (Start tile faults): the faulty tiles show their fault on the canvas until Fix glitch sends a technician to swap them. |
+| `glType` | Dead tile | Fault shown: one of the 12 fault types (Dead tile, Flicker, Colour channel out, Stuck pixels, Data chain break, Module out, Scrambled tile, Frozen tile, Calibration mismatch, Scan line fault, Noise and sparkle, Power circuit tripped) or Random mix (each tile its own fault). |
+| `glPick` | Tiles I pick | Faulty tiles: Tiles I pick (click tiles in the viewport) \| Random. |
+| `glN` | 3 | How many random faulty tiles (1-200). |
 | `font` | JetBrains Mono | UI font: JetBrains Mono (default), OpenDyslexic, or Current (the original Barlow-based stack). Set from Preferences in the Info popup; applies to the app chrome via --font-ui, not to canvas-drawn text. |
 | `hideEng` | false | Hide the Engineering data panel entirely. Toggled from the Hide / Show Engineering Data button in the top bar (desktop only). |
 
@@ -275,9 +333,8 @@ dialog) deletes the state and reloads.
 | `boxText` |  | Centre box text. |
 | `boxCol` | #ffffff | Centre box text colour. |
 | `boxImg` | null | Centre box logo image. |
-| `corner` | Top-left | Build start corner (LED build › Start corner): Top-left \| Top-right \| Bottom-left \| Bottom-right. |
-| `dir` | Horizontal | Build direction: Horizontal (row by row) \| Vertical (column by column). Ignored when flown. |
-| `bmode` | Ground stack | Build mode: Ground stack \| Flown from motors (top row first; each row hung at floor level, then the wall is raised a row). |
+| `corner` | Top-left | Build start corner (Tech starts at): Top-left \| Top-right \| Bottom-left \| Bottom-right. |
+| `dir` | Horizontal | Tile placement order: Horizontal (row at a time) \| Vertical. |
 | `wmode` | None | Data wiring pattern: None \| Snake \| Linear \| Manual. |
 | `wcorner` | Top-left | Data wiring start corner. |
 | `wdir` | Horizontal | Data wiring direction: Horizontal \| Vertical. |
@@ -289,6 +346,25 @@ dialog) deletes the state and reloads.
 | `pfill` | Fewest circuits | Power wiring preference (UI label "Wiring preference"): Fewest circuits \| Whole rows or columns \| One continuous path \| Horizontal \| Vertical (see Power). |
 | `plink` | 0 | Power link limit: max tiles per circuit (0 = none). |
 | `pman` | [] | Manual power chains (same format as wman). |
+| `bmode` | Ground stack | Wall key: how the wall goes up and how it is rigged: Ground stack (from the floor up) \| Flown from motors (bumpers on hoists, top row first) \| Flown from truss (bumpers on slings from a truss). |
+| `cdD` | 25 | Wall key: distance from the processor to the wall, in cunit (0-3000). |
+| `cdP` | 15 | Wall key: distance from the distro to the wall, in cunit (0-3000). |
+| `cin` | Bottom left | Wall key: where the cables arrive at the wall: Bottom left \| Bottom centre \| Bottom right \| Top left \| Top centre \| Top right. Each run = distance + climb along the wall to its first tile (no diagonals) + cslack, rounded up to a length you own. |
+| `wfib` | Auto | Wall key: data to this wall: Auto (fibre when the longest copper data run is over fibLim) \| Fibre \| Copper. |
+| `zone` | 0 | Wall key: the wall's zone id (0 = no zone). |
+| `wred` | Loop | Wall key: redundancy for this wall: Full (backup processor, own route) \| Backup processor (same port numbers) \| Loop (spare ports, same processor) \| Spare processor (on the truck) \| None. Old projects get Loop, or None when ret was off. |
+| `wpri` | 1 | Wall key: redundancy priority (1-99, 1 = covered first when gear is short). |
+| `rbw` | 2 | Wall key: bumper width in tiles (1-4). |
+| `rbkg` | 9 | Wall key: weight of one bumper in kg (0-500). |
+| `rpts` | 2 | Wall key: pickups per bumper (1 or 2). |
+| `rwll` | 500 | Wall key: hoist rating in kg (1-20000); hoist points over it are flagged. |
+| `tsec` | 1, 2, 3 | Wall key: truss section lengths owned in m, comma separated; the truss (wall width + tex each side) is made from the largest that fit first. |
+| `tkgm` | 8 | Wall key: truss weight in kg per m (0-200). |
+| `thn` | 3 | Wall key: hoists on the truss (1-50). |
+| `tex` | 0.5 | Wall key: extra truss each side of the wall in m (0-20). |
+| `rgbw` | 2 | Wall key: ground base width in tiles (1-4), for Ground stack. |
+| `rgkg` | 14 | Wall key: weight of one ground base in kg (0-500). |
+| `glk` | [] | Wall key: faulty tiles of the wall: [[tile key, fault index]]. |
 
 New wall ("Add wall"): copy of the selected wall's settings but 4x3, build from top-left horizontal, pattern = first of
 ['tileshade', 'SMPTEbars', 'sweep', 'circles', 'rgbramp', 'ramp'] not used yet, tile-shade colour from ['#3f8080', '#448040', '#7a4a9e', '#9e5a3a', '#3a5a9e', '#8a7a2a'] by index, name "Wall N". It is placed to the right of the
@@ -301,8 +377,14 @@ Quick sizes: 4x3, 6x4, 8x5, 10x6, 16x9.
 ## 5. Tile models (presets)
 
 Picking a preset fills tw, th, wmm, hmm, pitch, kg, wmax, dmm. Editing any of those switches the preset to "Custom".
-Density = 1e6 / (pitch^2) px/m^2; Typical power = 40% of max. The list is grouped by manufacturer (Absen, Unilumin,
-INFiLED, YES TECH; Custom last); ROE is split into one group per series (ROE Amber, ROE Black Marble, ... ROE Vanish Acoustics) in the order of the ROES array. YES TECH max watts = the higher W/m^2 figure on the spec sheet x cabinet area, rounded
+Density = 1e6 / (pitch^2) px/m^2; Typical power = 40% of max. Brand menu (PBR): ROE, Absen, Unilumin, INFiLED, AOTO,
+Gloshine, YES TECH, Owl Vision, Custom. The Model menu shows only the picked brand; models listed in TSER (key -> series name)
+sit in one optgroup per series, the rest come first ungrouped. "Find a tile" (#tFind, input type=search with datalist #tFindL)
+lists every preset and own tile with "series · pitch mm · W×H"; picking one exactly (change event, or a datalist pick in the
+input event) sets the preset, applies it, and clears the box; partial text does nothing. Catalog round 1 (2026-11-14) added
+209 models (INFiLED 167, Gloshine 17, AOTO 14, Absen 11) from the makers' own spec pages / sheets; each has PINFO.src (from
+TSRC) shown as a "Source" row in Engineering > LED Tiles and the PDF; where a sheet gives only W/m^2, max W = W/m^2 x panel area.
+INFiLED depth comes from each series brochure. The list is grouped by manufacturer (Custom last); ROE is split into one group per series (ROE Amber, ROE Black Marble, ... ROE Vanish Acoustics) in the order of the ROES array. YES TECH max watts = the higher W/m^2 figure on the spec sheet x cabinet area, rounded
 up. ROE figures come from the cabinet pages on roevisual.com (per panel, as printed). 23 ROE models have a half panel (HALF table, 'h' = two halves stacked make the full tile).
 
 | Preset | W mm | H mm | px W | px H | Pitch mm | kg | Max W | Depth mm |
@@ -479,6 +561,23 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | Absen A27 1.4 (A2714) | 610 | 343 | 416 | 234 | 1.46 | 8.5 | 97 | 61 |
 | Absen A27 1.2 (A2712) | 610 | 343 | 480 | 270 | 1.27 | 8.5 | 97 | 61 |
 | Absen KL3 | 640 | 480 | 208 | 156 | 3.07 | 7.8 | 166 | 60 |
+| Absen Saturn SA2.6 | 500 | 500 | 192 | 192 | 2.6 | 5.5 | 128 | 70 |
+| Absen Saturn SA2.6 1000×500 | 1000 | 500 | 384 | 192 | 2.6 | 9.5 | 255 | 70 |
+| Absen Saturn SA3.9 | 500 | 500 | 128 | 128 | 3.906 | 5.5 | 160 | 70 |
+| Absen Saturn SA3.9 1000×500 | 1000 | 500 | 256 | 128 | 3.906 | 9.5 | 320 | 70 |
+| Absen PR1.9 | 500 | 500 | 256 | 256 | 1.953 | 9.5 | 143 | 93 |
+| Absen PR2.5 | 500 | 500 | 200 | 200 | 2.5 | 9.5 | 150 | 93 |
+| Absen PR2.5 500×1000 | 500 | 1000 | 200 | 400 | 2.5 | 13.5 | 300 | 93 |
+| Absen PR3.9 | 500 | 500 | 128 | 128 | 3.906 | 9.5 | 150 | 93 |
+| Absen PR3.9 500×1000 | 500 | 1000 | 128 | 256 | 3.906 | 13.5 | 300 | 93 |
+| Absen PR5.2 | 500 | 500 | 96 | 96 | 5.208 | 9.5 | 145 | 93 |
+| Absen PR5.2 500×1000 | 500 | 1000 | 96 | 192 | 5.208 | 13.5 | 290 | 93 |
+| Absen Polaris PL1.9 Pro V10 | 500 | 500 | 256 | 256 | 1.953 | 9 | 180 | 88 |
+| Absen Polaris PL2.9 Lite | 500 | 500 | 168 | 168 | 2.97 | 7.6 | 135 | 87 |
+| Absen Polaris PL3.9 V10 | 500 | 500 | 128 | 128 | 3.906 | 7.7 | 135 | 88 |
+| Absen KL1.5 II | 640 | 360 | 416 | 234 | 1.53 | 6 | 106 | 65 |
+| Absen A27 1.5 (A2715 V3) | 610 | 343 | 384 | 216 | 1.58 | 5 | 113 | 44.5 |
+| Absen NX2.5 | 960 | 540 | 384 | 216 | 2.5 | 10.4 | 233 | 43.5 |
 | Unilumin UpadIV 1.9 | 500 | 500 | 256 | 256 | 1.953 | 6.3 | 120 | 70.1 |
 | Unilumin UpadIV 1.9 MIP | 500 | 500 | 256 | 256 | 1.953 | 6.3 | 80 | 70.1 |
 | Unilumin UpadIV 2.6 (8 scan) | 500 | 500 | 192 | 192 | 2.604 | 6.3 | 165 | 70.1 |
@@ -488,8 +587,8 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | INFiLED Deep Black DB1.9 Lite | 500 | 500 | 256 | 256 | 1.953 | 7.8 | 140 | 75.5 |
 | INFiLED Deep Black DB1.9 Pro | 500 | 500 | 256 | 256 | 1.953 | 7.8 | 140 | 75.5 |
 | INFiLED Deep Black DB2.3 Lite | 500 | 500 | 216 | 216 | 2.315 | 8.8 | 150 | 75.5 |
-| INFiLED Deep Black DB2.6 Lite | 500 | 500 | 192 | 192 | 2.604 | 7.8 | 140 | 75.5 |
-| INFiLED Deep Black DB2.6 Pro | 500 | 500 | 192 | 192 | 2.604 | 7.8 | 140 | 75.5 |
+| INFiLED Deep Black DB2.6 Lite | 500 | 500 | 192 | 192 | 2.604 | 8 | 150 | 75.5 |
+| INFiLED Deep Black DB2.6 Pro | 500 | 500 | 192 | 192 | 2.604 | 8 | 150 | 75.5 |
 | INFiLED Deep Black DB2.8 Lite | 500 | 500 | 176 | 176 | 2.84 | 7.8 | 140 | 75.5 |
 | INFiLED Deep Black DB3.4 Lite | 500 | 500 | 144 | 144 | 3.47 | 7.8 | 140 | 75.5 |
 | INFiLED Deep Black DB3.4 Pro | 500 | 500 | 144 | 144 | 3.47 | 7.8 | 140 | 75.5 |
@@ -504,6 +603,215 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | Owl Vision Black Owl 3.9 500×1000 | 500 | 1000 | 128 | 256 | 3.906 | 14 | 360 | 74 |
 | Owl Vision Black Owl 3.9 | 500 | 500 | 128 | 128 | 3.906 | 8.7 | 180 | 74 |
 | Owl Vision Pilot 2.6 | 500 | 500 | 192 | 192 | 2.604 | 7.4 | 50 | 71 |
+| INFiLED GX1.9 mk2 mini | 500 | 500 | 256 | 256 | 1.95 | 8.09 | 130 | 75.2 |
+| INFiLED GX1.9 mk2 | 500 | 1000 | 256 | 512 | 1.95 | 13.98 | 260 | 75.2 |
+| INFiLED GX2.5 mk2 | 500 | 1000 | 200 | 400 | 2.5 | 14.2 | 300 | 75.2 |
+| INFiLED GX2.5 mk2 mini | 500 | 500 | 200 | 200 | 2.5 | 8.2 | 150 | 75.2 |
+| INFiLED GX2.9 mk2 | 500 | 1000 | 168 | 336 | 2.97 | 14.06 | 300 | 75.2 |
+| INFiLED GX2.9 mk2 mini | 500 | 500 | 168 | 168 | 2.97 | 8.12 | 150 | 75.2 |
+| INFiLED GX3.9 mk2 | 500 | 1000 | 128 | 256 | 3.91 | 13.97 | 300 | 75.2 |
+| INFiLED GX3.9 mk2 mini | 500 | 500 | 128 | 128 | 3.91 | 8.08 | 150 | 75.2 |
+| INFiLED GX3.9 mk2 outdoor | 500 | 1000 | 128 | 256 | 3.91 | 13.12 | 340 | 75.2 |
+| INFiLED GX3.9 mk2 mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 7.66 | 170 | 75.2 |
+| INFiLED GX4.8 mk2 mini | 500 | 500 | 104 | 104 | 4.81 | 8.08 | 150 | 75.2 |
+| INFiLED GX4.6 mk2 mini outdoor | 500 | 500 | 108 | 108 | 4.63 | 7.92 | 170 | 75.2 |
+| INFiLED GX4.6 mk2 outdoor | 500 | 1000 | 108 | 216 | 4.63 | 13.75 | 340 | 75.2 |
+| INFiLED GX4.8 mk2 | 500 | 1000 | 104 | 208 | 4.81 | 13.97 | 300 | 75.2 |
+| INFiLED GX5.9 mk2 outdoor | 500 | 1000 | 84 | 168 | 5.95 | 13.23 | 340 | 75.2 |
+| INFiLED GX5.9 mk2 mini outdoor | 500 | 500 | 84 | 84 | 5.95 | 7.72 | 170 | 75.2 |
+| INFiLED GX6.9 mk2 outdoor | 500 | 1000 | 72 | 144 | 6.94 | 13.2 | 340 | 75.2 |
+| INFiLED GX6.9 mk2 mini outdoor | 500 | 500 | 72 | 72 | 6.94 | 7.7 | 170 | 75.2 |
+| INFiLED BWAMT3.9 outdoor | 1000 | 1000 | 256 | 256 | 3.91 | 29 | 660 | 110 |
+| INFiLED BWAMT4.6 outdoor | 1000 | 1000 | 216 | 216 | 4.63 | 29 | 660 | 110 |
+| INFiLED BWAMT7.8 outdoor | 1000 | 1000 | 128 | 128 | 7.81 | 26.3 | 660 | 110 |
+| INFiLED EZ1.95mk2 Lite | 500 | 500 | 256 | 256 | 1.95 | 5.9 | 150 | 75.5 |
+| INFiLED EZ1.56MT2mk2 SSG Ultra | 500 | 500 | 320 | 320 | 1.56 | 6.5 | 125 | 75.5 |
+| INFiLED EZ2.6mk2 | 500 | 500 | 192 | 192 | 2.6 | 5.9 | 150 | 75.5 |
+| INFiLED EZ2.6mk2 Lite | 500 | 500 | 192 | 192 | 2.6 | 5.9 | 150 | 75.5 |
+| INFiLED RS2.5 Ultra | 500 | 1000 | 200 | 400 | 2.5 | 9.45 | 270 | 81 |
+| INFiLED RS2.5 Ultra mini | 500 | 500 | 200 | 200 | 2.5 | 6.1 | 135 | 81 |
+| INFiLED RS2.5 Lite | 500 | 1000 | 200 | 400 | 2.5 | 9.2 | 270 | 81 |
+| INFiLED RS2.5 Lite mini | 500 | 500 | 200 | 200 | 2.5 | 6.1 | 135 | 81 |
+| INFiLED RS2.6 Ultra | 500 | 1000 | 192 | 384 | 2.6 | 9.45 | 270 | 81 |
+| INFiLED RS2.6 Ultra mini | 500 | 500 | 192 | 192 | 2.6 | 6.1 | 135 | 81 |
+| INFiLED RS2.9 Lite | 500 | 1000 | 168 | 336 | 2.97 | 9.2 | 270 | 81 |
+| INFiLED RS2.9 Lite mini | 500 | 500 | 168 | 168 | 2.97 | 6.1 | 135 | 81 |
+| INFiLED RS3.91 Lite outdoor | 500 | 1000 | 128 | 256 | 3.91 | 8.7 | 300 | 81 |
+| INFiLED RS3.91 Lite mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 5.9 | 150 | 81 |
+| INFiLED RS3.91 Turbo outdoor | 500 | 1000 | 128 | 256 | 3.91 | 8.7 | 300 | 81 |
+| INFiLED RS3.91 Turbo mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 5.9 | 150 | 81 |
+| INFiLED RS4.81 Lite outdoor | 500 | 1000 | 104 | 208 | 4.81 | 8.7 | 300 | 81 |
+| INFiLED RS4.81 Lite mini outdoor | 500 | 500 | 104 | 104 | 4.81 | 5.9 | 150 | 81 |
+| INFiLED RS6.94 Lite outdoor | 500 | 1000 | 72 | 144 | 6.94 | 8.7 | 300 | 81 |
+| INFiLED RS6.94 Lite mini outdoor | 500 | 500 | 72 | 72 | 6.94 | 5.9 | 150 | 81 |
+| INFiLED X1.56M2mk3 Ultra | 500 | 500 | 320 | 320 | 1.56 | 7.7 | 150 | 96.5 |
+| INFiLED X1.95M2mk3 | 500 | 500 | 256 | 256 | 1.95 | 7.7 | 150 | 96.5 |
+| INFiLED X1.95M2mk3 Ultra | 500 | 500 | 256 | 256 | 1.95 | 7.7 | 150 | 96.5 |
+| INFiLED X1.95mk3 Lite | 500 | 500 | 256 | 256 | 1.95 | 7.7 | 165 | 96.5 |
+| INFiLED X2.6M2mk3 Ultra | 500 | 500 | 192 | 192 | 2.6 | 7.7 | 150 | 96.5 |
+| INFiLED X2.6mk3 Pro | 500 | 500 | 192 | 192 | 2.6 | 7.7 | 150 | 96.5 |
+| INFiLED X3.9mk3 Lite | 500 | 500 | 128 | 128 | 3.9 | 7.6 | 150 | 96.5 |
+| INFiLED X3.9mk3 Turbo outdoor | 500 | 500 | 128 | 128 | 3.9 | 8.1 | 180 | 96.5 |
+| INFiLED TITAN X8 outdoor | 1200 | 1200 | 144 | 144 | 8.33 | 33 | 660 | 116 |
+| INFiLED AR2.9mk2 Lite mini outdoor | 500 | 500 | 168 | 168 | 2.97 | 8 | 180 | 82 |
+| INFiLED AR2.9mk2 Pro outdoor | 500 | 1000 | 168 | 336 | 2.97 | 13.5 | 360 | 82 |
+| INFiLED AR2.9mk2 Plus mini outdoor | 500 | 500 | 168 | 168 | 2.97 | 8 | 180 | 82 |
+| INFiLED AR2.9mk2 Plus outdoor | 500 | 1000 | 168 | 336 | 2.97 | 13.5 | 360 | 82 |
+| INFiLED AR2.9mk2 Pro mini outdoor | 500 | 500 | 168 | 168 | 2.97 | 8 | 180 | 82 |
+| INFiLED AR2.9mk2 Turbo outdoor | 500 | 1000 | 168 | 336 | 2.97 | 13.5 | 360 | 82 |
+| INFiLED AR2.9mk2 Turbo mini outdoor | 500 | 500 | 168 | 168 | 2.97 | 8 | 180 | 82 |
+| INFiLED AR2.9mk2 Lite outdoor | 500 | 1000 | 168 | 336 | 2.97 | 13.5 | 360 | 82 |
+| INFiLED AR2.9mk2 Pro mini | 500 | 500 | 168 | 168 | 2.97 | 8 | 180 | 82 |
+| INFiLED AR2.9mk2 Pro | 500 | 1000 | 168 | 336 | 2.97 | 12.5 | 360 | 82 |
+| INFiLED AR2.9mk2 Lite mini | 500 | 500 | 168 | 168 | 2.97 | 8 | 180 | 82 |
+| INFiLED AR2.9mk2 Lite | 500 | 1000 | 168 | 336 | 2.97 | 12.5 | 360 | 82 |
+| INFiLED AR3.9mk2 Ultra outdoor | 500 | 1000 | 128 | 256 | 3.91 | 12.5 | 360 | 82 |
+| INFiLED AR3.91mk2 Plus outdoor | 500 | 1000 | 128 | 256 | 3.91 | 12.5 | 360 | 82 |
+| INFiLED AR3.91mk2 Plus mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 8 | 180 | 82 |
+| INFiLED AR3.91mk2 Pro outdoor | 500 | 1000 | 128 | 256 | 3.91 | 12.5 | 360 | 82 |
+| INFiLED AR3.91mk2 Pro mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 8 | 180 | 82 |
+| INFiLED AR3.9mk2 Lite outdoor | 500 | 1000 | 128 | 256 | 3.91 | 12.5 | 360 | 82 |
+| INFiLED AR3.9mk2 Lite mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 8 | 180 | 82 |
+| INFiLED AR3.9mk2 Pro mini | 500 | 500 | 128 | 128 | 3.91 | 8 | 180 | 82 |
+| INFiLED AR3.9mk2 Pro | 500 | 1000 | 128 | 256 | 3.91 | 12.5 | 360 | 82 |
+| INFiLED AR3.9mk2 Lite mini | 500 | 500 | 128 | 128 | 3.91 | 8 | 180 | 82 |
+| INFiLED AR3.9mk2 Lite | 500 | 1000 | 128 | 256 | 3.91 | 12.5 | 360 | 82 |
+| INFiLED AR3.9mk2 Ultra mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 8 | 180 | 82 |
+| INFiLED AR3.9mk2 Turbo mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 8 | 180 | 82 |
+| INFiLED AR3.9mk2 Turbo outdoor | 500 | 1000 | 128 | 256 | 3.91 | 12.5 | 360 | 82 |
+| INFiLED AR4.8mk2 Pro mini | 500 | 500 | 104 | 104 | 4.81 | 8 | 180 | 82 |
+| INFiLED AR4.8mk2 Pro | 500 | 1000 | 104 | 208 | 4.81 | 12.5 | 360 | 82 |
+| INFiLED AR4.8mk2 Lite mini | 500 | 500 | 104 | 104 | 4.81 | 8 | 180 | 82 |
+| INFiLED AR4.8mk2 Lite | 500 | 1000 | 104 | 208 | 4.81 | 12.5 | 360 | 82 |
+| INFiLED ART3.9 mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 13 | 180 | 131 |
+| INFiLED ART3.9 CC outdoor | 500 | 1000 | 128 | 256 | 3.91 | 21 | 300 | 131 |
+| INFiLED ART3.9 CC mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 13 | 150 | 131 |
+| INFiLED ART3.9 Plus outdoor | 500 | 1000 | 128 | 256 | 3.91 | 21 | 360 | 131 |
+| INFiLED ART3.9 Plus mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 13 | 180 | 131 |
+| INFiLED ART3.9 outdoor | 500 | 1000 | 128 | 256 | 3.91 | 21 | 360 | 131 |
+| INFiLED ART3.9 Turbo mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 13 | 180 | 131 |
+| INFiLED ART3.9 Turbo outdoor | 500 | 1000 | 128 | 256 | 3.91 | 21 | 360 | 131 |
+| INFiLED ART4.6 Turbo mini outdoor | 500 | 500 | 108 | 108 | 4.63 | 13 | 180 | 131 |
+| INFiLED ART4.6 Turbo outdoor | 500 | 1000 | 108 | 216 | 4.63 | 21 | 360 | 131 |
+| INFiLED ART4.6 Plus mini outdoor | 500 | 500 | 108 | 108 | 4.63 | 13 | 180 | 131 |
+| INFiLED ART4.6 Plus outdoor | 500 | 1000 | 108 | 216 | 4.63 | 21 | 360 | 131 |
+| INFiLED ART4.6 mini outdoor | 500 | 500 | 108 | 108 | 4.63 | 13 | 180 | 131 |
+| INFiLED ART4.6 outdoor | 500 | 1000 | 108 | 216 | 4.63 | 21 | 360 | 131 |
+| INFiLED ART5.9 outdoor | 500 | 1000 | 84 | 168 | 5.95 | 21 | 360 | 131 |
+| INFiLED ART5.9 mini outdoor | 500 | 500 | 84 | 84 | 5.95 | 13 | 180 | 131 |
+| INFiLED ART7.8 outdoor | 500 | 1000 | 64 | 128 | 7.81 | 21 | 360 | 131 |
+| INFiLED ART7.8 mini outdoor | 500 | 500 | 64 | 64 | 7.81 | 13 | 180 | 131 |
+| INFiLED ART10.4 outdoor | 500 | 1000 | 48 | 96 | 10.41 | 22 | 360 | 131 |
+| INFiLED ART10.4 mini outdoor | 500 | 500 | 48 | 48 | 10.41 | 13 | 180 | 131 |
+| INFiLED AP2.5 | 500 | 1000 | 200 | 400 | 2.5 | 9.1 | 270 | 82 |
+| INFiLED AP2.5 mini | 500 | 500 | 200 | 200 | 2.5 | 5.9 | 135 | 82 |
+| INFiLED AP3.9 | 500 | 1000 | 128 | 256 | 3.91 | 8.9 | 270 | 82 |
+| INFiLED AP3.9 outdoor | 500 | 1000 | 128 | 256 | 3.91 | 8.7 | 300 | 82 |
+| INFiLED AP3.9 mini | 500 | 500 | 128 | 128 | 3.91 | 5.9 | 135 | 82 |
+| INFiLED AP3.9 mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 5.7 | 150 | 82 |
+| INFiLED AP4.8 outdoor | 500 | 1000 | 104 | 208 | 4.81 | 8.7 | 300 | 82 |
+| INFiLED AP4.8 mini outdoor | 500 | 500 | 104 | 104 | 4.81 | 5.7 | 150 | 82 |
+| INFiLED AP6.9 outdoor | 500 | 1000 | 72 | 144 | 6.94 | 8.7 | 300 | 82 |
+| INFiLED AP6.9 mini outdoor | 500 | 500 | 72 | 72 | 6.94 | 5.7 | 150 | 82 |
+| INFiLED AP8.9 outdoor | 500 | 1000 | 56 | 112 | 8.92 | 8.7 | 300 | 82 |
+| INFiLED AP8.9 mini outdoor | 500 | 500 | 56 | 56 | 8.92 | 5.7 | 150 | 82 |
+| INFiLED AMT5.95 outdoor | 1000 | 1000 | 168 | 168 | 5.95 | 20.4 | 720 | 108 |
+| INFiLED AMT8.33 Mesh Turbo outdoor | 1000 | 1000 | 120 | 120 | 8.33 | 15.5 | 500 | 108 |
+| INFiLED AMT8.33 Mesh outdoor | 1000 | 1000 | 120 | 120 | 8.33 | 15.5 | 500 | 108 |
+| INFiLED DB1.95 VSS M2 | 500 | 500 | 256 | 256 | 1.95 | 9.4 | 150 | 75.5 |
+| INFiLED X1.9mk2 M2 CBSF | 500 | 500 | 256 | 256 | 1.95 | 8.3 | 150 | 75.5 |
+| INFiLED DB1.95mk2 M2 CBSF | 500 | 500 | 256 | 256 | 1.95 | 8.4 | 120 | 75.5 |
+| INFiLED DB1.56mk2 MT2 CBSF | 500 | 500 | 320 | 320 | 1.56 | 8.4 | 160 | 75.5 |
+| INFiLED DB1.9 VSS | 500 | 500 | 256 | 256 | 1.95 | 8.8 | 180 | 75.5 |
+| INFiLED X1.9mk2 VSS | 500 | 500 | 256 | 256 | 1.95 | 8.3 | 160 | 75.5 |
+| INFiLED DB2.6 AD | 500 | 500 | 192 | 192 | 2.6 | 8.8 | 180 | 75.5 |
+| INFiLED DB2.6mk2 MT2 CBSF | 500 | 500 | 192 | 192 | 2.6 | 7.8 | 170 | 75.5 |
+| INFiLED DF2.6mk2 VSS outdoor | 500 | 500 | 192 | 192 | 2.6 | 11.5 | 180 | 83.3 |
+| INFiLED X2.6mk2 VSS | 500 | 500 | 192 | 192 | 2.6 | 8.3 | 180 | 75.5 |
+| INFiLED DB2.8 VSS | 500 | 500 | 176 | 176 | 2.84 | 8.8 | 180 | 75.5 |
+| INFiLED DB2.6 VSS | 500 | 500 | 192 | 192 | 2.6 | 8.8 | 180 | 75.5 |
+| INFiLED X2.6mk2 MT2 CBSF | 500 | 500 | 192 | 192 | 2.56 | 8.3 | 150 | 75.5 |
+| INFiLED X2.6mk2 LS | 500 | 500 | 192 | 192 | 2.6 | 8.3 | 180 | 75.5 |
+| INFiLED AR3.9 LS | 500 | 1000 | 128 | 256 | 3.91 | 11.3 | 360 | 77 |
+| INFiLED DF3.9mk2 VSS outdoor | 500 | 500 | 128 | 128 | 3.91 | 11.5 | 210 | 83.3 |
+| INFiLED DF3.9mk2 AD outdoor | 500 | 500 | 128 | 128 | 3.91 | 11.5 | 210 | 83.3 |
+| INFiLED DF3.9mk2 LS outdoor | 500 | 500 | 128 | 128 | 3.91 | 11.5 | 210 | 83.3 |
+| INFiLED AR3.9 VSS | 500 | 1000 | 128 | 256 | 3.91 | 11.3 | 360 | 77 |
+| INFiLED AR3.9 AD | 500 | 1000 | 128 | 256 | 3.91 | 11.3 | 360 | 77 |
+| INFiLED AR3.91 VSS | 500 | 1000 | 128 | 256 | 3.91 | 11.3 | 300 | 77 |
+| INFiLED AR5.9RGBW | 500 | 1000 | 84 | 168 | 5.95 | 12.5 | 360 | 77 |
+| INFiLED AR5.9 VSS | 500 | 1000 | 84 | 168 | 5.95 | 10.9 | 360 | 77 |
+| INFiLED AR5.9 LS | 500 | 1000 | 84 | 168 | 5.95 | 10.9 | 360 | 77 |
+| INFiLED AR5.9 AD | 500 | 1000 | 84 | 168 | 5.95 | 10.9 | 360 | 77 |
+| INFiLED DB1.5mk2 Ultra MT2 | 500 | 500 | 320 | 320 | 1.56 | 8.4 | 120 | 75.5 |
+| INFiLED DB1.9mk2 Ultra M2 | 500 | 500 | 256 | 256 | 1.95 | 7.8 | 130 | 75.5 |
+| INFiLED DB1.95mk2 VSS | 500 | 500 | 256 | 256 | 1.95 | 8.4 | 180 | 75.5 |
+| INFiLED DB2.6mk2 Ultra MT2 | 500 | 500 | 192 | 192 | 2.6 | 7.8 | 140 | 75.5 |
+| INFiLED DBmk2 2.6 Lite | 500 | 500 | 192 | 192 | 2.6 | 8 | 150 | 75.5 |
+| INFiLED DBmk2 2.6 Pro | 500 | 500 | 192 | 192 | 2.6 | 8 | 150 | 75.5 |
+| INFiLED DB2.6mk2 | 500 | 500 | 192 | 192 | 2.6 | 8.4 | 180 | 75.5 |
+| INFiLED MC2DB1.95M2 Ultra | 500 | 500 | 256 | 256 | 1.95 | 8.3 | 140 | 75.5 |
+| INFiLED MC2DB1.56MT2 Ultra | 500 | 500 | 320 | 320 | 1.56 | 8.4 | 140 | 75.5 |
+| INFiLED MC2DB1.56MT2mk2 CBSF | 500 | 500 | 320 | 320 | 1.56 | 8.4 | 140 | 75.5 |
+| INFiLED MC2DB1.95M2mk2 CBSF | 500 | 500 | 256 | 256 | 1.95 | 7.8 | 140 | 75.5 |
+| INFiLED MC2DB2.6MT2 Ultra | 500 | 500 | 192 | 192 | 2.6 | 7.8 | 150 | 75.5 |
+| INFiLED MC2DB2.6MT2mk2 CBSF | 500 | 500 | 192 | 192 | 2.6 | 8.3 | 150 | 75.5 |
+| INFiLED NX1.95 mini | 500 | 500 | 256 | 256 | 1.95 | 6.8 | 150 | 73 |
+| INFiLED NX1.95 | 500 | 1000 | 256 | 512 | 1.95 | 11 | 300 | 73 |
+| INFiLED NX2.5 mini | 500 | 500 | 200 | 200 | 2.5 | 6.8 | 150 | 73 |
+| INFiLED NX2.5 | 500 | 1000 | 200 | 400 | 2.5 | 11 | 300 | 73 |
+| INFiLED NX3.91 mini outdoor | 500 | 500 | 128 | 128 | 3.91 | 6.8 | 150 | 73 |
+| INFiLED NX3.91 outdoor | 500 | 1000 | 128 | 256 | 3.91 | 10.9 | 300 | 73 |
+| INFiLED EZ2.6 Lite outdoor | 500 | 500 | 192 | 192 | 2.6 | 7.6 | 180 | 82 |
+| INFiLED EZ2.6 Plus outdoor | 500 | 500 | 192 | 192 | 2.6 | 7.6 | 210 | 82 |
+| INFiLED EZ2.6 Pro outdoor | 500 | 500 | 192 | 192 | 2.6 | 7.6 | 180 | 82 |
+| INFiLED EZ2.6 Turbo outdoor | 500 | 500 | 192 | 192 | 2.6 | 7.6 | 180 | 82 |
+| INFiLED AM8.3mk2 outdoor | 1200 | 1200 | 144 | 144 | 8.33 | 15.5 | 660 | 55.4 |
+| INFiLED AM8.3mk2 Pro outdoor | 1200 | 1200 | 144 | 144 | 8.33 | 15.5 | 660 | 55.4 |
+| INFiLED AM8.3mk2 mini outdoor | 1200 | 600 | 144 | 72 | 8.33 | 8.5 | 330 | 55.4 |
+| INFiLED AM8.3mk2 Pro mini outdoor | 1200 | 600 | 144 | 72 | 8.33 | 8.5 | 330 | 55.4 |
+| AOTO RM1.5 | 500 | 500 | 320 | 320 | 1.56 | 8.2 | 190 | 67.5 |
+| AOTO RM1.5E | 500 | 500 | 320 | 320 | 1.56 | 8.2 | 150 | 67.5 |
+| AOTO RM1.9 | 500 | 500 | 256 | 256 | 1.95 | 8.2 | 150 | 67.5 |
+| AOTO RM2.3 | 500 | 500 | 216 | 216 | 2.31 | 8.2 | 167 | 67.5 |
+| AOTO RM2.3E | 500 | 500 | 216 | 216 | 2.31 | 8.2 | 153 | 67.5 |
+| AOTO RM1.5B | 500 | 500 | 320 | 320 | 1.56 | 9.3 | 185 | 67.5 |
+| AOTO RM2.3B | 500 | 500 | 216 | 216 | 2.31 | 9.3 | 155 | 67.5 |
+| AOTO DL1.9 | 500 | 500 | 256 | 256 | 1.95 | 7.2 | 125 | 76 |
+| AOTO DL2.3 | 500 | 500 | 216 | 216 | 2.31 | 7.2 | 150 | 76 |
+| AOTO DL2.6 | 500 | 500 | 192 | 192 | 2.604 | 7.2 | 160 | 76 |
+| AOTO SV3.9 | 500 | 1000 | 128 | 256 | 3.91 | 14.8 | 380 | 104 |
+| AOTO C1.8 | 480 | 480 | 256 | 256 | 1.875 | 3.88 | 110 | 82 |
+| AOTO C2.5 | 480 | 480 | 192 | 192 | 2.5 | 3.88 | 100 | 82 |
+| AOTO C3 | 480 | 480 | 160 | 160 | 3 | 3.88 | 116 | 82 |
+| Absen Polaris PL2.5 Pro V10 | 500 | 500 | 200 | 200 | 2.5 | 8.6 | 192 | 88 |
+| Absen Polaris PL2.9 V10 | 500 | 500 | 168 | 168 | 2.97 | 8 | 135 | 88 |
+| Absen Polaris PL2.9 XL V10 | 500 | 1000 | 168 | 336 | 2.97 | 12.6 | 270 | 88 |
+| Absen Polaris PL3.9 XL V10 | 500 | 1000 | 128 | 256 | 3.906 | 12.6 | 270 | 88 |
+| Absen Polaris PL3.9 Pro V10 | 500 | 500 | 128 | 128 | 3.906 | 8.4 | 170 | 88 |
+| Absen Polaris PL3.9 Pro XL V10 | 500 | 1000 | 128 | 256 | 3.906 | 13.7 | 340 | 88 |
+| Absen Polaris PL4.8 Pro V10 | 500 | 500 | 104 | 104 | 4.81 | 8.1 | 180 | 88 |
+| Absen Polaris PL4.8 Pro XL V10 | 500 | 1000 | 104 | 208 | 4.81 | 13.7 | 360 | 88 |
+| Absen A27 1.2 (A2712 V3) | 610 | 343 | 480 | 270 | 1.27 | 5 | 118 | 44.5 |
+| Absen A27 1.9 (A2719 V3) | 610 | 343 | 320 | 180 | 1.906 | 5 | 99 | 44.5 |
+| Absen A27 2.5 (A2725 V3) | 610 | 343 | 240 | 135 | 2.54 | 5 | 63 | 44.5 |
+| Gloshine DN1.9 | 500 | 500 | 256 | 256 | 1.95 | 7 | 145 | 76 |
+| Gloshine DN2.6 | 500 | 500 | 192 | 192 | 2.6 | 7 | 145 | 76 |
+| Gloshine DN2.6 500×1000 | 500 | 1000 | 192 | 384 | 2.6 | 11.8 | 290 | 76 |
+| Gloshine DN2.9 | 500 | 500 | 168 | 168 | 2.97 | 7 | 145 | 76 |
+| Gloshine DN2.9 500×1000 | 500 | 1000 | 168 | 336 | 2.97 | 11.8 | 290 | 76 |
+| Gloshine DN3.9 | 500 | 500 | 128 | 128 | 3.91 | 7 | 145 | 76 |
+| Gloshine DN3.9 500×1000 | 500 | 1000 | 128 | 256 | 3.91 | 11.8 | 290 | 76 |
+| Gloshine DN3.9 outdoor | 500 | 500 | 128 | 128 | 3.91 | 7.2 | 145 | 76 |
+| Gloshine DN3.9 500×1000 outdoor | 500 | 1000 | 128 | 256 | 3.91 | 12.2 | 290 | 76 |
+| Gloshine DN4.8 outdoor | 500 | 500 | 104 | 104 | 4.81 | 7.2 | 180 | 76 |
+| Gloshine DN4.8 500×1000 outdoor | 500 | 1000 | 104 | 208 | 4.81 | 12.2 | 360 | 76 |
+| Gloshine CF Pro1.9 | 500 | 500 | 256 | 256 | 1.95 | 8.5 | 135 | 107 |
+| Gloshine CF Pro2.3 | 500 | 500 | 208 | 208 | 2.38 | 8.5 | 135 | 107 |
+| Gloshine CF Pro2.6 (1/16 scan) | 500 | 500 | 192 | 192 | 2.6 | 8.5 | 135 | 107 |
+| Gloshine CF Pro2.6 (1/24 scan) | 500 | 500 | 192 | 192 | 2.6 | 8.5 | 135 | 107 |
+| Gloshine CF Pro2.9 | 500 | 500 | 168 | 168 | 2.97 | 8.5 | 135 | 107 |
+| Gloshine CF Pro3.9 | 500 | 500 | 128 | 128 | 3.91 | 8.5 | 135 | 107 |
 
 ## 6. Wall shapes: removed tiles and half tiles
 
@@ -521,6 +829,9 @@ tiles" clears the list. Tile IDs keep their grid numbers (T = row x cols + col +
 
 | Full model | Half model | Split |
 |---|---|---|
+| Absen PR2.5 500×1000 | Absen PR2.5 | h = top/bottom (half height) |
+| Absen PR3.9 500×1000 | Absen PR3.9 | h = top/bottom (half height) |
+| Absen PR5.2 500×1000 | Absen PR5.2 | h = top/bottom (half height) |
 | Owl Vision Black Owl 3.9 500×1000 | Owl Vision Black Owl 3.9 | h = top/bottom (half height) |
 | ROE Carbon CB3 | ROE Carbon CB3 Half | h = top/bottom (half height) |
 | ROE Carbon CB5 | ROE Carbon CB5 Half | h = top/bottom (half height) |
@@ -551,6 +862,68 @@ tiles" clears the list. Tile IDs keep their grid numbers (T = row x cols + col +
 | YES TECH MU 2.9 outdoor 500×1000 | YES TECH MU 2.9 outdoor | h = top/bottom (half height) |
 | YES TECH MU 3.9 outdoor 500×1000 | YES TECH MU 3.9 outdoor | h = top/bottom (half height) |
 | YES TECH MT II 3.9-7.8 1000×500 | YES TECH MT II 3.9-7.8 500×500 | w = left/right (half width) |
+| INFiLED GX1.9 mk2 | INFiLED GX1.9 mk2 mini | h = top/bottom (half height) |
+| INFiLED GX2.5 mk2 | INFiLED GX2.5 mk2 mini | h = top/bottom (half height) |
+| INFiLED GX2.9 mk2 | INFiLED GX2.9 mk2 mini | h = top/bottom (half height) |
+| INFiLED GX3.9 mk2 | INFiLED GX3.9 mk2 mini | h = top/bottom (half height) |
+| INFiLED GX3.9 mk2 outdoor | INFiLED GX3.9 mk2 mini outdoor | h = top/bottom (half height) |
+| INFiLED GX4.8 mk2 | INFiLED GX4.8 mk2 mini | h = top/bottom (half height) |
+| INFiLED GX4.6 mk2 outdoor | INFiLED GX4.6 mk2 mini outdoor | h = top/bottom (half height) |
+| INFiLED GX5.9 mk2 outdoor | INFiLED GX5.9 mk2 mini outdoor | h = top/bottom (half height) |
+| INFiLED GX6.9 mk2 outdoor | INFiLED GX6.9 mk2 mini outdoor | h = top/bottom (half height) |
+| INFiLED RS2.5 Ultra | INFiLED RS2.5 Ultra mini | h = top/bottom (half height) |
+| INFiLED RS2.5 Lite | INFiLED RS2.5 Lite mini | h = top/bottom (half height) |
+| INFiLED RS2.6 Ultra | INFiLED RS2.6 Ultra mini | h = top/bottom (half height) |
+| INFiLED RS2.9 Lite | INFiLED RS2.9 Lite mini | h = top/bottom (half height) |
+| INFiLED RS3.91 Lite outdoor | INFiLED RS3.91 Lite mini outdoor | h = top/bottom (half height) |
+| INFiLED RS3.91 Turbo outdoor | INFiLED RS3.91 Turbo mini outdoor | h = top/bottom (half height) |
+| INFiLED RS4.81 Lite outdoor | INFiLED RS4.81 Lite mini outdoor | h = top/bottom (half height) |
+| INFiLED RS6.94 Lite outdoor | INFiLED RS6.94 Lite mini outdoor | h = top/bottom (half height) |
+| INFiLED AR2.9mk2 Lite outdoor | INFiLED AR2.9mk2 Lite mini outdoor | h = top/bottom (half height) |
+| INFiLED AR2.9mk2 Plus outdoor | INFiLED AR2.9mk2 Plus mini outdoor | h = top/bottom (half height) |
+| INFiLED AR2.9mk2 Pro outdoor | INFiLED AR2.9mk2 Pro mini outdoor | h = top/bottom (half height) |
+| INFiLED AR2.9mk2 Turbo outdoor | INFiLED AR2.9mk2 Turbo mini outdoor | h = top/bottom (half height) |
+| INFiLED AR2.9mk2 Pro | INFiLED AR2.9mk2 Pro mini | h = top/bottom (half height) |
+| INFiLED AR2.9mk2 Lite | INFiLED AR2.9mk2 Lite mini | h = top/bottom (half height) |
+| INFiLED AR3.91mk2 Plus outdoor | INFiLED AR3.91mk2 Plus mini outdoor | h = top/bottom (half height) |
+| INFiLED AR3.91mk2 Pro outdoor | INFiLED AR3.91mk2 Pro mini outdoor | h = top/bottom (half height) |
+| INFiLED AR3.9mk2 Lite outdoor | INFiLED AR3.9mk2 Lite mini outdoor | h = top/bottom (half height) |
+| INFiLED AR3.9mk2 Pro | INFiLED AR3.9mk2 Pro mini | h = top/bottom (half height) |
+| INFiLED AR3.9mk2 Lite | INFiLED AR3.9mk2 Lite mini | h = top/bottom (half height) |
+| INFiLED AR3.9mk2 Ultra outdoor | INFiLED AR3.9mk2 Ultra mini outdoor | h = top/bottom (half height) |
+| INFiLED AR3.9mk2 Turbo outdoor | INFiLED AR3.9mk2 Turbo mini outdoor | h = top/bottom (half height) |
+| INFiLED AR4.8mk2 Pro | INFiLED AR4.8mk2 Pro mini | h = top/bottom (half height) |
+| INFiLED AR4.8mk2 Lite | INFiLED AR4.8mk2 Lite mini | h = top/bottom (half height) |
+| INFiLED ART3.9 outdoor | INFiLED ART3.9 mini outdoor | h = top/bottom (half height) |
+| INFiLED ART3.9 CC outdoor | INFiLED ART3.9 CC mini outdoor | h = top/bottom (half height) |
+| INFiLED ART3.9 Plus outdoor | INFiLED ART3.9 Plus mini outdoor | h = top/bottom (half height) |
+| INFiLED ART3.9 Turbo outdoor | INFiLED ART3.9 Turbo mini outdoor | h = top/bottom (half height) |
+| INFiLED ART4.6 Turbo outdoor | INFiLED ART4.6 Turbo mini outdoor | h = top/bottom (half height) |
+| INFiLED ART4.6 Plus outdoor | INFiLED ART4.6 Plus mini outdoor | h = top/bottom (half height) |
+| INFiLED ART4.6 outdoor | INFiLED ART4.6 mini outdoor | h = top/bottom (half height) |
+| INFiLED ART5.9 outdoor | INFiLED ART5.9 mini outdoor | h = top/bottom (half height) |
+| INFiLED ART7.8 outdoor | INFiLED ART7.8 mini outdoor | h = top/bottom (half height) |
+| INFiLED ART10.4 outdoor | INFiLED ART10.4 mini outdoor | h = top/bottom (half height) |
+| INFiLED AP2.5 | INFiLED AP2.5 mini | h = top/bottom (half height) |
+| INFiLED AP3.9 | INFiLED AP3.9 mini | h = top/bottom (half height) |
+| INFiLED AP3.9 outdoor | INFiLED AP3.9 mini outdoor | h = top/bottom (half height) |
+| INFiLED AP4.8 outdoor | INFiLED AP4.8 mini outdoor | h = top/bottom (half height) |
+| INFiLED AP6.9 outdoor | INFiLED AP6.9 mini outdoor | h = top/bottom (half height) |
+| INFiLED AP8.9 outdoor | INFiLED AP8.9 mini outdoor | h = top/bottom (half height) |
+| INFiLED NX1.95 | INFiLED NX1.95 mini | h = top/bottom (half height) |
+| INFiLED NX2.5 | INFiLED NX2.5 mini | h = top/bottom (half height) |
+| INFiLED NX3.91 outdoor | INFiLED NX3.91 mini outdoor | h = top/bottom (half height) |
+| INFiLED AM8.3mk2 outdoor | INFiLED AM8.3mk2 mini outdoor | h = top/bottom (half height) |
+| INFiLED AM8.3mk2 Pro outdoor | INFiLED AM8.3mk2 Pro mini outdoor | h = top/bottom (half height) |
+| Absen Polaris PL2.9 XL V10 | Absen Polaris PL2.9 V10 | h = top/bottom (half height) |
+| Absen Polaris PL3.9 XL V10 | Absen Polaris PL3.9 V10 | h = top/bottom (half height) |
+| Absen Polaris PL3.9 Pro XL V10 | Absen Polaris PL3.9 Pro V10 | h = top/bottom (half height) |
+| Absen Polaris PL4.8 Pro XL V10 | Absen Polaris PL4.8 Pro V10 | h = top/bottom (half height) |
+| Gloshine DN2.6 500×1000 | Gloshine DN2.6 | h = top/bottom (half height) |
+| Gloshine DN2.9 500×1000 | Gloshine DN2.9 | h = top/bottom (half height) |
+| Gloshine DN3.9 500×1000 | Gloshine DN3.9 | h = top/bottom (half height) |
+| Gloshine DN3.9 500×1000 outdoor | Gloshine DN3.9 outdoor | h = top/bottom (half height) |
+| Gloshine DN4.8 500×1000 outdoor | Gloshine DN4.8 outdoor | h = top/bottom (half height) |
 
 The wall is a grid of half-tile **units**: for split h, units are tw x th/2 and the unit grid is cols x 2*rows; for
 split w, units are tw/2 x th and the grid is 2*cols x rows. A piece is [u, v, a, b] = top-left unit and size in units:
@@ -643,6 +1016,7 @@ Original size on wall draws it 1:1 at the wall's origin. Large walls render at a
 | `rgbramp` | Four horizontal bands, each black to red / green / blue / white, left to right. |
 | `zone` | Zone plate: white concentric circles on black at radii sqrt(k) x max(6, R/45). |
 | `cycle` | Full-field colour stepping every 1.5 s through #f00 #0f0 #00f #fff #000 #ff0 #0ff #f0f. Redraws only when the colour changes. |
+| `cabinet IDs` | cidPat: #07090c background; each tile filled with its port colour (CIDCOL, 12 colours by port) and an edge of 2.5% of the tile; the ID in bold Barlow at 28% of the tile height (shrunk to 84% of its width) at 44% down, "C# R#" under it at 45% size; unwired tiles grey with a dash. With the data paths overlay off, a dashed line per port through (94% w, 84% h) of each tile and a P# dot on its first tile. The Tile IDs / address / mm labels and tile position arrows are skipped on this pattern. Not scrolled or cached. |
 
 "Next pattern" (top bar) moves the selected wall to the next pattern in this list order, wrapping to the first, skipping
 `custom` until an image is uploaded, and shows a toast "Test pattern: name (on wall)".
@@ -677,8 +1051,8 @@ per unit), ceil(LED px / processor max px)), Over capacity); power rows (section
 | NovaStar H series: H_20xRJ45 card | NovaStar | 20 | 650000 | 60 | 8 | 13000000 | novastar, 10-bit 320000, per card | H series sending card (H2/H5/H9/H15/H20), 2 slots: 20 × 1G outputs, 13 MP per card, max 10,752 px wide or high, up to 144 Hz. 320,000 px per port at 10-bit. The engineering panel shows how many cards the canvas needs. |
 | NovaStar H series: H_16xRJ45+2xFiber card | NovaStar | 16 | 650000 | 60 | 8 | 10400000 | novastar, 10-bit 320000, per card | H series sending card, 2 slots: 16 × 1G outputs, 10.4 MP per card, max 10,240 px wide or high, up to 144 Hz. 320,000 px per port at 10-bit. Fiber 1 copies Ethernet ports 1–8 and fiber 2 copies 9–16, so the fibers add no capacity. |
 | NovaStar H series: H_4xFiber card | NovaStar | 32 | 650000 | 60 | 8 | 20800000 | novastar, 10-bit 320000, per card | H series sending card: 4 × 10G fiber outputs, each equal to 8 Ethernet ports through a fiber converter (32 ports), 20.8 MP per card, max 16,384 px wide or high, up to 144 Hz. Figures are for independent mode; copy and backup modes give less. 320,000 px per port at 10-bit. |
-| HELIOS Jr | Megapixel HELIOS | 8 | 425000 | 60 | 12 |  | fixed | 8 × 1G outputs. HELIOS spec is 425,000 px per port at 12-bit 60 Hz. |
-| HELIOS 8K | Megapixel HELIOS | 72 | 425000 | 60 | 12 | 34000000 | fixed | 8 × 10G to distributors, 72 ports, 34 MP max. |
+| HELIOS Jr | Megapixel HELIOS | 8 | 401000 | 60 | 12 |  | table | 8 × 1G outputs. 401,000 px per port at 12-bit 60 Hz (HELIOS User Guide, output port capacity table). |
+| HELIOS 8K | Megapixel HELIOS | 72 | 401000 | 60 | 12 | 34000000 | table | 8 × 10G to distributors, 72 ports, 34 MP max. 401,000 px per 1G port at 12-bit 60 Hz. |
 | ROE Evision eV4 | Evision | 40 | 655360 | 60 | 8 | 8300000 | linear | 4 × 10G to EVX10 distributors, 40 ports, 8.3 MP max. |
 | Custom | Custom | 16 | 650000 | 60 | 8 |  | linear | Enter your processor's pixels per port and port count. |
 
@@ -738,7 +1112,7 @@ Tick **Power distribution** to enable and choose the Distribution cable (setting
 "One 120 V 20 A circuit loaded to 80% supplies 1,920 W, enough for 12 tiles of ... at 150 W max each."
 
 Circuits are numbered k = 1, 2, ... across walls; with n circuits per cable (Socapex 6, L14-30 2, L21-30 3) circuit k is on cable ceil(k/n) as leg (k-1) mod n (legs 1-6 for Socapex, X,Y for
-L14-30, X,Y,Z for L21-30); labels cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ... No phase is assigned (the PDU does that).
+L14-30, X,Y,Z for L21-30); labels cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ... Without distros no phase is assigned.
 powerCON to Edison (n = 1, no PDU): every circuit is its own cable and is labelled just k (1, 2, 3 ...); cables needed = circuits, no spares. Selecting it sets pvolt 120 and pamps 15. Edison shows two extra
 fields, "Edison plugs per wall circuit (0 = do not check)" (pwall) and "Wall circuit breaker (A)" (pwallA). With pwall > 0, plug k is on wall circuit ceil(k / pwall); its load in amps is watts / pvolt, summed per wall circuit and
 compared with pwallA x (0.8 if "Load circuits to 80%"). Engineering rows: "Edison plugs needed", "Peak load per plug" ("plug 3 9.4 A"), and with pwall > 0 "Wall circuits needed", "Peak load per wall circuit" ("(over)" after any
@@ -749,7 +1123,156 @@ path), capacity t, plus the power link limit; on half-tile layouts by each piece
 usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "This circuit is full (12 tiles)."
 
 Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
-Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak load per cable "cable 1 24.0 A · cable 2 12.0 A" (sum of circuit watts / V per cable), Over capacity.
+Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak amps per phase, each cable "cable 1: A 32.0 · B 32.0 · C 32.0 A" (circuit amps = watts / V; circuits land A, B, C
+repeating within a cable, so Socapex 1 and 4 on A, 2 and 5 on B, 3 and 6 on C; L14-30 X, Y on the two legs A, B; a 208 V circuit,
+or 240 V on L14-30, is line to line and counts its full current on two phases: circuit i on PHN[i%3] and PHN[(i+1)%3]),
+Peak amps per phase, all cables (with "busiest n% above average"), on 3-phase cables Balanced 3-phase current @V_LL (total watts /
+(V_LL x sqrt 3); V_LL = 208 for 120 V, 400 for 230 V, the circuit voltage itself for 208 V), Over capacity, and one "Check power
+settings" warning row for each problem from powWarn(): breaker above the connector's rating per circuit (Socapex 20 A, L14-30 and
+L21-30 30 A, powerCON/Edison 20 A), a voltage the connector is not made for (Socapex 100-240, L14-30 110/120/240, L21-30
+110/120/208, Edison 100-120), or an Edison wall circuit breaker above 20 A. The same warnings show in red under the circuit
+note in the Power distribution settings.
+
+**Power factor and design load**: usable watts per circuit = V x A x (0.8 if derated) x pf, so tiles per circuit drop
+at pf < 1 (16 -> 15 for 120 W tiles at 120 V 20 A, pf 0.95). Every amp figure is W / (V x pf). The design load (pload: Max,
+Typical ptyp % of max, or Measured pmeas W per tile capped at the tile's max) scales distro and leg totals only; circuits
+are always checked at max watts. Engineering adds "Design load" and "Design load power".
+
+**Distros** (submenu Engineering > Power > Distros, shown with Power distribution on): a list of distros (S.dists), each a
+card with name, System, Rating per leg (A), Socapex leg map (6 letters A/B/C, default ABCABC), and the number of Socapex,
+L21-30, L14-30 and Edison outputs, then leg bars (amber line at 80% of the rating when derated), Neutral, Imbalance and the
+cable count, and Balance / Remove distro buttons; then Add distro, "Rebalance after every wiring change" (autoBal) and
+"Colour power runs by phase on the canvas" (phaseView). Cables (all canvases; key "canvas:cable") are patched in S.pcab;
+any cable without a valid output is patched automatically to the first free output of its type (distro order), and
+cables that do not fit stay unpatched (Engineering warns "Cables not patched").
+Phases: a circuit at the distro's line-to-line voltage (within 6%: 208 on 120/208, 220 on 127/220, 400 on 230/400, 240 on
+120/240) takes two phases (p, p+1); otherwise one. Base phase of leg i: Socapex = map[i], L21-30 X/Y/Z = A/B/C, L14-30
+X/Y = A/B, Edison = A; phase = (base + r) mod n, n = 3 (3-phase), 2 (split phase) or 1 (single phase, always A). Auto
+patch gives Edison output j rotation (j-1) mod n.
+Leg amps (legSum): phases at 0, -120 and +120 degrees (split phase 0 and 180). A line-to-neutral current I adds I at its
+phase angle to its line and to the neutral; a line-to-line current I flows at the angle of V_p - V_q, added to line p
+and subtracted from line q. Leg = |line phasor|, Neutral = |neutral phasor| (shown when circuits are line to neutral),
+Imbalance = (max leg - mean) / mean, over capacity when a leg > rating x (0.8 if derated). Checks: 10 A on AB, BC and CA
+-> 17.3 A per line; 24 / 18 / 12 A line to neutral -> neutral 10.4 A.
+Balance (per distro, or Balance in the tray for all): only each cable's rotation r changes (outputs and circuit order
+stay). Heaviest cable first, each takes the r that gives the lowest (highest leg, neutral, sum of squared legs), then
+up to 6 passes of single-cable changes; the result is kept only if it is strictly better than before.
+Engineering section "Power distribution" (after Entire canvas; also one section at the end of the PDF spec): Design load,
+Design load power, Cables not patched, then per distro a heading row and System, Voltage warning when pvolt matches
+neither voltage, Leg A/B/C "40.0 A · 40% of rating", Neutral, Imbalance, Outputs used, Cables, Over capacity.
+
+**Power tray** (#ptray, under the viewport, shown while distros exist): bar with "Power tray", a green "every cable
+patched" or red "n cables not patched" flag, a hint, Balance and Hide/Show; then one card per distro with a slot per
+output of the current cable type (other output types summarised in one line) and a "Not patched" box. A slot holds the
+cable chip (name, walls, amps, and one chip per circuit "1-3 C 14.0" bordered in its phase colour) and an x to unpatch.
+Drag a chip onto a slot (HTML5 drag and drop) or click the chip, then the slot. Dropping on a taken slot swaps the two
+cables; a slot of another type refuses with a message. While dragged or picked, the cable's tiles are highlighted on the
+viewport (not on the output) and each slot shows what it would add per leg ("+A 12.0 B 12.0 A").
+
+**Shared circuits** (Power wiring > Shared circuits): pick two or three runs ("Wall · run n") and Share one circuit. The
+runs keep their own chains but take the first run's circuit number; later numbers close up, so circuits used drops.
+The circuit is over capacity when the runs together exceed the usable watts; adding such a share is refused unless one
+of the walls uses Manual power wiring. Labels show "1-3a", "1-3b" and "2fer on 1-3".
+
+**Phase on canvas and labels**: with phaseView and a patched cable, a run is drawn in its phase colour (A #ffffff, B
+#f59e0b, C #3b82f6; over capacity stays red) and its badge reads "1-3 C" (two letters for line to line). Circuit labels
+add "<distro> phase C" to the cable line and print in the phase colour (A #222222, B #f59e0b, C #2563c9) with
+"PHASE C · <wall>" as the flag text. Top bar "Phase" (shown while distros exist) toggles phaseView.
+
+**Rigging** (submenu Engineering > Rigging; S.rigOn, default off): hang method = per-wall bmode ('Ground stack' | 'Flown from
+motors' | 'Flown from truss'; the LED build treats both flown modes the same). Per wall: rbw (bumper width in tiles 1-4, default
+2), rbkg (9), rpts (pickups per bumper 1-2, default 2), rwll (hoist rating kg, 500), tsec (truss lengths owned, "1, 2, 3"), tkgm
+(truss kg/m, 8), thn (hoists on the truss, 3), tex (extra truss each side m, 0.5), rgbw (ground base width, 2), rgkg (14). S.rparts
+= {tile model: [[part, qty, per (tile | column | row | wall | hoist point), kg each]]}. rigCalc(w): bumpers = ceil(cols / rbw);
+motors: hoist points = bumpers x rpts; truss: span = wall width + 2 x tex from the longest sections that fit, hoists = thn,
+slings and shackles per pickup; ground: bases = ceil(cols / rgbw). Parts counted ceil(qty x count); per hoist point parts are
+skipped on a ground stack. Rows: hang method, bumpers/bases, truss, hoists, load per pickup, rigging weight, total weight,
+load per hoist (total / hoists) with a warning over rwll, and "Planning figures only". The pull sheet gets a Rigging
+department (parts per tile get the tile spare %).
+
+**Show binder** (submenu Engineering > Show binder; top bar "Export binder" = exportPDF(true)): S.bShow, S.bVenue, S.bDate
+(text), S.spT (spare tiles %, 0-100, default 5), S.spC (spare cables per length, 0-20, default 1). The binder PDF is: cover
+(show name, venue, load-in, walls and tile counts, processor, power, page count), contents (section -> first page, filled in
+last), the full raster page(s), one landscape page per wall (the wall cropped from the canvas drawn with data and power runs
+forced on, then wallRows + cable home runs in two columns; "More figures for this wall are in the spec sheet." when they do
+not fit), the pull sheet (pullItems(): Video = tiles per model, half tiles separately, spare = ceil(n x spT%), processors
+needed; Data = etherCON per length (Cable lengths on) or home-run count "length not set", jumpers spare max(spC, spT%);
+Power = cables per length or count, breakouts, jumpers, each distro; Labels = label sheets; columns NEED SPARE TOTAL and tick
+boxes PULLED LOADED BACK; footer "Pulled by / Checked by / Returned by"), then the spec sheet and labels exactly as Export PDF.
+File name "<show name>-binder-YYYYMMDD.pdf". Export PDF itself is unchanged. When any wall is wired (cidAny), a "Cabinet IDs"
+section (cidPages) goes between the wall pages and the pull sheet.
+
+**Cabinet IDs** (submenu Engineering > Cabinet IDs): S.cidFmt (CIDFMT: "Processor : port : tile (1:P2:07)" default | "Port -
+tile (P12-07, as on the cable labels)"), S.cidStk (sticker per tile, default off). cabIds(plan) -> per wall, in portPlan order:
+{wi, p (global port), s = floor((p-1)/pports)+1, ps = (p-1)%pports+1, k (1-based place on the port's cable), q (piece), id,
+col/row (1-based, u/v on custom layouts), model, half}; id = `${s}:P${ps}:${kk}` or `P${p}-${kk}` (kk two digits). Same
+processor split as cfgRows / the NovaStar config export. #cidStat: "Pick a processor..." | "Wire the data (Data wiring)..." |
+"N tiles have an ID, on M ports." Buttons: cidShow (sets the selected wall's pattern to "cabinet IDs"; toast when nothing is
+wired), cidPdf -> cidPDF(): "<show name or TileSmith>-cabinet-ids-YYYYMMDD.pdf" (Letter or A4 as Export PDF) = cidPages +
+cidStickers when cidStk. cidPages: per wired wall a landscape map page ("<wall>: cabinet IDs", tiles, ports, processor, style;
+tiles filled with the port's paper colour, port-colour edge, ID and C# R#, dashed cable per port, P# tag on its first tile),
+then portrait list pages ("<wall>: cabinet IDs in data order"; two columns of ID, Proc., Port, Tile, Col., Row with a port
+colour bar). cidStickers: one per tile on lblGeom() (no skip/copies), port colour bar at the left, the ID large, "<wall> · C#
+R# · <model>" under it.
+
+**Locations** (submenu Engineering > Locations; called zones in the code): S.zones = [{id, name (30 chars), c (#rrggbb)}] (max 20, list order = pull sheet
+and binder order), per wall w.zone (0 = no zone), per distro d.zone, S.zProc (processor's zone), S.zHide (zones hidden in the
+viewport only). zSan() drops unknown ids on load; a wall saved without zone opens as 0. New zones get the first unused colour
+of ZCOL. Engineering "Locations" section (zTotals over every canvas): per zone a head row, LED walls (names), Tiles, Weight, Peak
+power, Data ports (x2 with returns), Power circuits, Gear staged here; wall rows add "Location". Viewport (zDrawVp): 3 px outline
+and a name tag in the zone colour; a hidden zone's walls are drawn black with a dashed grey edge and "<name> · hidden", and
+hitWall skips them; the strip #zstrip above the viewport toggles S.zHide and has Show all. pullItems(zid) keeps only walls in
+the zone (zid 0 = no zone) and the gear whose zone matches; processors and label sheets go with S.zProc; with Cable lengths a
+power cable belongs to the wall it is measured to, otherwise to the first wall it feeds; jumpers and breakouts are counted per
+zone. Pull sheet: a coloured zone bar (name, "N LED walls") before that zone's departments, zones in list order then No location.
+Binder: a "Location map" page per canvas after the canvas pages (the raster darkened, each wall tinted and outlined in its zone
+colour with "<wall> · <zone>", and a key with walls and gear per zone), contents list each zone under LED walls, and each wall
+page has a zone tag top right.
+
+**Cable lengths** (submenu Engineering > Cable lengths; S.cabOn, default off): per wall cdD / cdP (distance from processor /
+distro, in S.cunit, 0-3000, defaults 25 / 15) and cin (Bottom left | Bottom centre | Bottom right | Top left | Top centre |
+Top right); global cunit (m | ft; switching converts every wall's distances and swaps the default cable lists), cslack (% per
+run, default 10), clenD / clenP (comma-separated lengths owned; defaults m: "1, 3, 5, 10, 15, 20, 30, 50" / "1, 3, 5, 10, 15,
+25"; ft: "3, 10, 15, 25, 50, 75, 100, 150" / "5, 10, 25, 50, 75, 100"). Run = (distance + |x - entry x| + |y - entry y| to the
+centre of the first tile, in m) x (1 + slack); returns R# start at the last tile; a multi-circuit cable is measured to the
+farthest first tile of its circuits, Edison/powerCON per circuit. Cables: the shortest owned length that reaches; longer runs
+take the longest length repeatedly plus the shortest that covers the rest ("50+20 m"). Engineering and the PDF get a "Cable
+pack list" section (counts per length, jumpers = tiles - 1 per run, breakouts, total, joined runs, warn when a data run is
+over 100 m) and per-wall "Cables arrive at" / "Data home runs" / "Power home runs" rows. The canvas shows each run's length
+in a dark pill under its P# / power start badge.
+
+**Fibre and breakout boxes** (inside Cable lengths): per wall wfib (Auto | Fibre | Copper, default Auto); global fibLim (copper
+limit in S.cunit, 1-10000, default 90 m / 295 ft), fibBox (ports per breakout box 4 | 10 | 16, default 10), fibNat (processor
+has fibre outputs, default off), fibTr (opticalCON DUO = 1 box per trunk | opticalCON QUAD = 2 boxes per trunk, default QUAD),
+fibLen / fibTail (lengths owned; m "50, 100, 150, 300" / "1, 3, 5, 10", ft "150, 300, 500, 1000" / "3, 10, 15, 30"; the limit
+and lists convert with the units). cFib(w, runs): far = longest copper data run (P# and R#, slack included); fibre when wfib =
+Fibre, or Auto and far > fibLim. A fibre wall: ports = runs x (2 with returns), boxes = ceil(ports / fibBox), trunks =
+ceil(boxes / 1 or 2), trunk length = processor distance x (1 + slack) picked from fibLen (cPick, joined when longer),
+converters = boxes unless fibNat; each run becomes a copper tail = climb from the arrival point to its first tile x (1 + slack)
+picked from fibTail. cabRuns returns runs with fib:1 and R.fib = [{wi, ports, boxes, trunks, m, cab}]. Pack list rows: Fibre
+walls, Fibre breakout boxes, Fibre converters at the processor, Fibre trunks, Copper tails (box to tile), fibre in Cable on the
+truck; the Over 100 m warning skips fibre walls. Wall rows: "Data to this wall" (Fibre with the reason or "set by hand",
+Copper with the longest run), Breakout boxes, Fibre trunk, Copper tails from the box. Pull sheet Data: "Fibre breakout box, N
+ports", "Fibre converter at the processor, N ports", "<trunk> fibre L", "etherCON tail L". Canvas pills show the tail length.
+
+**Redundancy** (in LED processor; replaces the old global S.ret "Return lines" switch, which now only seeds old projects:
+walls saved without wred get Loop, or None when S.ret was false). Per wall wred (Full | Backup processor | Loop | Spare
+processor | None, default Loop) and wpri (1-99, default 1); global rlink (link / sync cable per backup unit, default on),
+gOn (limit to gear on hand, default off), gProc / gTr / gBox (0-50). redPlan(plan): primaries P = all runs, main units =
+max(ceil(P / pports), ceil(px / max px)) capped by gProc; P# p sits on main unit floor((p-1)/pports), port (p-1)%pports+1.
+Fibre walls (cFib, Cable lengths on) first take their own trunks and boxes. Walls in order of wpri then wall order try
+their method, then each weaker one: Loop needs spare main ports after the primaries (adds a main unit if one is on hand);
+Backup processor / Full need a backup unit mirroring every main unit that holds the wall's P# (shared between walls), and
+on fibre walls Full needs ceil(ports / fibBox) more boxes and their trunks for its own route, while Loop / Backup share the
+main box (2 x ports). Spare processor needs one unit left over at the end (one covers the canvas), else None. The first
+reason a wall failed is kept ("no processor left for a backup", "no spare processor ports left", ...). Loop R# lines go on
+the main units after the primaries; backup R# on the mirror port. Engineering: "Redundancy" section (Processors, Not enough
+processors, Fibre short, each wall "<got> (should get <want>: <reason>)", Stepped down, Port map rows per unit) and "Signal
+path" svg (main x N box, backup x N box, link line, per wall: P# solid, fibre trunk pink dashes + box, R# dashed to main or
+backup, Full on fibre via a second trunk + box, labels "R# loop" / "R# backup" / "R# own route" / "spare on truck" / "no
+backup", "wanted ..." when stepped down). The PDF spec gets the Redundancy rows. Pull sheet Video: main processors, "Backup
+<proc>", "Spare <proc> (not patched)", "Processor link / sync cable". Labels: R# processor end "<proc> return N" for Loop,
+"Backup <proc> port N" for backup. wiring.json returnPorts = [{wall, redundancy}].
 
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 ['#ff9f1c', '#ffd166', '#06d6a0', '#4cc9f0', '#ef476f', '#c77dff'] by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
@@ -761,7 +1284,7 @@ over-capacity circuits stay red. With only one shown, it runs through the centre
 
 Per wall a simulation steps through the pieces in build order (cells in order of the start corner and Horizontal/
 Vertical placement; for half-tile layouts, pieces sorted by their anchor cell's order then unit position). Phases per
-tile: walkin 0.8 s, move 1.1 s, place 0.8 s, lock 0.6 s, walkout 1.5 s, scaled by Speed and a per-wall rate from [1, 0.88, 1.1, 0.94, 1.06, 0.84, 1.14, 0.97] (wall index); wall i waits i x 0.6 s before
+tile: walkin 0.8 s, move 1.1 s, place 0.8 s, lock 0.6 s, walkout 1.5 s, hoist 1.6 s, scaled by Speed and a per-wall rate from [1, 0.88, 1.1, 0.94, 1.06, 0.84, 1.14, 0.97] (wall index); wall i waits i x 0.6 s before
 starting. walkin: tech walks in from the wall edge carrying the tile; move: walks beside the slot; place: turns and
 lifts the tile into place (tile scales from carry size to full); lock: tile flashes into place (a ring sparkle expands
 from its centre) and the tile becomes lit; walkout: turns and walks off. Loop build restarts after Pause before restart.
@@ -773,6 +1296,26 @@ height, wall height/1.05, wall width/0.85)), clipped to the wall, standing besid
 facing it, with both hands on the carried tile. The carried tile is a dark #1b2028 rectangle with a light frame,
 amber corner marks and a black handle, at the piece's own size. Crew: ['Marcus', 'Elena', 'David', 'Chen', 'Priya', 'Malik'] by default, editable (name, skin,
 hair, face photo), rotating so one person is not on two walls at once.
+
+Character style (S.tstyle): Classic is the flat vector person above. Hand-drawn draws two Microsoft Rocketbox workers
+(MIT; binary FBX, motion-captured walk and textures base64-encoded in app/crew/rb-assets.js) posed from their skeleton
+for each build phase with the walk blended in, rendered by three.js r147 into an offscreen WebGL canvas through an ink
+outline / flat-colour shader, then drawn onto the wall like the Classic tech. The files load only when Hand-drawn is
+picked; without them or without WebGL the Classic tech is drawn and #crewNote says why. Backlit is a dark Canvas 2D
+figure with a rim of wall light and bright reflective tape. Hat, vest, logo and name tags apply to every style.
+
+Build mode (wall key bmode): Ground stack builds up from the floor from any start corner, row by row or column by
+column. Flown from motors and Flown from truss hang the wall top row first, a row at a time: each row goes on at floor
+level, then the wall is raised one row (bar on chain motors, or bumpers on a truss); only the left or right side of the
+start corner is used. The same setting is the rigging hang method (Engineering > Rigging).
+
+Tile faults (Animation Options > Tile faults; S.glOn, glType, glPick, glN, wall key glk): GLT = Dead tile, Flicker,
+Colour channel out, Stuck pixels, Data chain break, Module out, Scrambled tile, Frozen tile, Calibration mismatch, Scan
+line fault, Noise and sparkle, Power circuit tripped (GLD holds the cause shown under the menu), or Random mix. Faulty
+tiles are picked by clicking in the viewport (Pick tiles) or rolled at random (glN tiles). Start tile faults (top bar
+or the submenu) draws each fault over its tile on every output. Fix glitch sends two technicians: one behind the wall
+appears in the gap when the faulty tile pops out; a reachable tile is handed down and the new one up, a higher one is
+lowered on a rope; the other swaps it and carries the broken tile off; the faults stop when every tile is fixed.
 
 ## 13. DVD screensaver
 
@@ -878,6 +1421,19 @@ or as a background tint). Flag styles: full-height end blocks (flag 20% + wall 1
 height each), corner squares (36% of height). Black or white text is chosen by colour luminance. Extra preset: wrap-around
 strip roll 100x30 mm; the default sheet is Avery 5163. With "keep together" the two ends never straddle a row on a sheet.
 **PNG**: the full canvas as tilesmith-canvas.png. **PDF**: see the Export PDF paragraph in the top bar section.
+**Layered SVG / PSD** (Export layers ▾): a dialog with SVG / PSD buttons and a checklist of layers, bottom to top Background, Test pattern,
+Tile grid, Tile labels, Data paths, Power paths. Data and Power paths are disabled unless the canvas shows them (Data / Power on and a
+processor / distribution set); unticked layers are remembered (lyrOff). One file per canvas, tilesmith-layers[-canvas].svg|psd. Each layer is
+drawn by the normal canvas renderer with a layer filter (and an optional single-wall filter) on a clear canvas, so layers stack to exactly the
+PNG. Test pattern = pattern, DVD sprite, tile faults, rigging; Tile grid = tile edges, inner line, corner squares, unbuilt outlines; Tile labels =
+Tile IDs / addresses / mm sizes, tile position markers, the position label and footer of the shaded patterns. The technician is never drawn.
+SVG: each layer is a top-level <g> with inkscape:groupmode="layer", inkscape:label and data-name (the translated layer name). Vector
+layers come from a stand-in 2D context that turns fillRect/strokeRect/paths/arcs/roundRect/fillText into <rect>/<path>/<text> (rgba split
+into colour + opacity, textBaseline converted to a y offset, text-anchor from textAlign); the test pattern is an <image> with a PNG data URL.
+PSD: hand-written, version 1, RGB 8-bit, no colour mode data or image resources; one layer per leaf with channels -1 (alpha), 0, 1, 2 in
+PackBits RLE, cropped to the pixels it draws, Pascal name (ASCII) plus a luni Unicode name; folders use lsct section dividers; then the
+merged RGB image in RLE. Grouping (lyrGrp): A one layer per kind holding every wall (the default), B a folder per wall, C a folder per kind
+with one layer per wall.
 Port = "P1" or "P1 / R1" for the last tile; Tile = full | half top/bottom/left/right | full on its side; coordinates
 are canvas px; MaxW/TypW per piece. **Resolume XML**: an Arena Advanced Output preset (XmlState > ScreenSetup >
 screens > Screen > layers > Slice) whose composition size is the canvas, one virtual output screen the size of the
