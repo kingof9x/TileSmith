@@ -106,6 +106,16 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Fibre and breakout boxes (LRD feature, user picked option C of the demo, 2026-11-14): Auto by a copper limit (90 m) with a
   per-wall Fibre / Copper override; converters at the processor, opticalCON DUO/QUAD trunks, breakout boxes, copper tails;
   pack list, wall rows, pull sheet, canvas pills. Test: manual-src/tests/fibre_test.py.
+- Cabinet IDs (LRD feature, user picked option C of demos/cabinet-id-demo.html, 2026-11-14): each tile's ID from the port plan
+  (processor : port : tile, or global P#-tile), a "cabinet IDs" test pattern (tinted by port, cable drawn), Save cabinet ID sheet
+  (map + list per wall, optional sticker per tile on the label sheet) and a Cabinet IDs section in the binder.
+  Test: manual-src/tests/cabid_test.py; binder_test.py follows the new pages. make_spec.py already fails on main (keys from
+  earlier features have no KEYDESC); labels/bugreport/outputopts/charpack/techstyle tests fail on main too.
+- Layered pixel map export (LRD feature, 2026-11-14; demo /mnt/project-files/demos/layered-export-demo.html): top bar Export layers ▾
+  → Layered SVG… / Layered PSD…, dialog with a layer checklist (Background, Test pattern, Tile grid, Tile labels, Data paths, Power paths).
+  render() takes a layer filter (LYR) and wall filter (LYW); SVG vector layers via a stand-in 2D context (svgRec), PSD by a hand-written
+  RLE writer (lyrPSD). Grouping S.lyrGrp A/B/C all work; the user kept A (by layer type). Test: manual-src/tests/layers_test.py
+  (needs Pillow). Not yet opened in real Photoshop / Illustrator by the user.
 - Tile catalog round 1 (LRD feature, 2026-11-14): 209 models added to P (INFiLED 167 from the series spec tables on
   infiled.com with depth from each series brochure on media-infiled.metodica.co; AOTO 14 from en.aoto.com series sheets;
   Gloshine 17 from the DN and CF Pro sheets on gloshine.com (image PDFs, read by eye); Absen 11 from Full Compass copies of

@@ -31,7 +31,7 @@ KEYDESC = {
  'pports': 'Ports per processor / sending card (editable).', 'ret': 'Count a return port (R#) for every primary port.', 'showData': 'Draw data paths on the canvas.',
  'pdist': 'Power distribution ticked. Gates all power features.', 'pf': 'Power factor 0.5-1 (default 1). Usable watts per circuit = V x A x (0.8) x PF; amps everywhere = W / (V x PF).', 'pload': 'Design load for distro and leg totals: Max (spec) | Typical (% of max) | Measured (W per tile). Circuits are always checked at max.', 'ptyp': 'Typical design load in % of each tile\'s max watts (1-100, default 40).', 'pmeas': 'Measured design load in watts per tile (0-5000; 0 = use max; never above a tile\'s max).', 'dists': 'Distros: [{id, name, sys (120/208 V 3-phase wye | 127/220 V 3-phase wye | 230/400 V 3-phase wye | 120/240 V split phase | Single phase), amps per leg, soca, l2130, l1430, edison (output counts), map (Socapex leg map, default ABCABC)}], at most 12.', 'pcab': 'Power patch: "canvas index:cable number" -> {d: distro id (\'\' = left unpatched on purpose), o: output key (soca1, l21302, edison3 ...), r: leg rotation 0-2}.', 'pshare': 'Shared circuits (2fer / 3fer): [canvas index, [wall, run], [wall, run](, [wall, run])].', 'autoBal': 'Rebalance every distro after every wiring change.', 'phaseView': 'Colour power runs by phase (A white, B amber, C blue) and label them "1-1 A" when distros exist.', 'trayOpen': 'Power tray under the viewport expanded.', 'pdt': 'Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)". Choosing Edison sets pvolt 120 and pamps 15.', 'pwall': 'Edison only: plugs per wall circuit (0-100, default 0 = no wall-circuit check).', 'pwallA': 'Edison only: wall circuit breaker in amps (1-400, default 20).', 'gx': 'Wall key: how far (px) the top-left of the wall\'s real tiles sits right of the full tile grid. Set by the app, not the user; ox/oy are the canvas position of those tiles.', 'gy': 'Wall key: like gx, downwards (a converted top row makes it half a tile).', 'lblPow': 'Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only".', 'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
  'pamps': 'Breaker size in amps (1-400).', 'derate': 'Load circuits to 80% (continuous load rule).', 'showPow': 'Draw power runs on the canvas.',
- 'resSl': 'Resolume XML slice mode: One slice per LED wall | One slice per tile.', 'loop': 'Restart the build animation continuously.', 'loopHold': 'Seconds to pause before restarting (0-600).',
+ 'resSl': 'Resolume XML slice mode: One slice per LED wall | One slice per tile.', 'lyrFmt': 'Export layers format last used: svg | psd.', 'lyrOff': 'Layers unticked in the Export layers dialog (bg, pat, grid, lab, data, pow).', 'lyrGrp': 'Export layers grouping: A by kind (default) | B folder per wall | C folder per kind with a layer per wall.', 'loop': 'Restart the build animation continuously.', 'loopHold': 'Seconds to pause before restarting (0-600).',
  'ndiName': 'NDI source name (default TileSmith-LED-Out).', 'ndiFps': 'NDI frame rate (see NDI).', 'ndiIdle': 'Save CPU: when nothing moves, send about 4 frames per second instead of the full rate.',
  'shName': 'Spout sender name (Windows) or Syphon server name (Mac), default TileSmith. Applies the next time it starts.',
  'shFps': 'Spout/Syphon frame rate while NDI is off: 60, 50, 30 or 25 (while NDI runs, its rate is used).',
@@ -40,6 +40,7 @@ KEYDESC = {
  'lblSize': 'Label sheet preset: Avery 5160 (30 per US Letter), Avery 5163 (10 per US Letter), Avery L7160 (21 per A4), Label roll 62 x 29 mm, or Custom label roll.',
  'lblW': 'Custom roll label width in mm (20-300).', 'lblH': 'Custom roll label height in mm (10-300).',
  'lblCopies': 'Copies printed of each cable end (1-4).', 'lblSkip': 'First label position to use on a sheet (skips used labels).',
+ 'cidFmt': 'Cabinet ID style: "Processor : port : tile (1:P2:07)" or "Port - tile (P12-07, as on the cable labels)".', 'cidStk': 'Cabinet ID sheet: add one sticker per tile on the label sheet.',
  'lblColor': 'Colour the labels: data labels are completely green (primary) or red (return); power labels carry a flag in the wall\'s Tile-shade colour; off = plain labels, no flags or wall marks.',
  'lblLayout': 'Wrap layout: Two identical panels (default), Flag fold-over (second panel rotated 180 degrees), Text in the middle, colour on the ends.',
  'lblFlag': 'Colour flag style: Big end blocks (default), Top and bottom bars, Big corner squares.',
@@ -84,6 +85,7 @@ PATSPEC = {
  'rgbramp': 'Four horizontal bands, each black to red / green / blue / white, left to right.',
  'zone': 'Zone plate: white concentric circles on black at radii sqrt(k) x max(6, R/45).',
  'cycle': 'Full-field colour stepping every 1.5 s through #f00 #0f0 #00f #fff #000 #ff0 #0ff #f0f. Redraws only when the colour changes.',
+ 'cabinet IDs': 'cidPat: #07090c background; each tile filled with its port colour (CIDCOL, 12 colours by port) and an edge of 2.5% of the tile; the ID in bold Barlow at 28% of the tile height (shrunk to 84% of its width) at 44% down, "C# R#" under it at 45% size; unwired tiles grey with a dash. With the data paths overlay off, a dashed line per port through (94% w, 84% h) of each tile and a P# dot on its first tile. The Tile IDs / address / mm labels and tile position arrows are skipped on this pattern. Not scrolled or cached.',
 }
 
 async def collect():
@@ -144,7 +146,7 @@ TileSmith is a pixel-mapping and test-pattern tool for LED video walls, used by 
   planned automatically or by hand and are drawn on the canvas.
 - An animated **technician** builds each wall tile by tile, for live display or video.
 - The canvas is sent live as an **NDI®** video source, shared with other programs on the same computer through
-  **Spout** (Windows) or **Syphon** (Mac), and can be recorded to video, exported as PNG, a PDF (full raster, spec sheet and cable labels) or
+  **Spout** (Windows) or **Syphon** (Mac), and can be recorded to video, exported as PNG, layered SVG or PSD, a PDF (full raster, spec sheet and cable labels) or
   a Resolume Arena Advanced Output preset.
 
 Everything runs offline in one HTML page (vanilla JS + Canvas 2D). The desktop build wraps it in Electron and adds
@@ -187,7 +189,7 @@ Visibility rules:
 ### 3.2 Top bar
 
 Buttons: {top}. Then a red recording status, the zoom level (e.g. "41%") and an fps readout ("still" when nothing
-moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Start NDI®" toggles NDI; while
+moves). Resolume XML is a drop-down (One slice per LED wall / One slice per tile). "Export layers ▾" is a drop-down (Layered SVG… / Layered PSD…). "Start NDI®" toggles NDI; while
 live it is green with a dot and reads "Stop NDI®". Right after it, "Start Spout" (Windows) or "Start Syphon" (Mac)
 toggles that output the same way ("Stop Spout" / "Stop Syphon", green); the button is hidden in the web version and in a
 desktop build made without the Spout/Syphon files. Short messages (NDI started/stopped/errors, Resolume saved, Next
@@ -532,7 +534,21 @@ not fit), the pull sheet (pullItems(): Video = tiles per model, half tiles separ
 needed; Data = etherCON per length (Cable lengths on) or home-run count "length not set", jumpers spare max(spC, spT%);
 Power = cables per length or count, breakouts, jumpers, each distro; Labels = label sheets; columns NEED SPARE TOTAL and tick
 boxes PULLED LOADED BACK; footer "Pulled by / Checked by / Returned by"), then the spec sheet and labels exactly as Export PDF.
-File name "<show name>-binder-YYYYMMDD.pdf". Export PDF itself is unchanged.
+File name "<show name>-binder-YYYYMMDD.pdf". Export PDF itself is unchanged. When any wall is wired (cidAny), a "Cabinet IDs"
+section (cidPages) goes between the wall pages and the pull sheet.
+
+**Cabinet IDs** (submenu Engineering > Cabinet IDs): S.cidFmt (CIDFMT: "Processor : port : tile (1:P2:07)" default | "Port -
+tile (P12-07, as on the cable labels)"), S.cidStk (sticker per tile, default off). cabIds(plan) -> per wall, in portPlan order:
+{{wi, p (global port), s = floor((p-1)/pports)+1, ps = (p-1)%pports+1, k (1-based place on the port's cable), q (piece), id,
+col/row (1-based, u/v on custom layouts), model, half}}; id = `${{s}}:P${{ps}}:${{kk}}` or `P${{p}}-${{kk}}` (kk two digits). Same
+processor split as cfgRows / the NovaStar config export. #cidStat: "Pick a processor..." | "Wire the data (Data wiring)..." |
+"N tiles have an ID, on M ports." Buttons: cidShow (sets the selected wall's pattern to "cabinet IDs"; toast when nothing is
+wired), cidPdf -> cidPDF(): "<show name or TileSmith>-cabinet-ids-YYYYMMDD.pdf" (Letter or A4 as Export PDF) = cidPages +
+cidStickers when cidStk. cidPages: per wired wall a landscape map page ("<wall>: cabinet IDs", tiles, ports, processor, style;
+tiles filled with the port's paper colour, port-colour edge, ID and C# R#, dashed cable per port, P# tag on its first tile),
+then portrait list pages ("<wall>: cabinet IDs in data order"; two columns of ID, Proc., Port, Tile, Col., Row with a port
+colour bar). cidStickers: one per tile on lblGeom() (no skip/copies), port colour bar at the left, the ID large, "<wall> · C#
+R# · <model>" under it.
 
 **Cable lengths** (submenu Engineering > Cable lengths; S.cabOn, default off): per wall cdD / cdP (distance from processor /
 distro, in S.cunit, 0-3000, defaults 25 / 15) and cin (Bottom left | Bottom centre | Bottom right | Top left | Top centre |
@@ -680,6 +696,19 @@ or as a background tint). Flag styles: full-height end blocks (flag 20% + wall 1
 height each), corner squares (36% of height). Black or white text is chosen by colour luminance. Extra preset: wrap-around
 strip roll 100x30 mm; the default sheet is Avery 5163. With "keep together" the two ends never straddle a row on a sheet.
 **PNG**: the full canvas as tilesmith-canvas.png. **PDF**: see the Export PDF paragraph in the top bar section.
+**Layered SVG / PSD** (Export layers ▾): a dialog with SVG / PSD buttons and a checklist of layers, bottom to top Background, Test pattern,
+Tile grid, Tile labels, Data paths, Power paths. Data and Power paths are disabled unless the canvas shows them (Data / Power on and a
+processor / distribution set); unticked layers are remembered (lyrOff). One file per canvas, tilesmith-layers[-canvas].svg|psd. Each layer is
+drawn by the normal canvas renderer with a layer filter (and an optional single-wall filter) on a clear canvas, so layers stack to exactly the
+PNG. Test pattern = pattern, DVD sprite, tile faults, rigging; Tile grid = tile edges, inner line, corner squares, unbuilt outlines; Tile labels =
+Tile IDs / addresses / mm sizes, tile position markers, the position label and footer of the shaded patterns. The technician is never drawn.
+SVG: each layer is a top-level <g> with inkscape:groupmode="layer", inkscape:label and data-name (the translated layer name). Vector
+layers come from a stand-in 2D context that turns fillRect/strokeRect/paths/arcs/roundRect/fillText into <rect>/<path>/<text> (rgba split
+into colour + opacity, textBaseline converted to a y offset, text-anchor from textAlign); the test pattern is an <image> with a PNG data URL.
+PSD: hand-written, version 1, RGB 8-bit, no colour mode data or image resources; one layer per leaf with channels -1 (alpha), 0, 1, 2 in
+PackBits RLE, cropped to the pixels it draws, Pascal name (ASCII) plus a luni Unicode name; folders use lsct section dividers; then the
+merged RGB image in RLE. Grouping (lyrGrp): A one layer per kind holding every wall (the default), B a folder per wall, C a folder per kind
+with one layer per wall.
 Port = "P1" or "P1 / R1" for the last tile; Tile = full | half top/bottom/left/right | full on its side; coordinates
 are canvas px; MaxW/TypW per piece. **Resolume XML**: an Arena Advanced Output preset (XmlState > ScreenSetup >
 screens > Screen > layers > Slice) whose composition size is the canvas, one virtual output screen the size of the
