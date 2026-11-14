@@ -110,6 +110,11 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
   missing gear; he liked the signal path diagram and wants it kept. Built: per-wall Full / Backup processor / Loop / Spare /
   None with priority, gear on hand with step-down and reasons, port map, Signal path svg in Engineering (also covers fibre).
   Test: tests/redundancy_test.py.
+- Cabinet IDs (LRD feature, user picked option C of demos/cabinet-id-demo.html, 2026-11-14): each tile's ID from the port plan
+  (processor : port : tile, or global P#-tile), a "cabinet IDs" test pattern (tinted by port, cable drawn), Save cabinet ID sheet
+  (map + list per wall, optional sticker per tile on the label sheet) and a Cabinet IDs section in the binder.
+  Test: manual-src/tests/cabid_test.py; binder_test.py follows the new pages. make_spec.py already fails on main (keys from
+  earlier features have no KEYDESC); labels/bugreport/outputopts/charpack/techstyle tests fail on main too.
 
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers

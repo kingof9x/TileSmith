@@ -32,14 +32,15 @@ async def main():
         t1, t2 = txt(f, 1, 1), txt(f, 2, 2); print(t2)
         ok &= 'Spring Tour 2027' in t1 and 'Hall B' in t1 and '2 LED walls' in t1 and 'Contents' in t2
         toc = {m.group(1).strip(): int(m.group(2)) for m in re.finditer(r'^\s*(\S[^\n]*?)\s{2,}[ .]*(\d+)\s*$', t2, re.M)}; print('toc', toc)
-        ok &= toc.get('Canvas') == 3 and toc.get('LED walls') == 4 and toc.get('Pull sheet') == 6
+        ok &= toc.get('Canvas') == 3 and toc.get('LED walls') == 4 and toc.get('Cabinet IDs') == 6 and toc.get('Pull sheet') == 10
+        ok &= 'Main: cabinet IDs' in txt(f, 6, 6) and 'Side: cabinet IDs in data order' in txt(f, 9, 9)
         ok &= 'Main' in txt(f, 4, 4) and 'Side' in txt(f, 5, 5)
-        ps = txt(f, 6, 6); print(ps[:1500]); ok &= 'pull sheet' in ps and 'NEED' in ps and 'PULLED' in ps and 'Pulled by' in ps
+        ps = txt(f, 10, 10); print(ps[:1500]); ok &= 'pull sheet' in ps and 'NEED' in ps and 'PULLED' in ps and 'Pulled by' in ps
         ok &= 'LED Wall Spec' in txt(f, toc['Spec sheet'], toc['Spec sheet'])
         # the plain Export PDF is unchanged: no cover, no pull sheet
         async with pg.expect_download() as d: await pg.evaluate("()=>exportPDF()")
         dl = await d.value; g = os.path.join(OUT, dl.suggested_filename); await dl.save_as(g); t = txt(g); print('plain', dl.suggested_filename, npages(g))
-        ok &= 'pull sheet' not in t and 'Contents' not in t and npages(g) == n - 5
+        ok &= 'pull sheet' not in t and 'Contents' not in t and npages(g) == n - 9
         # paths toggles restored after the binder
         r = await pg.evaluate("()=>[S.showData,S.showPow]"); ok &= r == [False, True] or r[0] is False; print('toggles', r)
         # settings saved with the project
