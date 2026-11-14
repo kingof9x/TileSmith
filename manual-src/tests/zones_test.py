@@ -40,7 +40,7 @@ async def main():
         r = await pg.evaluate("()=>({z:S.zones.map(z=>z.name),w:walls.map(w=>w.zone),p:S.zProc,d:S.dists.map(d=>d.zone),cols:S.zones.map(z=>z.c)})"); print('set', r)
         ok &= r['z'] == names and r['w'] == [us, sl, sr] and r['p'] == us and r['d'] == [sl, sr] and len(set(r['cols'])) == 3
         # Engineering: a Zones section; per-zone totals add up to the whole show
-        r = await pg.evaluate("()=>{const T=zTotals(),all=walls.map(wst);return{T:T.map(t=>[t.z.name,t.walls,t.N,+t.kg.toFixed(3),t.dp,t.pc]),N:all.reduce((a,s)=>a+s.N,0),kg:+all.reduce((a,s)=>a+s.kg,0).toFixed(3),dp:portPlan().flat().length*(S.ret?2:1),pc:powerPlan().flat().length,txt:document.querySelector('#right').innerText}}")
+        r = await pg.evaluate("()=>{const T=zTotals(),all=walls.map(wst);return{T:T.map(t=>[t.z.name,t.walls,t.N,+t.kg.toFixed(3),t.dp,t.pc]),N:all.reduce((a,s)=>a+s.N,0),kg:+all.reduce((a,s)=>a+s.kg,0).toFixed(3),dp:(()=>{const pl=portPlan(),RP=redPlan(pl);return pl.reduce((a,x,i)=>a+x.length*(hasR(RP.got[i])?2:1),0)})(),pc:powerPlan().flat().length,txt:document.querySelector('#right').innerText}}")
         print('totals', r['T']); T = {t[0]: t for t in r['T']}
         ok &= T['Upstage'][2] == 72 and T['Stage left'][2] == 16 and T['Stage right'][2] == 16 and T['No location'][1] == 0
         ok &= sum(t[2] for t in r['T']) == r['N'] and abs(sum(t[3] for t in r['T']) - r['kg']) < 1e-6 and sum(t[4] for t in r['T']) == r['dp'] and sum(t[5] for t in r['T']) == r['pc']
