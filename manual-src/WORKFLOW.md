@@ -32,6 +32,35 @@
 
 Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wiring preferences, Android and iOS apps.
 
+## Parallel PRs without merge conflicts (Callum, 2026-11-14)
+Several feature branches are open at once and Callum merges them one after another, so every PR must avoid editing
+lines another feature also edits. The shared hotspots, and what to do in each:
+- `TR` (translations), `S` (settings defaults), `WK` (per-wall keys) and `LIM` (number limits) in app/index.html are one
+  entry per line, each ending in a comma, under `// Feature` headers: Core first, then the features in A to Z order.
+  Add your entries as a new `// Your feature` group at its A to Z place, never at the top or bottom of the list and never
+  on an existing line. tests/lists_test.py checks this (no browser; `npm install` in tools once).
+- `sync()` and `uiVis()` call each panel's refresh one per line: add your call on its own new line.
+- `KEYDESC` in make_spec.py is one key per line: add your keys as a `# Your feature` block, not on an existing line.
+- Canvas drawing (render and the per-tile loop): put your drawing in your own function and call it from one new line,
+  for example `if(S.xOn)drawX(c,w);`, instead of editing a shared drawing line.
+- Manual (make_manual.py) and spec prose: add your own new `<p>` / paragraph where it belongs, not always right before the
+  chapter's last line, and don't rewrap other paragraphs.
+- Feature notes: write them in their own file, manual-src/changes/<feature>.md, not at the bottom of the list below.
+  Fold them into HISTORY at the next package. (.gitattributes merges WORKFLOW.md and changes/*.md with `union`, so a
+  local `git merge` keeps both sides of a notes clash.)
+- Don't reformat, reorder or tidy shared lines in a feature PR. Do that in its own PR when nothing else is open.
+
+PR steps for every thread:
+1. Start the branch from the latest origin/main.
+2. Right before opening the PR (Callum, 2026-11-14: open it yourself once the feature is finished and tested,
+   without asking him first):
+   `git fetch origin main && git merge origin/main` (merge, never rebase or force-push), fix any conflict by keeping both
+   sides, then run your feature's test and tests/lists_test.py.
+   A branch started before this layout (TR etc. still on one long line) merges main once with
+   `python3 manual-src/tools/regroup_merge.py "Your feature"` right after the conflicting `git merge origin/main`.
+3. Once the PR is open, watch it. When another PR lands on main, merge main into yours the same way and push, without
+   being asked, and tell Callum in one line.
+
 ## Google AI Studio kit (added 2026-10-14, after v3.3)
 - Project folder android-aistudio/: webview-bridge.js (window.TileSmithAndroid -> window.TSM, same as the Capacitor
   bridge), prepare-assets.js, README.txt, android/ (Kotlin + Compose Android Studio project, app ID
@@ -123,15 +152,6 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Locations (LRD "beaches", user picked option C of /mnt/project-files/demos/beaches-demo.html, 2026-11-14; rejected the names
   beaches and zones, picked Locations; code still says zone/zones): project location list, walls / processor / distros pick one, Engineering totals, viewport outline + hide
   strip, pull sheet block per location, binder location map and location order. Test: manual-src/tests/zones_test.py.
-- Tile catalog round 1 (LRD feature, 2026-11-14): 209 models added to P (INFiLED 167 from the series spec tables on
-  infiled.com with depth from each series brochure on media-infiled.metodica.co; AOTO 14 from en.aoto.com series sheets;
-  Gloshine 17 from the DN and CF Pro sheets on gloshine.com (image PDFs, read by eye); Absen 11 from Full Compass copies of
-  the Polaris V10 and Acclaim V3 cut sheets). New brands AOTO and Gloshine in PBR. TSER groups the Model menu by series,
-  TSRC + PINFO.src give each tile's sheet ("Source" row), HALF gains the mini / small halves. INFiLED Deep Black DB2.6
-  Lite / Pro now use the DBmk2 figures (no longer estimated). "Find a tile" search box above Brand (picker option B).
-  Never use LED Raster Designer's cabinet data. Not reachable: Unilumin (sheets behind a contact form), Planar (spec table
-  loads by script), Leyard (bot check), Liantronics (pages give no power), Glux (www.glux.com is a parked domain), absen.com
-  (bot check). Test: manual-src/tests/catalog_test.py (TS_APP=file://... to point at a checkout).
 
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
