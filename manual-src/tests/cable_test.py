@@ -22,7 +22,7 @@ async def main():
         ok &= abs(r['m'] - r['exp']) < 1e-9 and r['nd'] == r['ports'] and r['np'] == r['soca'] == r['cables'] and r['jd'] == r['tiles'] - r['ports'] and r['eng'] and 'Cable pack list' in r['spec']
         ok &= r['cab'] == [min(x for x in [1, 3, 5, 10, 15, 20, 30, 50] if x >= r['m'])]
         # return lines double the data runs; top-right arrival changes the climb
-        r = await pg.evaluate("()=>{S.ret=true;sync();const a=cabRuns().filter(x=>x.kind=='r').length,n=portPlan().flat().length;S.ret=false;const b=cabRuns().find(x=>x.id=='P1').m;S.cin='Top right';sync();const c=cabRuns().find(x=>x.id=='P1').m;S.cin='Bottom left';sync();return{a,n,b,c}}")
+        r = await pg.evaluate("()=>{S.wred='Loop';storeWall();sync();const a=cabRuns().filter(x=>x.kind=='r').length,n=portPlan().flat().length;S.wred='None';storeWall();sync();const b=cabRuns().find(x=>x.id=='P1').m;S.cin='Top right';sync();const c=cabRuns().find(x=>x.id=='P1').m;S.cin='Bottom left';sync();return{a,n,b,c}}")
         print('ret/arrive', r); ok &= r['a'] == r['n'] and abs(r['b'] - r['c']) > 1e-6
         # over 100 m on a wall forced to copper: fibre warning and joined cables (Auto would switch it to fibre)
         r = await pg.evaluate("()=>{S.cdD=120;S.wfib='Copper';storeWall();sync();const R=cabRuns();S.cdD=25;S.wfib='Auto';storeWall();sync();return cabRows(R)}")
