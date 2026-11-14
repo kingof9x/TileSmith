@@ -104,8 +104,7 @@ KEYDESC = {
   'hat': 'Technician hard hat colour.',
   'vest': 'Technician vest colour.',
   'logo': 'Vest logo text.',
-  'tstyle': 'Technician character style: Classic or Character pack.',
-  'tpack': 'Selected character pack (id in the on-device pack library).',
+  'tstyle': 'Technician character style: Classic | Hand-drawn (Rocketbox workers rendered with three.js and an ink shader; files in app/crew, loaded only when picked; Classic is drawn without WebGL) | Backlit (dark Canvas 2D figure with a rim of wall light and reflective tape).',
   'cd': 'Show crew details editor and name tags.',
   'play': 'Build animation playing (not saved).',
   'font': 'UI font: JetBrains Mono (default), OpenDyslexic, or Current (the original Barlow-based stack). Set from Preferences in the Info popup; applies to the app chrome via --font-ui, not to canvas-drawn text.',
@@ -152,6 +151,58 @@ KEYDESC = {
   'pfill': 'Power wiring preference (UI label "Wiring preference"): Fewest circuits | Whole rows or columns | One continuous path | Horizontal | Vertical (see Power).',
   'plink': 'Power link limit: max tiles per circuit (0 = none).',
   'pman': 'Manual power chains (same format as wman).',
+  # Binder
+  'bShow': 'Export binder / pull sheet: show name, printed on every page title and used in the file name.',
+  'bVenue': 'Export binder: venue, printed under the title.',
+  'bDate': 'Export binder: load-in date (free text), printed under the title.',
+  'spT': 'Pull sheet spares: extra tiles as % of the tiles in use (0-100, rounded up).',
+  'spC': 'Pull sheet spares: extra cables per cable length (0-20).',
+  # Build modes
+  'bmode': 'Wall key: how the wall goes up and how it is rigged: Ground stack (from the floor up) | Flown from motors (bumpers on hoists, top row first) | Flown from truss (bumpers on slings from a truss).',
+  # Cable lengths
+  'cabOn': 'Engineering > Cable lengths ticked: work out every data and power run and list the cables to take (needs a processor or power distribution).',
+  'cdD': 'Wall key: distance from the processor to the wall, in cunit (0-3000).',
+  'cdP': 'Wall key: distance from the distro to the wall, in cunit (0-3000).',
+  'cin': 'Wall key: where the cables arrive at the wall: Bottom left | Bottom centre | Bottom right | Top left | Top centre | Top right. Each run = distance + climb along the wall to its first tile (no diagonals) + cslack, rounded up to a length you own.',
+  'cunit': 'Cable length units: m | ft. Changing it converts the distances, limits and owned lengths.',
+  'cslack': 'Slack added to every run in % (0-100).',
+  'clenD': 'Data cable lengths you own, comma separated, in cunit.',
+  'clenP': 'Power cable lengths you own, comma separated, in cunit.',
+  # Fibre
+  'wfib': 'Wall key: data to this wall: Auto (fibre when the longest copper data run is over fibLim) | Fibre | Copper.',
+  'fibLim': 'Copper limit in cunit (default 90 m / 295 ft); Auto walls with a longer data run go over fibre.',
+  'fibBox': 'Ports per fibre breakout box at the wall: 4 | 10 | 16.',
+  'fibNat': 'Processor has fibre outputs, so no converter is needed at the processor.',
+  'fibTr': 'Fibre trunk type: opticalCON DUO (1 breakout box per trunk) | opticalCON QUAD (2 boxes per trunk).',
+  'fibLen': 'Fibre trunk lengths you own, comma separated, in cunit.',
+  'fibTail': 'Copper tail lengths you own (breakout box to the first tile), comma separated, in cunit.',
+  # Redundancy
+  'wred': 'Wall key: redundancy for this wall: Full (backup processor, own route) | Backup processor (same port numbers) | Loop (spare ports, same processor) | Spare processor (on the truck) | None. Old projects get Loop, or None when ret was off.',
+  'wpri': 'Wall key: redundancy priority (1-99, 1 = covered first when gear is short).',
+  'gOn': 'Limit the plan to the gear on hand (gProc, gTr, gBox): walls step down from their method, in priority order, with the reason shown.',
+  'gProc': 'Processors on hand (0-50).',
+  'gTr': 'Fibre trunks on hand (0-50).',
+  'gBox': 'Fibre breakout boxes on hand (0-50).',
+  'rlink': 'Backup processors need a link / sync cable (added to the pull sheet and drawn in the signal path).',
+  # Rigging
+  'rigOn': 'Engineering > Rigging ticked: work out bumpers, truss, ground bases and hoist loads for every wall and add them to the pull sheet. Loads assume the weight is shared evenly (planning figures only).',
+  'rparts': 'Rigging parts rules per tile model: {model: [[name, qty, per (tile | column | row | wall | hoist point), kg]]}, at most 40 rows each.',
+  'rbw': 'Wall key: bumper width in tiles (1-4).',
+  'rbkg': 'Wall key: weight of one bumper in kg (0-500).',
+  'rpts': 'Wall key: pickups per bumper (1 or 2).',
+  'rwll': 'Wall key: hoist rating in kg (1-20000); hoist points over it are flagged.',
+  'tsec': 'Wall key: truss section lengths owned in m, comma separated; the truss (wall width + tex each side) is made from the largest that fit first.',
+  'tkgm': 'Wall key: truss weight in kg per m (0-200).',
+  'thn': 'Wall key: hoists on the truss (1-50).',
+  'tex': 'Wall key: extra truss each side of the wall in m (0-20).',
+  'rgbw': 'Wall key: ground base width in tiles (1-4), for Ground stack.',
+  'rgkg': 'Wall key: weight of one ground base in kg (0-500).',
+  # Tile faults
+  'glOn': 'Tile faults running (Start tile faults): the faulty tiles show their fault on the canvas until Fix glitch sends a technician to swap them.',
+  'glType': 'Fault shown: one of the 12 fault types (Dead tile, Flicker, Colour channel out, Stuck pixels, Data chain break, Module out, Scrambled tile, Frozen tile, Calibration mismatch, Scan line fault, Noise and sparkle, Power circuit tripped) or Random mix (each tile its own fault).',
+  'glPick': 'Faulty tiles: Tiles I pick (click tiles in the viewport) | Random.',
+  'glN': 'How many random faulty tiles (1-200).',
+  'glk': 'Wall key: faulty tiles of the wall: [[tile key, fault index]].',
 }
 PATSPEC = {
  'tileshade': 'Classic pixel map. Tiles alternate (checkerboard by grid cell) between Tile-shade colour and that colour mixed 50% with white. White 1.5 px+ lines corner to corner across the wall, a centre circle of radius h/4. Wall name (light box, dark text) and "W {w} X H {h}" (dark box, white text) in the middle, font f = max(12, min(h/22, w/30)). Position label "X {x},Y {y}" (canvas position of the first tile\'s top-left corner; first tile = top row, then leftmost) drawn as an overlay at that corner: white text on rgba(0,0,0,.62). Footer centred at the bottom: "{name} / Position: X {ox}, Y {oy} / {cols}.0 Columns X {rows}.0 Rows - {N} Cabinets Total ({n} half) / Resolution: {w} x {h} ( {w*h} ) / Aspect Ratio: {w/h}" in a light box, font max(10, min(h/50, tileH/10)) shrunk to fit 98% of the wall width; drawn again above the tile borders.',
@@ -343,6 +394,12 @@ goes to the output.
 ### 3.4 Engineering data panel (right; a collapsible menu after the settings on phones)
 
 Collapsible "Entire canvas" section then one section per wall, as two-column tables (label, value). Rows in section 9.
+
+### 3.5 Language
+The UI is written in English. TR maps each English text to [Español, Português (Brasil)]; tr() looks texts up with
+whitespace collapsed and trAll() translates the page's text (elements marked data-notr are skipped).
+Info > Preferences > Language (select[data-lang]) picks English, Español or Português (Brasil); the choice is kept in
+localStorage "tilesmith-lang", and the first launch follows navigator.language.
 
 ## 4. Data model and saved settings
 
@@ -718,6 +775,26 @@ height, wall height/1.05, wall width/0.85)), clipped to the wall, standing besid
 facing it, with both hands on the carried tile. The carried tile is a dark #1b2028 rectangle with a light frame,
 amber corner marks and a black handle, at the piece's own size. Crew: {d['crew']} by default, editable (name, skin,
 hair, face photo), rotating so one person is not on two walls at once.
+
+Character style (S.tstyle): Classic is the flat vector person above. Hand-drawn draws two Microsoft Rocketbox workers
+(MIT; binary FBX, motion-captured walk and textures base64-encoded in app/crew/rb-assets.js) posed from their skeleton
+for each build phase with the walk blended in, rendered by three.js r147 into an offscreen WebGL canvas through an ink
+outline / flat-colour shader, then drawn onto the wall like the Classic tech. The files load only when Hand-drawn is
+picked; without them or without WebGL the Classic tech is drawn and #crewNote says why. Backlit is a dark Canvas 2D
+figure with a rim of wall light and bright reflective tape. Hat, vest, logo and name tags apply to every style.
+
+Build mode (wall key bmode): Ground stack builds up from the floor from any start corner, row by row or column by
+column. Flown from motors and Flown from truss hang the wall top row first, a row at a time: each row goes on at floor
+level, then the wall is raised one row (bar on chain motors, or bumpers on a truss); only the left or right side of the
+start corner is used. The same setting is the rigging hang method (Engineering > Rigging).
+
+Tile faults (Animation Options > Tile faults; S.glOn, glType, glPick, glN, wall key glk): GLT = Dead tile, Flicker,
+Colour channel out, Stuck pixels, Data chain break, Module out, Scrambled tile, Frozen tile, Calibration mismatch, Scan
+line fault, Noise and sparkle, Power circuit tripped (GLD holds the cause shown under the menu), or Random mix. Faulty
+tiles are picked by clicking in the viewport (Pick tiles) or rolled at random (glN tiles). Start tile faults (top bar
+or the submenu) draws each fault over its tile on every output. Fix glitch sends two technicians: one behind the wall
+appears in the gap when the faulty tile pops out; a reachable tile is handed down and the new one up, a higher one is
+lowered on a rope; the other swaps it and carries the broken tile off; the faults stop when every tile is fixed.
 
 ## 13. DVD screensaver
 
