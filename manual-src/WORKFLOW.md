@@ -97,6 +97,12 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Cable lengths and stock (LRD feature, user picked option A of the demo, 2026-11-12): per-wall distance to processor and distro
   plus arrival point; runs add the climb along the wall and slack, rounded up to the lengths owned; pack list in Engineering
   and the PDF, lengths on the canvas. Off by default, so old projects are unchanged. Test: tests/cable_test.py (ALL OK).
+- Show binder (LRD pull sheet/binder, user picked option B of the demo, 2026-11-12): Export binder = cover, contents, canvas,
+  page per wall, pull sheet with spares, spec sheet, labels. Rigging (frames/bumpers) is not listed: the app has no rigging
+  data. Test: tests/binder_test.py (ALL OK, needs pdftotext and pypdf).
+- Rigging (LRD feature, user picked option C of the demo and asked for truss, 2026-11-13): hang method = Build mode with a
+  new "Flown from truss"; bumpers / truss / ground bases, hoist loads, parts rules per tile model, pull sheet Rigging section.
+  Test: tests/rigging_test.py (ALL OK). techstyle_test.py fails on main too (workerPack removed in #17).
 
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
