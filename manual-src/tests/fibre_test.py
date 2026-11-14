@@ -9,8 +9,8 @@ async def main():
         b = await p.chromium.launch(); pg = await b.new_page(viewport={'width': 1500, 'height': 1000}); errs = []
         pg.on('pageerror', lambda e: errs.append(str(e))); await pg.goto(APP); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(600)
         # two walls: Main 40 m away stays copper, Delay 120 m away goes over fibre on Auto
-        r = await pg.evaluate("""()=>{S.cols=12;S.rows=8;S.name='Main';storeWall();S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';S.ret=false;S.cabOn=true;S.cdD=40;S.cslack=10;storeWall();
-          addWall(false);S.name='Delay';S.cols=8;S.rows=6;S.cdD=120;storeWall();sync();const R=cabRuns(),pl=portPlan();
+        r = await pg.evaluate("""()=>{S.cols=12;S.rows=8;S.name='Main';storeWall();S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';S.wred='None';S.cabOn=true;S.cdD=40;S.cslack=10;storeWall();
+          addWall(false);S.name='Delay';S.wred='None';S.cols=8;S.rows=6;S.cdD=120;storeWall();sync();const R=cabRuns(),pl=portPlan();
           return{fib:R.fib.map(x=>({wi:x.wi,ports:x.ports,boxes:x.boxes,trunks:x.trunks,m:x.m,cab:x.cab})),ports:pl.map(x=>x.length),tails:R.filter(x=>x.fib).map(x=>[x.id,x.m,x.cab]),
            rows:cabRows(R),w0:cabWallRows(R,0),w1:cabWallRows(R,1),pull:pullItems().find(d=>d[0]=='Data'),over:cabRows(R).some(x=>x[0]=='Over 100 m')}}""")
         print(json.dumps(r, indent=1)[:3000])

@@ -106,6 +106,10 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Fibre and breakout boxes (LRD feature, user picked option C of the demo, 2026-11-14): Auto by a copper limit (90 m) with a
   per-wall Fibre / Copper override; converters at the processor, opticalCON DUO/QUAD trunks, breakout boxes, copper tails;
   pack list, wall rows, pull sheet, canvas pills. Test: manual-src/tests/fibre_test.py.
+- Redundancy (LRD feature, 2026-11-14): Callum wants every method available per wall, and plans that cope with failed or
+  missing gear; he liked the signal path diagram and wants it kept. Built: per-wall Full / Backup processor / Loop / Spare /
+  None with priority, gear on hand with step-down and reasons, port map, Signal path svg in Engineering (also covers fibre).
+  Test: tests/redundancy_test.py.
 
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
