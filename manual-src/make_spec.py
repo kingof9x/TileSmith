@@ -371,8 +371,14 @@ Quick sizes: 4x3, 6x4, 8x5, 10x6, 16x9.
 ## 5. Tile models (presets)
 
 Picking a preset fills tw, th, wmm, hmm, pitch, kg, wmax, dmm. Editing any of those switches the preset to "Custom".
-Density = 1e6 / (pitch^2) px/m^2; Typical power = 40% of max. The list is grouped by manufacturer (Absen, Unilumin,
-INFiLED, YES TECH; Custom last); ROE is split into one group per series (ROE Amber, ROE Black Marble, ... ROE Vanish Acoustics) in the order of the ROES array. YES TECH max watts = the higher W/m^2 figure on the spec sheet x cabinet area, rounded
+Density = 1e6 / (pitch^2) px/m^2; Typical power = 40% of max. Brand menu (PBR): ROE, Absen, Unilumin, INFiLED, AOTO,
+Gloshine, YES TECH, Owl Vision, Custom. The Model menu shows only the picked brand; models listed in TSER (key -> series name)
+sit in one optgroup per series, the rest come first ungrouped. "Find a tile" (#tFind, input type=search with datalist #tFindL)
+lists every preset and own tile with "series · pitch mm · W×H"; picking one exactly (change event, or a datalist pick in the
+input event) sets the preset, applies it, and clears the box; partial text does nothing. Catalog round 1 (2026-11-14) added
+209 models (INFiLED 167, Gloshine 17, AOTO 14, Absen 11) from the makers' own spec pages / sheets; each has PINFO.src (from
+TSRC) shown as a "Source" row in Engineering > LED Tiles and the PDF; where a sheet gives only W/m^2, max W = W/m^2 x panel area.
+INFiLED depth comes from each series brochure. The list is grouped by manufacturer (Custom last); ROE is split into one group per series (ROE Amber, ROE Black Marble, ... ROE Vanish Acoustics) in the order of the ROES array. YES TECH max watts = the higher W/m^2 figure on the spec sheet x cabinet area, rounded
 up. ROE figures come from the cabinet pages on roevisual.com (per panel, as printed). 23 ROE models have a half panel (HALF table, 'h' = two halves stacked make the full tile).
 
 {presets}
