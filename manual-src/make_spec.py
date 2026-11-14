@@ -528,17 +528,17 @@ Power = cables per length or count, breakouts, jumpers, each distro; Labels = la
 boxes PULLED LOADED BACK; footer "Pulled by / Checked by / Returned by"), then the spec sheet and labels exactly as Export PDF.
 File name "<show name>-binder-YYYYMMDD.pdf". Export PDF itself is unchanged.
 
-**Zones** (submenu Engineering > Zones): S.zones = [{{id, name (30 chars), c (#rrggbb)}}] (max 20, list order = pull sheet
+**Locations** (submenu Engineering > Locations; called zones in the code): S.zones = [{{id, name (30 chars), c (#rrggbb)}}] (max 20, list order = pull sheet
 and binder order), per wall w.zone (0 = no zone), per distro d.zone, S.zProc (processor's zone), S.zHide (zones hidden in the
 viewport only). zSan() drops unknown ids on load; a wall saved without zone opens as 0. New zones get the first unused colour
-of ZCOL. Engineering "Zones" section (zTotals over every canvas): per zone a head row, LED walls (names), Tiles, Weight, Peak
-power, Data ports (x2 with returns), Power circuits, Gear staged here; wall rows add "Zone". Viewport (zDrawVp): 3 px outline
+of ZCOL. Engineering "Locations" section (zTotals over every canvas): per zone a head row, LED walls (names), Tiles, Weight, Peak
+power, Data ports (x2 with returns), Power circuits, Gear staged here; wall rows add "Location". Viewport (zDrawVp): 3 px outline
 and a name tag in the zone colour; a hidden zone's walls are drawn black with a dashed grey edge and "<name> · hidden", and
 hitWall skips them; the strip #zstrip above the viewport toggles S.zHide and has Show all. pullItems(zid) keeps only walls in
 the zone (zid 0 = no zone) and the gear whose zone matches; processors and label sheets go with S.zProc; with Cable lengths a
 power cable belongs to the wall it is measured to, otherwise to the first wall it feeds; jumpers and breakouts are counted per
-zone. Pull sheet: a coloured zone bar (name, "N LED walls") before that zone's departments, zones in list order then No zone.
-Binder: a "Zone map" page per canvas after the canvas pages (the raster darkened, each wall tinted and outlined in its zone
+zone. Pull sheet: a coloured zone bar (name, "N LED walls") before that zone's departments, zones in list order then No location.
+Binder: a "Location map" page per canvas after the canvas pages (the raster darkened, each wall tinted and outlined in its zone
 colour with "<wall> · <zone>", and a key with walls and gear per zone), contents list each zone under LED walls, and each wall
 page has a zone tag top right.
 

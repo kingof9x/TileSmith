@@ -1,4 +1,4 @@
-# Zones (Engineering › Zones): named places the show stages its gear. Walls, distros and the processor pick a zone;
+# Locations (Engineering › Locations; code name zones): named places the show stages its gear. Walls, distros and the processor pick a zone;
 # Engineering totals each zone, the pull sheet has a block per zone, the binder orders wall pages by zone and adds a zone map,
 # and the strip above the viewport hides a zone's walls in the viewport only.
 import asyncio, json, os, re, subprocess, tempfile
@@ -24,7 +24,7 @@ async def main():
           S.proc='NovaStar VX1000 Pro';applySpec();S.pdist=true;S.pdt='Socapex (6 circuits per cable)';walls.forEach(w=>{w.wmode='Snake';w.pmode='Snake'});loadWall(0);
           distAct('dadd');distAct('dadd');S.showData=false;sync()}""")
         # no zones yet: nothing changes
-        r = await pg.evaluate("()=>({on:zOn(),strip:document.querySelector('#zstrip').hidden,eng:document.querySelector('#right').innerText.includes('Zones')})")
+        r = await pg.evaluate("()=>({on:zOn(),strip:document.querySelector('#zstrip').hidden,eng:document.querySelector('#right').innerText.includes('Locations')})")
         print('off', r); ok &= r == {'on': False, 'strip': True, 'eng': False}
         # add three zones with the buttons, rename them, assign walls and gear through the selects
         await pg.evaluate("()=>{const p=document.querySelector('#zoneBox');p.closest('details').open=true;p.closest('details').parentElement.closest('details').open=true}")
@@ -42,7 +42,7 @@ async def main():
         # Engineering: a Zones section; per-zone totals add up to the whole show
         r = await pg.evaluate("()=>{const T=zTotals(),all=walls.map(wst);return{T:T.map(t=>[t.z.name,t.walls,t.N,+t.kg.toFixed(3),t.dp,t.pc]),N:all.reduce((a,s)=>a+s.N,0),kg:+all.reduce((a,s)=>a+s.kg,0).toFixed(3),dp:portPlan().flat().length*(S.ret?2:1),pc:powerPlan().flat().length,txt:document.querySelector('#right').innerText}}")
         print('totals', r['T']); T = {t[0]: t for t in r['T']}
-        ok &= T['Upstage'][2] == 72 and T['Stage left'][2] == 16 and T['Stage right'][2] == 16 and T['No zone'][1] == 0
+        ok &= T['Upstage'][2] == 72 and T['Stage left'][2] == 16 and T['Stage right'][2] == 16 and T['No location'][1] == 0
         ok &= sum(t[2] for t in r['T']) == r['N'] and abs(sum(t[3] for t in r['T']) - r['kg']) < 1e-6 and sum(t[4] for t in r['T']) == r['dp'] and sum(t[5] for t in r['T']) == r['pc']
         ok &= 'Gear staged here' in r['txt'] and 'Stage left' in r['txt']
         # pull sheet: each zone's block holds its own walls and gear; blocks add up to the whole show
@@ -79,10 +79,10 @@ async def main():
         dl = await d.value; f = os.path.join(OUT, dl.suggested_filename); await dl.save_as(f)
         t2 = txt(f, 2, 2); toc = [(m.group(1).strip(), int(m.group(2))) for m in re.finditer(r'^\s*(\S[^\n]*?)\s{2,}[ .]*(\d+)\s*$', t2, re.M)]; print('toc', toc)
         names_toc = [x[0] for x in toc]; D = dict(toc)
-        ok &= names_toc[:6] == ['Canvas', 'Zone map', 'LED walls', 'Stage left', 'Upstage', 'Stage right']
-        ok &= 'Zone map' in txt(f, D['Zone map'], D['Zone map']) and 'IMAG L' in txt(f, D['Stage left'], D['Stage left']) and 'Centre' in txt(f, D['Upstage'], D['Upstage'])
+        ok &= names_toc[:6] == ['Canvas', 'Location map', 'LED walls', 'Stage left', 'Upstage', 'Stage right']
+        ok &= 'Location map' in txt(f, D['Location map'], D['Location map']) and 'IMAG L' in txt(f, D['Stage left'], D['Stage left']) and 'Centre' in txt(f, D['Upstage'], D['Upstage'])
         ps = txt(f, D['Pull sheet'], D['Spec sheet'] - 1); print(ps[:1800])
-        i1, i2, i3 = ps.find('STAGE LEFT'), ps.find('UPSTAGE'), ps.find('STAGE RIGHT'); ok &= -1 < i1 < i2 < i3 and 'NO ZONE' not in ps
+        i1, i2, i3 = ps.find('STAGE LEFT'), ps.find('UPSTAGE'), ps.find('STAGE RIGHT'); ok &= -1 < i1 < i2 < i3 and 'NO LOCATION' not in ps
         # saved and opened again; an old project without zones opens with none; removing a zone frees its walls and gear
         r = await pg.evaluate("""()=>{const o=JSON.parse(JSON.stringify(stateObj()));S.zones=[];walls.forEach(w=>w.zone=0);applyCore(o);sync();const a={z:S.zones.map(z=>z.name),w:walls.map(w=>w.zone),p:S.zProc,d:S.dists.map(d=>d.zone)};
           const o2=JSON.parse(JSON.stringify(o));delete o2.S.zones;delete o2.S.zProc;delete o2.S.zHide;o2.walls.forEach(w=>delete w.zone);S.zones=[];applyCore(o2);sync();const b={on:zOn(),w:walls.map(w=>w.zone)};
@@ -91,7 +91,7 @@ async def main():
         ok &= r['b'] == {'on': False, 'w': [0, 0, 0]} and r['c'] == {'z': ['Stage left', 'Stage right'], 'w': [0, sl, sr], 'p': 0}
         # Spanish: the panel text is translated
         r = await pg.evaluate("()=>{setLang&&setLang('es');sync();return document.querySelector('#zoneBox').closest('details').querySelector('summary').innerText}") if await pg.evaluate("()=>typeof setLang=='function'") else 'skip'
-        print('es', r); ok &= r in ('skip', 'Zonas')
+        print('es', r); ok &= r in ('skip', 'Ubicaciones')
         print('page errors', errs); ok &= not errs; await b.close()
     print('ALL OK' if ok else 'FAILED')
 asyncio.run(main())
