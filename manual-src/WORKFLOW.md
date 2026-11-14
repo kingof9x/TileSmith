@@ -106,6 +106,15 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Fibre and breakout boxes (LRD feature, user picked option C of the demo, 2026-11-14): Auto by a copper limit (90 m) with a
   per-wall Fibre / Copper override; converters at the processor, opticalCON DUO/QUAD trunks, breakout boxes, copper tails;
   pack list, wall rows, pull sheet, canvas pills. Test: manual-src/tests/fibre_test.py.
+- Tile catalog round 1 (LRD feature, 2026-11-14): 209 models added to P (INFiLED 167 from the series spec tables on
+  infiled.com with depth from each series brochure on media-infiled.metodica.co; AOTO 14 from en.aoto.com series sheets;
+  Gloshine 17 from the DN and CF Pro sheets on gloshine.com (image PDFs, read by eye); Absen 11 from Full Compass copies of
+  the Polaris V10 and Acclaim V3 cut sheets). New brands AOTO and Gloshine in PBR. TSER groups the Model menu by series,
+  TSRC + PINFO.src give each tile's sheet ("Source" row), HALF gains the mini / small halves. INFiLED Deep Black DB2.6
+  Lite / Pro now use the DBmk2 figures (no longer estimated). "Find a tile" search box above Brand (picker option B).
+  Never use LED Raster Designer's cabinet data. Not reachable: Unilumin (sheets behind a contact form), Planar (spec table
+  loads by script), Leyard (bot check), Liantronics (pages give no power), Glux (www.glux.com is a parked domain), absen.com
+  (bot check). Test: manual-src/tests/catalog_test.py (TS_APP=file://... to point at a checkout).
 
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
