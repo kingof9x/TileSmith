@@ -13,3 +13,6 @@ gradlew text eol=lf
 *.dll binary
 *.node binary
 *.jar binary
+# Append-only notes: on a local merge keep both sides instead of stopping on a conflict
+manual-src/WORKFLOW.md merge=union
+manual-src/changes/*.md merge=union
