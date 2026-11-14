@@ -30,7 +30,8 @@
   (An earlier, unfinished attempt used the texture-bridge add-on downloaded at build time; it was replaced on 2026-10-14
   by the simpler direct SpoutDX / node-syphon output in the page itself.)
 
-Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wiring preferences, Android and iOS apps.
+Last released: v3.6 (2026-11-14), built by Actions > Build and release from main f3f61d0 (see "Release v3.6" at the end).
+Earlier: v3.5 (2026-10-18), v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wiring preferences, Android and iOS apps.
 
 ## Parallel PRs without merge conflicts (Callum, 2026-11-14)
 Several feature branches are open at once and Callum merges them one after another, so every PR must avoid editing
@@ -75,7 +76,7 @@ PR steps for every thread:
   of MainActivity.kt / TileSmithBridge.kt against API stubs with the Kotlin compiler inside Gradle: tests/kstub/check.sh).
 - Not testable here: APK build (no Android SDK/Maven), AI Studio itself, real devices.
 
-## Changes since the last release (roll into HISTORY at the next package)
+## Changes up to v3.6 (shipped in v3.6 on 2026-11-14; kept as notes, the manual has no history chapter)
 - TileSmith-App-Spec.md now lists all 25 test patterns (make_spec.py had a duplicate PATS key that cut the table to
   the 7 new-wall patterns) and describes the android-aistudio app in section 15.
 - New TileSmith-Mobile-Manual.pdf (separate mobile app manual); BUILD-ANDROID.txt / BUILD-IOS.txt and the desktop
@@ -143,7 +144,7 @@ PR steps for every thread:
   (processor : port : tile, or global P#-tile), a "cabinet IDs" test pattern (tinted by port, cable drawn), Save cabinet ID sheet
   (map + list per wall, optional sticker per tile on the label sheet) and a Cabinet IDs section in the binder.
   Test: manual-src/tests/cabid_test.py; binder_test.py follows the new pages. make_spec.py already fails on main (keys from
-  earlier features have no KEYDESC); labels/bugreport/outputopts/charpack/techstyle tests fail on main too.
+  earlier features have no KEYDESC; fixed for v3.6, see "Release v3.6"); labels/bugreport/outputopts/charpack/techstyle tests fail on main too.
 - Layered pixel map export (LRD feature, 2026-11-14; demo /mnt/project-files/demos/layered-export-demo.html): top bar Export layers ▾
   → Layered SVG… / Layered PSD…, dialog with a layer checklist (Background, Test pattern, Tile grid, Tile labels, Data paths, Power paths).
   render() takes a layer filter (LYR) and wall filter (LYW); SVG vector layers via a stand-in 2D context (svgRec), PSD by a hand-written
@@ -172,3 +173,28 @@ PR steps for every thread:
   release and writes VIRUSTOTAL.md in the project root. The release workflow no longer scans.
 - Source version is 3.5 (set 2026-10-18). From now on versions are decided in GitHub (Actions > Build and release >
   version box); do not bump the source version for ordinary revisions, only when the user asks.
+
+## Release v3.6 (2026-11-14)
+- Callum ran Actions > Build and release with version 3.6 on main f3f61d0. All six builds (Windows, Mac, Linux,
+  snap, flatpak, Android) passed and the release v3.6 was published.
+- The Build documentation run that follows a release failed at "App spec": make_spec.py asserts that every S key has
+  a KEYDESC entry, and 45 keys from Binder, Build modes, Cable lengths, Fibre, Redundancy, Rigging and Tile faults had
+  none. Fixed in PR #27 (one `# Feature` block each). Before a release, run `python3 make_spec.py` locally: it fails
+  fast on a missing description. The mobile manual needs make_kit_shots.py and make_kit_anims.py first.
+- Docs for 3.6: manual chapter 14 now describes the Classic / Hand-drawn / Backlit character styles (Character pack
+  was removed in #17), chapter 15 has a Tile faults section, the top-bar table lists Export binder and Start Tile
+  Faults, and Info > Preferences mentions the Language picker. The spec has Character style, Build mode and Tile
+  faults paragraphs in section 12 and a 3.5 Language section; tstyle KEYDESC updated, tpack removed.
+- README: "What's new in 3.6" with screenshots from make_readme_features.py (writes docs/screenshots/features/*.png
+  straight from the app: `python3 make_readme_features.py ../tilesmith-desktop/app/index.html ../docs/screenshots/features`).
+  Re-run it after UI changes. Real video players in the README still need Callum to drag the .mp4 into GitHub's editor.
+- Features in v3.6 (since v3.5): power distros, phase balance and the power tray; power/data math fixes from the LRD
+  review; 17 Absen tiles; cable lengths and pack list; Export binder and pull sheet; rigging (bumpers, truss, ground
+  stack); LED build corner/direction and Flown from motors / truss; Hand-drawn and Backlit crew; tile faults and the
+  Fix glitch repair; fibre and breakout boxes; redundancy with the signal path; cabinet IDs; layered SVG/PSD export;
+  Locations; the 209-tile catalog with Find a tile; Spanish and Portuguese UI; merge-friendly lists (PR #25).
+- Folded from changes/tile-catalog.md: Tile catalog round 1 (LRD feature, 2026-11-14): 209 models added to P (INFiLED 167 from the series spec tables on infiled.com with depth from each series brochure on media-infiled.metodica.co; AOTO 14 from en.aoto.com series sheets; Gloshine 17 from the DN and CF Pro sheets on gloshine.com (image PDFs, read by eye); Absen 11 from Full Compass copies of the Polaris V10 and Acclaim V3 cut sheets). New brands AOTO and Gloshine in PBR. TSER groups the Model menu by series, TSRC + PINFO.src give each tile's sheet ("Source" row), HALF gains the mini / small halves. INFiLED Deep Black DB2.6 Lite / Pro now use the DBmk2 figures (no longer estimated). "Find a tile" search box above Brand (picker option B). Never use LED Raster Designer's cabinet data. Not reachable: Unilumin (sheets behind a contact form), Planar (spec table loads by script), Leyard (bot check), Liantronics (pages give no power), Glux (www.glux.com is a parked domain), absen.com (bot check). Test: manual-src/tests/catalog_test.py (TS_APP=file://... to point at a checkout).
+    Picker: Callum had not picked A/B/C from /mnt/project-files/demos/catalog-demo.html; option B (search box) was built as recommended and he said to continue (2026-11-14).
+
+## Changes since the last release (v3.6)
+- Write each feature's notes in manual-src/changes/<feature>.md (see changes/README.md), not here.

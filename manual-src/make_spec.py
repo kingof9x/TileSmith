@@ -104,8 +104,7 @@ KEYDESC = {
   'hat': 'Technician hard hat colour.',
   'vest': 'Technician vest colour.',
   'logo': 'Vest logo text.',
-  'tstyle': 'Technician character style: Classic or Character pack.',
-  'tpack': 'Selected character pack (id in the on-device pack library).',
+  'tstyle': 'Technician character style: Classic | Hand-drawn (Rocketbox workers rendered with three.js and an ink shader; files in app/crew, loaded only when picked; Classic is drawn without WebGL) | Backlit (dark Canvas 2D figure with a rim of wall light and reflective tape).',
   'cd': 'Show crew details editor and name tags.',
   'play': 'Build animation playing (not saved).',
   'font': 'UI font: JetBrains Mono (default), OpenDyslexic, or Current (the original Barlow-based stack). Set from Preferences in the Info popup; applies to the app chrome via --font-ui, not to canvas-drawn text.',
@@ -395,6 +394,12 @@ goes to the output.
 ### 3.4 Engineering data panel (right; a collapsible menu after the settings on phones)
 
 Collapsible "Entire canvas" section then one section per wall, as two-column tables (label, value). Rows in section 9.
+
+### 3.5 Language
+The UI is written in English. TR maps each English text to [Español, Português (Brasil)]; tr() looks texts up with
+whitespace collapsed and trAll() translates the page's text (elements marked data-notr are skipped).
+Info > Preferences > Language (select[data-lang]) picks English, Español or Português (Brasil); the choice is kept in
+localStorage "tilesmith-lang", and the first launch follows navigator.language.
 
 ## 4. Data model and saved settings
 
@@ -770,6 +775,26 @@ height, wall height/1.05, wall width/0.85)), clipped to the wall, standing besid
 facing it, with both hands on the carried tile. The carried tile is a dark #1b2028 rectangle with a light frame,
 amber corner marks and a black handle, at the piece's own size. Crew: {d['crew']} by default, editable (name, skin,
 hair, face photo), rotating so one person is not on two walls at once.
+
+Character style (S.tstyle): Classic is the flat vector person above. Hand-drawn draws two Microsoft Rocketbox workers
+(MIT; binary FBX, motion-captured walk and textures base64-encoded in app/crew/rb-assets.js) posed from their skeleton
+for each build phase with the walk blended in, rendered by three.js r147 into an offscreen WebGL canvas through an ink
+outline / flat-colour shader, then drawn onto the wall like the Classic tech. The files load only when Hand-drawn is
+picked; without them or without WebGL the Classic tech is drawn and #crewNote says why. Backlit is a dark Canvas 2D
+figure with a rim of wall light and bright reflective tape. Hat, vest, logo and name tags apply to every style.
+
+Build mode (wall key bmode): Ground stack builds up from the floor from any start corner, row by row or column by
+column. Flown from motors and Flown from truss hang the wall top row first, a row at a time: each row goes on at floor
+level, then the wall is raised one row (bar on chain motors, or bumpers on a truss); only the left or right side of the
+start corner is used. The same setting is the rigging hang method (Engineering > Rigging).
+
+Tile faults (Animation Options > Tile faults; S.glOn, glType, glPick, glN, wall key glk): GLT = Dead tile, Flicker,
+Colour channel out, Stuck pixels, Data chain break, Module out, Scrambled tile, Frozen tile, Calibration mismatch, Scan
+line fault, Noise and sparkle, Power circuit tripped (GLD holds the cause shown under the menu), or Random mix. Faulty
+tiles are picked by clicking in the viewport (Pick tiles) or rolled at random (glN tiles). Start tile faults (top bar
+or the submenu) draws each fault over its tile on every output. Fix glitch sends two technicians: one behind the wall
+appears in the gap when the faulty tile pops out; a reachable tile is handed down and the new one up, a higher one is
+lowered on a rope; the other swaps it and carries the broken tile off; the faults stop when every tile is fixed.
 
 ## 13. DVD screensaver
 

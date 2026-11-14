@@ -50,6 +50,87 @@ https://github.com/user-attachments/assets/3fe2f407-80e1-4f42-a2f5-a2593f6d69d9
 
 <sub>The screenshots are made from the app itself with `manual-src/make_readme_shots.py`.</sub>
 
+## What's new in 3.6
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/power-distros.png" alt="Power distros and phase balance">
+
+<b>Power distros and phase balance.</b> Add the distros the walls plug into, patch each cable to an output in the power tray, and see the amps on every leg, the neutral and the imbalance. Balance evens out the legs without changing the wiring; the Phase button colours each run by its phase.
+
+</td>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/cable-fibre.png" alt="Cable lengths, fibre and breakout boxes">
+
+<b>Cable lengths, fibre and breakout boxes.</b> Set how far each wall is from the processor and the distro and which cable lengths you own. TileSmith works out every run and a cable pack list, and sends long data runs over fibre with converters, opticalCON trunks, breakout boxes and copper tails.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/redundancy.png" alt="Redundancy and the signal path">
+
+<b>Redundancy and the signal path.</b> Pick Full, Backup processor, Loop or Spare processor for each wall, limit the plan to the gear you actually have, and read the port map and a signal path diagram in Engineering.
+
+</td>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/rigging.png" alt="Rigging">
+
+<b>Rigging.</b> Ground stack, flown from motors or flown from truss: bumpers, truss sections, ground bases, hoist points and the load on each hoist, with parts rules per tile model, all added to the pull sheet. Planning figures only.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/cabinet-ids.png" alt="Cabinet IDs">
+
+<b>Cabinet IDs.</b> Every tile gets an ID from the data wiring (processor : port : tile). Show them on the wall as a test pattern, or save a cabinet ID sheet with a sticker for each tile.
+
+</td>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/locations.png" alt="Locations">
+
+<b>Locations.</b> Stage your walls, processor and distros in locations such as Stage or FOH. Engineering totals each location, the viewport outlines them, and the pull sheet and binder are sorted by location.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/tile-faults.png" alt="Tile faults and Fix glitch">
+
+<b>Tile faults and Fix glitch.</b> Show twelve kinds of LED tile failure, from a dead tile to a tripped circuit, on the tiles you pick or at random. Fix glitch sends two technicians to swap each faulty tile.
+
+</td>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/tile-catalog.png" alt="209 more tile models">
+
+<b>209 more tile models.</b> INFiLED, AOTO, Gloshine and Absen tiles from the makers' spec sheets, grouped by series, with a Find a tile search box and the source sheet shown in Engineering.
+
+</td>
+</tr>
+</table>
+
+Also new in 3.6:
+
+- **Export binder and pull sheet.** One PDF for the show folder: cover, contents, the canvas, a page per wall, cabinet IDs, a pull sheet with spares and Pulled / Loaded / Back boxes, the spec sheet and the cable labels.
+- **Export layers.** Save the pixel map as a layered SVG or PSD (background, test pattern, tile grid, labels, data and power paths) to finish it in Illustrator or Photoshop.
+- **Build modes.** Start the LED build from any corner, row by row or column by column, or hang the wall from motors or a truss, top row first.
+- **Hand-drawn and Backlit crew.** Two new technician styles next to Classic: realistic workers drawn with ink lines, and a dark figure lit by the wall.
+- **Power math fixes.** Power factor, design load (max, typical or measured) and processor port capacities checked against the makers' published figures.
+- **17 Absen tiles** in the built-in tile list.
+- **Español and Português (Brasil).** Pick the language under ⓘ Info › Preferences.
+
+<sub>These screenshots are made from the app with `manual-src/make_readme_features.py`.</sub>
+
 ## Virus scan and documentation
 
 **Virus scan:** every program file in each release is scanned on VirusTotal after it is built. See the results, with a link to each full report and the SHA-256 of every file, in **[VIRUSTOTAL.md](VIRUSTOTAL.md)**.
