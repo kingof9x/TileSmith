@@ -106,6 +106,11 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Fibre and breakout boxes (LRD feature, user picked option C of the demo, 2026-11-14): Auto by a copper limit (90 m) with a
   per-wall Fibre / Copper override; converters at the processor, opticalCON DUO/QUAD trunks, breakout boxes, copper tails;
   pack list, wall rows, pull sheet, canvas pills. Test: manual-src/tests/fibre_test.py.
+- Cabinet IDs (LRD feature, user picked option C of demos/cabinet-id-demo.html, 2026-11-14): each tile's ID from the port plan
+  (processor : port : tile, or global P#-tile), a "cabinet IDs" test pattern (tinted by port, cable drawn), Save cabinet ID sheet
+  (map + list per wall, optional sticker per tile on the label sheet) and a Cabinet IDs section in the binder.
+  Test: manual-src/tests/cabid_test.py; binder_test.py follows the new pages. make_spec.py already fails on main (keys from
+  earlier features have no KEYDESC); labels/bugreport/outputopts/charpack/techstyle tests fail on main too.
 - Locations (LRD "beaches", user picked option C of /mnt/project-files/demos/beaches-demo.html, 2026-11-14; rejected the names
   beaches and zones, picked Locations; code still says zone/zones): project location list, walls / processor / distros pick one, Engineering totals, viewport outline + hide
   strip, pull sheet block per location, binder location map and location order. Test: manual-src/tests/zones_test.py.

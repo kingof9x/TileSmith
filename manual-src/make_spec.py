@@ -40,6 +40,7 @@ KEYDESC = {
  'lblSize': 'Label sheet preset: Avery 5160 (30 per US Letter), Avery 5163 (10 per US Letter), Avery L7160 (21 per A4), Label roll 62 x 29 mm, or Custom label roll.',
  'lblW': 'Custom roll label width in mm (20-300).', 'lblH': 'Custom roll label height in mm (10-300).',
  'lblCopies': 'Copies printed of each cable end (1-4).', 'lblSkip': 'First label position to use on a sheet (skips used labels).',
+ 'cidFmt': 'Cabinet ID style: "Processor : port : tile (1:P2:07)" or "Port - tile (P12-07, as on the cable labels)".', 'cidStk': 'Cabinet ID sheet: add one sticker per tile on the label sheet.',
  'lblColor': 'Colour the labels: data labels are completely green (primary) or red (return); power labels carry a flag in the wall\'s Tile-shade colour; off = plain labels, no flags or wall marks.',
  'lblLayout': 'Wrap layout: Two identical panels (default), Flag fold-over (second panel rotated 180 degrees), Text in the middle, colour on the ends.',
  'lblFlag': 'Colour flag style: Big end blocks (default), Top and bottom bars, Big corner squares.',
@@ -84,6 +85,7 @@ PATSPEC = {
  'rgbramp': 'Four horizontal bands, each black to red / green / blue / white, left to right.',
  'zone': 'Zone plate: white concentric circles on black at radii sqrt(k) x max(6, R/45).',
  'cycle': 'Full-field colour stepping every 1.5 s through #f00 #0f0 #00f #fff #000 #ff0 #0ff #f0f. Redraws only when the colour changes.',
+ 'cabinet IDs': 'cidPat: #07090c background; each tile filled with its port colour (CIDCOL, 12 colours by port) and an edge of 2.5% of the tile; the ID in bold Barlow at 28% of the tile height (shrunk to 84% of its width) at 44% down, "C# R#" under it at 45% size; unwired tiles grey with a dash. With the data paths overlay off, a dashed line per port through (94% w, 84% h) of each tile and a P# dot on its first tile. The Tile IDs / address / mm labels and tile position arrows are skipped on this pattern. Not scrolled or cached.',
 }
 
 async def collect():
@@ -526,7 +528,21 @@ not fit), the pull sheet (pullItems(): Video = tiles per model, half tiles separ
 needed; Data = etherCON per length (Cable lengths on) or home-run count "length not set", jumpers spare max(spC, spT%);
 Power = cables per length or count, breakouts, jumpers, each distro; Labels = label sheets; columns NEED SPARE TOTAL and tick
 boxes PULLED LOADED BACK; footer "Pulled by / Checked by / Returned by"), then the spec sheet and labels exactly as Export PDF.
-File name "<show name>-binder-YYYYMMDD.pdf". Export PDF itself is unchanged.
+File name "<show name>-binder-YYYYMMDD.pdf". Export PDF itself is unchanged. When any wall is wired (cidAny), a "Cabinet IDs"
+section (cidPages) goes between the wall pages and the pull sheet.
+
+**Cabinet IDs** (submenu Engineering > Cabinet IDs): S.cidFmt (CIDFMT: "Processor : port : tile (1:P2:07)" default | "Port -
+tile (P12-07, as on the cable labels)"), S.cidStk (sticker per tile, default off). cabIds(plan) -> per wall, in portPlan order:
+{{wi, p (global port), s = floor((p-1)/pports)+1, ps = (p-1)%pports+1, k (1-based place on the port's cable), q (piece), id,
+col/row (1-based, u/v on custom layouts), model, half}}; id = `${{s}}:P${{ps}}:${{kk}}` or `P${{p}}-${{kk}}` (kk two digits). Same
+processor split as cfgRows / the NovaStar config export. #cidStat: "Pick a processor..." | "Wire the data (Data wiring)..." |
+"N tiles have an ID, on M ports." Buttons: cidShow (sets the selected wall's pattern to "cabinet IDs"; toast when nothing is
+wired), cidPdf -> cidPDF(): "<show name or TileSmith>-cabinet-ids-YYYYMMDD.pdf" (Letter or A4 as Export PDF) = cidPages +
+cidStickers when cidStk. cidPages: per wired wall a landscape map page ("<wall>: cabinet IDs", tiles, ports, processor, style;
+tiles filled with the port's paper colour, port-colour edge, ID and C# R#, dashed cable per port, P# tag on its first tile),
+then portrait list pages ("<wall>: cabinet IDs in data order"; two columns of ID, Proc., Port, Tile, Col., Row with a port
+colour bar). cidStickers: one per tile on lblGeom() (no skip/copies), port colour bar at the left, the ID large, "<wall> · C#
+R# · <model>" under it.
 
 **Locations** (submenu Engineering > Locations; called zones in the code): S.zones = [{{id, name (30 chars), c (#rrggbb)}}] (max 20, list order = pull sheet
 and binder order), per wall w.zone (0 = no zone), per distro d.zone, S.zProc (processor's zone), S.zHide (zones hidden in the
