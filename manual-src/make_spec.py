@@ -540,6 +540,20 @@ pack list" section (counts per length, jumpers = tiles - 1 per run, breakouts, t
 over 100 m) and per-wall "Cables arrive at" / "Data home runs" / "Power home runs" rows. The canvas shows each run's length
 in a dark pill under its P# / power start badge.
 
+**Fibre and breakout boxes** (inside Cable lengths): per wall wfib (Auto | Fibre | Copper, default Auto); global fibLim (copper
+limit in S.cunit, 1-10000, default 90 m / 295 ft), fibBox (ports per breakout box 4 | 10 | 16, default 10), fibNat (processor
+has fibre outputs, default off), fibTr (opticalCON DUO = 1 box per trunk | opticalCON QUAD = 2 boxes per trunk, default QUAD),
+fibLen / fibTail (lengths owned; m "50, 100, 150, 300" / "1, 3, 5, 10", ft "150, 300, 500, 1000" / "3, 10, 15, 30"; the limit
+and lists convert with the units). cFib(w, runs): far = longest copper data run (P# and R#, slack included); fibre when wfib =
+Fibre, or Auto and far > fibLim. A fibre wall: ports = runs x (2 with returns), boxes = ceil(ports / fibBox), trunks =
+ceil(boxes / 1 or 2), trunk length = processor distance x (1 + slack) picked from fibLen (cPick, joined when longer),
+converters = boxes unless fibNat; each run becomes a copper tail = climb from the arrival point to its first tile x (1 + slack)
+picked from fibTail. cabRuns returns runs with fib:1 and R.fib = [{{wi, ports, boxes, trunks, m, cab}}]. Pack list rows: Fibre
+walls, Fibre breakout boxes, Fibre converters at the processor, Fibre trunks, Copper tails (box to tile), fibre in Cable on the
+truck; the Over 100 m warning skips fibre walls. Wall rows: "Data to this wall" (Fibre with the reason or "set by hand",
+Copper with the longest run), Breakout boxes, Fibre trunk, Copper tails from the box. Pull sheet Data: "Fibre breakout box, N
+ports", "Fibre converter at the processor, N ports", "<trunk> fibre L", "etherCON tail L". Canvas pills show the tail length.
+
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 {d['POWC']} by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
 square at the last tile. When a wall shows both data and power: data runs at (centre x - 0.2 tile w, centre y), power
