@@ -52,7 +52,8 @@ lines another feature also edits. The shared hotspots, and what to do in each:
 
 PR steps for every thread:
 1. Start the branch from the latest origin/main.
-2. Right before asking Callum "is this ready to submit?", and again right before opening the PR:
+2. Right before opening the PR (Callum, 2026-11-14: open it yourself once the feature is finished and tested,
+   without asking him first):
    `git fetch origin main && git merge origin/main` (merge, never rebase or force-push), fix any conflict by keeping both
    sides, then run your feature's test and tests/lists_test.py.
    A branch started before this layout (TR etc. still on one long line) merges main once with
