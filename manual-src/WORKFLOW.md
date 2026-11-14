@@ -103,6 +103,9 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Rigging (LRD feature, user picked option C of the demo and asked for truss, 2026-11-13): hang method = Build mode with a
   new "Flown from truss"; bumpers / truss / ground bases, hoist loads, parts rules per tile model, pull sheet Rigging section.
   Test: tests/rigging_test.py (ALL OK). techstyle_test.py fails on main too (workerPack removed in #17).
+- Fibre and breakout boxes (LRD feature, user picked option C of the demo, 2026-11-14): Auto by a copper limit (90 m) with a
+  per-wall Fibre / Copper override; converters at the processor, opticalCON DUO/QUAD trunks, breakout boxes, copper tails;
+  pack list, wall rows, pull sheet, canvas pills. Test: manual-src/tests/fibre_test.py.
 
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers

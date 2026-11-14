@@ -24,8 +24,8 @@ async def main():
         # return lines double the data runs; top-right arrival changes the climb
         r = await pg.evaluate("()=>{S.ret=true;sync();const a=cabRuns().filter(x=>x.kind=='r').length,n=portPlan().flat().length;S.ret=false;const b=cabRuns().find(x=>x.id=='P1').m;S.cin='Top right';sync();const c=cabRuns().find(x=>x.id=='P1').m;S.cin='Bottom left';sync();return{a,n,b,c}}")
         print('ret/arrive', r); ok &= r['a'] == r['n'] and abs(r['b'] - r['c']) > 1e-6
-        # over 100 m: fibre warning and joined cables
-        r = await pg.evaluate("()=>{S.cdD=120;sync();const R=cabRuns();S.cdD=25;sync();return cabRows(R)}")
+        # over 100 m on a wall forced to copper: fibre warning and joined cables (Auto would switch it to fibre)
+        r = await pg.evaluate("()=>{S.cdD=120;S.wfib='Copper';storeWall();sync();const R=cabRuns();S.cdD=25;S.wfib='Auto';storeWall();sync();return cabRows(R)}")
         ok &= any(x[0] == 'Over 100 m' and len(x) == 3 for x in r) and any(x[0] == 'Runs made of joined cables' for x in r); print('far', [x for x in r if x[0] in ('Over 100 m',)])
         # feet: switching units converts the distances and swaps the default cable lists; lengths stay the same in metres
         r = await pg.evaluate("""()=>{const m0=cabRuns().find(x=>x.id=='P1').m,sel=document.querySelector('select[data-k=cunit]');sel.value='ft';sel.dispatchEvent(new Event('input',{bubbles:true}));
