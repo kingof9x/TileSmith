@@ -32,6 +32,32 @@
 
 Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wiring preferences, Android and iOS apps.
 
+## Parallel PRs without merge conflicts (Callum, 2026-11-14)
+Several feature branches are open at once and Callum merges them one after another, so every PR must avoid editing
+lines another feature also edits. The shared hotspots, and what to do in each:
+- `TR` (translations), `S` (settings defaults), `WK` (per-wall keys) and `LIM` (number limits) in app/index.html are one
+  entry per line, each ending in a comma, under `// Feature` headers: Core first, then the features in A to Z order.
+  Add your entries as a new `// Your feature` group at its A to Z place, never at the top or bottom of the list and never
+  on an existing line. tests/lists_test.py checks this (no browser; `npm install` in tools once).
+- `sync()` and `uiVis()` call each panel's refresh one per line: add your call on its own new line.
+- `KEYDESC` in make_spec.py is one key per line: add your keys as a `# Your feature` block, not on an existing line.
+- Canvas drawing (render and the per-tile loop): put your drawing in your own function and call it from one new line,
+  for example `if(S.xOn)drawX(c,w);`, instead of editing a shared drawing line.
+- Manual (make_manual.py) and spec prose: add your own new `<p>` / paragraph where it belongs, not always right before the
+  chapter's last line, and don't rewrap other paragraphs.
+- Feature notes: write them in their own file, manual-src/changes/<feature>.md, not at the bottom of the list below.
+  Fold them into HISTORY at the next package. (.gitattributes merges WORKFLOW.md and changes/*.md with `union`, so a
+  local `git merge` keeps both sides of a notes clash.)
+- Don't reformat, reorder or tidy shared lines in a feature PR. Do that in its own PR when nothing else is open.
+
+PR steps for every thread:
+1. Start the branch from the latest origin/main.
+2. Right before asking Callum "is this ready to submit?", and again right before opening the PR:
+   `git fetch origin main && git merge origin/main` (merge, never rebase or force-push), fix any conflict by keeping both
+   sides, then run your feature's test and tests/lists_test.py.
+3. Once the PR is open, watch it. When another PR lands on main, merge main into yours the same way and push, without
+   being asked, and tell Callum in one line.
+
 ## Google AI Studio kit (added 2026-10-14, after v3.3)
 - Project folder android-aistudio/: webview-bridge.js (window.TileSmithAndroid -> window.TSM, same as the Capacitor
   bridge), prepare-assets.js, README.txt, android/ (Kotlin + Compose Android Studio project, app ID
