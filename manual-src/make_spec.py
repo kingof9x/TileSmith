@@ -28,8 +28,8 @@ KEYDESC = {
  'vCodec': 'Video export format (see Video formats).', 'hapFmt': 'HAP flavour: hap | hap_alpha | hap_q.',
  'proc': 'LED processor model (or None). Gates all data/port features.', 'fps': 'Processor frame rate in Hz (affects pixels per port).',
  'bpc': 'Processor bit depth (8, 10, 12).', 'ull': 'Brompton Ultra Low Latency (halves port capacity).', 'ppx': 'Pixels per port in use (from spec, editable).',
- 'pports': 'Ports per processor / sending card (editable).', 'ret': 'Count a return port (R#) for every primary port.', 'showData': 'Draw data paths on the canvas.',
- 'pdist': 'Power distribution ticked. Gates all power features.', 'pf': 'Power factor 0.5-1 (default 1). Usable watts per circuit = V x A x (0.8) x PF; amps everywhere = W / (V x PF).', 'pload': 'Design load for distro and leg totals: Max (spec) | Typical (% of max) | Measured (W per tile). Circuits are always checked at max.', 'ptyp': 'Typical design load in % of each tile\'s max watts (1-100, default 40).', 'pmeas': 'Measured design load in watts per tile (0-5000; 0 = use max; never above a tile\'s max).', 'dists': 'Distros: [{id, name, sys (120/208 V 3-phase wye | 127/220 V 3-phase wye | 230/400 V 3-phase wye | 120/240 V split phase | Single phase), amps per leg, soca, l2130, l1430, edison (output counts), map (Socapex leg map, default ABCABC)}], at most 12.', 'pcab': 'Power patch: "canvas index:cable number" -> {d: distro id (\'\' = left unpatched on purpose), o: output key (soca1, l21302, edison3 ...), r: leg rotation 0-2}.', 'pshare': 'Shared circuits (2fer / 3fer): [canvas index, [wall, run], [wall, run](, [wall, run])].', 'autoBal': 'Rebalance every distro after every wiring change.', 'phaseView': 'Colour power runs by phase (A white, B amber, C blue) and label them "1-1 A" when distros exist.', 'trayOpen': 'Power tray under the viewport expanded.', 'pdt': 'Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)". Choosing Edison sets pvolt 120 and pamps 15.', 'pwall': 'Edison only: plugs per wall circuit (0-100, default 0 = no wall-circuit check).', 'pwallA': 'Edison only: wall circuit breaker in amps (1-400, default 20).', 'gx': 'Wall key: how far (px) the top-left of the wall\'s real tiles sits right of the full tile grid. Set by the app, not the user; ox/oy are the canvas position of those tiles.', 'gy': 'Wall key: like gx, downwards (a converted top row makes it half a tile).', 'lblPow': 'Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only".', 'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
+ 'pports': 'Ports per processor / sending card (editable).', 'ret': 'Old global Return lines switch (no UI now); only seeds wred for walls in old projects.', 'showData': 'Draw data paths on the canvas.',
+ 'zones': 'Zones: [{id, name, c (colour)}] in pull sheet order, at most 20 (see Zones).', 'zHide': 'Zone ids whose walls are hidden in the viewport only.', 'zProc': 'Zone of the processor (0 = no zone).', 'zone': 'Wall key: the wall\'s zone id (0 = no zone).', 'pdist': 'Power distribution ticked. Gates all power features.', 'pf': 'Power factor 0.5-1 (default 1). Usable watts per circuit = V x A x (0.8) x PF; amps everywhere = W / (V x PF).', 'pload': 'Design load for distro and leg totals: Max (spec) | Typical (% of max) | Measured (W per tile). Circuits are always checked at max.', 'ptyp': 'Typical design load in % of each tile\'s max watts (1-100, default 40).', 'pmeas': 'Measured design load in watts per tile (0-5000; 0 = use max; never above a tile\'s max).', 'dists': 'Distros: [{id, name, sys (120/208 V 3-phase wye | 127/220 V 3-phase wye | 230/400 V 3-phase wye | 120/240 V split phase | Single phase), amps per leg, soca, l2130, l1430, edison (output counts), map (Socapex leg map, default ABCABC)}], at most 12.', 'pcab': 'Power patch: "canvas index:cable number" -> {d: distro id (\'\' = left unpatched on purpose), o: output key (soca1, l21302, edison3 ...), r: leg rotation 0-2}.', 'pshare': 'Shared circuits (2fer / 3fer): [canvas index, [wall, run], [wall, run](, [wall, run])].', 'autoBal': 'Rebalance every distro after every wiring change.', 'phaseView': 'Colour power runs by phase (A white, B amber, C blue) and label them "1-1 A" when distros exist.', 'trayOpen': 'Power tray under the viewport expanded.', 'pdt': 'Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)". Choosing Edison sets pvolt 120 and pamps 15.', 'pwall': 'Edison only: plugs per wall circuit (0-100, default 0 = no wall-circuit check).', 'pwallA': 'Edison only: wall circuit breaker in amps (1-400, default 20).', 'gx': 'Wall key: how far (px) the top-left of the wall\'s real tiles sits right of the full tile grid. Set by the app, not the user; ox/oy are the canvas position of those tiles.', 'gy': 'Wall key: like gx, downwards (a converted top row makes it half a tile).', 'lblPow': 'Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only".', 'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
  'pamps': 'Breaker size in amps (1-400).', 'derate': 'Load circuits to 80% (continuous load rule).', 'showPow': 'Draw power runs on the canvas.',
  'resSl': 'Resolume XML slice mode: One slice per LED wall | One slice per tile.', 'lyrFmt': 'Export layers format last used: svg | psd.', 'lyrOff': 'Layers unticked in the Export layers dialog (bg, pat, grid, lab, data, pow).', 'lyrGrp': 'Export layers grouping: A by kind (default) | B folder per wall | C folder per kind with a layer per wall.', 'loop': 'Restart the build animation continuously.', 'loopHold': 'Seconds to pause before restarting (0-600).',
  'ndiName': 'NDI source name (default TileSmith-LED-Out).', 'ndiFps': 'NDI frame rate (see NDI).', 'ndiIdle': 'Save CPU: when nothing moves, send about 4 frames per second instead of the full rate.',
@@ -550,6 +550,20 @@ then portrait list pages ("<wall>: cabinet IDs in data order"; two columns of ID
 colour bar). cidStickers: one per tile on lblGeom() (no skip/copies), port colour bar at the left, the ID large, "<wall> · C#
 R# · <model>" under it.
 
+**Locations** (submenu Engineering > Locations; called zones in the code): S.zones = [{{id, name (30 chars), c (#rrggbb)}}] (max 20, list order = pull sheet
+and binder order), per wall w.zone (0 = no zone), per distro d.zone, S.zProc (processor's zone), S.zHide (zones hidden in the
+viewport only). zSan() drops unknown ids on load; a wall saved without zone opens as 0. New zones get the first unused colour
+of ZCOL. Engineering "Locations" section (zTotals over every canvas): per zone a head row, LED walls (names), Tiles, Weight, Peak
+power, Data ports (x2 with returns), Power circuits, Gear staged here; wall rows add "Location". Viewport (zDrawVp): 3 px outline
+and a name tag in the zone colour; a hidden zone's walls are drawn black with a dashed grey edge and "<name> · hidden", and
+hitWall skips them; the strip #zstrip above the viewport toggles S.zHide and has Show all. pullItems(zid) keeps only walls in
+the zone (zid 0 = no zone) and the gear whose zone matches; processors and label sheets go with S.zProc; with Cable lengths a
+power cable belongs to the wall it is measured to, otherwise to the first wall it feeds; jumpers and breakouts are counted per
+zone. Pull sheet: a coloured zone bar (name, "N LED walls") before that zone's departments, zones in list order then No location.
+Binder: a "Location map" page per canvas after the canvas pages (the raster darkened, each wall tinted and outlined in its zone
+colour with "<wall> · <zone>", and a key with walls and gear per zone), contents list each zone under LED walls, and each wall
+page has a zone tag top right.
+
 **Cable lengths** (submenu Engineering > Cable lengths; S.cabOn, default off): per wall cdD / cdP (distance from processor /
 distro, in S.cunit, 0-3000, defaults 25 / 15) and cin (Bottom left | Bottom centre | Bottom right | Top left | Top centre |
 Top right); global cunit (m | ft; switching converts every wall's distances and swaps the default cable lists), cslack (% per
@@ -575,6 +589,25 @@ walls, Fibre breakout boxes, Fibre converters at the processor, Fibre trunks, Co
 truck; the Over 100 m warning skips fibre walls. Wall rows: "Data to this wall" (Fibre with the reason or "set by hand",
 Copper with the longest run), Breakout boxes, Fibre trunk, Copper tails from the box. Pull sheet Data: "Fibre breakout box, N
 ports", "Fibre converter at the processor, N ports", "<trunk> fibre L", "etherCON tail L". Canvas pills show the tail length.
+
+**Redundancy** (in LED processor; replaces the old global S.ret "Return lines" switch, which now only seeds old projects:
+walls saved without wred get Loop, or None when S.ret was false). Per wall wred (Full | Backup processor | Loop | Spare
+processor | None, default Loop) and wpri (1-99, default 1); global rlink (link / sync cable per backup unit, default on),
+gOn (limit to gear on hand, default off), gProc / gTr / gBox (0-50). redPlan(plan): primaries P = all runs, main units =
+max(ceil(P / pports), ceil(px / max px)) capped by gProc; P# p sits on main unit floor((p-1)/pports), port (p-1)%pports+1.
+Fibre walls (cFib, Cable lengths on) first take their own trunks and boxes. Walls in order of wpri then wall order try
+their method, then each weaker one: Loop needs spare main ports after the primaries (adds a main unit if one is on hand);
+Backup processor / Full need a backup unit mirroring every main unit that holds the wall's P# (shared between walls), and
+on fibre walls Full needs ceil(ports / fibBox) more boxes and their trunks for its own route, while Loop / Backup share the
+main box (2 x ports). Spare processor needs one unit left over at the end (one covers the canvas), else None. The first
+reason a wall failed is kept ("no processor left for a backup", "no spare processor ports left", ...). Loop R# lines go on
+the main units after the primaries; backup R# on the mirror port. Engineering: "Redundancy" section (Processors, Not enough
+processors, Fibre short, each wall "<got> (should get <want>: <reason>)", Stepped down, Port map rows per unit) and "Signal
+path" svg (main x N box, backup x N box, link line, per wall: P# solid, fibre trunk pink dashes + box, R# dashed to main or
+backup, Full on fibre via a second trunk + box, labels "R# loop" / "R# backup" / "R# own route" / "spare on truck" / "no
+backup", "wanted ..." when stepped down). The PDF spec gets the Redundancy rows. Pull sheet Video: main processors, "Backup
+<proc>", "Spare <proc> (not patched)", "Processor link / sync cable". Labels: R# processor end "<proc> return N" for Loop,
+"Backup <proc> port N" for backup. wiring.json returnPorts = [{{wall, redundancy}}].
 
 **Drawing power runs**: dashed line (dash 3w gap 2w, w = max(2, min(tw,th)/36)) through tile centres, colour from
 {d['POWC']} by circuit; start badge = dark rounded box with a lightning-bolt icon and the circuit number k; small
