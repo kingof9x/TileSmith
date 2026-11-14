@@ -1951,6 +1951,8 @@ function actA(G,t,sz){const RT=G.hand?HT:RT_;if(t<RT.pop||t>=RT.b3)return null;c
   else if(t<RT.pull){const p=seg(t,RT.raise,RT.pull),mv=p>0&&p<1?Math.sin(p*PI*8):0;o.hands=[{t:V(-.03,ty-.12-.06*mv,.3),w:1},{t:V(.03,ty-.12+.06*mv,.28),w:1}];o.headPitch=-.3*(1-p);rope=1}
   else if(t<RT.lock){const p=seg(t,RT.pull,RT.lock);o.hands=edge(.34-.22*ss(p),-.04+.1*ss(p))}
   else{const p=seg(t,RT.lock,RT.b3);o.hands=edge(.12,.06);o.hands[0].t=lerp3(o.hands[0].t,V(-hw*.3,ty+G.th/2/sz-.03,.1),ss(p/.4)*(1-ss((p-.7)/.3)))}}
+ // facing the audience the figure's first hand is on the screen's right: swap so the arms don't cross
+ if(o.hands)o.hands=[o.hands[1],o.hands[0]];
  return{x,yy,o,walk,mode,al,rope,tile:null}}
 // B without a rope: the faulty tile comes down by hand and the new one goes up by hand
 function actBh(G,t,sz){const T=HT;if(t<T.bin||t>=T.end)return null;const eB=G.eB,wy=eB*1.36,o={psi:wy,expr:''},x0=G.xb,cs=G.cs,hw=G.tw/2/sz,hh=G.th/2/sz,
