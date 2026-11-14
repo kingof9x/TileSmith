@@ -49,6 +49,10 @@ KEYDESC = {
   'pports': 'Ports per processor / sending card (editable).',
   'ret': 'Old global Return lines switch (no UI now); only seeds wred for walls in old projects.',
   'showData': 'Draw data paths on the canvas.',
+  'zones': 'Zones: [{id, name, c (colour)}] in pull sheet order, at most 20 (see Zones).',
+  'zHide': 'Zone ids whose walls are hidden in the viewport only.',
+  'zProc': 'Zone of the processor (0 = no zone).',
+  'zone': 'Wall key: the wall\'s zone id (0 = no zone).',
   'pdist': 'Power distribution ticked. Gates all power features.',
   'pf': 'Power factor 0.5-1 (default 1). Usable watts per circuit = V x A x (0.8) x PF; amps everywhere = W / (V x PF).',
   'pload': 'Design load for distro and leg totals: Max (spec) | Typical (% of max) | Measured (W per tile). Circuits are always checked at max.',
@@ -626,6 +630,20 @@ tiles filled with the port's paper colour, port-colour edge, ID and C# R#, dashe
 then portrait list pages ("<wall>: cabinet IDs in data order"; two columns of ID, Proc., Port, Tile, Col., Row with a port
 colour bar). cidStickers: one per tile on lblGeom() (no skip/copies), port colour bar at the left, the ID large, "<wall> · C#
 R# · <model>" under it.
+
+**Locations** (submenu Engineering > Locations; called zones in the code): S.zones = [{{id, name (30 chars), c (#rrggbb)}}] (max 20, list order = pull sheet
+and binder order), per wall w.zone (0 = no zone), per distro d.zone, S.zProc (processor's zone), S.zHide (zones hidden in the
+viewport only). zSan() drops unknown ids on load; a wall saved without zone opens as 0. New zones get the first unused colour
+of ZCOL. Engineering "Locations" section (zTotals over every canvas): per zone a head row, LED walls (names), Tiles, Weight, Peak
+power, Data ports (x2 with returns), Power circuits, Gear staged here; wall rows add "Location". Viewport (zDrawVp): 3 px outline
+and a name tag in the zone colour; a hidden zone's walls are drawn black with a dashed grey edge and "<name> · hidden", and
+hitWall skips them; the strip #zstrip above the viewport toggles S.zHide and has Show all. pullItems(zid) keeps only walls in
+the zone (zid 0 = no zone) and the gear whose zone matches; processors and label sheets go with S.zProc; with Cable lengths a
+power cable belongs to the wall it is measured to, otherwise to the first wall it feeds; jumpers and breakouts are counted per
+zone. Pull sheet: a coloured zone bar (name, "N LED walls") before that zone's departments, zones in list order then No location.
+Binder: a "Location map" page per canvas after the canvas pages (the raster darkened, each wall tinted and outlined in its zone
+colour with "<wall> · <zone>", and a key with walls and gear per zone), contents list each zone under LED walls, and each wall
+page has a zone tag top right.
 
 **Cable lengths** (submenu Engineering > Cable lengths; S.cabOn, default off): per wall cdD / cdP (distance from processor /
 distro, in S.cunit, 0-3000, defaults 25 / 15) and cin (Bottom left | Bottom centre | Bottom right | Top left | Top centre |

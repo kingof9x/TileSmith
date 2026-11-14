@@ -148,6 +148,9 @@ PR steps for every thread:
   render() takes a layer filter (LYR) and wall filter (LYW); SVG vector layers via a stand-in 2D context (svgRec), PSD by a hand-written
   RLE writer (lyrPSD). Grouping S.lyrGrp A/B/C all work; the user kept A (by layer type). Test: manual-src/tests/layers_test.py
   (needs Pillow). Not yet opened in real Photoshop / Illustrator by the user.
+- Locations (LRD "beaches", user picked option C of /mnt/project-files/demos/beaches-demo.html, 2026-11-14; rejected the names
+  beaches and zones, picked Locations; code still says zone/zones): project location list, walls / processor / distros pick one, Engineering totals, viewport outline + hide
+  strip, pull sheet block per location, binder location map and location order. Test: manual-src/tests/zones_test.py.
 
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
