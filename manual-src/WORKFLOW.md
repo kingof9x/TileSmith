@@ -106,6 +106,9 @@ Last released: v3.3 (2026-10-14): Spout/Syphon output, Horizontal/Vertical wirin
 - Fibre and breakout boxes (LRD feature, user picked option C of the demo, 2026-11-14): Auto by a copper limit (90 m) with a
   per-wall Fibre / Copper override; converters at the processor, opticalCON DUO/QUAD trunks, breakout boxes, copper tails;
   pack list, wall rows, pull sheet, canvas pills. Test: manual-src/tests/fibre_test.py.
+- Zones (LRD "beaches", user picked option C of /mnt/project-files/demos/beaches-demo.html, 2026-11-14, and asked not to
+  call them beaches): project zone list, walls / processor / distros pick one, Engineering totals, viewport outline + hide
+  strip, pull sheet block per zone, binder zone map and zone order. Test: manual-src/tests/zones_test.py.
 
 ## Open questions for the user
 - Phone layout for the mobile app: A bottom tabs, B split screen (recommended), C slide-in drawers
