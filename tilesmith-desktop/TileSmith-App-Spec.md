@@ -1,6 +1,6 @@
 # TileSmith 3.7 - app specification for building a clone
 
-Generated 2026-11-14 from TileSmith v3.7 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-11-16 from TileSmith v3.7 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -812,6 +812,18 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | Gloshine CF Pro2.6 (1/24 scan) | 500 | 500 | 192 | 192 | 2.6 | 8.5 | 135 | 107 |
 | Gloshine CF Pro2.9 | 500 | 500 | 168 | 168 | 2.97 | 8.5 | 135 | 107 |
 | Gloshine CF Pro3.9 | 500 | 500 | 128 | 128 | 3.91 | 8.5 | 135 | 107 |
+| Aluvision Hi-LED 55 1.9 | 496 | 496 | 256 | 256 | 1.9 | 9.5 | 120 | 55 |
+| Aluvision Hi-LED 55 2.5 | 496 | 496 | 192 | 192 | 2.58 | 9.5 | 150 | 55 |
+| Aluvision Hi-LED 55 2.8 | 496 | 496 | 176 | 176 | 2.82 | 9 | 145 | 55 |
+| Aluvision Hi-LED 55 OU 3.9 outdoor | 496 | 496 | 128 | 128 | 3.88 | 9.1 | 130 | 62 |
+| Aluvision Hi-LED 55 R437 concave 2.5 | 689 | 496 | 266 | 192 | 2.58 | 14 | 209 | 55 |
+| Aluvision Hi-LED 55 R437 concave 2.8 | 689 | 496 | 244 | 176 | 2.82 | 14 | 181 | 55 |
+| Aluvision Hi-LED 55 R437 convex 2.5 | 772 | 496 | 300 | 192 | 2.58 | 14 | 243 | 55 |
+| Aluvision Hi-LED 55 R437 convex 2.8 | 772 | 496 | 274 | 176 | 2.82 | 14 | 203 | 55 |
+| Aluvision Hi-LED 55 R1421 convex 2.5 | 772 | 496 | 300 | 192 | 2.58 | 14 | 243 | 55 |
+| Aluvision Hi-LED 55 R1421 convex 2.8 | 772 | 496 | 274 | 176 | 2.82 | 14 | 203 | 55 |
+| Aluvision Hi-LED 55 R1476 concave 2.5 | 772 | 496 | 300 | 192 | 2.58 | 14 | 243 | 55 |
+| Aluvision Hi-LED 55 R1476 concave 2.8 | 772 | 496 | 274 | 176 | 2.82 | 14 | 203 | 55 |
 
 ## 6. Wall shapes: removed tiles and half tiles
 
