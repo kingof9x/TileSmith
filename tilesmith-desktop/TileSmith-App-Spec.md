@@ -1,6 +1,6 @@
 # TileSmith 3.7 - app specification for building a clone
 
-Generated 2026-11-16 from TileSmith v3.7 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-11-17 from TileSmith v3.7 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
