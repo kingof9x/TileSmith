@@ -50,6 +50,16 @@ https://github.com/user-attachments/assets/3fe2f407-80e1-4f42-a2f5-a2593f6d69d9
 
 <sub>The screenshots are made from the app itself with `manual-src/make_readme_shots.py`.</sub>
 
+## What's new in 3.7 and 3.8
+
+- **Windows and Mac installers.** Next to the portable and .dmg downloads there is now a Windows setup (Start menu, desktop shortcut, uninstaller) and a Mac .pkg. The Windows setup offers to fetch the NDI® Runtime and ffmpeg for you.
+- **Check for updates.** ⓘ Info › Updates asks GitHub for the newest release and opens the right download for your computer. The desktop and phone apps check by themselves once a day and show a small note when a new version is out.
+- **Add-ons.** ⓘ Info › Add-ons shows whether NDI® and ffmpeg are set up, opens NDI's own download page, and downloads ffmpeg into TileSmith's own folder.
+- **Ten languages.** German, French, Italian, Dutch, Simplified Chinese, Japanese and Korean join English, Español and Português (Brasil). Pick one under ⓘ Info › Preferences; a first visit uses your browser's language.
+- **More gear.** Aluvision Hi-LED 55 tiles (12 flat and curved models) and 13 more NovaStar processors, including the MCTRL4K, MCTRL R5, MX20, MX30 and VX600 Pro, all from the makers' spec sheets.
+- **One sub menu at a time.** Opening a sub menu in the left panel closes the others in the same menu, with a short slide. Double-click a sub menu to keep the others open.
+- **Tile faults.** Random mix no longer repeats the same fault start after start, and the panel names the faults on show.
+
 ## What's new in 3.6
 
 <table>
