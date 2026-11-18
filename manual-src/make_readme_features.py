@@ -1,11 +1,24 @@
 # Feature screenshots for the README "What's new" section, taken from the running app:
 #   python3 make_readme_features.py <app index.html> <output folder>
-# Writes one PNG per feature (power-distros, cable-fibre, redundancy, rigging, cabinet-ids, locations, tile-faults, tile-catalog).
-import asyncio, sys, os
+# Writes one PNG per feature (power-distros, cable-fibre, redundancy, rigging, cabinet-ids, locations, tile-faults, tile-catalog,
+# languages, updates). Set CHROME to a Chromium binary if Playwright has no browser of its own.
+# Set VERSION (e.g. VERSION=3.8) to show that version in the app header; the updates shot then shows VERSION offered
+# to someone on the release before it. Without it the shots use the version in index.html.
+import asyncio, json, re, sys, os
 from playwright.async_api import async_playwright
 APP = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else '../tilesmith-desktop/app/index.html')
 OUT = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else 'readme-shots')
 os.makedirs(OUT, exist_ok=True)
+VERSION = os.environ.get('VERSION', '').lstrip('v')
+TMP = []
+def stamped(v):
+    # a copy of the app next to the original (so its relative files load) showing version v, as set-version.js does
+    s = open(APP, encoding='utf-8').read()
+    s = re.sub(r'color:var\(--am\)">v[\d.]+</span></h1>', f'color:var(--am)">v{v}</span></h1>', s)
+    s = re.sub(r"const APP_VERSION='[\d.]+';", f"const APP_VERSION='{v}';", s)
+    t = os.path.join(os.path.dirname(APP), f'.readme-shot-{v}.html'); open(t, 'w', encoding='utf-8').write(s)
+    if t not in TMP: TMP.append(t)
+    return t
 
 # open the side-panel sections whose titles start with these names (and their parents); close all others
 OPEN = """(names)=>{document.querySelectorAll('#left details').forEach(d=>d.open=false);
@@ -21,7 +34,7 @@ BASE = """()=>{S.cw=3000;S.ch=1500;S.preset='ROE Black Pearl BP2V2';applyPreset(
 
 async def shot(pg, name, setup, open_names, scroll=None, wait=1200, eng=None):
     await pg.evaluate(setup)
-    await pg.evaluate(OPEN, open_names)
+    if open_names is not None: await pg.evaluate(OPEN, open_names)
     if scroll: await pg.evaluate(SCROLL, scroll)
     await pg.evaluate("()=>{sync();fit()}")
     await pg.wait_for_timeout(wait)
@@ -31,11 +44,11 @@ async def shot(pg, name, setup, open_names, scroll=None, wait=1200, eng=None):
 
 async def main():
     async with async_playwright() as p:
-        b = await p.chromium.launch(); errs = []
-        async def fresh():
+        b = await p.chromium.launch(**({'executable_path': os.environ['CHROME']} if os.environ.get('CHROME') else {})); errs = []
+        async def fresh(app=None):
             pg = await b.new_page(viewport={'width': 1600, 'height': 960}, device_scale_factor=1)
             pg.on('pageerror', lambda e: errs.append(str(e)))
-            await pg.goto('file://' + APP); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(900)
+            await pg.goto('file://' + (app or (stamped(VERSION) if VERSION else APP))); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(900)
             await pg.evaluate(BASE); return pg
         pg = await fresh()
         await shot(pg, 'power-distros', """()=>{S.pdist=true;S.showPow=true;S.showData=false;distAct('dadd');distAct('dadd');S.phaseView=true;S.autoBal=true;storeWall();sync()}""",
@@ -63,6 +76,25 @@ async def main():
         await pg.evaluate(SCROLL, 'Tile model')
         await pg.fill('#tFind', 'AR3.9'); await pg.wait_for_timeout(300)
         await shot(pg, 'tile-catalog', "()=>{}", ['Tile model'], 'Tile model')
+        await pg.close(); pg = await fresh()
+        # the whole UI in Portuguese (Brazil), with the Canvases and Tile model menus open
+        await pg.evaluate(OPEN, ['Canvases', 'Tile model'])
+        await shot(pg, 'languages', "()=>{setLang('pt-BR');sync()}", None, wait=800)
+        await pg.close()
+        # Info > Updates after Check for updates finds a newer release (GitHub mocked, no network needed)
+        nxt = VERSION or '0'
+        if VERSION:
+            prev = VERSION.split('.'); prev[-1] = str(int(prev[-1]) - 1); pg = await fresh(stamped('.'.join(prev)))
+        else:
+            pg = await fresh(); ver = await pg.evaluate("()=>APP_VERSION"); nxt = ver.split('.'); nxt[-1] = str(int(nxt[-1]) + 1); nxt = '.'.join(nxt)
+        rel = {'tag_name': 'v' + nxt, 'html_url': 'https://github.com/kingof9x/TileSmith/releases/tag/v' + nxt, 'assets': []}
+        await pg.route('https://api.github.com/**', lambda r: r.fulfill(status=200, content_type='application/json', body=json.dumps(rel),
+                                                                      headers={'Access-Control-Allow-Origin': '*'}))
+        await pg.click('[data-a=about]'); await pg.wait_for_timeout(300)
+        await pg.click('#updChk'); await pg.wait_for_timeout(600)
+        await pg.evaluate("()=>document.getElementById('updBox').scrollIntoView({block:'center'})"); await pg.wait_for_timeout(300)
+        await pg.screenshot(path=os.path.join(OUT, 'updates.png')); print('wrote updates.png')
         await b.close()
+        for t in TMP: os.remove(t)
         assert not errs, errs
 asyncio.run(main())
