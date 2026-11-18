@@ -1,6 +1,7 @@
 TILESMITH v3.5 - BUILD INSTRUCTIONS FOR WINDOWS
 ================================================
-Result: ONE stand-alone file, TileSmith-Portable.exe. Copy it anywhere and double-click.
+Result: TileSmith-Portable.exe (ONE stand-alone file: copy it anywhere and double-click) and an installer,
+TileSmith-<version>-windows-setup.exe (Start menu entry, desktop shortcut, uninstaller; installs for the current user).
 NDI® output is built in: computers that RUN TileSmith do not need NDI® Tools or the NDI® Runtime.
 Spout output is built in too (bin\spout comes in the zip; nothing extra to download or install).
 How to use the app: see TileSmith-Manual.pdf in this folder.
@@ -52,8 +53,9 @@ STEP 5 - Build
   and
      [ok] Spout output will be built into TileSmith: bin/spout/SpoutDX.dll ... Spout licence included: Spout-licence.txt
   or [info] bin/spout/SpoutDX.dll not found ...   (the build still works, without Spout; see USING SPOUT)
-  When finished it prints DONE and leaves ONE file in the project folder:
+  When finished it prints DONE and leaves two files in the project folder:
      TileSmith-Portable.exe
+     TileSmith-<version>-windows-setup.exe   (the installer; run it to install like any Windows program)
 
 STEP 6 - Run it
   Copy ONLY TileSmith-Portable.exe wherever you want and double-click it.

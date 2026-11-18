@@ -8,7 +8,7 @@
   "scripts": {
     "start": "electron .",
     "predist": "node scripts/check-deps.js && node scripts/check-ffmpeg.js && node scripts/get-ndi.js && node scripts/check-share.js",
-    "dist": "electron-builder --win portable --x64 --publish never",
+    "dist": "electron-builder --win portable nsis --x64 --publish never",
     "postdist": "node scripts/finish.js",
     "dist:folder": "electron-builder --win dir --x64 --publish never",
     "dist:installer": "electron-builder --win nsis --x64 --publish never",
@@ -81,13 +81,26 @@
     },
     "nsis": {
       "oneClick": false,
+      "perMachine": false,
       "allowToChangeInstallationDirectory": true,
-      "installerIcon": "build/icon.ico"
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "TileSmith",
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "uninstallDisplayName": "TileSmith",
+      "artifactName": "TileSmith-${version}-windows-setup.${ext}"
     },
     "mac": {
       "target": [
         {
           "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "pkg",
           "arch": [
             "universal"
           ]
@@ -143,6 +156,11 @@
         ]
       },
       "x64ArchFiles": "{koffi.node,ffmpeg,libndi.dylib,syphon.node,Syphon}"
+    },
+    "pkg": {
+      "installLocation": "/Applications",
+      "isRelocatable": false,
+      "identity": null
     },
     "dmg": {
       "title": "TileSmith ${version}",

@@ -4,6 +4,7 @@ package-lock.json
 dist/
 *.exe
 *.dmg
+*.pkg
 *.blockmap
 *.apk
 *.aab
