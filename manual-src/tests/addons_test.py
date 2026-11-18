@@ -70,5 +70,8 @@ srv.listen(0,async()=>{const base='http://127.0.0.1:'+srv.address().port,Module=
     nsh = open(os.path.join(DESKDIR, 'build', 'installer.nsh'), encoding='utf8').read()
     chk('!macro customInstall' in nsh and 'IfSilent' in nsh and 'https://ndi.link/NDIRedistV6' in nsh, 'Windows installer asks about the NDI Runtime at the end of setup (not when silent)')
     chk(all(ord(ch) < 128 for ch in nsh), 'installer script is plain ASCII (NSIS)')
+    chk('get-ffmpeg.ps1' in nsh and 'nsExec::ExecToLog' in nsh and r'$APPDATA\TileSmith\addons' in nsh, 'Windows installer offers to download ffmpeg into the app’s add-ons folder')
+    ps = open(os.path.join(DESKDIR, 'build', 'get-ffmpeg.ps1'), encoding='utf8').read()
+    chk('ffmpeg-release-full.7z' in ps and 'ffmpeg-release-essentials.zip' in ps and '-version' in ps and 'exit 0' in ps, 'get-ffmpeg.ps1 tries full then essentials and checks ffmpeg runs')
     print('ALL OK' if ok else 'SOME FAILED'); sys.exit(0 if ok else 1)
 asyncio.run(m())

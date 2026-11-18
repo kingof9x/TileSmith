@@ -270,7 +270,8 @@ once a day (untick *Check for updates when TileSmith starts* to stop that). Noth
 companies and are not in the downloads. *Info > Add-ons* shows whether each is found; *Get NDI® Runtime* opens NDI's
 own Runtime installer download (you run it and accept NDI's licence), and *Download ffmpeg* fetches a build from
 gyan.dev (Windows) or osxexperts.net / evermeet.cx (Mac) into TileSmith's own folder. The app reminds you at start
-when one is missing, and the Windows installer offers the NDI® Runtime download at the end of setup.
+when one is missing, and the Windows installer offers the NDI® Runtime download and an ffmpeg download (from gyan.dev,
+into the same add-ons folder) at the end of setup.
 
 ## Project status
 
