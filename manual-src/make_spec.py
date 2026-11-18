@@ -317,6 +317,11 @@ amber for the version). Header: "TileSmith v{VERSION}" and subtitle "LED Wall Pi
 Sections are collapsible `<details>`; submenus are nested collapsible blocks. Sections marked with the wall name edit
 the selected wall.
 
+Top-level sections open and close freely. Submenus open one at a time within their parent: opening a submenu closes
+the other open submenus that share its parent (nested submenus and other sections are left alone), 0.32 s after the
+click so a second click can still land on the same header. Double-clicking a submenu header opens it and keeps the
+others open. Add canvas opens the new canvas alone. Header text is not selectable.
+
 {panel}
 
 Visibility rules:
@@ -400,9 +405,12 @@ goes to the output.
 Collapsible "Entire canvas" section then one section per wall, as two-column tables (label, value). Rows in section 9.
 
 ### 3.5 Language
-The UI is written in English. TR maps each English text to [Español, Português (Brasil)]; tr() looks texts up with
+The UI is written in English. TR maps each English text to its translations in LIX order (es, pt-BR, de, fr, zh-CN,
+ja, ko, it, nl; a shorter row falls back to English for the missing languages); tr() looks texts up with
 whitespace collapsed and trAll() translates the page's text (elements marked data-notr are skipped).
-Info > Preferences > Language (select[data-lang]) picks English, Español or Português (Brasil); the choice is kept in
+Info > Preferences > Language (select[data-lang]) picks English, Español, Português (Brasil), Deutsch, Français,
+Italiano, Nederlands, 简体中文, 日本語 or 한국어 (zh-* maps to zh-CN, pt-* to pt-BR). Chinese, Japanese and Korean add the
+system CJK fonts after the UI font. PDF and binder exports stay in English. The choice is kept in
 localStorage "tilesmith-lang", and the first launch follows navigator.language.
 
 ## 4. Data model and saved settings
