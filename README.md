@@ -266,6 +266,12 @@ no Spout or Syphon there; NDI® needs the runtime installed), and attaches them 
 when it is newer, offers the download for that computer. The desktop and phone apps also check by themselves at most
 once a day (untick *Check for updates when TileSmith starts* to stop that). Nothing is installed without you.
 
+**Add-ons** (desktop app, Info window): the NDI® Runtime (NDI® output) and ffmpeg (video export) are made by other
+companies and are not in the downloads. *Info > Add-ons* shows whether each is found; *Get NDI® Runtime* opens NDI's
+own Runtime installer download (you run it and accept NDI's licence), and *Download ffmpeg* fetches a build from
+gyan.dev (Windows) or osxexperts.net / evermeet.cx (Mac) into TileSmith's own folder. The app reminds you at start
+when one is missing, and the Windows installer offers the NDI® Runtime download at the end of setup.
+
 ## Project status
 
 **Status:** Waiting on developer  

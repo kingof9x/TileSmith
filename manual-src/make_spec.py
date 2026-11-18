@@ -151,6 +151,8 @@ KEYDESC = {
   'pfill': 'Power wiring preference (UI label "Wiring preference"): Fewest circuits | Whole rows or columns | One continuous path | Horizontal | Vertical (see Power).',
   'plink': 'Power link limit: max tiles per circuit (0 = none).',
   'pman': 'Manual power chains (same format as wman).',
+  # Add-ons
+  'addonAsk': 'At start (desktop app), show a note when the NDI® Runtime or ffmpeg is missing, with Set up (opens Info > Add-ons), Not now and Don’t ask again (sets this to false).',
   # Binder
   'bShow': 'Export binder / pull sheet: show name, printed on every page title and used in the file name.',
   'bVenue': 'Export binder: venue, printed under the title.',
