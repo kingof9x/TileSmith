@@ -1,0 +1,162 @@
+# PR test builds
+#
+# When one of this repo's build workflows (listed under `workflows:` below)
+# finishes for a branch that has an open pull request, this:
+#   1. copies that build's files into a pre-release called `pr-<number>`
+#   2. keeps ONE comment on the PR with direct download links (no login needed
+#      on public repos) and the build status of each workflow
+# When the PR is merged or closed, the pre-release and its tag are deleted.
+#
+# Only branches in this repo are handled; forks never get write access.
+# Note: GitHub only runs `workflow_run` triggers from the copy of this file on
+# the default branch, so it starts working after this file is merged.
+
+name: PR test builds
+
+on:
+  workflow_run:
+    workflows: ["Build and release"]
+    types: [completed]
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: pr-test-builds-${{ github.event.workflow_run.head_branch || github.event.pull_request.head.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      github.event_name == 'workflow_run' &&
+      github.event.workflow_run.head_repository.full_name == github.repository &&
+      github.event.workflow_run.head_branch != github.event.repository.default_branch &&
+      github.event.workflow_run.conclusion != 'cancelled' &&
+      github.event.workflow_run.conclusion != 'skipped'
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+      RUN_URL: ${{ github.event.workflow_run.html_url }}
+      RUN_NAME: ${{ github.event.workflow_run.name }}
+      BRANCH: ${{ github.event.workflow_run.head_branch }}
+      SHA: ${{ github.event.workflow_run.head_sha }}
+      CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+    steps:
+      - name: Find the open PR for this branch
+        id: pr
+        run: |
+          num=$(gh pr list -R "$REPO" --head "$BRANCH" --state open --json number --jq '.[0].number // empty')
+          echo "number=$num" >> "$GITHUB_OUTPUT"
+          if [ -z "$num" ]; then echo "No open PR for $BRANCH yet, nothing to publish."; fi
+
+      - name: Download this run's build files
+        if: steps.pr.outputs.number != '' && env.CONCLUSION == 'success'
+        run: |
+          mkdir -p dl upload
+          gh api "repos/$REPO/actions/runs/$RUN_ID/artifacts" --paginate --jq '.artifacts[] | select(.expired | not) | .name' > names.txt
+          while IFS= read -r name; do
+            [ -n "$name" ] || continue
+            safe=$(printf '%s' "$name" | tr -c 'A-Za-z0-9._-' '_')
+            gh run download "$RUN_ID" -R "$REPO" -n "$name" -D "dl/$safe"
+            count=$(find "dl/$safe" -type f | wc -l)
+            if [ "$count" -eq 1 ]; then
+              f=$(find "dl/$safe" -type f)
+              cp "$f" "upload/$(basename "$f")"
+            elif [ "$count" -gt 1 ]; then
+              (cd "dl/$safe" && zip -qr "$GITHUB_WORKSPACE/upload/$safe.zip" .)
+            fi
+          done < names.txt
+          ls -la upload
+
+      - name: Publish to the PR's pre-release
+        if: steps.pr.outputs.number != '' && env.CONCLUSION == 'success'
+        env:
+          N: ${{ steps.pr.outputs.number }}
+        run: |
+          tag="pr-$N"
+          if gh release view "$tag" -R "$REPO" >/dev/null 2>&1; then
+            # Move the tag to the commit that was just built.
+            gh api -X PATCH "repos/$REPO/git/refs/tags/$tag" -f sha="$SHA" -F force=true >/dev/null
+          else
+            gh release create "$tag" -R "$REPO" --prerelease --latest=false --target "$SHA" \
+              --title "Test build for PR #$N" \
+              --notes "Automatic test build for #$N (branch \`$BRANCH\`). Not a real release: it is replaced on every push and deleted when the PR closes."
+          fi
+          if compgen -G "upload/*" >/dev/null; then
+            gh release upload "$tag" upload/* -R "$REPO" --clobber
+          fi
+
+      - name: Update the PR comment
+        if: steps.pr.outputs.number != ''
+        env:
+          N: ${{ steps.pr.outputs.number }}
+        shell: python
+        run: |
+          import json, os, subprocess, re
+
+          repo, n = os.environ["REPO"], os.environ["N"]
+          sha, run_name = os.environ["SHA"], os.environ["RUN_NAME"]
+          run_url, ok = os.environ["RUN_URL"], os.environ["CONCLUSION"] == "success"
+          tag, marker = f"pr-{n}", "<!-- pr-test-builds -->"
+
+          def gh(*args):
+              return subprocess.run(["gh", *args], capture_output=True, text=True)
+
+          # Existing comment (if any) and the per-workflow status lines it holds.
+          comments = json.loads(gh("api", f"repos/{repo}/issues/{n}/comments", "--paginate").stdout or "[]")
+          mine = next((c for c in comments if c["body"].startswith(marker)), None)
+          status = {}
+          if mine:
+              m = re.search(r"<!-- status (.*?) -->", mine["body"], re.S)
+              if m:
+                  status = json.loads(m.group(1))
+          icon = "✅ built" if ok else "❌ failed"
+          status[run_name] = f"{icon} from `{sha[:7]}` · [log]({run_url})"
+
+          # Current files on the pre-release.
+          rel = gh("release", "view", tag, "-R", repo, "--json", "assets,url")
+          assets, rel_url = [], None
+          if rel.returncode == 0:
+              data = json.loads(rel.stdout)
+              rel_url = data["url"]
+              assets = sorted(data["assets"], key=lambda a: a["name"].lower())
+
+          lines = [marker, "## 🧪 Test builds", ""]
+          lines += [f"- **{k}**: {v}" for k, v in sorted(status.items())]
+          lines.append("")
+          if assets:
+              lines.append("**Download**")
+              for a in assets:
+                  mb = a["size"] / 1048576
+                  lines.append(f"- [{a['name']}]({a['url']}) ({mb:.1f} MB)")
+              lines += ["", f"All files: {rel_url}"]
+          else:
+              lines.append("_No downloadable files yet._")
+          lines += ["", "_Updated automatically after every push. Deleted when this PR closes._",
+                    f"<!-- status {json.dumps(status)} -->"]
+          body = "\n".join(lines)
+
+          if mine:
+              gh("api", "-X", "PATCH", f"repos/{repo}/issues/comments/{mine['id']}", "-f", f"body={body}")
+          else:
+              gh("api", "-X", "POST", f"repos/{repo}/issues/{n}/comments", "-f", f"body={body}")
+
+  cleanup:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      N: ${{ github.event.pull_request.number }}
+    steps:
+      - name: Delete the PR's pre-release and tag
+        run: |
+          gh release delete "pr-$N" -R "$REPO" --cleanup-tag -y || echo "No test build to delete."
