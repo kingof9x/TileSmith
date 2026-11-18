@@ -33,6 +33,7 @@ async def main():
         # every button: click, must not throw
         n=0
         for i in range(await pg.locator('button:visible').count()):
+            if i>=await pg.locator('button:visible').count(): break  # a click can hide buttons (Hide Engineering Data); nth() past the end waits 30 s each
             bt=pg.locator('button:visible').nth(i)
             try:
                 lab=((await bt.inner_text()) or await bt.get_attribute('data-a') or '')[:24]
