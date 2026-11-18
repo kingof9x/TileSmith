@@ -151,6 +151,8 @@ KEYDESC = {
   'pfill': 'Power wiring preference (UI label "Wiring preference"): Fewest circuits | Whole rows or columns | One continuous path | Horizontal | Vertical (see Power).',
   'plink': 'Power link limit: max tiles per circuit (0 = none).',
   'pman': 'Manual power chains (same format as wman).',
+  # Add-ons
+  'addonAsk': 'At start (desktop app), show a note when the NDI® Runtime or ffmpeg is missing, with Set up (opens Info > Add-ons), Not now and Don’t ask again (sets this to false).',
   # Binder
   'bShow': 'Export binder / pull sheet: show name, printed on every page title and used in the file name.',
   'bVenue': 'Export binder: venue, printed under the title.',
@@ -203,6 +205,8 @@ KEYDESC = {
   'glPick': 'Faulty tiles: Tiles I pick (click tiles in the viewport) | Random.',
   'glN': 'How many random faulty tiles (1-200).',
   'glk': 'Wall key: faulty tiles of the wall: [[tile key, fault index]].',
+  # Updates
+  'updAuto': 'Check for updates when TileSmith starts (desktop and phone apps): at most once a day, asks the GitHub API for the latest release and, when it is newer than APP_VERSION, shows a note with Download (the file for this platform), Release notes and Not now.',
 }
 PATSPEC = {
  'tileshade': 'Classic pixel map. Tiles alternate (checkerboard by grid cell) between Tile-shade colour and that colour mixed 50% with white. White 1.5 px+ lines corner to corner across the wall, a centre circle of radius h/4. Wall name (light box, dark text) and "W {w} X H {h}" (dark box, white text) in the middle, font f = max(12, min(h/22, w/30)). Position label "X {x},Y {y}" (canvas position of the first tile\'s top-left corner; first tile = top row, then leftmost) drawn as an overlay at that corner: white text on rgba(0,0,0,.62). Footer centred at the bottom: "{name} / Position: X {ox}, Y {oy} / {cols}.0 Columns X {rows}.0 Rows - {N} Cabinets Total ({n} half) / Resolution: {w} x {h} ( {w*h} ) / Aspect Ratio: {w/h}" in a light box, font max(10, min(h/50, tileH/10)) shrunk to fit 98% of the wall width; drawn again above the tile borders.',

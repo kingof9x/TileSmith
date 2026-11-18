@@ -1,4 +1,7 @@
 # Builds TileSmith for Windows, Mac and Linux and attaches the files to a GitHub Release.
+# Windows: TileSmith-windows-setup.exe (installer) and TileSmith-windows-portable.exe. Mac: TileSmith-mac-universal.dmg
+# and TileSmith-mac-universal.pkg (installer). The app's "Check for updates" (Info window) reads the latest release
+# and offers the matching file, so keep these names.
 #
 # To publish a version: Actions tab > Build and release > Run workflow > type the version (for example 3.4) > Run.
 # The workflow builds everything, then creates the release v3.4 itself. (Pushing a tag such as v3.4 also works.)
@@ -49,7 +52,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: windows
-          path: tilesmith-desktop/TileSmith-Portable.exe
+          path: |
+            tilesmith-desktop/TileSmith-Portable.exe
+            tilesmith-desktop/TileSmith-*-windows-setup.exe
           if-no-files-found: error
           retention-days: 7
 
@@ -73,7 +78,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: mac
-          path: tilesmith-desktop/TileSmith-*.dmg
+          path: |
+            tilesmith-desktop/TileSmith-*.dmg
+            tilesmith-desktop/TileSmith-*.pkg
           if-no-files-found: error
           retention-days: 7
 
@@ -226,7 +233,7 @@ jobs:
             gh release upload "$TAG" upload/* --clobber
           else
             gh release create "$TAG" --target "$GITHUB_SHA" --title "TileSmith $VER" \
-              --notes "Windows portable app, Mac universal installer and Linux packages (AppImage, deb, rpm, Arch pacman, snap, flatpak) and an Android APK (debug-signed, for testing), unsigned. Manuals and the app spec are attached a few minutes after the release by the Build documentation workflow. NDI runtime and ffmpeg are not included: see BUILD-WINDOWS.txt / BUILD-MAC.txt." \
+              --notes "Windows installer and portable app, Mac universal disk image (.dmg) and installer (.pkg), Linux packages (AppImage, deb, rpm, Arch pacman, snap, flatpak) and an Android APK (debug-signed, for testing), unsigned. Manuals and the app spec are attached a few minutes after the release by the Build documentation workflow. NDI runtime and ffmpeg are not included: see BUILD-WINDOWS.txt / BUILD-MAC.txt." \
               upload/*
           fi
       - uses: actions/upload-artifact@v4

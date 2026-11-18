@@ -1,6 +1,6 @@
 TILESMITH v3.5 - BUILD INSTRUCTIONS FOR MAC (Apple Silicon + Intel, one universal app)
 =====================================================================================
-Result: TileSmith-3.5.0-mac-universal.dmg - one installer that runs on BOTH Apple Silicon (M1/M2/M3/M4)
+Result: TileSmith-3.5.0-mac-universal.dmg (and a .pkg installer next to it) - runs on BOTH Apple Silicon (M1/M2/M3/M4)
 and Intel Macs. The app is UNSIGNED (fine for personal/internal use; see step 8).
 You must build on a Mac. Needs internet only while building. The finished app works offline.
 Commands are typed in the Terminal app (Applications > Utilities > Terminal).
@@ -67,8 +67,10 @@ STEP 7 - Build
   and "[ok] Syphon output will be built into TileSmith ..." (or "[info] ... Syphon output will NOT be built in"
   if bin/mac/syphon is missing; the build still works, without Syphon).
   The build takes several minutes (it builds Apple Silicon and Intel and merges them).
-  When finished it prints DONE and leaves this file in the project folder:
+  When finished it prints DONE and leaves these files in the project folder:
      TileSmith-3.5.0-mac-universal.dmg
+     TileSmith-3.5.0-mac-universal.pkg   (installer: double-click, Continue, Install; puts TileSmith in Applications.
+                                          Unsigned, so the first time right-click the .pkg -> Open)
 
 STEP 8 - Install and open
   1) Double-click the .dmg and drag TileSmith onto the Applications folder.

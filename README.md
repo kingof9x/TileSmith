@@ -179,8 +179,10 @@ software listed in *Software to install* above.
 
 | Platform | File | What it is |
 |---|---|---|
-| **Windows** 10/11, 64-bit | [TileSmith-windows-portable.exe](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-windows-portable.exe) | Portable app: no install, just run it. Includes Spout. |
+| **Windows** 10/11, 64-bit (installer) | [TileSmith-windows-setup.exe](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-windows-setup.exe) | Installs TileSmith with a Start menu entry, a desktop shortcut and an uninstaller. Includes Spout. |
+| **Windows** 10/11, 64-bit (portable) | [TileSmith-windows-portable.exe](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-windows-portable.exe) | Portable app: no install, just run it. Includes Spout. |
 | **Mac** (Apple Silicon and Intel) | [TileSmith-mac-universal.dmg](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-mac-universal.dmg) | Open it and drag TileSmith to Applications. Includes Syphon. Right-click the app and choose *Open* the first time. |
+| **Mac** (installer) | [TileSmith-mac-universal.pkg](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-mac-universal.pkg) | Double-click, Continue, Install: puts TileSmith in Applications. Unsigned: right-click the .pkg > Open the first time. |
 | **Linux**, any distribution | [TileSmith-linux-x64.AppImage](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.AppImage) | Runs without installing: make it executable, then run it. |
 | **Debian, Ubuntu, Mint** | [TileSmith-linux-x64.deb](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.deb) | `sudo apt install ./TileSmith-linux-x64.deb` |
 | **Fedora, RHEL, openSUSE** | [TileSmith-linux-x64.rpm](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-linux-x64.rpm) | `sudo dnf install ./TileSmith-linux-x64.rpm` |
@@ -215,9 +217,9 @@ After every release the files are scanned on VirusTotal and the results are writ
 Read the guide for your platform in `tilesmith-desktop/`. In short:
 
 - **Windows**: Node.js LTS, plus the NDI® SDK and an ffmpeg "full" build on the build computer. Then, in Command Prompt
-  in `tilesmith-desktop`: `npm run clean`, `npm install`, `npm run dist`. The result is `TileSmith-Portable.exe`.
+  in `tilesmith-desktop`: `npm run clean`, `npm install`, `npm run dist`. The result is `TileSmith-Portable.exe` and the installer `TileSmith-<version>-windows-setup.exe`.
 - **Mac**: Node.js, the NDI® SDK and ffmpeg (BUILD-MAC.txt explains each), then `npm run dist:mac`. The result is a
-  universal `.dmg`.
+  universal `.dmg` and a `.pkg` installer.
 - **Android / iOS**: `npm install`, then `npm run android` or `npm run ios` in `tilesmith-desktop/mobile`, then Android
   Studio or Xcode.
 
@@ -255,10 +257,20 @@ Copyright (c) 2026 Callum Davenport-Lambton.
 
 ## Downloads and builds
 
-Open **Actions > Build and release > Run workflow**, type a version such as `3.3` and run it. GitHub builds the Windows portable
-app, the Mac universal installer and an Android APK, and the Linux packages (`.AppImage`, `.deb`, `.rpm`, `.pacman` for Arch, `.snap` and `.flatpak`;
+Open **Actions > Build and release > Run workflow**, type a version such as `3.3` and run it. GitHub builds the Windows installer and portable
+app, the Mac universal `.dmg` and `.pkg` installer, and an Android APK, and the Linux packages (`.AppImage`, `.deb`, `.rpm`, `.pacman` for Arch, `.snap` and `.flatpak`;
 no Spout or Syphon there; NDI® needs the runtime installed), and attaches them to a release named `v3.3` together with the manuals. Downloads are on the **Releases** page. The builds are unsigned. On Ubuntu
 24.04 and newer, the AppImage may need `--no-sandbox` (or install the `.deb`).
+
+**Check for updates**: the Info window has a *Check for updates* button that asks GitHub for the latest release and,
+when it is newer, offers the download for that computer. The desktop and phone apps also check by themselves at most
+once a day (untick *Check for updates when TileSmith starts* to stop that). Nothing is installed without you.
+
+**Add-ons** (desktop app, Info window): the NDI® Runtime (NDI® output) and ffmpeg (video export) are made by other
+companies and are not in the downloads. *Info > Add-ons* shows whether each is found; *Get NDI® Runtime* opens NDI's
+own Runtime installer download (you run it and accept NDI's licence), and *Download ffmpeg* fetches a build from
+gyan.dev (Windows) or osxexperts.net / evermeet.cx (Mac) into TileSmith's own folder. The app reminds you at start
+when one is missing, and the Windows installer offers the NDI® Runtime download at the end of setup.
 
 ## Project status
 

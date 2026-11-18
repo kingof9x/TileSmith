@@ -16,6 +16,7 @@ function sub(rel, pat, rep) {
 sub('app/index.html', /<title>TileSmith v[\d.]+ - LED Wall Builder<\/title>/, `<title>TileSmith v${v} - LED Wall Builder</title>`);
 sub('app/index.html', /color:var\(--am\)">v[\d.]+<\/span><\/h1>/, `color:var(--am)">v${v}</span></h1>`);
 sub('app/index.html', />Version [\d.]+ ·[^<]*<\/div>/, `>Version ${v} · build ${today}</div>`);
+sub('app/index.html', /const APP_VERSION='[\d.]+';/, `const APP_VERSION='${v}';`);
 sub('main.js', /title: 'TileSmith v[\d.]+ - LED Wall Builder'/, `title: 'TileSmith v${v} - LED Wall Builder'`);
 sub('package.json', /"version": "[\d.]+"/, `"version": "${full}"`);
 sub('mobile/package.json', /"version": "[\d.]+"/, `"version": "${full}"`);
@@ -28,14 +29,14 @@ sub('mobile/ios/App/App.xcodeproj/project.pbxproj', /CURRENT_PROJECT_VERSION = \
 for (const f of ['BUILD-WINDOWS.txt', 'BUILD-MAC.txt', 'BUILD-ANDROID.txt', 'BUILD-IOS.txt']) {
   sub(f, /TILESMITH v[\d.]+/g, `TILESMITH v${v}`);
   sub(f, /header say "v[\d.]+"/g, `header say "v${v}"`);
-  sub(f, /TileSmith-[\d.]+-mac-universal\.dmg/g, `TileSmith-${full}-mac-universal.dmg`);
+  sub(f, /TileSmith-[\d.]+-mac-universal\.(dmg|pkg)/g, (m, e) => `TileSmith-${full}-mac-universal.${e}`);
   sub(f, /TileSmith v[\d.]+ \.\.\./g, `TileSmith v${v} ...`);
 }
 
 // Check: the app must now carry the version that was typed. If a pattern above stopped matching (the page text
 // changed), fail the build instead of shipping an app that shows the wrong version.
 const app = fs.readFileSync(path.join(root, 'app', 'index.html'), 'utf8');
-const need = [`<title>TileSmith v${v} - LED Wall Builder</title>`, `color:var(--am)">v${v}</span></h1>`, `>Version ${v} · build `];
+const need = [`const APP_VERSION='${v}';`, `<title>TileSmith v${v} - LED Wall Builder</title>`, `color:var(--am)">v${v}</span></h1>`, `>Version ${v} · build `];
 const miss = need.filter(x => !app.includes(x));
 if (miss.length) { console.error('[set-version] ERROR: the app does not show version ' + v + '. Missing: ' + miss.join(' | ')); process.exit(1); }
 console.log('[set-version] OK: the app shows version ' + v);
