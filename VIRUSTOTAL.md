@@ -4,6 +4,24 @@ Every program file attached to a TileSmith release is uploaded to [VirusTotal](h
 
 TileSmith is not code-signed, and a few engines now and then flag an unsigned Electron app by mistake (a false positive). The source code is public, so you can see exactly what was built. The manuals and the app spec are documents and are not scanned.
 
+## v3.8
+
+Scanned 2026-11-18 18:35 UTC.
+
+| File | Result | SHA-256 |
+|---|---|---|
+| TileSmith-android.apk | [0 / 62 engines flag it](https://www.virustotal.com/gui/file/ba101dea36166472afbe0200c67c97919c81607c99b7709af96c7f24eeb51ba5) | `ba101dea36166472afbe0200c67c97919c81607c99b7709af96c7f24eeb51ba5` |
+| TileSmith-linux-x64.AppImage | [0 / 62 engines flag it](https://www.virustotal.com/gui/file/f5232c69d47c9d2c0270f6f7d1f237dc7ecfedee92cd1232b43c772258704db6) | `f5232c69d47c9d2c0270f6f7d1f237dc7ecfedee92cd1232b43c772258704db6` |
+| TileSmith-linux-x64.deb | [0 / 58 engines flag it](https://www.virustotal.com/gui/file/26194b92445a6abb2aa26824c3b7686da026515c60b084aa6e83daa33cd84ca9) | `26194b92445a6abb2aa26824c3b7686da026515c60b084aa6e83daa33cd84ca9` |
+| TileSmith-linux-x64.flatpak | [0 / 60 engines flag it](https://www.virustotal.com/gui/file/14da2e09fc19a4a0d0fde0bc218193e1dbf84ac13e837db4c69dd28eae01d4e3) | `14da2e09fc19a4a0d0fde0bc218193e1dbf84ac13e837db4c69dd28eae01d4e3` |
+| TileSmith-linux-x64.pacman | [0 / 58 engines flag it](https://www.virustotal.com/gui/file/65675f84f21006e15255b18a487bcf280ba9120bd18f64dfa285677e2cf09028) | `65675f84f21006e15255b18a487bcf280ba9120bd18f64dfa285677e2cf09028` |
+| TileSmith-linux-x64.rpm | [0 / 60 engines flag it](https://www.virustotal.com/gui/file/c6dccfed7d930b69feba7188787fe8d226069f9734bf364d7d8b9e6d96f3a331) | `c6dccfed7d930b69feba7188787fe8d226069f9734bf364d7d8b9e6d96f3a331` |
+| TileSmith-linux-x64.snap | [0 / 60 engines flag it](https://www.virustotal.com/gui/file/62a2d7c691ec9d80557f1705bd15e8a386686af4a20f9cfa648bb21fe56ed4bd) | `62a2d7c691ec9d80557f1705bd15e8a386686af4a20f9cfa648bb21fe56ed4bd` |
+| TileSmith-mac-universal.dmg | [0 / 61 engines flag it](https://www.virustotal.com/gui/file/10d213dc543ec532c1fa50d8a0a3b2bc89bfad2ee51c77c6cd1305babb3325e1) | `10d213dc543ec532c1fa50d8a0a3b2bc89bfad2ee51c77c6cd1305babb3325e1` |
+| TileSmith-mac-universal.pkg | [0 / 59 engines flag it](https://www.virustotal.com/gui/file/6d70d1e5a6047e78303b0a5ed173dfe0367e35298c1670b2f7e84c7e68f08ea2) | `6d70d1e5a6047e78303b0a5ed173dfe0367e35298c1670b2f7e84c7e68f08ea2` |
+| TileSmith-windows-portable.exe | [0 / 65 engines flag it](https://www.virustotal.com/gui/file/fcf2b7afbd40a4be8f9a4f84395385a49edf7d6b1c1e30a4d65259e4e515a391) | `fcf2b7afbd40a4be8f9a4f84395385a49edf7d6b1c1e30a4d65259e4e515a391` |
+| TileSmith-windows-setup.exe | [0 / 67 engines flag it](https://www.virustotal.com/gui/file/632cd618ba84d8deb9ddf64a23e17fa9982aba27cdcec6247355a8051e2aba65) | `632cd618ba84d8deb9ddf64a23e17fa9982aba27cdcec6247355a8051e2aba65` |
+
 ## v3.7
 
 Scanned 2026-11-18 17:48 UTC.
