@@ -74,7 +74,7 @@ https://github.com/user-attachments/assets/3fe2f407-80e1-4f42-a2f5-a2593f6d69d9
 Also new in 3.7 and 3.8:
 
 - **Windows and Mac installers.** Next to the portable and .dmg downloads there is now a Windows setup (Start menu, desktop shortcut, uninstaller) and a Mac .pkg. The Windows setup offers to fetch the NDI® Runtime and ffmpeg for you.
-- **Add-ons.** ⓘ Info › Add-ons shows whether NDI® and ffmpeg are set up, opens NDI's own download page, and downloads ffmpeg into TileSmith's own folder.
+- **Add-ons.** ⓘ Info › Add-ons shows whether NDI® and ffmpeg are set up, installs NDI's own Runtime installer, and downloads ffmpeg into TileSmith's own folder.
 - **More gear.** Aluvision Hi-LED 55 tiles (12 flat and curved models) and 13 more NovaStar processors, including the MCTRL4K, MCTRL R5, MX20, MX30 and VX600 Pro, all from the makers' spec sheets.
 - **One sub menu at a time.** Opening a sub menu in the left panel closes the others in the same menu, with a short slide. Double-click a sub menu to keep the others open.
 - **Tile faults.** Random mix no longer repeats the same fault start after start, and the panel names the faults on show.
@@ -298,11 +298,13 @@ apps also check by themselves at most once a day (untick *Check for updates when
 Nothing is installed until you click *Update now*.
 
 **Add-ons** (desktop app, Info window): the NDI® Runtime (NDI® output) and ffmpeg (video export) are made by other
-companies and are not in the downloads. *Info > Add-ons* shows whether each is found; *Get NDI® Runtime* opens NDI's
-own Runtime installer download (you run it and accept NDI's licence), and *Download ffmpeg* fetches a build from
-gyan.dev (Windows) or osxexperts.net / evermeet.cx (Mac) into TileSmith's own folder. The app reminds you at start
-when one is missing, and the Windows installer offers the NDI® Runtime download and an ffmpeg download (from gyan.dev,
-into the same add-ons folder) at the end of setup.
+companies and are not in the downloads. *Info > Add-ons* shows whether each is found; *Install NDI® Runtime*
+downloads NDI's own Runtime installer and runs it (Windows: silently after the administrator prompt; Mac: Apple's
+Installer opens; installing it means accepting NDI's licence), and *Download ffmpeg* fetches a build from gyan.dev
+(Windows) or osxexperts.net / evermeet.cx (Mac) into TileSmith's own folder. The app reminds you at start when one is
+missing. At the end of setup the Windows installer checks for each one (NDI® 5 or 6, Runtime or Tools) and, only if it
+is missing and you say yes, installs it with a progress window. Downloads go to a temporary folder that is removed
+afterwards.
 
 ## Project status
 
