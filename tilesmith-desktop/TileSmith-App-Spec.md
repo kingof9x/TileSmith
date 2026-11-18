@@ -1,6 +1,6 @@
-# TileSmith 3.7 - app specification for building a clone
+# TileSmith 3.8 - app specification for building a clone
 
-Generated 2026-11-17 from TileSmith v3.7 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-11-18 from TileSmith v3.8 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -39,12 +39,17 @@ Mac (Syphon.framework via node-syphon) and video export (via ffmpeg). All settin
 
 Desktop: three columns. Left panel (settings, 350 px), centre (top bar + viewport), right panel (engineering, 310 px).
 Below 900 px wide the columns stack. Colours: dark UI (`--bg`, `--pn` panel, `--ac` teal accent #22a0ac-ish, `--am`
-amber for the version). Header: "TileSmith v3.7" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
+amber for the version). Header: "TileSmith v3.8" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
 
 ### 3.1 Left panel sections and submenus (in order)
 
 Sections are collapsible `<details>`; submenus are nested collapsible blocks. Sections marked with the wall name edit
 the selected wall.
+
+Top-level sections open and close freely. Submenus open one at a time within their parent: opening a submenu closes
+the other open submenus that share its parent (nested submenus and other sections are left alone), 0.32 s after the
+click so a second click can still land on the same header. Double-clicking a submenu header opens it and keeps the
+others open. Add canvas opens the new canvas alone. Header text is not selectable.
 
 - **Canvases**
   - Canvas 1 1920×1080
@@ -159,9 +164,12 @@ goes to the output.
 Collapsible "Entire canvas" section then one section per wall, as two-column tables (label, value). Rows in section 9.
 
 ### 3.5 Language
-The UI is written in English. TR maps each English text to [Español, Português (Brasil)]; tr() looks texts up with
+The UI is written in English. TR maps each English text to its translations in LIX order (es, pt-BR, de, fr, zh-CN,
+ja, ko, it, nl; a shorter row falls back to English for the missing languages); tr() looks texts up with
 whitespace collapsed and trAll() translates the page's text (elements marked data-notr are skipped).
-Info > Preferences > Language (select[data-lang]) picks English, Español or Português (Brasil); the choice is kept in
+Info > Preferences > Language (select[data-lang]) picks English, Español, Português (Brasil), Deutsch, Français,
+Italiano, Nederlands, 简体中文, 日本語 or 한국어 (zh-* maps to zh-CN, pt-* to pt-BR). Chinese, Japanese and Korean add the
+system CJK fonts after the UI font. PDF and binder exports stay in English. The choice is kept in
 localStorage "tilesmith-lang", and the first launch follows navigator.language.
 
 ## 4. Data model and saved settings
@@ -251,6 +259,7 @@ dialog) deletes the state and reloads.
 | `logo` | TILESMITH | Vest logo text. |
 | `cd` | true | Show crew details editor and name tags. |
 | `play` | true | Build animation playing (not saved). |
+| `addonAsk` | true | At start (desktop app), show a note when the NDI® Runtime or ffmpeg is missing, with Set up (opens Info > Add-ons), Not now and Don’t ask again (sets this to false). |
 | `bShow` |  | Export binder / pull sheet: show name, printed on every page title and used in the file name. |
 | `bVenue` |  | Export binder: venue, printed under the title. |
 | `bDate` |  | Export binder: load-in date (free text), printed under the title. |
@@ -298,6 +307,7 @@ dialog) deletes the state and reloads.
 | `glN` | 3 | How many random faulty tiles (1-200). |
 | `font` | JetBrains Mono | UI font: JetBrains Mono (default), OpenDyslexic, or Current (the original Barlow-based stack). Set from Preferences in the Info popup; applies to the app chrome via --font-ui, not to canvas-drawn text. |
 | `hideEng` | false | Hide the Engineering data panel entirely. Toggled from the Hide / Show Engineering Data button in the top bar (desktop only). |
+| `updAuto` | true | Check for updates when TileSmith starts (desktop and phone apps): at most once a day, asks the GitHub API for the latest release and, when it is newer than APP_VERSION, shows a note with Download (the file for this platform), Release notes and Not now. |
 
 ### 4.2 Per-wall settings
 

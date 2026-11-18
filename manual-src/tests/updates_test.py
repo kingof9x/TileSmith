@@ -70,6 +70,20 @@ async def m():
         chk(names == ['TileSmith-windows-setup.exe', 'TileSmith-windows-portable.exe', 'TileSmith-mac-universal.dmg', 'TileSmith-linux-x64.AppImage', None],
             f'installed Windows gets the installer, portable gets the portable exe, Mac the .dmg, AppImage the AppImage, other Linux the page {names}')
 
+        # Update now: which in-app install each desktop build uses (DESK and process stood in, as above)
+        plans = await pg.evaluate("""()=>{const src=updPlan.toString().replace(/!DESK/g,'false');
+          const u={assets:['TileSmith-windows-setup.exe','TileSmith-windows-portable.exe','TileSmith-mac-universal.dmg','TileSmith-mac-universal.pkg','TileSmith-linux-x64.AppImage'].map(n=>({name:n,browser_download_url:'https://x/'+n}))};
+          const f=(pl,env,w,app)=>new Function('process','updMacApp','updWritable','return ('+src+')')({platform:pl,env},()=>app,()=>w)(u);
+          const m=p=>p?p.mode+':'+p.name:null;
+          return [m(f('win32',{},true)),m(f('win32',{PORTABLE_EXECUTABLE_FILE:'C:/t.exe'},true)),m(f('darwin',{},true,'/Applications/TileSmith.app')),
+                  m(f('darwin',{},false,'/Applications/TileSmith.app')),m(f('linux',{APPIMAGE:'/a'},true)),m(f('linux',{},true)),
+                  m(new Function('process','updMacApp','updWritable','return ('+src+')')({platform:'win32',env:{}},()=>null,()=>true)({assets:[]}))]}""")
+        chk(plans == ['win-setup:TileSmith-windows-setup.exe', 'win-portable:TileSmith-windows-portable.exe', 'mac-app:TileSmith-mac-universal.dmg',
+                      'mac-pkg:TileSmith-mac-universal.pkg', 'appimage:TileSmith-linux-x64.AppImage', None, None],
+            f'Update now installs in-app: setup.exe silently, portable/AppImage swapped, Mac app from .dmg (or .pkg when not writable); else Download {plans}')
+        chk(await pg.evaluate("()=>updPlan({assets:[{name:'TileSmith-windows-setup.exe'}]})") is None, 'the web page never tries to install (Download only)')
+        src = await pg.evaluate("()=>updInstall.toString()")
+        chk("'/S','--force-run'" in src and 'Wait-Process' in src and "ts-quit" in src, 'Windows: waits for TileSmith to close, runs setup silently and restarts it')
         # the note at start (what the desktop app shows when a newer release exists)
         await pg.click('#cls')
         await pg.evaluate("()=>checkUpdates(true)"); await pg.wait_for_timeout(400)
