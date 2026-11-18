@@ -263,8 +263,10 @@ no Spout or Syphon there; NDI® needs the runtime installed), and attaches them 
 24.04 and newer, the AppImage may need `--no-sandbox` (or install the `.deb`).
 
 **Check for updates**: the Info window has a *Check for updates* button that asks GitHub for the latest release and,
-when it is newer, offers the download for that computer. The desktop and phone apps also check by themselves at most
-once a day (untick *Check for updates when TileSmith starts* to stop that). Nothing is installed without you.
+when it is newer, offers *Update now*: the desktop app downloads the new version, closes, installs it and opens again
+(Windows installer or portable, Mac, Linux AppImage; other builds and the phone app get a *Download* link instead). The
+apps also check by themselves at most once a day (untick *Check for updates when TileSmith starts* to stop that).
+Nothing is installed until you click *Update now*.
 
 **Add-ons** (desktop app, Info window): the NDI® Runtime (NDI® output) and ffmpeg (video export) are made by other
 companies and are not in the downloads. *Info > Add-ons* shows whether each is found; *Get NDI® Runtime* opens NDI's
