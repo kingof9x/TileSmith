@@ -1407,6 +1407,11 @@ const TR={
 "You have {0}.":["Tienes {0}.", "Você tem {0}.", "Du hast {0}.", "Vous avez {0}.", "你的版本是 {0}。", "お使いのバージョンは {0} です。", "현재 버전은 {0}입니다.", "Hai {0}.", "Je hebt {0}."],
 "Download {0}":["Descargar {0}", "Baixar {0}", "{0} herunterladen", "Télécharger {0}", "下载 {0}", "{0} をダウンロード", "{0} 다운로드", "Scarica {0}", "{0} downloaden"],
 "Release notes":["Notas de la versión", "Notas da versão", "Versionshinweise", "Notes de version", "版本说明", "リリースノート", "릴리스 노트", "Note di rilascio", "Release-opmerkingen"],
+"Update now ({0})":["Actualizar ahora ({0})", "Atualizar agora ({0})", "Jetzt aktualisieren ({0})", "Mettre à jour ({0})", "立即更新（{0}）", "今すぐアップデート（{0}）", "지금 업데이트({0})", "Aggiorna ora ({0})", "Nu bijwerken ({0})"],
+"Downloading TileSmith {0}…":["Descargando TileSmith {0}…", "Baixando o TileSmith {0}…", "TileSmith {0} wird heruntergeladen…", "Téléchargement de TileSmith {0}…", "正在下载 TileSmith {0}…", "TileSmith {0} をダウンロード中…", "TileSmith {0} 다운로드 중…", "Download di TileSmith {0}…", "TileSmith {0} downloaden…"],
+"Downloading TileSmith {0}… {1}%":["Descargando TileSmith {0}… {1}%", "Baixando o TileSmith {0}… {1}%", "TileSmith {0} wird heruntergeladen… {1}%", "Téléchargement de TileSmith {0}… {1}%", "正在下载 TileSmith {0}… {1}%", "TileSmith {0} をダウンロード中… {1}%", "TileSmith {0} 다운로드 중… {1}%", "Download di TileSmith {0}… {1}%", "TileSmith {0} downloaden… {1}%"],
+"Installing TileSmith {0}. TileSmith closes now and opens again when it is done.":["Instalando TileSmith {0}. TileSmith se cierra ahora y se abre de nuevo al terminar.", "Instalando o TileSmith {0}. O TileSmith fecha agora e abre de novo quando terminar.", "TileSmith {0} wird installiert. TileSmith schließt sich jetzt und öffnet sich danach wieder.", "Installation de TileSmith {0}. TileSmith se ferme maintenant et se rouvre une fois terminé.", "正在安装 TileSmith {0}。TileSmith 现在会关闭，完成后重新打开。", "TileSmith {0} をインストール中です。TileSmith はいったん閉じ、完了すると再び開きます。", "TileSmith {0} 설치 중입니다. TileSmith가 지금 닫히고 완료되면 다시 열립니다.", "Installazione di TileSmith {0}. TileSmith si chiude ora e si riapre al termine.", "TileSmith {0} wordt geïnstalleerd. TileSmith sluit nu en opent weer als het klaar is."],
+"Update failed: {0}":["La actualización falló: {0}", "Falha na atualização: {0}", "Update fehlgeschlagen: {0}", "Échec de la mise à jour : {0}", "更新失败：{0}", "アップデートに失敗しました：{0}", "업데이트 실패: {0}", "Aggiornamento non riuscito: {0}", "Bijwerken mislukt: {0}"],
 "Not now":["Ahora no", "Agora não", "Nicht jetzt", "Pas maintenant", "以后再说", "今はしない", "나중에", "Non ora", "Niet nu"],
 };
 const LANGS={en:'English',es:'Español','pt-BR':'Português (Brasil)',de:'Deutsch',fr:'Français','zh-CN':'简体中文',ja:'日本語',ko:'한국어',it:'Italiano',nl:'Nederlands'},LKEY='tilesmith-lang',
@@ -5011,7 +5016,7 @@ function openLink(url){if(DESK){try{require('electron').shell.openExternal(url);
 async function updFetch(){const r=await fetch(UPD_API,{headers:{Accept:'application/vnd.github+json'},cache:'no-store'});
  if(r.status==404)return {none:true};if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();
  const want=updAssetName(),assets=j.assets||[],pick=want&&(assets.find(a=>a.name==want)||(want=='TileSmith-windows-setup.exe'&&assets.find(a=>a.name=='TileSmith-windows-portable.exe')));
- return {tag:j.tag_name||'',page:j.html_url||UPD_PAGE,url:pick?pick.browser_download_url:(j.html_url||UPD_PAGE),file:pick?pick.name:''}}
+ return {tag:j.tag_name||'',page:j.html_url||UPD_PAGE,url:pick?pick.browser_download_url:(j.html_url||UPD_PAGE),file:pick?pick.name:'',assets}}
 let UPD=null;
 function updShow(u){UPD=u;const msg=$('#updMsg'),act=$('#updAct'),hide=h=>act.style.display=h?'none':'';
  if(!u){msg.textContent='Checking GitHub for the latest release…';hide(1);return}
@@ -5019,7 +5024,7 @@ function updShow(u){UPD=u;const msg=$('#updMsg'),act=$('#updAct'),hide=h=>act.st
  if(u.none){msg.textContent='No release found on GitHub yet.';hide(1);return}
  const tag='v'+u.tag.replace(/^v/i,'');
  if(!verNewer(u.tag,APP_VERSION)){msg.textContent=`You have the latest version (${tag}).`;hide(1);return}
- msg.textContent=`TileSmith ${tag} is available. You have v${APP_VERSION}.`;$('#updDl').textContent=`Download ${tag}`;hide(0)}
+ msg.textContent=`TileSmith ${tag} is available. You have v${APP_VERSION}.`;$('#updDl').textContent=updPlan(u)?`Update now (${tag})`:`Download ${tag}`;hide(0)}
 async function checkUpdates(auto){
  if(!auto)updShow(null);let u;
  try{u=await updFetch()}catch(e){u={err:String(e.message||e)}}
@@ -5028,11 +5033,46 @@ async function checkUpdates(auto){
  if(u.tag&&verNewer(u.tag,APP_VERSION)){updShow(u);updToast(u)}return u}
 function noteStack(){let n=$('#tsNotes');if(!n){n=document.createElement('div');n.id='tsNotes';document.body.appendChild(n)}return n}
 function updToast(u){let t=$('#updToast');if(!t){t=document.createElement('div');t.id='updToast';t.setAttribute('role','status');noteStack().appendChild(t)}
- const tag='v'+u.tag.replace(/^v/i,'');t.innerHTML=`<div><b>TileSmith ${tag} is available.</b> <span>You have v${APP_VERSION}.</span></div><div class="row"><button data-u="dl">Download ${tag}</button><button data-u="notes">Release notes</button><button data-u="x">Not now</button></div>`;
- t.onclick=e=>{const b=e.target.closest('[data-u]');if(!b)return;if(b.dataset.u=='dl')openLink(u.url);else if(b.dataset.u=='notes')openLink(u.page);t.remove()}}
+ const tag='v'+u.tag.replace(/^v/i,'');t.innerHTML=`<div><b>TileSmith ${tag} is available.</b> <span>You have v${APP_VERSION}.</span></div><div class="row"><button data-u="dl">${updPlan(u)?`Update now (${tag})`:`Download ${tag}`}</button><button data-u="notes">Release notes</button><button data-u="x">Not now</button></div>`;
+ t.onclick=e=>{const b=e.target.closest('[data-u]');if(!b)return;if(b.dataset.u=='dl'){if(updPlan(u)){updInstall(u);return}openLink(u.url)}else if(b.dataset.u=='notes')openLink(u.page);t.remove()}}
 $('#updChk').onclick=()=>checkUpdates(false);
-$('#updDl').onclick=()=>UPD&&UPD.url&&openLink(UPD.url);
+$('#updDl').onclick=()=>{if(!UPD)return;if(updPlan(UPD))updInstall(UPD);else if(UPD.url)openLink(UPD.url)};
 $('#updNotes').onclick=()=>openLink(UPD&&UPD.page||UPD_PAGE);
+// Update now (desktop app): download the new version, close TileSmith, install it and open the new version, like an
+// app's built-in updater. Windows installed: the new setup.exe runs silently (/S, same per-user folder) and starts
+// TileSmith again (--force-run). Windows portable and Linux AppImage: the new file replaces the old one once TileSmith
+// has closed. Mac: the new TileSmith.app from the .dmg replaces the old one; when the app folder is not writable (it was
+// installed by the .pkg as an administrator) the new .pkg opens in Apple's Installer instead. Other systems: Download.
+function updPlan(u){if(!DESK||!u||!u.assets)return null;const env=process.env||{},pl=process.platform,has=n=>u.assets.find(a=>a.name==n);let m=null,a=null;
+ if(pl=='win32'){if(env.PORTABLE_EXECUTABLE_FILE){m='win-portable';a=has('TileSmith-windows-portable.exe')}else{m='win-setup';a=has('TileSmith-windows-setup.exe')}}
+ else if(pl=='darwin'){const app=updMacApp();if(!app)return null;if(updWritable(app)){m='mac-app';a=has('TileSmith-mac-universal.dmg')}else{m='mac-pkg';a=has('TileSmith-mac-universal.pkg')}}
+ else if(pl=='linux'&&env.APPIMAGE){m='appimage';a=has('TileSmith-linux-x64.AppImage')}
+ return a?{mode:m,url:a.browser_download_url,name:a.name}:null}
+function updMacApp(){const m=/^(.*?\.app)\/Contents\/MacOS\//.exec(process.execPath||'');return m?m[1]:null}
+function updWritable(app){try{const fs=require('fs'),path=require('path');fs.accessSync(app,fs.constants.W_OK);fs.accessSync(path.dirname(app),fs.constants.W_OK);return true}catch(e){return false}}
+let UPD_BUSY=false;
+async function updInstall(u){if(UPD_BUSY)return;const plan=updPlan(u);if(!plan)return;UPD_BUSY=true;
+ const fs=require('fs'),path=require('path'),os=require('os'),cp=require('child_process'),tag='v'+u.tag.replace(/^v/i,'');
+ const say=t=>{const m=$('#updMsg');if(m)m.textContent=t;const n=document.querySelector('#updToast div');if(n)n.textContent=t};
+ document.querySelectorAll('#updDl,#updToast [data-u=dl]').forEach(b=>b.disabled=true);
+ try{const dir=fs.mkdtempSync(path.join(os.tmpdir(),'tilesmith-update-')),file=path.join(dir,plan.name);
+  say(`Downloading TileSmith ${tag}…`);
+  await addonGet(plan.url,file,f=>say(f<0?`Downloading TileSmith ${tag}…`:`Downloading TileSmith ${tag}… ${Math.round(f*100)}%`));
+  try{saveNow()}catch(e){}
+  say(`Installing TileSmith ${tag}. TileSmith closes now and opens again when it is done.`);
+  const pid=process.pid,q=s=>"'"+String(s).replace(/'/g,"''")+"'",sq=s=>"'"+String(s).replace(/'/g,"'\\''")+"'";
+  const run=(cmd,args)=>cp.spawn(cmd,args,{detached:true,stdio:'ignore',windowsHide:true}).unref();
+  if(plan.mode=='win-setup')run('powershell.exe',['-NoProfile','-NonInteractive','-WindowStyle','Hidden','-Command',
+   `try{Wait-Process -Id ${pid} -Timeout 60 -ErrorAction SilentlyContinue}catch{};Start-Process -FilePath ${q(file)} -ArgumentList '/S','--force-run'`]);
+  else if(plan.mode=='win-portable'){const old=process.env.PORTABLE_EXECUTABLE_FILE;run('powershell.exe',['-NoProfile','-NonInteractive','-WindowStyle','Hidden','-Command',
+   `try{Wait-Process -Id ${pid} -Timeout 60 -ErrorAction SilentlyContinue}catch{};for($i=0;$i -lt 20;$i++){try{Copy-Item -Force ${q(file)} ${q(old)};break}catch{Start-Sleep 1}};Start-Process -FilePath ${q(old)}`])}
+  else if(plan.mode=='mac-app'){const app=updMacApp(),sh=path.join(dir,'update.sh');
+   fs.writeFileSync(sh,`#!/bin/sh\nwhile kill -0 ${pid} 2>/dev/null; do sleep 0.5; done\nM=$(mktemp -d)\nhdiutil attach -nobrowse -quiet -mountpoint "$M" ${sq(file)} || { open ${sq(app)}; exit 1; }\nrm -rf ${sq(app+'.new')}\nditto "$M/TileSmith.app" ${sq(app+'.new')} && rm -rf ${sq(app)} && mv ${sq(app+'.new')} ${sq(app)}\nhdiutil detach -quiet "$M"\nxattr -cr ${sq(app)} 2>/dev/null\nopen ${sq(app)}\n`,{mode:0o755});run('/bin/sh',[sh])}
+  else if(plan.mode=='mac-pkg')run('/usr/bin/open',[file]);
+  else if(plan.mode=='appimage'){const old=process.env.APPIMAGE,sh=path.join(dir,'update.sh');
+   fs.writeFileSync(sh,`#!/bin/sh\nwhile kill -0 ${pid} 2>/dev/null; do sleep 0.5; done\nchmod +x ${sq(file)}\nmv -f ${sq(file)} ${sq(old)} || cp -f ${sq(file)} ${sq(old)}\nchmod +x ${sq(old)}\nnohup ${sq(old)} >/dev/null 2>&1 &\n`,{mode:0o755});run('/bin/sh',[sh])}
+  setTimeout(()=>{try{require('electron').ipcRenderer.send('ts-quit')}catch(e){window.close()}},800)}
+ catch(e){UPD_BUSY=false;say('Update failed: '+(e.message||e));document.querySelectorAll('#updDl,#updToast [data-u=dl]').forEach(b=>b.disabled=false)}}
 // at start (desktop and phone apps only): at most once a day, a few seconds after the app opens
 setTimeout(()=>{if(!(DESK||MOBILE)||!S.updAuto)return;let last=0;try{last=+localStorage.getItem(UPD_LAST)||0}catch(e){}if(Date.now()-last>864e5)checkUpdates(true)},4000);
 // Add-ons (Info window, desktop app): the NDI® Runtime and ffmpeg are made by other companies and are not in TileSmith.
