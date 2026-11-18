@@ -77,9 +77,9 @@ async def main():
         await pg.fill('#tFind', 'AR3.9'); await pg.wait_for_timeout(300)
         await shot(pg, 'tile-catalog', "()=>{}", ['Tile model'], 'Tile model')
         await pg.close(); pg = await fresh()
-        # the whole UI in Japanese, with the Canvases and Tile model menus open
+        # the whole UI in Portuguese (Brazil), with the Canvases and Tile model menus open
         await pg.evaluate(OPEN, ['Canvases', 'Tile model'])
-        await shot(pg, 'languages', "()=>{setLang('ja');sync()}", None, wait=800)
+        await shot(pg, 'languages', "()=>{setLang('pt-BR');sync()}", None, wait=800)
         await pg.close()
         # Info > Updates after Check for updates finds a newer release (GitHub mocked, no network needed)
         nxt = VERSION or '0'

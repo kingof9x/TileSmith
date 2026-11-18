@@ -56,7 +56,7 @@ https://github.com/user-attachments/assets/3fe2f407-80e1-4f42-a2f5-a2593f6d69d9
 <tr>
 <td width="50%" valign="top">
 
-<img src="docs/screenshots/features/languages.png" alt="TileSmith in Japanese">
+<img src="docs/screenshots/features/languages.png" alt="TileSmith in Portuguese (Brazil)">
 
 <b>Ten languages.</b> German, French, Italian, Dutch, Simplified Chinese, Japanese and Korean join English, Español and Português (Brasil). Pick one under ⓘ Info › Preferences; a first visit uses your browser's language.
 
