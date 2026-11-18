@@ -28,7 +28,7 @@ async def m():
           const run=(scan,pl,sh)=>{f(()=>scan,()=>'C:/Users/x/AppData/Roaming/TileSmith/addons',{platform:pl,arch:'x64'},sh,'installed NDI® Runtime',pl=='win32',pl=='darwin',NDI_RT,FF_SRC,$);out.push(L.innerHTML)};
           run({ndi:null,ff:null},'win32',true);run({ndi:'x',ff:{path:'y',hap:true}},'win32',true);run({ndi:'x',ff:{path:'y',hap:false}},'darwin',false);run({ndi:null,ff:null},'linux',false);return out}""")
         miss, ready, nohap, lin = html
-        chk('Get NDI® Runtime' in miss and 'Download ffmpeg' in miss and miss.count('Not installed') == 2, 'nothing found: NDI Runtime and ffmpeg offered')
+        chk('Install NDI® Runtime' in miss and 'Download ffmpeg' in miss and miss.count('Not installed') == 2, 'nothing found: NDI Runtime and ffmpeg offered')
         chk('Spout output' in miss and 'Built in' in miss, 'Windows shows Spout as built in')
         chk('data-ad' not in ready and ready.count('Ready') == 2, 'everything found: no download buttons')
         chk('Ready (no HAP encoder)' in nohap and 'Download ffmpeg' in nohap and 'Syphon output' in nohap and 'Not in this build' in nohap, 'ffmpeg without HAP offers the full download; Mac shows Syphon')
@@ -68,10 +68,15 @@ srv.listen(0,async()=>{const base='http://127.0.0.1:'+srv.address().port,Module=
         shutil.rmtree(tmp, ignore_errors=True)
 
     nsh = open(os.path.join(DESKDIR, 'build', 'installer.nsh'), encoding='utf8').read()
-    chk('!macro customInstall' in nsh and 'IfSilent' in nsh and 'https://ndi.link/NDIRedistV6' in nsh, 'Windows installer asks about the NDI Runtime at the end of setup (not when silent)')
+    chk('!macro customInstall' in nsh and 'IfSilent' in nsh and 'https://ndi.link/NDIRedistV6' in nsh, 'Windows installer handles add-ons at the end of setup (not when silent)')
     chk(all(ord(ch) < 128 for ch in nsh), 'installer script is plain ASCII (NSIS)')
-    chk('get-ffmpeg.ps1' in nsh and 'nsExec::ExecToLog' in nsh and r'$APPDATA\TileSmith\addons' in nsh, 'Windows installer offers to download ffmpeg into the app’s add-ons folder')
-    ps = open(os.path.join(DESKDIR, 'build', 'get-ffmpeg.ps1'), encoding='utf8').read()
-    chk('ffmpeg-release-full.7z' in ps and 'ffmpeg-release-essentials.zip' in ps and '-version' in ps and 'exit 0' in ps, 'get-ffmpeg.ps1 tries full then essentials and checks ffmpeg runs')
+    chk('ExecShellWait' in nsh and '/verysilent' in nsh and 'ndi.link/NDIRedistV6' in nsh, 'installer installs the NDI Runtime itself (silently, after the admin prompt) instead of opening a browser')
+    chk('ExecShell "open" "https' not in nsh and 'powershell' not in nsh.lower(), 'installer opens no browser and runs no PowerShell')
+    chk(nsh.count('inetc::get /POPUP') == 2 and '$PLUGINSDIR' in nsh, 'downloads show a progress window and go to the temporary setup folder (deleted after setup)')
+    chk('NDI_RUNTIME_DIR_V5' in nsh and 'HKCU "Environment"' in nsh and '$PROGRAMFILES64\\NDI\\*' in nsh and 'Runtime\\${TS_NDI_DLL}' in nsh, 'NDI check looks at v5 and v6, machine and user variables, and every folder under Program Files\\NDI')
+    chk('Nsis7z::ExtractWithDetails' in nsh and '$APPDATA\\TileSmith\\addons' in nsh, 'ffmpeg .7z is unpacked by the installer and copied to the add-ons folder')
+    html = open(os.path.join(DESKDIR, 'app', 'index.html'), encoding='utf8').read()
+    chk("-Verb RunAs -Wait" in html and "'/verysilent','/norestart'" in html and "open',['-W'" in html, 'app: Install NDI Runtime runs NDI’s installer (Windows silently as admin, Mac in Installer)')
+    chk('7-zip.org/a/7zr.exe' in html, 'app: .7z falls back to 7-Zip’s 7zr.exe when Windows tar cannot unpack it')
     print('ALL OK' if ok else 'SOME FAILED'); sys.exit(0 if ok else 1)
 asyncio.run(m())
