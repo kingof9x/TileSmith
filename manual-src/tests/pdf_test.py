@@ -25,7 +25,7 @@ async def main():
         n0 = len(re.findall(rb'/Type /Page /', data)); chk(n0 >= 2, 'pages ' + str(n0))
         chk(b'DCTDecode' in data and b'LED Wall Spec' in data, 'raster + spec text')
         # wire data + power -> labels pages appear
-        await ev("""()=>{S.cols=12;S.rows=8;S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';S.pdist=true;S.showPow=true;storeWall();sync();showAll()}""")
+        await ev("""()=>{S.cols=12;S.rows=8;S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';(S.dists.length||distAct('dadd'));S.showPow=true;storeWall();sync();showAll()}""")
         await pg.wait_for_timeout(300)
         has = await ev("()=>lblHas()"); print(has)
         async with pg.expect_download() as d: await pg.click('#bar [data-a=pdf]')

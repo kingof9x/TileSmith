@@ -21,7 +21,7 @@ async def main():
         # three walls, processor, Socapex power with two distros
         await pg.evaluate("""()=>{S.cw=3840;S.ch=2160;S.cols=12;S.rows=6;S.name='Centre';S.ox=600;storeWall();addWall(false);S.name='IMAG L';S.cols=4;S.rows=4;S.ox=0;S.oy=0;storeWall();
           addWall(false);S.name='IMAG R';S.cols=4;S.rows=4;S.ox=3000;S.oy=0;storeWall();sync();
-          S.proc='NovaStar VX1000 Pro';applySpec();S.pdist=true;S.pdt='Socapex (6 circuits per cable)';walls.forEach(w=>{w.wmode='Snake';w.pmode='Snake'});loadWall(0);
+          S.proc='NovaStar VX1000 Pro';applySpec();S.pdt='Socapex (6 circuits per cable)';walls.forEach(w=>{w.wmode='Snake';w.pmode='Snake'});loadWall(0);
           distAct('dadd');distAct('dadd');S.showData=false;sync()}""")
         # no zones yet: nothing changes
         r = await pg.evaluate("()=>({on:zOn(),strip:document.querySelector('#zstrip').hidden,eng:document.querySelector('#right').innerText.includes('Locations')})")

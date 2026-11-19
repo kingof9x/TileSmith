@@ -8,7 +8,7 @@ async def main():
         b = await p.chromium.launch(); pg = await b.new_page(viewport={'width': 1500, 'height': 1000}); errs = []
         pg.on('pageerror', lambda e: errs.append(str(e))); await pg.goto(APP); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(600)
         # off by default: no pack list
-        r = await pg.evaluate("()=>{S.cols=12;S.rows=8;storeWall();S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';S.pdist=true;S.pmode='Snake';S.pdt='Socapex (6 circuits per cable)';S.pvolt=120;S.pamps=20;sync();return{eng:document.querySelector('#right').innerHTML.includes('Cable pack list'),spec:specSections().map(x=>x[0])}}")
+        r = await pg.evaluate("()=>{S.cols=12;S.rows=8;storeWall();S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';(S.dists.length||distAct('dadd'));S.pmode='Snake';S.pdt='Socapex (6 circuits per cable)';S.pvolt=120;S.pamps=20;sync();return{eng:document.querySelector('#right').innerHTML.includes('Cable pack list'),spec:specSections().map(x=>x[0])}}")
         ok &= not r['eng'] and 'Cable pack list' not in r['spec']; print('off', r['spec'])
         # cPick: smallest cable that fits, joined when longer than the longest
         r = await pg.evaluate("()=>{const st=cLens('50, 1,3 5;10 15 20 30 x 0');return{st,a:cPick(32,st),b:cPick(120,st),c:cPick(.4,st),d:cPick(50,st),e:cPick(5,[])}}"); print('pick', r)
@@ -42,7 +42,7 @@ async def main():
         print('old', r); ok &= all(x[1] == 'Bottom left' for x in r['w']) and r['on'] is False
         # canvas draws the length tags without errors; no processor or power: a note, no runs
         await pg.evaluate("()=>{S.cabOn=true;S.showData=true;S.showPow=true;sync()}"); await pg.wait_for_timeout(500)
-        r = await pg.evaluate("()=>{S.proc=Object.keys(PROC).find(k=>/none/i.test(k))||S.proc;S.pdist=false;sync();return{n:procOn(),note:document.querySelector('#cabNote').textContent,runs:cabRuns().length}}"); print('none', r)
+        r = await pg.evaluate("()=>{S.proc=Object.keys(PROC).find(k=>/none/i.test(k))||S.proc;S.dists=[];sync();return{n:procOn(),note:document.querySelector('#cabNote').textContent,runs:cabRuns().length}}"); print('none', r)
         if not r['n']: ok &= 'first' in r['note'] and r['runs'] == 0
         print('page errors', errs); ok &= not errs; await b.close()
     print('ALL OK' if ok else 'FAILED')
