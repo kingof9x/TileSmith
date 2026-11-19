@@ -23,9 +23,17 @@ async def main():
         # drawing by hand: chips pick the circuit, a full circuit refuses tiles
         r = await pg.evaluate("""()=>{walls.splice(1);cur=0;S.pmode='Manual';S.pcabs=0;S.plink=4;S.pman=[];storeWall();sync();const L=pieces(walls[cur]).list;
           [0,1,2].forEach(i=>pmanAdd(L[i],'click'));S.pman.push([]);pcSel=-1;[6,7].forEach(i=>pmanAdd(L[i],'click'));pcSel=0;pmanAdd(L[3],'click');pmanAdd(L[4],'click');
-          const msg=$('#pmsg').textContent;storeWall();sync();return{m:S.pman.map(c=>c.length),msg,chips:[...document.querySelectorAll('#pchips button')].map(b=>b.textContent)}}""")
+          const msg=$('#pmsg').textContent;storeWall();sync();return{m:S.pman.map(c=>c.length),msg,chips:[...document.querySelectorAll('#pcabCards [data-pc]')].map(b=>b.textContent)}}""")
         chk(r['m'] == [4, 2] and 'full' in r['msg'], f'a chip draws onto its circuit and a full circuit refuses tiles {r["m"]} {r["msg"]}')
-        chk(r['chips'][:2] == ['1-1 · 4/4', '1-2 · 2/4'] and r['chips'].count('spare') == 4, f'chips show tiles / limit and the spare circuits {r["chips"]}')
+        chk(r['chips'][:2] == ['1-1 · 4/4', '1-2 · 2/4'] and sum(c.endswith('spare') for c in r['chips']) == 4, f'chips show tiles / limit and the spare circuits {r["chips"]}')
+        # + Add Socapex cable reserves a cable (patched in the tray) and Draw circuit turns an automatic pattern into circuits to draw on
+        r = await pg.evaluate("""()=>{S.pman=[];S.pmode='Snake';S.plink=0;storeWall();sync();const before=document.querySelectorAll('#pcabCards .pcab').length;
+          document.querySelector('[data-pcx="add"]').click();const T=powerTotals(powerPlan());const after=[...document.querySelectorAll('#pcabCards .pcabh')].map(x=>x.textContent);
+          const n0=powerPlan()[cur].length;document.querySelector('[data-pcx="draw"]').click();return{before,after,cables:T.cables,mode:S.pmode,pman:S.pman.filter(c=>c.length).length,n0,pw:pwiring}}""")
+        print(json.dumps(r))
+        chk(r['before'] == 1 and len(r['after']) == 2 and r['cables'] == 2, 'Add Socapex cable adds a second cable to the wall')
+        chk(r['mode'] == 'Manual' and r['pman'] == r['n0'] and r['pw'], 'Draw circuit keeps the pattern circuits as Manual ones and starts drawing')
+        await pg.evaluate("()=>{pwiring=false;S.pcabs=0;storeWall();sync()}")
         # maker data: link limit follows the voltage, a lower user limit is kept, voltages a tile does not take are blocked
         r = await pg.evaluate("""()=>{const o={};S.pmode='Snake';S.pman=[];S.plink=0;S.preset='ROE Black Pearl BP2V2';applyPreset();S.pvolt=120;storeWall();sync();o.a=[S.plink,tpcW(walls[cur])];
           S.pvolt=230;sync();o.b=S.plink;S.plink=25;storeWall();sync();o.c=S.plink;S.plink=6;storeWall();sync();S.pvolt=120;sync();o.d=S.plink;

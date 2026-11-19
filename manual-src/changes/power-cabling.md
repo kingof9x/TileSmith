@@ -14,4 +14,5 @@
   (129), PL2.5 Pro V10 (170), Unilumin UpadIV 1.9 (150), YES TECH MG6S 2.84 (105).
 - Option A (Callum 2026-11-19, card): the distros set the rules. dsRules/dsVolts/dsKinds: voltage only one every distro supplies, cable only a type with distro outputs, breaker clamped to the connector rating (rA), #dsSrc shows the source. powercheck_test now expects the clamp instead of a breaker warning.
 - Open: INFiLED GXmk2 / NX voltage (website 100-240 V vs brochure 200-240 V; 200-240 used).
+- 2026-11-19 follow-up (Callum: "I still can't add socapex cable or draw circuit"): cable cards with circuit chips for every wall (#pcabCards, pcabUI), + Add Socapex cable / × (pcabs, reserved via PCK0 so the next wall starts after them; empty reserved cables go in the tray via pcEmpty), Draw circuit (pcToManual keeps an automatic pattern's circuits).
 - Test: tests/powercabling_test.py.
