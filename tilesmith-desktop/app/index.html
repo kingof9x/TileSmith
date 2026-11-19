@@ -1359,6 +1359,52 @@ const TR={
 "A {0} circuit is rated {1} A, so the breaker is now {2} A.":["Un circuito {0} admite {1} A, así que el disyuntor pasa a {2} A.", "Um circuito {0} suporta {1} A, então o disjuntor agora é de {2} A.", "Ein {0}-Stromkreis ist für {1} A ausgelegt, daher ist der Schutzschalter jetzt {2} A.", "Un circuit {0} est prévu pour {1} A : le disjoncteur passe à {2} A.", "{0} 回路额定 {1} A，断路器已改为 {2} A。", "{0} 回路の定格は {1} A のため、ブレーカーを {2} A にしました。", "{0} 회로 정격은 {1} A라 차단기를 {2} A로 바꿨습니다.", "Un circuito {0} è da {1} A, quindi l’interruttore ora è da {2} A.", "Een {0}-groep is geschikt voor {1} A, dus de automaat is nu {2} A."],
 "Power comes from {0} · {1}":["La alimentación viene de {0} · {1}", "A energia vem de {0} · {1}", "Strom kommt von {0} · {1}", "L’alimentation vient de {0} · {1}", "电源来自 {0} · {1}", "電源の供給元 {0} · {1}", "전원 공급원 {0} · {1}", "L’alimentazione arriva da {0} · {1}", "Voeding komt van {0} · {1}"],
 "The distros do not share a circuit voltage. Set them to the same system.":["Los distros no comparten una tensión de circuito. Ponlos en el mismo sistema.", "Os distros não têm uma tensão de circuito em comum. Coloque-os no mesmo sistema.", "Die Verteiler haben keine gemeinsame Stromkreisspannung. Stelle sie auf dasselbe System.", "Les distribs n’ont pas de tension de circuit commune. Réglez-les sur le même système.", "配电箱没有共同的回路电压。请设为相同系统。", "分電盤に共通の回路電圧がありません。同じ方式にしてください。", "분전반에 공통 회로 전압이 없습니다. 같은 시스템으로 설정하세요.", "I quadri non hanno una tensione di circuito comune. Impostali sullo stesso sistema.", "De verdelers hebben geen gemeenschappelijke groepsspanning. Zet ze op hetzelfde systeem."],
+// Power settings
+"Add a distro or house power below to plan power: where it comes from, the circuits, and how each wall is wired.":["Añade un distro o alimentación de la sala abajo para planificar la energía: de dónde viene, los circuitos y cómo se cablea cada pantalla.","Adicione um distro ou energia da casa abaixo para planejar a energia: de onde ela vem, os circuitos e como cada painel é ligado.","Füge unten einen Verteiler oder Hausstrom hinzu, um den Strom zu planen: woher er kommt, die Stromkreise und wie jede Wand verkabelt wird.","Ajoutez une distrib ou le courant de la salle ci-dessous pour planifier l’alimentation : d’où elle vient, les circuits et le câblage de chaque mur.","在下方添加配电箱或场馆市电来规划电源：电从哪里来、回路，以及每块屏体如何接线。","下で分電盤または建物電源を追加して電源を計画します：電源の供給元、回路、各ウォールの配線。","아래에서 분전반 또는 건물 전원을 추가해 전원을 계획하세요: 전원 공급원, 회로, 각 월의 배선.","Aggiungi qui sotto un quadro o la corrente della sala per pianificare l’alimentazione: da dove arriva, i circuiti e come è cablato ogni ledwall.","Voeg hieronder een verdeler of zaalstroom toe om de stroom te plannen: waar die vandaan komt, de groepen en hoe elke ledwall bekabeld is."],
+"Supply":["Suministro","Fornecimento","Versorgung","Alimentation","供电","電源供給","전원 공급","Alimentazione","Voeding"],
+"Where the power comes from. Each distro or house power sets the voltage and breaker of the circuits it feeds. Each cable goes to a free output (move it in the power tray under the viewport), each circuit lands on a phase, and the legs are added up as phasors. Balance turns the leg each cable starts on to even out the legs, without changing the wiring.":["De dónde viene la energía. Cada distro o alimentación de la sala fija la tensión y el disyuntor de los circuitos que alimenta. Cada cable va a una salida libre (muévelo en la bandeja de alimentación bajo la vista), cada circuito cae en una fase y las fases se suman como fasores. Equilibrar gira la fase en la que empieza cada cable para igualar las fases, sin cambiar el cableado.","De onde vem a energia. Cada distro ou energia da casa define a tensão e o disjuntor dos circuitos que alimenta. Cada cabo vai para uma saída livre (mova-o na bandeja de energia abaixo da visualização), cada circuito cai em uma fase e as fases são somadas como fasores. Balancear gira a fase em que cada cabo começa para igualar as fases, sem mudar a ligação.","Woher der Strom kommt. Jeder Verteiler und jeder Hausstrom legt Spannung und Sicherung der Stromkreise fest, die er speist. Jedes Kabel kommt an einen freien Ausgang (im Strom-Patchfeld unter der Ansicht verschieben), jeder Stromkreis liegt auf einer Phase, und die Phasen werden als Zeiger addiert. Ausgleichen dreht die Phase, auf der jedes Kabel beginnt, um die Phasen anzugleichen, ohne die Verkabelung zu ändern.","D’où vient le courant. Chaque distrib ou courant de la salle fixe la tension et le disjoncteur des circuits qu’il alimente. Chaque câble va sur une sortie libre (déplacez-le dans le bac d’alimentation sous la vue), chaque circuit tombe sur une phase et les phases s’additionnent en phaseurs. Équilibrer tourne la phase sur laquelle chaque câble commence pour égaliser les phases, sans changer le câblage.","电从哪里来。每个配电箱或场馆市电决定其所供回路的电压和断路器。每根线缆接到一个空闲输出（在视图下方的电源托盘中移动），每个回路落在一相上，各相按相量相加。平衡会旋转每根线缆的起始相以使各相均衡，不改变接线。","電源の供給元。各分電盤または建物電源が、供給する回路の電圧とブレーカーを決めます。各ケーブルは空いている出力へ（ビュー下の電源トレイで移動）、各回路は1つの相に載り、相はフェーザーとして合算されます。バランスは各ケーブルの開始相を回して相をそろえます。配線は変わりません。","전원이 오는 곳. 각 분전반 또는 건물 전원이 공급하는 회로의 전압과 차단기를 정합니다. 각 케이블은 빈 출력으로 가고(뷰 아래 전원 트레이에서 이동), 각 회로는 한 상에 놓이며, 상은 페이저로 합산됩니다. 밸런스는 배선을 바꾸지 않고 각 케이블이 시작하는 상을 돌려 상을 고르게 합니다.","Da dove arriva la corrente. Ogni quadro o corrente della sala fissa la tensione e l’interruttore dei circuiti che alimenta. Ogni cavo va su un’uscita libera (spostalo nel vassoio alimentazione sotto la vista), ogni circuito cade su una fase e le fasi si sommano come fasori. Bilancia ruota la fase su cui parte ogni cavo per pareggiare le fasi, senza cambiare il cablaggio.","Waar de stroom vandaan komt. Elke verdeler of zaalstroom bepaalt de spanning en zekering van de groepen die hij voedt. Elke kabel gaat naar een vrije uitgang (verplaats hem in de stroomlade onder de weergave), elke groep komt op een fase, en de fasen worden als fasoren opgeteld. Balanceren draait de fase waarop elke kabel begint om de fasen gelijk te trekken, zonder de bekabeling te veranderen."],
+"+ Add distro":["+ Añadir distro","+ Adicionar distro","+ Verteiler hinzufügen","+ Ajouter une distrib","+ 添加配电箱","+ 分電盤を追加","+ 분전반 추가","+ Aggiungi quadro","+ Verdeler toevoegen"],
+"+ Add house power":["+ Añadir alimentación de la sala","+ Adicionar energia da casa","+ Hausstrom hinzufügen","+ Ajouter le courant de la salle","+ 添加场馆市电","+ 建物電源を追加","+ 건물 전원 추가","+ Aggiungi corrente della sala","+ Zaalstroom toevoegen"],
+"Load":["Carga","Carga","Last","Charge","负载","負荷","부하","Carico","Belasting"],
+"How much the tiles draw.":["Cuánto consumen los paneles.","Quanto os gabinetes consomem.","Wie viel die Kacheln ziehen.","Ce que consomment les dalles.","灯板的耗电量。","タイルの消費電力。","타일이 소비하는 전력.","Quanto assorbono i pannelli.","Hoeveel de tegels trekken."],
+"This wall":["Esta pantalla","Este painel","Diese Wand","Ce mur","此屏体","このウォール","이 월","Questo ledwall","Deze ledwall"],
+"Fed from":["Alimentada desde","Alimentado por","Gespeist von","Alimenté par","供电来源","給電元","급전원","Alimentato da","Gevoed door"],
+"Cable":["Cable","Cabo","Kabel","Câble","线缆","ケーブル","케이블","Cavo","Kabel"],
+"House power":["Alimentación de la sala","Energia da casa","Hausstrom","Courant de la salle","场馆市电","建物電源","건물 전원","Corrente della sala","Zaalstroom"],
+"House power name":["Nombre de la alimentación de la sala","Nome da energia da casa","Name des Hausstroms","Nom du courant de la salle","场馆市电名称","建物電源の名前","건물 전원 이름","Nome della corrente della sala","Naam zaalstroom"],
+"Outlet rating (A)":["Capacidad del enchufe (A)","Capacidade da tomada (A)","Steckdosen-Nennstrom (A)","Calibre de la prise (A)","插座额定电流 (A)","コンセント定格 (A)","콘센트 정격(A)","Portata della presa (A)","Stopcontact-waarde (A)"],
+"Outlets you can use":["Enchufes que puedes usar","Tomadas que você pode usar","Nutzbare Steckdosen","Prises utilisables","可用插座","使えるコンセント","사용 가능한 콘센트","Prese utilizzabili","Bruikbare stopcontacten"],
+"Outlets on one house circuit (0 = do not check)":["Enchufes en un circuito de la sala (0 = no comprobar)","Tomadas em um circuito da casa (0 = não verificar)","Steckdosen an einem Hausstromkreis (0 = nicht prüfen)","Prises sur un circuit de la salle (0 = ne pas vérifier)","每个场馆回路的插座数（0 = 不检查）","建物回路1つあたりのコンセント数（0 = 確認しない）","건물 회로 하나의 콘센트 수(0 = 확인 안 함)","Prese su un circuito della sala (0 = non verificare)","Stopcontacten op één zaalgroep (0 = niet controleren)"],
+"House circuit breaker (A)":["Disyuntor del circuito de la sala (A)","Disjuntor do circuito da casa (A)","Sicherung des Hausstromkreises (A)","Disjoncteur du circuit de la salle (A)","场馆回路断路器 (A)","建物回路のブレーカー (A)","건물 회로 차단기(A)","Interruttore del circuito della sala (A)","Zekering zaalgroep (A)"],
+"Circuit breaker (A)":["Disyuntor del circuito (A)","Disjuntor do circuito (A)","Sicherung je Stromkreis (A)","Disjoncteur du circuit (A)","回路断路器 (A)","回路ブレーカー (A)","회로 차단기(A)","Interruttore del circuito (A)","Groepszekering (A)"],
+"Feeds {0}":["Alimenta {0}","Alimenta {0}","Speist {0}","Alimente {0}","供电给 {0}","給電先 {0}","급전 대상 {0}","Alimenta {0}","Voedt {0}"],
+"No wall on this canvas is fed from it yet (set Fed from in This wall).":["Ninguna pantalla de este lienzo se alimenta todavía desde aquí (fija Alimentada desde en Esta pantalla).","Nenhum painel desta tela é alimentado por aqui ainda (defina Alimentado por em Este painel).","Noch keine Wand auf dieser Leinwand wird hiervon gespeist (Gespeist von unter Diese Wand einstellen).","Aucun mur de ce canevas n’est encore alimenté par ici (réglez Alimenté par dans Ce mur).","此画布上还没有屏体由它供电（在“此屏体”中设置供电来源）。","このキャンバスのウォールはまだここから給電されていません（このウォールで給電元を設定）。","이 캔버스의 월은 아직 여기서 급전되지 않습니다(이 월에서 급전원을 설정).","Nessun ledwall di questa tela è ancora alimentato da qui (imposta Alimentato da in Questo ledwall).","Nog geen ledwall op dit canvas wordt hierdoor gevoed (stel Gevoed door in bij Deze ledwall)."],
+"{0} V (line to neutral)":["{0} V (fase-neutro)","{0} V (fase-neutro)","{0} V (Phase-Neutralleiter)","{0} V (phase-neutre)","{0} V（相线对零线）","{0} V（相-中性線）","{0} V(상-중성선)","{0} V (fase-neutro)","{0} V (fase-nul)"],
+"{0} V (line to line)":["{0} V (fase-fase)","{0} V (fase-fase)","{0} V (Phase-Phase)","{0} V (phase-phase)","{0} V（相线对相线）","{0} V（相間）","{0} V(상-상)","{0} V (fase-fase)","{0} V (fase-fase)"],
+"{0} outlet{1} used":["{0} enchufe{1} usado{1}","{0} tomada{1} usada{1}","{0} Steckdose{1} belegt","{0} prise{1} utilisée{1}","已用 {0} 个插座","使用中のコンセント {0}","사용 중인 콘센트 {0}개","{0} prese usate","{0} stopcontact{1} gebruikt"],
+"Every circuit is its own powerCON cable with a standard Edison plug on the wall end, plugged into an Edison outlet on {0}. Plugs are numbered 1, 2, 3 and so on.":["Cada circuito es su propio cable powerCON con un enchufe Edison estándar en el extremo de la sala, conectado a un enchufe Edison de {0}. Los enchufes se numeran 1, 2, 3 y así sucesivamente.","Cada circuito é um cabo powerCON próprio com um plugue Edison padrão na ponta da parede, ligado a uma tomada Edison de {0}. Os plugues são numerados 1, 2, 3 e assim por diante.","Jeder Stromkreis ist ein eigenes powerCON-Kabel mit einem normalen Edison-Stecker am Wandende, eingesteckt in eine Edison-Steckdose von {0}. Die Stecker sind 1, 2, 3 usw. nummeriert.","Chaque circuit est son propre câble powerCON avec une fiche Edison standard côté mur, branchée sur une prise Edison de {0}. Les fiches sont numérotées 1, 2, 3 et ainsi de suite.","每个回路都是一根独立的 powerCON 线缆，墙端为标准 Edison 插头，插在 {0} 的 Edison 插座上。插头编号为 1、2、3，依此类推。","各回路は壁側に標準の Edison プラグが付いた専用の powerCON ケーブルで、{0} の Edison コンセントに差します。プラグは 1、2、3… と番号が付きます。","각 회로는 벽 쪽 끝에 표준 Edison 플러그가 달린 개별 powerCON 케이블이며, {0}의 Edison 콘센트에 꽂습니다. 플러그는 1, 2, 3 순으로 번호가 매겨집니다.","Ogni circuito è un cavo powerCON a sé con una spina Edison standard lato muro, inserita in una presa Edison di {0}. Le spine sono numerate 1, 2, 3 e così via.","Elke groep is een eigen powerCON-kabel met een gewone Edison-stekker aan de wandkant, ingestoken in een Edison-stopcontact van {0}. De stekkers zijn genummerd 1, 2, 3 enzovoort."],
+"{0} carries {1} circuits per cable{2}. Circuits are numbered 1-{3}, 1-{4}{5} and so on (cable-{6}). Each circuit's phase comes from the {7} output its cable is patched to.":["{0} lleva {1} circuitos por cable{2}. Los circuitos se numeran 1-{3}, 1-{4}{5} y así sucesivamente (cable-{6}). La fase de cada circuito viene de la salida de {7} a la que está conectado su cable.","{0} leva {1} circuitos por cabo{2}. Os circuitos são numerados 1-{3}, 1-{4}{5} e assim por diante (cabo-{6}). A fase de cada circuito vem da saída de {7} em que o cabo dele está ligado.","{0} führt {1} Stromkreise pro Kabel{2}. Die Stromkreise sind 1-{3}, 1-{4}{5} usw. nummeriert (Kabel-{6}). Die Phase jedes Stromkreises ergibt sich aus dem Ausgang von {7}, auf den sein Kabel gepatcht ist.","{0} porte {1} circuits par câble{2}. Les circuits sont numérotés 1-{3}, 1-{4}{5} et ainsi de suite (câble-{6}). La phase de chaque circuit vient de la sortie de {7} sur laquelle son câble est patché.","{0} 每根线缆有 {1} 个回路{2}。回路编号为 1-{3}、1-{4}{5}，依此类推（线缆-{6}）。每个回路的相位取决于其线缆跳接到的 {7} 输出。","{0} はケーブル1本あたり {1} 回路{2}。回路は 1-{3}、1-{4}{5}… と番号が付きます（ケーブル-{6}）。各回路の相は、ケーブルがパッチされた {7} の出力で決まります。","{0}는 케이블당 {1}개 회로{2}. 회로는 1-{3}, 1-{4}{5} 순으로 번호가 매겨집니다(케이블-{6}). 각 회로의 상은 케이블이 패치된 {7} 출력에서 정해집니다.","{0} porta {1} circuiti per cavo{2}. I circuiti sono numerati 1-{3}, 1-{4}{5} e così via (cavo-{6}). La fase di ogni circuito dipende dall’uscita di {7} su cui è patchato il suo cavo.","{0} draagt {1} groepen per kabel{2}. De groepen zijn genummerd 1-{3}, 1-{4}{5} enzovoort (kabel-{6}). De fase van elke groep komt van de uitgang van {7} waarop de kabel is gepatcht."],
+"{0} takes {1}–{2} V, but {3} gives {4} V circuits. Feed this wall from another supply or change the supply's circuit voltage.":["{0} admite {1}–{2} V, pero {3} da circuitos de {4} V. Alimenta esta pantalla desde otro suministro o cambia la tensión de circuito del suministro.","{0} aceita {1}–{2} V, mas {3} fornece circuitos de {4} V. Alimente este painel por outro fornecimento ou mude a tensão de circuito do fornecimento.","{0} nimmt {1}–{2} V, aber {3} liefert {4}-V-Stromkreise. Speise diese Wand aus einer anderen Versorgung oder ändere deren Stromkreisspannung.","{0} accepte {1}–{2} V, mais {3} donne des circuits en {4} V. Alimentez ce mur par une autre alimentation ou changez la tension de circuit de l’alimentation.","{0} 支持 {1}–{2} V，但 {3} 提供 {4} V 回路。请改由其他供电为此屏体供电，或更改该供电的回路电压。","{0} は {1}–{2} V 対応ですが、{3} は {4} V の回路です。このウォールを別の電源供給から給電するか、電源供給の回路電圧を変更してください。","{0}는 {1}–{2} V를 받지만 {3}는 {4} V 회로를 공급합니다. 이 월을 다른 전원 공급에서 급전하거나 전원 공급의 회로 전압을 바꾸세요.","{0} accetta {1}–{2} V, ma {3} fornisce circuiti a {4} V. Alimenta questo ledwall da un’altra alimentazione o cambia la tensione dei circuiti dell’alimentazione.","{0} neemt {1}–{2} V, maar {3} levert groepen van {4} V. Voed deze ledwall uit een andere voeding of wijzig de groepsspanning van de voeding."],
+"A {0} A house circuit is above the 20 A an Edison outlet is rated for.":["Un circuito de la sala de {0} A supera los 20 A que admite un enchufe Edison.","Um circuito da casa de {0} A passa dos 20 A que uma tomada Edison suporta.","Ein {0}-A-Hausstromkreis liegt über den 20 A, für die eine Edison-Steckdose ausgelegt ist.","Un circuit de salle de {0} A dépasse les 20 A d’une prise Edison.","{0} A 的场馆回路超过了 Edison 插座额定的 20 A。","{0} A の建物回路は Edison コンセントの定格 20 A を超えています。","{0} A 건물 회로는 Edison 콘센트 정격 20 A를 넘습니다.","Un circuito della sala da {0} A supera i 20 A di una presa Edison.","Een zaalgroep van {0} A ligt boven de 20 A van een Edison-stopcontact."],
+"{0} has no {1} outputs, so this wall's cable is now {2}.":["{0} no tiene salidas {1}, así que el cable de esta pantalla pasa a ser {2}.","{0} não tem saídas {1}, então o cabo deste painel agora é {2}.","{0} hat keine {1}-Ausgänge, daher ist das Kabel dieser Wand jetzt {2}.","{0} n’a pas de sorties {1}, le câble de ce mur passe donc en {2}.","{0} 没有 {1} 输出，此屏体的线缆已改为 {2}。","{0} に {1} 出力がないため、このウォールのケーブルは {2} になりました。","{0}에 {1} 출력이 없어 이 월의 케이블이 {2}(으)로 바뀌었습니다.","{0} non ha uscite {1}, quindi il cavo di questo ledwall ora è {2}.","{0} heeft geen {1}-uitgangen, dus de kabel van deze ledwall is nu {2}."],
+"{0} does not take {1} V, so {2} now gives {3} V circuits.":["{0} no admite {1} V, así que {2} ahora da circuitos de {3} V.","{0} não aceita {1} V, então {2} agora fornece circuitos de {3} V.","{0} nimmt keine {1} V, daher liefert {2} jetzt {3}-V-Stromkreise.","{0} n’accepte pas {1} V, {2} donne donc maintenant des circuits en {3} V.","{0} 不支持 {1} V，{2} 现在提供 {3} V 回路。","{0} は {1} V に対応していないため、{2} は {3} V の回路になりました。","{0}는 {1} V를 받지 않아 {2}가 이제 {3} V 회로를 공급합니다.","{0} non accetta {1} V, quindi {2} ora fornisce circuiti a {3} V.","{0} neemt geen {1} V, dus {2} levert nu groepen van {3} V."],
+"{0} does not take {1} V":["{0} no admite {1} V","{0} não aceita {1} V","{0} nimmt keine {1} V","{0} n’accepte pas {1} V","{0} 不支持 {1} V","{0} は {1} V に対応していません","{0}는 {1} V를 받지 않습니다","{0} non accetta {1} V","{0} neemt geen {1} V"],
+"{0} gives {1} V circuits, which the tiles on this cable do not take.":["{0} da circuitos de {1} V, que los paneles de este cable no admiten.","{0} fornece circuitos de {1} V, que os gabinetes deste cabo não aceitam.","{0} liefert {1}-V-Stromkreise, die die Kacheln an diesem Kabel nicht nehmen.","{0} donne des circuits en {1} V, que les dalles de ce câble n’acceptent pas.","{0} 提供 {1} V 回路，此线缆上的灯板不支持。","{0} は {1} V の回路で、このケーブルのタイルは対応していません。","{0}는 {1} V 회로를 공급하지만 이 케이블의 타일은 받지 않습니다.","{0} fornisce circuiti a {1} V, che i pannelli di questo cavo non accettano.","{0} levert groepen van {1} V, die de tegels op deze kabel niet nemen."],
+"{0} now fed from {1}.":["{0} ahora se alimenta desde {1}.","{0} agora é alimentado por {1}.","{0} wird jetzt von {1} gespeist.","{0} est maintenant alimenté par {1}.","{0} 现在由 {1} 供电。","{0} は {1} から給電されるようになりました。","{0}는 이제 {1}에서 급전됩니다.","{0} ora è alimentato da {1}.","{0} wordt nu gevoed door {1}."],
+"Up to 12 supplies.":["Hasta 12 suministros.","Até 12 fornecimentos.","Bis zu 12 Versorgungen.","Jusqu’à 12 alimentations.","最多 12 个供电。","電源供給は最大 12 個です。","전원 공급은 최대 12개입니다.","Fino a 12 alimentazioni.","Tot 12 voedingen."],
+"This supply has no {0} outputs":["Este suministro no tiene salidas {0}","Este fornecimento não tem saídas {0}","Diese Versorgung hat keine {0}-Ausgänge","Cette alimentation n’a pas de sorties {0}","此供电没有 {0} 输出","この電源供給に {0} 出力はありません","이 전원 공급에는 {0} 출력이 없습니다","Questa alimentazione non ha uscite {0}","Deze voeding heeft geen {0}-uitgangen"],
+"No cables yet: wire a wall in Engineering › Power › This wall.":["Aún no hay cables: cablea una pantalla en Ingeniería › Alimentación › Esta pantalla.","Ainda não há cabos: ligue um painel em Engenharia › Energia › Este painel.","Noch keine Kabel: verkabele eine Wand unter Engineering › Strom › Diese Wand.","Pas encore de câbles : câblez un mur dans Ingénierie › Alimentation › Ce mur.","还没有线缆：在 工程 › 电源 › 此屏体 中为屏体接线。","まだケーブルがありません: エンジニアリング › 電源 › このウォール でウォールを配線してください。","아직 케이블이 없습니다: 엔지니어링 › 전원 › 이 월에서 월을 배선하세요.","Ancora nessun cavo: cabla un ledwall in Engineering › Alimentazione › Questo ledwall.","Nog geen kabels: bekabel een ledwall onder Engineering › Stroom › Deze ledwall."],
+"No outputs for these cables: set them in Engineering › Power › Supply.":["No hay salidas para estos cables: configúralas en Ingeniería › Alimentación › Suministro.","Não há saídas para estes cabos: configure em Engenharia › Energia › Fornecimento.","Keine Ausgänge für diese Kabel: Lege sie unter Engineering › Strom › Versorgung fest.","Aucune sortie pour ces câbles : définissez-les dans Ingénierie › Alimentation › Alimentation.","这些线缆没有输出：请在 工程 › 电源 › 供电 中设置。","これらのケーブル用の出力がありません: エンジニアリング › 電源 › 電源供給 で設定してください。","이 케이블들을 위한 출력이 없습니다: 엔지니어링 › 전원 › 전원 공급에서 설정하세요.","Nessuna uscita per questi cavi: impostale in Engineering › Alimentazione › Alimentazione.","Geen uitgangen voor deze kabels: stel ze in onder Engineering › Stroom › Voeding."],
+"Drag onto an output, or click it and then click an output":["Arrástralo a una salida, o haz clic en él y luego en una salida","Arraste para uma saída, ou clique nele e depois em uma saída","Auf einen Ausgang ziehen oder anklicken und dann einen Ausgang anklicken","Glissez-le sur une sortie, ou cliquez dessus puis sur une sortie","拖到一个输出上，或先点击它再点击一个输出","出力へドラッグするか、クリックしてから出力をクリック","출력으로 끌어다 놓거나, 클릭한 다음 출력을 클릭하세요","Trascinalo su un’uscita, oppure cliccalo e poi clicca un’uscita","Sleep naar een uitgang, of klik erop en dan op een uitgang"],
+"These runs come from different supplies or cable types, so they cannot share one circuit.":["Estos tramos vienen de suministros o tipos de cable distintos, así que no pueden compartir un circuito.","Estes trechos vêm de fornecimentos ou tipos de cabo diferentes, então não podem dividir um circuito.","Diese Strecken kommen aus verschiedenen Versorgungen oder Kabeltypen und können sich keinen Stromkreis teilen.","Ces lignes viennent d’alimentations ou de types de câble différents, elles ne peuvent donc pas partager un circuit.","这些线路来自不同的供电或线缆类型，不能共用一个回路。","これらの系統は電源供給またはケーブルの種類が異なるため、1つの回路を共有できません。","이 구간들은 전원 공급이나 케이블 종류가 달라 한 회로를 공유할 수 없습니다.","Queste linee arrivano da alimentazioni o tipi di cavo diversi, quindi non possono condividere un circuito.","Deze lijnen komen uit verschillende voedingen of kabeltypen en kunnen dus geen groep delen."],
+"Circuit: {0}, {1}":["Circuito: {0}, {1}","Circuito: {0}, {1}","Stromkreis: {0}, {1}","Circuit : {0}, {1}","回路：{0}，{1}","回路: {0}、{1}","회로: {0}, {1}","Circuito: {0}, {1}","Groep: {0}, {1}"],
+"Edison plugs":["Enchufes Edison","Plugues Edison","Edison-Stecker","Fiches Edison","Edison 插头","Edison プラグ","Edison 플러그","Spine Edison","Edison-stekkers"],
+"Spare circuits":["Circuitos de reserva","Circuitos reserva","Reserve-Stromkreise","Circuits de réserve","备用回路","予備回路","예비 회로","Circuiti di riserva","Reservegroepen"],
+"House circuits":["Circuitos de la sala","Circuitos da casa","Hausstromkreise","Circuits de la salle","场馆回路","建物回路","건물 회로","Circuiti della sala","Zaalgroepen"],
+"Load per house circuit":["Carga por circuito de la sala","Carga por circuito da casa","Last je Hausstromkreis","Charge par circuit de la salle","每个场馆回路的负载","建物回路ごとの負荷","건물 회로별 부하","Carico per circuito della sala","Belasting per zaalgroep"],
+"Outlets used":["Enchufes usados","Tomadas usadas","Belegte Steckdosen","Prises utilisées","已用插座","使用中のコンセント","사용 중인 콘센트","Prese usate","Gebruikte stopcontacten"],
+"Plugs":["Enchufes","Plugues","Stecker","Fiches","插头","プラグ","플러그","Spine","Stekkers"],
+"Power breakouts":["Breakouts de alimentación","Breakouts de energia","Strom-Breakouts","Éclateurs d’alimentation","电源分线器","電源ブレイクアウト","전원 브레이크아웃","Breakout di alimentazione","Stroom-breakouts"],
 // Redundancy
 "Redundancy":["Redundancia","Redundância","Redundanz","Redondance","冗余","冗長化","이중화","Ridondanza","Redundantie"],
 "For the selected LED wall: where its backup lines (R#, from the last tile of each run) go. Full and Backup processor send them to a backup processor with the same port numbers; Full also gives them their own route (a second fibre trunk on fibre walls).":["Para la pantalla LED seleccionada: a dónde van sus líneas de respaldo (R#, desde el último panel de cada tirada). Completa y Procesador de respaldo las envían a un procesador de respaldo con los mismos números de puerto; Completa además les da su propia ruta (una segunda manguera de fibra en pantallas con fibra).","Para o painel de LED selecionado: para onde vão as linhas de backup (R#, do último gabinete de cada cabo). Completa e Processador de backup as enviam para um processador de backup com os mesmos números de porta; Completa também dá a elas uma rota própria (um segundo cabo de fibra em painéis com fibra).","Für die ausgewählte LED-Wand: wohin ihre Backup-Leitungen (R#, vom letzten Panel jedes Strangs) gehen. Voll und Backup-Prozessor schicken sie an einen Backup-Prozessor mit denselben Portnummern; Voll gibt ihnen zusätzlich einen eigenen Weg (ein zweites Glasfaser-Multicore bei Glasfaser-Wänden).","Pour le mur LED sélectionné : où vont ses lignes de secours (R#, depuis la dernière dalle de chaque ligne). Complète et Processeur de secours les envoient à un processeur de secours avec les mêmes numéros de port ; Complète leur donne aussi leur propre trajet (un deuxième multipaire fibre sur les murs en fibre).","对于所选 LED 屏：其备份线路（R#，来自每条线路的最后一个箱体）去往何处。“完全”和“备份处理器”将它们发送到端口编号相同的备份处理器；“完全”还为它们提供独立路由（光纤屏体上的第二条光纤主干）。","選択中の LED ウォールについて: バックアップライン（R#、各系統の最後のパネルから）の行き先。「フル」と「バックアッププロセッサー」は同じポート番号のバックアッププロセッサーに送ります。「フル」はさらに独自の経路も与えます（光ファイバーのウォールでは 2 本目の光トランク）。","선택한 LED 월: 백업 라인(R#, 각 라인의 마지막 캐비닛에서 나옴)이 어디로 가는지. 전체와 백업 프로세서는 같은 포트 번호의 백업 프로세서로 보내고, 전체는 별도 경로도 줍니다(광 월에서는 두 번째 광 트렁크).","Per il ledwall selezionato: dove vanno le sue linee di backup (R#, dall'ultimo pannello di ogni linea). Completa e Processore di backup le mandano a un processore di backup con gli stessi numeri di porta; Completa dà loro anche un percorso proprio (un secondo multicore in fibra sui ledwall in fibra).","Voor de geselecteerde ledwall: waar de back-uplijnen (R#, vanaf het laatste panel van elke lijn) heen gaan. Volledig en Back-upprocessor sturen ze naar een back-upprocessor met dezelfde poortnummers; Volledig geeft ze ook een eigen route (een tweede glasvezeltrunk bij glasvezel-ledwalls)."],
@@ -2712,7 +2758,6 @@ ppx:0,
 pports:0,
 ret:true,
 showData:true,
-pdist:false,
 pvolt:120,
 pamps:20,
 derate:true,
@@ -2739,8 +2784,6 @@ shGpu:'Automatic',
 lblWhat:'Data and power',
 lblPow:'Cable and circuit labels',
 pdt:'Socapex (6 circuits per cable)',
-pwall:0,
-pwallA:20,
 lblSize:'Avery 5163 (10 per US Letter sheet)',
 lblLayout:'Two identical panels',
 lblFlag:'Big end blocks',
@@ -2812,6 +2855,9 @@ pshare:[],
 autoBal:false,
 phaseView:true,
 trayOpen:true,
+// Power settings
+pfeed:'',
+pwv:2,
 // Redundancy
 wred:'Loop',
 wpri:1,
@@ -2933,6 +2979,9 @@ const WK=[
 'pown',
 'pcabs',
 'pmk',
+// Power settings
+'pfeed',
+'pdt',
 // Redundancy
 'wred',
 'wpri',
@@ -2961,7 +3010,7 @@ function cvMake(name,cw,ch,wl,c0){const m=document.createElement('canvas');m.wid
  return{id:++CVID,name,cw,ch,walls:wl,cur:Math.max(0,Math.min(wl.length-1,c0|0)),sims:[],loopW:0,crewNext:0,M:m,mc:m.getContext('2d',{willReadFrequently:true}),gen:0,grabIm:null,grabGen:-1,dvdSt:null,open:false}}
 function cvStore(){const c=CVS[cc];if(!c)return;storeWall();Object.assign(c,{cw:S.cw,ch:S.ch,walls,cur,sims,loopW,crewNext,M,mc,gen,grabIm,grabGen,dvdSt:dvdCanvasSt})}
 function cvLoad(i){cc=i;const c=CVS[i];S.cw=c.cw;S.ch=c.ch;walls=c.walls;sims=c.sims;loopW=c.loopW;crewNext=c.crewNext;M=c.M;mc=c.mc;gen=c.gen;grabIm=c.grabIm;grabGen=c.grabGen;dvdCanvasSt=c.dvdSt;loadWall(c.cur)}
-function withCv(i,f){if(i===cc||!CVS[i])return f(i);const p=cc;cvStore();cvLoad(i);CVX++;try{return f(i)}finally{CVX--;cvStore();cvLoad(p)}}
+function withCv(i,f){if(i===cc||!CVS[i])return f(i);const p=cc,sg=SEG,pk=PCK0;cvStore();cvLoad(i);CVX++;try{return f(i)}finally{CVX--;cvStore();cvLoad(p);SEG=sg;PCK0=pk}}
 function eachCv(f){if(!CVS.length){f(0);return}for(let i=0;i<CVS.length;i++)withCv(i,f)}
 const cvTag=()=>CVS.length>1&&CVS[cc]?'-'+String(CVS[cc].name).replace(/[^\w-]+/g,'_').replace(/^_+|_+$/g,'').slice(0,30):'';
 const cloneWall=w=>{const x={};WK.forEach(k=>x[k]=k=='patImg'||k=='boxImg'?w[k]:cl(w[k]));return x};
@@ -3134,14 +3183,16 @@ ${SUB('Data wiring <span class="wn"></span>',`<div id="wireBox"><div class="g">$
 ${SUB('Cabinet IDs',`<div style="color:var(--mu);font-size:12px">Every tile gets an ID from the data wiring: the processor, the port on it and the tile's place on that port's cable. Show them on the wall with the cabinet IDs test pattern, or save a sheet to print.</div>
 <div class="g">${F('cidFmt','ID style','select',CIDFMT,'w')}${F('cidStk','Add a sticker for every tile (uses the label sheet from Label printing options)','check')}</div><div id="cidStat" style="color:var(--mu);font-size:12px"></div>
 <div class="row">${B('cidShow','Show on this wall')}${B('cidPdf','Save cabinet ID sheet')}</div>`)}
-${SUB('Power',`${F('pdist','Power distribution','check')}
-<div id="pwrBox"><div id="dsSrc" style="font-size:12px"></div><div class="g">${F('pdt','Distribution cable','select',Object.keys(PDT),'w')}</div><div class="g">${F('pvolt','Circuit voltage','select',[100,110,120,208,220,230,240])}${F('pamps','Breaker (A)','number','min=1 max=400')}</div>${F('derate','Load circuits to 80% (continuous load)','check')}<div id="pwnote" style="color:var(--mu);font-size:12px"></div><div class="g">${F('pf','Power factor (W ÷ VA)','number','min=0.5 max=1 step=0.01')}${F('pload','Design load','select',PLOAD,'w')}${F('ptyp','Typical (% of max)','number','min=1 max=100')}${F('pmeas','Measured W per tile','number','min=0 max=5000')}</div><div id="dlnote" style="color:var(--mu);font-size:12px"></div>${F('showPow','Show power runs on the canvas','check')}<div id="socaNote" style="color:var(--mu);font-size:12px"></div><div id="edW" class="g">${F('pwall','Edison plugs per wall circuit (0 = do not check)','number','min=0 max=100')}${F('pwallA','Wall circuit breaker (A)','number','min=1 max=400')}</div>
-${SUB('Distros',`<div style="color:var(--mu);font-size:12px">Add the distros the walls plug into. Each cable goes to a free output (move it in the power tray under the viewport), each circuit lands on a phase, and the legs are added up as phasors. Balance turns the leg each cable starts on to even out the legs, without changing the wiring.</div><div id="distBox"></div>${F('autoBal','Rebalance after every wiring change','check')}${F('phaseView','Colour power runs by phase on the canvas','check')}`)}
-${SUB('Power wiring <span class="wn"></span>',`<div id="pwireBox"><div class="g">${F('pmode','Pattern','select',['None','Snake','Linear','Manual'],'w')}${F('plink','Power link limit (tiles per circuit, 0 = none)','number','min=0 max=500','w')}</div>
+${SUB('Power',`<div id="supNone" style="color:var(--mu);font-size:12px">Add a distro or house power below to plan power: where it comes from, the circuits, and how each wall is wired.</div>
+${SUB('Supply',`<div style="color:var(--mu);font-size:12px">Where the power comes from. Each distro or house power sets the voltage and breaker of the circuits it feeds. Each cable goes to a free output (move it in the power tray under the viewport), each circuit lands on a phase, and the legs are added up as phasors. Balance turns the leg each cable starts on to even out the legs, without changing the wiring.</div><div id="distBox"></div>`,1)}
+<div class="row"><button data-dact="dadd">+ Add distro</button><button data-dact="hadd">+ Add house power</button></div>
+<div id="pwrBox">${SUB('Load',`<div style="color:var(--mu);font-size:12px">How much the tiles draw.</div><div class="g">${F('pload','Design load','select',PLOAD,'w')}${F('ptyp','Typical (% of max)','number','min=1 max=100')}${F('pmeas','Measured W per tile','number','min=0 max=5000')}${F('pf','Power factor (W ÷ VA)','number','min=0.5 max=1 step=0.01')}</div>${F('derate','Load circuits to 80% (continuous load)','check')}<div id="dlnote" style="color:var(--mu);font-size:12px"></div>`)}
+${SUB('This wall <span class="wn"></span>',`<div id="pwireBox"><div class="g"><div id="pfeedBox" style="display:contents"></div>${F('pdt','Cable','select',Object.keys(PDT),'w')}</div><div id="pwnote" style="color:var(--mu);font-size:12px"></div><div id="socaNote" style="color:var(--mu);font-size:12px"></div><div class="g">${F('pmode','Pattern','select',['None','Snake','Linear','Manual'],'w')}${F('plink','Power link limit (tiles per circuit, 0 = none)','number','min=0 max=500','w')}</div>
 <div id="pmkNote" style="color:var(--mu);font-size:12px"></div><div id="pcabSet" class="g">${F('pown','Start this wall on its own cable (walls too far apart to share a power run)','check','','w')}${F('pcabs','Cables run to this wall (0 = as many as it needs)','number','min=0 max=24','w')}</div><div id="pcabCards"></div><div id="pcabNote" style="font-size:12px"></div>
 <div id="pautoBox"><div style="color:var(--mu);font-size:12px">Power flow: pick the start corner and direction. Green is the first tile, red the last.</div><div id="ppat" class="wpat" role="group" aria-label="Power flow pattern"></div><div id="ppatl" style="font-size:12px"></div><div class="g">${F('pfill','Wiring preference','select',PFILL,'w')}</div><div id="pfilln" style="color:var(--mu);font-size:12px"></div></div>
 <div id="pmanBox"><div style="color:var(--mu);font-size:12px">Click Wire tiles, then click tiles or drag across them in the viewport, in power-link order. Drag back over a tile to take it off. A circuit stops accepting tiles when it is full.</div><div class="row">${B('pedit','Wire tiles')}${B('pnew','New circuit')}${B('pundo','Undo')}${B('pclr','Clear')}</div><div id="pmsg" class="bad" style="font-size:12px"></div></div>
-<div id="pstat" style="color:var(--mu);font-size:12px"></div><div id="shareBox"></div></div>`,1)}</div>`,1)}
+<div id="pstat" style="color:var(--mu);font-size:12px"></div><div id="shareBox"></div></div>`,1)}
+<div style="font-weight:700;margin-top:8px">Show</div><div style="display:grid;gap:4px">${F('showPow','Show power runs on the canvas','check')}${F('phaseView','Colour power runs by phase on the canvas','check')}${F('autoBal','Rebalance after every wiring change','check')}</div></div>`,1)}
 ${SUB('Cable lengths',`${F('cabOn','Work out cable lengths and a pack list','check')}<div id="cabBox"><div style="color:var(--mu);font-size:12px">For the selected LED wall: how far the cables travel to the wall and where they arrive. Each run adds the climb along the wall to its first tile (no diagonals) and the slack, then is rounded up to a cable you own. Longer runs are joined from several cables.</div>
 <div class="g">${F('cdD','<span>Processor to wall (<span class="cu">m</span>)</span>','number','min=0 max=3000 step=0.5')}${F('cdP','<span>Distro to wall (<span class="cu">m</span>)</span>','number','min=0 max=3000 step=0.5')}</div>${F('cin','Cables arrive at','select',CIN,'w')}
 <div class="g">${F('cunit','Units','select',[['m','Metres'],['ft','Feet']])}${F('cslack','Slack per run (%)','number','min=0 max=100')}</div>${F('clenD','<span>Data cable lengths you own (<span class="cu">m</span>)</span>','text','','w')}${F('clenP','<span>Power cable lengths you own (<span class="cu">m</span>)</span>','text','','w')}
@@ -3243,7 +3294,7 @@ hide('procBox',!on);hide('cfgBox',!on);{const ns=on&&cfgNova(),b=document.queryS
  if(wl)wl.textContent=`${S.wmode=='Linear'?'Linear':'Snake'} from the ${S.wcorner.toLowerCase()} tile: ${vt?'columns':'rows'} first, ${vt?(bt?'bottom to top':'top to bottom'):(rt?'right to left':'left to right')}${S.wmode=='Linear'?', every line in the same direction':', turning back at the end of each line'}.`;
  if(fn)fn.textContent=WFILLN[Math.max(0,WFILL.indexOf(S.wfill))]}hide('sdRow',!plan.some(a=>a.length));
 const eb=document.querySelector('[data-a=wedit]');if(eb){eb.textContent=wiring?'Stop wiring':'Wire tiles';eb.setAttribute('aria-pressed',wiring)}
-{const pon=pdOn();hide('pwrBox',!pon);hide('pautoBox',!['Snake','Linear'].includes(S.pmode));hide('pmanBox',S.pmode!='Manual');
+{const pon=pdOn();hide('pwrBox',!pon);hide('supNone',pon);hide('pautoBox',!['Snake','Linear'].includes(S.pmode));hide('pmanBox',S.pmode!='Manual');
  const pp=$('#ppat');if(pp){const h=SIG16.map(([m,c2,d2],i)=>{const on=S.pmode==m&&S.pcorner==c2&&S.pwdir==d2;return `<button class="wpb${on?' on':''}" data-pp="${i}" title="${m}: ${c2} start, ${d2.toLowerCase()}" aria-label="${m}, ${c2} start, ${d2.toLowerCase()}" aria-pressed="${on}">${wpatSvg(c2,d2,m=='Snake')}</button>`}).join('');if(pp.__h!==h){pp.innerHTML=h;pp.__h=h}}
  const vt2=S.pwdir=='Vertical',rt2=/right/i.test(S.pcorner),bt2=/^bottom/i.test(S.pcorner),pl=$('#ppatl'),pf2=$('#pfilln');
  if(pl)pl.textContent=`${S.pmode=='Linear'?'Linear':'Snake'} from the ${S.pcorner.toLowerCase()} tile: ${vt2?'columns':'rows'} first, ${vt2?(bt2?'bottom to top':'top to bottom'):(rt2?'right to left':'left to right')}${S.pmode=='Linear'?', every line in the same direction':', turning back at the end of each line'}.`;
@@ -3254,9 +3305,8 @@ const eb=document.querySelector('[data-a=wedit]');if(eb){eb.textContent=wiring?'
  document.querySelectorAll('[data-a=phtog]').forEach(b=>{b.style.display=dsOn()?'':'none';b.classList.toggle('tgon',!!S.phaseView);b.setAttribute('aria-pressed',!!S.phaseView)});
  {const lb=k=>{const e=document.querySelector(`[data-k=${k}]`);return e&&e.closest('label')},a=lb('ptyp'),m=lb('pmeas');if(a)a.style.display=S.pload==PLOAD[1]?'':'none';if(m)m.style.display=S.pload==PLOAD[2]?'':'none';const n=$('#dlnote');if(n){const t=S.pload==PLOAD[0]?'Distro and leg loads use each tile\'s max watts.':'Distro and leg loads use this design load. Circuits are still checked at max watts, so a full-white test cannot trip a breaker.';if(n.textContent!==tr(t))n.textContent=t}}
  document.querySelectorAll('[data-a=engtog]').forEach(b=>{b.classList.toggle('tgon',!S.hideEng);b.textContent=S.hideEng?'Show Engineering Data':'Hide Engineering Data'});
- const ew=$('#edW');if(ew)ew.style.display=PD().one?'':'none';
- const sn=$('#socaNote');if(sn){const d=PD(),tx=d.one?'Every circuit is its own powerCON cable with a standard Edison plug on the wall end, plugged into wall power. Circuits are numbered 1, 2, 3 and so on. Voltage and breaker above are for each powerCON circuit. Enter how many plugs share one wall circuit, and that wall circuit\'s breaker, to check the room\'s breakers.':d.n==6?'Power runs on Socapex, 6 circuits per cable. Circuits are numbered 1-1 to 1-6 (cable-circuit), then 2-1 and so on.'+(dsOn()?' Each circuit\'s phase comes from the distro its cable is patched to (Distros below).':' Until a distro is added, the amps per phase assume circuits 1 and 4 land on phase A, 2 and 5 on B, 3 and 6 on C (the usual breakout). Add a distro below to set the real phases.'):`Power runs on ${d.name} cables, ${d.n} circuits per cable (legs ${d.legs.join(', ')}). Circuits are numbered 1-X, 1-Y${d.n>2?', 1-Z':''}, then 2-X and so on (cable-leg). `+(dsOn()?' Each circuit\'s phase comes from the distro its cable is patched to (Distros below).':` Until a distro is added, the amps per phase assume X, Y${d.n>2?', Z':''} land on phases A, B${d.n>2?', C':''}. Add a distro below to set the real phases.`);if(sn.textContent!==tr(tx))sn.textContent=tx}
- const w=walls[cur],pn2=$('#pwnote');if(pn2&&pon){const t=tpcCalc(w),tx=`One ${S.pvolt} V ${S.pamps} A circuit${S.derate?' loaded to 80%':''}${(S.pf||1)<1?` at power factor ${S.pf.toFixed(2)} (${Math.round(circW()/S.pf).toLocaleString()} VA)`:''} supplies ${Math.round(circW()).toLocaleString()} W, enough for ${t} tile${t==1?'':'s'} of ${w.preset} at ${w.wmax} W max each.`,wn=powWarn(),hx=esc(tx)+(wn.length?'<br><span class="bad">⚠ '+wn.map(esc).join('<br>⚠ ')+'</span>':'');if(pn2.innerHTML!==hx)pn2.innerHTML=hx}
+ const sn=$('#socaNote');if(sn&&pon){const c=pwC(S),d=c.D,nm=c.d?c.d.name:'',tx=d.one?`Every circuit is its own powerCON cable with a standard Edison plug on the wall end, plugged into an Edison outlet on ${nm}. Plugs are numbered 1, 2, 3 and so on.`:`${d.name} carries ${d.n} circuits per cable${d.n<6?` (legs ${d.legs.join(', ')})`:''}. Circuits are numbered 1-${d.legs[0]}, 1-${d.legs[1]}${d.n>2?', 1-'+d.legs[2]:''} and so on (cable-${d.leg}). Each circuit's phase comes from the ${nm} output its cable is patched to.`;if(sn.textContent!==tr(tx))sn.textContent=tx}
+ const w=walls[cur],pn2=$('#pwnote');if(pn2&&pon){const c=pwC(S),t=tpcCalc(w),cap=c.d&&c.d.cb>c.A?` (the ${c.D.name} rating; ${c.d.name} is set to ${c.d.cb} A)`:'',tx=`One ${c.V} V ${c.A} A circuit${cap}${S.derate?' loaded to 80%':''}${(S.pf||1)<1?` at power factor ${S.pf.toFixed(2)} (${Math.round(c.cw/S.pf).toLocaleString()} VA)`:''} supplies ${Math.round(c.cw).toLocaleString()} W, enough for ${t} tile${t==1?'':'s'} of ${w.preset} at ${w.wmax} W max each.`,wn=powWarn(S),hx=esc(tx)+(wn.length?'<br><span class="bad">⚠ '+wn.map(esc).join('<br>⚠ ')+'</span>':'');if(pn2.innerHTML!==hx)pn2.innerHTML=hx}
  const ps=$('#pstat');if(ps&&pon){const t=tpcW(w),pp2=powerPlan(),mine=pp2[cur]||[],pw=mine.reduce((a,x)=>a+x.tiles.length,0);let h=t<1?'<span class="bad">One tile draws more than a circuit can supply. Check the breaker size and the tile model\'s max watts.</span>':`Each circuit powers up to <b>${t}</b> tiles of this model${w.plink>0&&w.plink<tpcCalc(w)?' (power link limit)':''}.`;
   if(S.pmode!='None')h+='<br>'+(mine.length?mine.map(x=>`${cLabel(x.k)}: ${x.half?Math.round(x.watts).toLocaleString()+'/'+Math.round(circW()).toLocaleString()+' W':x.tiles.length+'/'+t}${x.over?' <span class="bad">over capacity</span>':''}`).join(', '):'No circuits wired yet.')+(pw<tN(w)?`<br><span class="bad">${tN(w)-pw} tile${tN(w)-pw==1?'':'s'} without power.</span>`:'<br>All tiles powered.');
   if(S.pmode=='Manual'&&pwiring){const l=(S.pman||[]).slice(-1)[0],base=pp2.slice(0,cur).reduce((a,x)=>a+x.length,0);h+=`<br>Adding to ${l&&l.length&&mine.length?cLabel(mine[mine.length-1].k):cLabel(base+mine.length+1)}.`}
@@ -3326,8 +3376,6 @@ speed:[.25,5],
 ppx:[0,50000000],
 pports:[1,1000],
 pamps:[1,400],
-pwall:[0,100],
-pwallA:[1,400],
 plink:[0,500],
 loopHold:[0,600],
 dvdSize:[5,60],
@@ -3370,8 +3418,8 @@ glN:[1,200],
 const HEAVY=['cw','ch','cols','rows','tw','th'];
 function applyKey(t){const k=t.dataset.k;if(!k)return;let v;
 if(t.type=='checkbox')v=t.checked;else if(t.type=='number'||t.type=='range'){v=+t.value;if(t.value===''||!isFinite(v))return;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}else{v=t.value;if(t.tagName=='SELECT'&&typeof S[k]=='number')v=+v}
-if(k=='cunit'&&v!=S.cunit)cUnitSwap(S.cunit,v);const glWas=S.glOn;S[k]=v;if(k=='glOn'&&v!=glWas)glOnChange(v);if(k=='glPick'&&v=='Random'&&S.glOn){glReset();glRoll()}if(k=='glType'){GLRN++;GLFRZ.clear()}if(k=='pdt'&&PD().one){S.pvolt=PD().volt;S.pamps=PD().amps}if(k=='preset')applyPreset();if(['tw','th','wmm','hmm','pitch','kg','wmax','dmm'].includes(k))utAuto();if(!HALF[S.preset])halfEdit=false;
-if(['proc','fps','bpc','ull'].includes(k))applySpec();if(k=='wmode'&&v!='Manual')wiring=false;if(k=='showData'&&!v)wiring=false;if(k=='pmode'&&v!='Manual'||k=='showPow'&&!v||k=='pdist'&&!v)pwiring=false;
+if(k=='cunit'&&v!=S.cunit)cUnitSwap(S.cunit,v);const glWas=S.glOn;S[k]=v;if(k=='glOn'&&v!=glWas)glOnChange(v);if(k=='glPick'&&v=='Random'&&S.glOn){glReset();glRoll()}if(k=='glType'){GLRN++;GLFRZ.clear()}if(k=='preset')applyPreset();if(['tw','th','wmm','hmm','pitch','kg','wmax','dmm'].includes(k))utAuto();if(!HALF[S.preset])halfEdit=false;
+if(['proc','fps','bpc','ull'].includes(k))applySpec();if(k=='wmode'&&v!='Manual')wiring=false;if(k=='showData'&&!v)wiring=false;if(k=='pmode'&&v!='Manual'||k=='showPow'&&!v)pwiring=false;
 storeWall();if(['cols','rows','tw','th','preset','corner','dir','bmode'].includes(k))showAll();
 if(k=='loop'&&v&&allDone()&&!REC){reset();S.play=true}
 if(k=='shGpu'&&shOut){shStop();toggleShare()}}
@@ -3834,8 +3882,17 @@ const PFILLN=['Each circuit gets a rectangle of tiles, sized to use as few circu
  'Each circuit takes a horizontal band: complete rows across the whole wall, as many as it can power, whichever way the pattern runs. If a circuit cannot power a whole row, each row is split evenly between circuits.',
  'Each circuit takes a vertical band: complete columns down the whole wall, as many as it can power, whichever way the pattern runs. If a circuit cannot power a whole column, each column is split evenly between circuits.'];
 const POWC=['#ff9f1c','#ffd166','#06d6a0','#4cc9f0','#ef476f','#c77dff'];
-const pdOn=()=>S.pdist===true;
-const circW=()=>S.pvolt*S.pamps*(S.derate?.8:1)*(S.pf||1),tpcCalc=w=>Math.floor(circW()/Math.max(1,w.wmax)),tpcW=w=>{const t=tpcCalc(w),m=mkLink(w),u=m>0?Math.min(t,m):t;return w.plink>0?Math.min(u,w.plink):u};
+// Power settings (Callum 2026-11-19): power is on once there is a supply in S.dists (a distro, or house power = wall outlets).
+// Each supply sets its circuit voltage (cv) and breaker (cb); each wall picks the supply it is fed from (pfeed) and its cable
+// (pdt, only a type that supply has outputs for). pwC(w) = the wall's power: supply d, cable kind / PDT entry D, circuit volts
+// V, breaker A (never above the connector's rating) and the usable watts of one circuit cw. S.pdt, S.pvolt and S.pamps mirror
+// the selected wall (pwMirror), so code about the selected wall can keep reading them.
+const pdOn=()=>Array.isArray(S.dists)&&S.dists.length>0;
+const pwSup=w=>{const L=S.dists||[];return L.find(d=>d.id===(w&&w.pfeed))||L[0]||null},
+ supKinds=d=>d?Object.keys(OUTK).filter(k=>(d[k]|0)>0):[];
+function pwC(w){w=w||S;const d=pwSup(w),ks=supKinds(d);let kind=Object.keys(OUTK).find(k=>OUTK[k][1]==w.pdt)||'soca';if(ks.length&&!ks.includes(kind))kind=ks[0];
+ const D=PDT[OUTK[kind][1]],V=d?+d.cv||120:120,A=d?Math.min(+d.cb||20,D.rA||400):20;return{d,kind,D,V,A,cw:V*A*(S.derate?.8:1)*(S.pf||1)}}
+const circW=w=>pwC(w).cw,tpcCalc=w=>Math.floor(circW(w)/Math.max(1,w.wmax)),tpcW=w=>{const t=tpcCalc(w),m=mkLink(w),u=m>0?Math.min(t,m):t;return w.plink>0?Math.min(u,w.plink):u};
 // Power distribution type: how circuits are bundled into cables. Socapex carries 6 circuits (numbered 1-6); a NEMA L14-30 carries
 // 2 (legs X, Y) and an L21-30 carries 3 (legs X, Y, Z). Circuit k is leg ((k-1) mod n) of cable ceil(k/n).
 // rA = the connector's rating per circuit (A); vOk = the circuit voltages the connector is made for; ph = the phases a
@@ -3844,70 +3901,84 @@ const PDT={'Socapex (6 circuits per cable)':{n:6,name:'Socapex',pre:'',legs:['1'
  'L14-30 (2 circuits per cable)':{n:2,name:'L14-30',pre:'',legs:['X','Y'],leg:'leg',src:'DISTRO END',end:'WALL END',rA:30,ph:2,vOk:[110,120,240]},
  'L21-30 (3 circuits per cable)':{n:3,name:'L21-30',pre:'',legs:['X','Y','Z'],leg:'leg',src:'DISTRO END',end:'WALL END',rA:30,ph:3,vOk:[110,120,208]},
  // powerCON to Edison: every circuit is its own powerCON cable with a standard Edison plug on the wall end, plugged into wall power.
- // Circuits are numbered 1, 2, 3 ... (no cable-leg pair). Plugs can be grouped per wall circuit (S.pwall) to check the room's breakers.
+ // Circuits are numbered 1, 2, 3 ... (no cable-leg pair). House power groups its outlets per house circuit to check the room's breakers.
  'powerCON to Edison (1 circuit per cable)':{n:1,name:'Edison',one:true,volt:120,amps:15,pre:'',legs:[''],leg:'circuit',src:'EDISON PLUG END',end:'POWERCON END',rA:20,ph:1,vOk:[100,110,120]}};
 // Phases a circuit draws from. 208 V circuits (and 240 V on L14-30) are line to line: each one uses two phases and its
 // full current flows in both. Everything else is line to neutral on one phase. Cables are assumed to land A, B, C in
 // order at the distro (the usual Socapex breakout: circuits 1 and 4 on A, 2 and 5 on B, 3 and 6 on C).
 // PHN (phase names A, B, C) is declared with the distro code below
-const cLL=()=>{const d=PD();return !d.one&&(S.pvolt==208&&d.ph==3||S.pvolt==240&&d.ph==2)};
-function cPhases(k){const d=PD();if(d.one||!d.ph)return[];const i=(k-1)%d.n;if(cLL())return d.ph==2?['A','B']:[PHN[i%3],PHN[(i+1)%3]];return[PHN[i%d.ph]]}
+const cLLv=(D,V)=>!D.one&&(V==208&&D.ph==3||V==240&&D.ph==2),cLL=()=>cLLv(PD(),+S.pvolt);
+function cPhases(k){const s=segK(k),d=s.D;if(d.one||!d.ph)return[];const i=cLegI(k);if(cLLv(d,s.V))return d.ph==2?['A','B']:[PHN[i%3],PHN[(i+1)%3]];return[PHN[i%d.ph]]}
 // The line-to-line voltage of the service the circuits come from (for the balanced 3-phase current).
 const VLL={100:173,110:190,120:208,127:220,220:380,230:400,240:415},svcVLL=()=>cLL()?+S.pvolt:VLL[S.pvolt]||Math.round(S.pvolt*Math.sqrt(3));
-// Problems with the circuit settings for the chosen connector: breaker above the connector's rating, or a voltage the
-// connector is not made for.
-function powWarn(){const d=PD(),o=[];if(d.rA&&S.pamps>d.rA)o.push(`The ${S.pamps} A breaker is above the ${d.rA} A rating of one ${d.name} circuit. Use a ${d.rA} A breaker or smaller.`);
- if(d.vOk&&!d.vOk.includes(+S.pvolt))o.push(`${d.name} is not made for ${S.pvolt} V circuits (it is used at ${d.vOk.join(', ')} V).`);
- if(d.one&&S.pwall>0&&S.pwallA>20)o.push(`A ${S.pwallA} A wall circuit is above the 20 A an Edison outlet is rated for.`);return o}
-const PD=()=>PDT[S.pdt]||PDT[Object.keys(PDT)[0]],cCab=k=>Math.ceil(k/PD().n),cLeg=k=>PD().legs[(k-1)%PD().n],
- cLabel=k=>{const d=PD();return d.one?''+k:d.pre+cCab(k)+'-'+cLeg(k)};
+// Problems with a wall's circuits: a voltage the connector is not made for, a voltage the tile does not take, or a house
+// circuit above what an Edison outlet is rated for. (The breaker can't go above the connector's rating: pwC caps it.)
+function powWarn(w){w=w||S;const c=pwC(w),d=c.D,o=[];if(!c.d)return o;if(d.vOk&&!d.vOk.includes(c.V))o.push(`${d.name} is not made for ${c.V} V circuits (it is used at ${d.vOk.join(', ')} V).`);
+ if(!vOkTile(w,c.V)){const p=pwrOf(w);o.push(`${w.preset} takes ${p[0]}–${p[1]} V, but ${c.d.name} gives ${c.V} V circuits. Feed this wall from another supply or change the supply's circuit voltage.`)}
+ if(c.d.type=='house'&&c.d.outl>0&&c.d.hb>20)o.push(`A ${c.d.hb} A house circuit is above the 20 A an Edison outlet is rated for.`);return o}
+// Cables. Every wall has a segment SEG[i] = {k0, c0, n, kind, D, d, V}: its circuits k0+1, k0+2 ... fill cables c0+1, c0+2 ... of
+// its own cable type, n circuits each. A wall starts a new segment (new cables) unless it shares the previous wall's cable
+// (pown off, same supply and cable type). Cable numbers q are unique across types; cabNo(q) is the number shown, counted
+// within its type (Socapex 1, Socapex 2, L21-30 1 ...). Circuit k is leg cLegI(k) of cable cCab(k).
+let PCK0=[],SEG=[];
+const segDef=()=>{const c=pwC(S);return{k0:0,c0:0,n:c.D.n,kind:c.kind,D:c.D,d:c.d,V:c.V}},
+ segK=k=>{for(let i=SEG.length-1;i>=0;i--){const s=SEG[i];if(s&&s.k0<k)return s}return SEG[0]||segDef()},
+ cabSeg=q=>{for(let i=SEG.length-1;i>=0;i--){const s=SEG[i];if(s&&s.c0<q)return s}return SEG[0]||segDef()},
+ cCab=k=>{const s=segK(k);return s.c0+Math.ceil((k-s.k0)/s.n)},cLegI=k=>{const s=segK(k);return(k-s.k0-1)%s.n},cLeg=k=>segK(k).D.legs[cLegI(k)],
+ cabNo=q=>{const s=cabSeg(q),seen=new Set,L=SEG.filter(x=>x&&!seen.has(x)&&seen.add(x));let n=0;L.forEach((x,i)=>{if(x.kind!=s.kind)return;if(x===s)n+=q-x.c0;else if(x.c0<s.c0)n+=(L[i+1]?L[i+1].c0:x.c0)-x.c0});return n},
+ cabName=q=>{const s=cabSeg(q);return s.D.one?'Edison plug '+cabNo(q):s.D.name+' '+cabNo(q)},
+ cLabel=k=>{const s=segK(k),q=cCab(k);return s.D.one?''+cabNo(q):s.D.pre+cabNo(q)+'-'+cLeg(k)};
+const PD=()=>pwC(S).D;
 function powChains(w){if(!pdOn()||w.pmode=='None')return[];if(w.pmode=='Manual')return manChains(w,'pman');const t=tpcW(w);if(t<1)return[];
- if(layOn(w))return layChains(w,w.pmode,w.pcorner,w.pwdir,ch=>ch.reduce((a,p)=>a+p.sp.W,0)<=circW()+1e-6&&!(w.plink>0&&ch.length>w.plink));
+ if(layOn(w))return layChains(w,w.pmode,w.pcorner,w.pwdir,ch=>ch.reduce((a,p)=>a+p.sp.W,0)<=circW(w)+1e-6&&!(w.plink>0&&ch.length>w.plink));
  return autoChains({cols:w.cols,rows:w.rows,wcorner:w.pcorner,wdir:w.pwdir,wmode:w.pmode,wfill:WFILL[Math.max(0,PFILL.indexOf(w.pfill))],pw:1},t)}
 // dw = the circuit's design load in watts (Max, Typical % or Measured W per tile); circuits are always checked at max (watts)
 // Power cabling: each wall starts on its own cable (pown, default on) so walls far apart never share a Socapex; the
 // circuits it does not use are spare. pcabs = cables run to the wall (0 = as many as it needs): circuits past them are over.
-let PCK0=[];
-function pcStart(w,k){const n=PD().n,i=walls.indexOf(w);if(i<=0)PCK0=[];if(i>0){const p=walls[i-1],r=(p.pcabs|0)*n;if(r>0&&PCK0[i-1]!=null)k=Math.max(k,PCK0[i-1]+r)}if(w.pown!==false&&k%n)k=Math.ceil(k/n)*n;PCK0[i]=k;return k}
-function pcCap(w,k0,P){const m=(w.pcabs|0)*PD().n;if(m>0)P.forEach(x=>{if(x.k-k0>m){x.over=true;x.nocab=true}});return P}
+function pcStart(w,k){const i=walls.indexOf(w),c=pwC(w),n=c.D.n,mk=(c0)=>({k0:k,c0,n,kind:c.kind,D:c.D,d:c.d,V:c.V});if(i<=0){PCK0=[];SEG=[]}
+ if(i>0&&SEG[i-1]){const p=walls[i-1],ps=SEG[i-1],r=(p.pcabs|0)*ps.n;if(r>0&&PCK0[i-1]!=null)k=Math.max(k,PCK0[i-1]+r);
+  if(w.pown===false&&ps.kind==c.kind&&ps.d===c.d&&ps.V==c.V)SEG[i]=ps;else SEG[i]=mk(ps.c0+Math.ceil((k-ps.k0)/ps.n))}
+ else SEG[Math.max(0,i)]=mk(0);PCK0[i]=k;return k}
+function pcCap(w,k0,P){const m=(w.pcabs|0)*pwC(w).D.n;if(m>0)P.forEach(x=>{if(x.k-k0>m){x.over=true;x.nocab=true}});return P}
 // Power cabling: what the maker allows. vOkTile = the tile takes this circuit voltage; mkLink = the most panels the maker allows
 // on one power link at the circuit voltage (their printed count; without one, loop-through amps x V / max W), 0 = none published.
 const PVOLTS=[100,110,120,208,220,230,240];
 const pwrOf=w=>w&&PWR[w.preset],
  vOkTile=(w,V)=>{const p=pwrOf(w);return !p||!p[0]||(V>=p[0]-.5&&V<=p[1]+.5)},
  vOkAll=V=>walls.every(w=>vOkTile(w,V));
-function mkLink(w,V){const p=pwrOf(w);if(!p)return 0;V=+(V||S.pvolt);const L=(V<150?p[2]:p[3])||0;return L||(p[4]?Math.floor(p[4]*V/Math.max(1,w.wmax)):0)}
-// Selects settings the maker allows: a circuit voltage every wall's tile takes, and the power link limit set to the maker's
-// count (pmk remembers the value set here, so a limit the user lowered is kept and one we set follows the voltage).
+function mkLink(w,V){const p=pwrOf(w);if(!p)return 0;V=+(V||pwC(w).V);const L=(V<150?p[2]:p[3])||0;return L||(p[4]?Math.floor(p[4]*V/Math.max(1,w.wmax)):0)}
+// Selects settings the maker and the supplies allow. Each wall's cable is a type its supply has outputs for (pwMirror); a
+// supply's circuit voltage moves to its other voltage when a tile fed from it does not take it and the other one suits every
+// tile; the power link limit is set to the maker's count (pmk remembers the value set here, so a limit the user lowered is
+// kept and one we set follows the voltage).
 let pwrToast='';
-function pwrEnforce(){if(!pdOn())return;dsRules();const sel=document.querySelector('select[data-k="pvolt"]'),dv=dsVolts();
- if(sel)[...sel.options].forEach(o=>{const v=+o.value,t=vOkAll(v),d=!dv||dv.includes(v);o.disabled=!(t&&d);o.title=!t?'A tile model on this canvas is not made for '+v+' V':!d?'The distros do not supply '+v+' V':''});
- const okV=v=>vOkAll(v)&&(!dv||dv.includes(v));
- if(!okV(+S.pvolt)){const v=PVOLTS.filter(okV).sort((a,b)=>Math.abs(a-S.pvolt)-Math.abs(b-S.pvolt))[0];
-  if(v){const bad=walls.find(w=>!vOkTile(w,+S.pvolt)),m=bad?`${S.pvolt} V is outside what ${bad.preset} accepts, so the circuits are now ${v} V.`:`The distros do not supply ${S.pvolt} V, so the circuits are now ${v} V.`;S.pvolt=v;if(sel)sel.value=v;if(pwrToast!==m){pwrToast=m;toast(m,5000)}}}
+const pwToast=m=>{if(m&&pwrToast!==m){pwrToast=m;toast(m,5000)}};
+// a supply's circuit voltages: line to neutral or line to line on a 3-phase / split-phase distro; any common one on a single
+// phase supply or house power
+const supVolts=d=>{const s=PSYS[d.sys]||PSYS['Single phase'];return d.type!='house'&&s.ph>1?[s.ln,s.ll]:[100,110,120,220,230,240]};
+function pwMirror(){if(!pdOn())return;const c=pwC(S),t=OUTK[c.kind][1];if(c.d&&S.pfeed!==c.d.id)S.pfeed=c.d.id;
+ if(S.pdt!==t){const was=Object.keys(OUTK).find(k=>OUTK[k][1]==S.pdt);if(was&&c.d)pwToast(`${c.d.name} has no ${OUTK[was][0]} outputs, so this wall's cable is now ${OUTK[c.kind][0]}.`);S.pdt=t}
+ S.pvolt=c.V;S.pamps=c.A;storeWall()}
+function pwrEnforce(){if(!pdOn())return;
+ (S.dists||[]).forEach(d=>{const fed=walls.filter(w=>pwSup(w)===d);if(!fed.length||fed.every(w=>vOkTile(w,d.cv)))return;const alt=supVolts(d).find(v=>v!=d.cv&&fed.every(w=>vOkTile(w,v)));
+  if(alt){const bad=fed.find(w=>!vOkTile(w,d.cv));pwToast(`${bad.preset} does not take ${d.cv} V, so ${d.name} now gives ${alt} V circuits.`);d.cv=alt}});
+ pwMirror();
+ const fb=$('#pfeedBox');if(fb){const h=`<label class="w">Fed from<select data-k="pfeed">${S.dists.map(d=>`<option value="${esc(d.id)}">${esc(d.name)}</option>`).join('')}</select></label>`;if(fb.__h!==h){fb.__h=h;fb.innerHTML=h}}
+ const ps=document.querySelector('select[data-k="pdt"]'),ks=supKinds(pwSup(S));if(ps)[...ps.options].forEach(o=>{const k=Object.keys(OUTK).find(x=>OUTK[x][1]==o.value),ok=ks.includes(k);o.disabled=!ok;o.title=ok?'':'This supply has no '+OUTK[k][0]+' outputs'});
  walls.forEach((w,i)=>{const m=mkLink(w);if(m>0&&(!(w.plink>0)||w.plink>m||w.plink===w.pmk)){w.plink=m;w.pmk=m}else if(!m&&w.plink===w.pmk&&w.pmk>0){w.plink=0;w.pmk=0}
   if(i==cur){S.plink=w.plink;S.pmk=w.pmk}});
  const pi=document.querySelector('input[data-k="plink"]'),m=mkLink(walls[cur]);if(pi){pi.max=m>0?m:500;if(document.activeElement!==pi)pi.value=S.plink}
  const nb=$('#pmkNote');if(nb){const p=pwrOf(walls[cur]),t=(p?[p[0]?`${walls[cur].preset} takes ${p[0]}–${p[1]} V.`:'',m>0?`The maker allows at most ${m} panels on one power link at ${S.pvolt} V, so the limit can be set lower, never higher.`:'No power link limit is published for this model, so circuits are limited by the breaker.']:['The maker publishes no power limits for this model, so circuits are limited by the breaker.']).filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join(' ');if(nb.__h!==t){nb.__h=t;nb.innerHTML=t}}}
-// Power cabling, option A (Callum 2026-11-19): the distros set the rules. With distros added, the circuit voltage can only be
-// one every distro supplies (its line-to-neutral or line-to-line voltage), the cable can only be a type the distros have
-// outputs for, and the breaker can't go above the connector's rating. #dsSrc says where the power comes from.
-const dsVolts=()=>{if(!dsOn())return null;let v=null;S.dists.forEach(d=>{const s=PSYS[d.sys],o=s.ph==1?PVOLTS.slice():PVOLTS.filter(x=>[s.ln,s.ll].some(y=>Math.abs(x-y)/y<.03));v=v?v.filter(x=>o.includes(x)):o});return v&&v.length?v:null},
- dsKinds=()=>dsOn()?Object.keys(OUTK).filter(k=>S.dists.some(d=>(d[k]|0)>0)):null;
-function dsRules(){const ks=dsKinds(),ps=document.querySelector('select[data-k="pdt"]');let m='';
- if(ps)[...ps.options].forEach(o=>{const k=Object.keys(OUTK).find(x=>OUTK[x][1]==o.value),ok=!ks||ks.includes(k);o.disabled=!ok;o.title=ok?'':'No distro has '+OUTK[k][0]+' outputs'});
- if(ks&&ks.length&&!ks.includes(outKind())){const k=ks[0];m=`The distros have no ${OUTK[outKind()][0]} outputs, so the cable is now ${OUTK[k][0]}.`;S.pdt=OUTK[k][1];if(ps)ps.value=S.pdt}
- const rA=PD().rA,pa=document.querySelector('input[data-k="pamps"]');if(pa)pa.max=rA||400;
- if(rA&&S.pamps>rA){m=`A ${PD().name} circuit is rated ${rA} A, so the breaker is now ${rA} A.`;S.pamps=rA;if(pa&&document.activeElement!==pa)pa.value=rA}
- if(m&&pwrToast!==m){pwrToast=m;toast(m,5000)}
- const e=$('#dsSrc');if(e){const t=dsOn()?S.dists.map(d=>`<span>Power comes from ${esc(d.name)} · ${esc(d.sys)}</span>`).join('<br>')+(dsVolts()?'':'<br><span class="bad">The distros do not share a circuit voltage. Set them to the same system.</span>'):'';if(e.__h!==t){e.__h=t;e.innerHTML=t}}}
 // Engineering rows for a tile model: what the maker publishes about power
 function pwrRows(w){const p=pwrOf(w);if(!p)return[];const r=[];if(p[0])r.push(['Power input',p[0]+'–'+p[1]+' V AC']);if(p[5])r.push(['Average power (sheet)',p[5]+' W']);
  const lo=mkLink(w,110),hi=mkLink(w,230);if(lo||hi)r.push(['Panels per power link',(lo?lo+' at 110 V':'')+(lo&&hi?' · ':'')+(hi?hi+' at 230 V':'')]);if(p[4])r.push(['Power loop-through',p[4]+' A']);if(p[6]>=0&&PWRSRC[p[6]])r.push(['Power source',PWRSRC[p[6]]]);return r}
-function powerPlan(){let k=0;return shareApply(walls.map(w=>{const t=tpcW(w),P2=pieces(w),q=P2.lay||P2.nh>0,f=dlF(w);k=pcStart(w,k);const k0=k;return pcCap(w,k0,keepTiles(w,powChains(w),t,w.pmode=='Manual',w.pfill==PFILL[2]).filter(ch=>ch.length).map(ch=>{const watts=ch.reduce((a,e)=>{const x=pieceOf(w,e);return a+(x?x.sp.W:0)},0);return{k:++k,tiles:ch,watts,dw:watts*f,half:q,over:q?watts>circW()+1e-6||w.plink>0&&ch.length>w.plink:ch.length>t}}))}))}
-function powerTotals(plan){const all=plan.flat(),ks=[...new Set(all.map(x=>x.k))],n=ks.length,per=PD().n,cab={},A=S.pvolt*(S.pf||1);const cph={},ph={};all.forEach(x=>{const c=cCab(x.k),a=x.watts/A;cab[c]=(cab[c]||0)+a;cPhases(x.k).forEach(p=>{(cph[c]=cph[c]||{})[p]=(cph[c][p]||0)+a;ph[p]=(ph[p]||0)+a})});const L=walls.length-1,rs=L>=0&&PCK0[L]!=null?PCK0[L]+(walls[L].pcabs|0)*per:0,cables=n||rs?Math.ceil(Math.max(0,...ks,rs)/per):0;const o={n,cables,spare:n?cables*per-n:0,cab,cph,ph,watts:all.reduce((a,x)=>a+x.watts,0),over:new Set(all.filter(x=>x.over).map(x=>x.k)).size};
- if(PD().one&&S.pwall>0&&n){const wl={};all.forEach(x=>{const g=Math.ceil(x.k/S.pwall);wl[g]=(wl[g]||0)+x.watts/A});o.wall=wl;o.wlim=S.pwallA*(S.derate?.8:1);o.wn=Object.keys(wl).length;o.wover=Object.keys(wl).filter(g=>wl[g]>o.wlim+1e-6).length}
- return o}
+function powerPlan(){let k=0;return shareApply(walls.map((w,wi)=>{const t=tpcW(w),P2=pieces(w),q=P2.lay||P2.nh>0,f=dlF(w),c=pwC(w),cw=c.cw;k=pcStart(w,k);const k0=k;return pcCap(w,k0,keepTiles(w,powChains(w),t,w.pmode=='Manual',w.pfill==PFILL[2]).filter(ch=>ch.length).map(ch=>{const watts=ch.reduce((a,e)=>{const x=pieceOf(w,e);return a+(x?x.sp.W:0)},0);return{k:++k,tiles:ch,watts,dw:watts*f,half:q,V:c.V,cw,wi,over:q?watts>cw+1e-6||w.plink>0&&ch.length>w.plink:ch.length>t}}))}))}
+// totals for one canvas: circuits, cables (and of each type), spare circuits, amps per cable and assumed phase, watts
+function powerTotals(plan){const all=plan.flat(),ks=[...new Set(all.map(x=>x.k))],n=ks.length,cab={},cph={},ph={},pf=S.pf||1;
+ all.forEach(x=>{const c=cCab(x.k),a=x.watts/((x.V||S.pvolt)*pf);cab[c]=(cab[c]||0)+a;cPhases(x.k).forEach(p=>{(cph[c]=cph[c]||{})[p]=(cph[c][p]||0)+a;ph[p]=(ph[p]||0)+a})});
+ const L=walls.length-1,s=SEG[L],rs=s&&PCK0[L]!=null?PCK0[L]+(walls[L].pcabs|0)*s.n:0,cables=Math.max(0,...ks.map(cCab),rs>0?cCab(rs):0),kinds={};let slots=0;
+ for(let q=1;q<=cables;q++){const x=cabSeg(q);slots+=x.n;kinds[x.kind]=(kinds[x.kind]||0)+1}
+ return{n,cables,kinds,spare:n?Math.max(0,slots-n):0,cab,cph,ph,watts:all.reduce((a,x)=>a+x.watts,0),over:new Set(all.filter(x=>x.over).map(x=>x.k)).size}}
 let pwiring=false,halfEdit=false,goneEdit=false;
 // ---------- distros: circuits roll up to cable -> distro output -> distro leg. Each circuit lands on one phase (line to
 // neutral) or two (line to line, e.g. 208 V on a 120/208 V distro), and leg currents are phasor sums. S.dists = the distros;
@@ -3916,12 +3987,26 @@ let pwiring=false,halfEdit=false,goneEdit=false;
 const PSYS={'120/208 V 3-phase wye':{ph:3,ln:120,ll:208},'127/220 V 3-phase wye':{ph:3,ln:127,ll:220},'230/400 V 3-phase wye':{ph:3,ln:230,ll:400},'120/240 V split phase':{ph:2,ln:120,ll:240},'Single phase':{ph:1,ln:0,ll:0}};
 const PLOAD=['Max (spec)','Typical (% of max)','Measured (W per tile)'],PHN=['A','B','C'],PHC=['#ffffff','#f59e0b','#3b82f6'],PHCL=['#222222','#f59e0b','#2563c9'];
 const OUTK={soca:['Socapex','Socapex (6 circuits per cable)'],l2130:['L21-30','L21-30 (3 circuits per cable)'],l1430:['L14-30','L14-30 (2 circuits per cable)'],edison:['Edison','powerCON to Edison (1 circuit per cable)']};
-const outKind=()=>Object.keys(OUTK).find(k=>OUTK[k][1]==S.pdt)||'soca',dsOn=()=>pdOn()&&Array.isArray(S.dists)&&S.dists.length>0,dsById=id=>(S.dists||[]).find(d=>d.id===id);
+const outKind=()=>pwC(S).kind,dsOn=pdOn,dsById=id=>(S.dists||[]).find(d=>d.id===id);
 // design load factor for a wall: Max = the tile's max watts, Typical = a % of it, Measured = watts per tile (never above max)
 const dlF=w=>S.pload==PLOAD[1]?S.ptyp/100:S.pload==PLOAD[2]&&S.pmeas>0?Math.min(1,S.pmeas/Math.max(1,w.wmax)):1;
-function dsSan(d,i){d=d&&typeof d=='object'?d:{};const n=(v,a,b,df)=>{v=+v;return isFinite(v)?Math.max(a,Math.min(b,Math.round(v))):df};
- return{id:typeof d.id=='string'&&/^[\w-]{1,20}$/.test(d.id)?d.id:'d'+(i+1),name:String(d.name==null?'Distro '+(i+1):d.name).slice(0,30),sys:PSYS[d.sys]?d.sys:Object.keys(PSYS)[0],amps:n(d.amps,1,4000,100),
-  soca:n(d.soca,0,24,4),l2130:n(d.l2130,0,24,2),l1430:n(d.l1430,0,24,0),edison:n(d.edison,0,48,6),zone:n(d.zone,0,9999,0),map:/^[ABC]{6}$/.test(d.map)?d.map:'ABCABC'}}
+// a supply: type 'distro' (system, rating per leg, outputs, Socapex leg map) or 'house' (house power: wall outlets on the
+// venue's single-phase circuits; edison = outlets you can use, outl = outlets on one house circuit, 0 = do not check, hb =
+// that house circuit's breaker). cv = circuit voltage, cb = circuit breaker (A) for the circuits it feeds.
+function dsSan(d,i){d=d&&typeof d=='object'?d:{};const n=(v,a,b,df)=>{v=+v;return isFinite(v)?Math.max(a,Math.min(b,Math.round(v))):df},h=d.type=='house';
+ const o={id:typeof d.id=='string'&&/^[\w-]{1,20}$/.test(d.id)?d.id:'d'+(i+1),type:h?'house':'distro',name:String(d.name==null?(h?'House power':'Distro '+(i+1)):d.name).slice(0,30),sys:h?'Single phase':PSYS[d.sys]?d.sys:Object.keys(PSYS)[0],amps:n(d.amps,1,4000,100),
+  soca:h?0:n(d.soca,0,24,4),l2130:h?0:n(d.l2130,0,24,2),l1430:h?0:n(d.l1430,0,24,0),edison:n(d.edison,0,48,h?12:6),zone:n(d.zone,0,9999,0),map:/^[ABC]{6}$/.test(d.map)?d.map:'ABCABC',
+  cb:n(d.cb,1,400,h?15:20),outl:n(d.outl,0,48,h?2:0),hb:n(d.hb,1,400,20)};
+ const vs=supVolts(o),s=PSYS[o.sys];o.cv=vs.includes(+d.cv)?+d.cv:vs.includes(s.ln)?s.ln:120;return o}
+// projects saved before the 2026-11-19 power settings had one cable, circuit voltage and breaker for the whole show (plus
+// Edison wall-circuit fields) and a Power distribution switch. They become supplies: existing distros take the old voltage and
+// breaker; with none, one is made from the old settings (house power for powerCON to Edison). Power that was off stays off.
+let pwFix=false;
+function pwMigrate(os){if(!os||os.pwv===2||!('pdist' in os)&&!('pvolt' in os))return;S.pwv=2;const on=os.pdist===true||typeof os.pdist=='string'&&os.pdist!='None';if(!on){S.dists=[];return}
+ const V=+os.pvolt||120,A=+os.pamps||20,kind=Object.keys(OUTK).find(k=>OUTK[k][1]==os.pdt)||'soca';if(!Array.isArray(S.dists))S.dists=[];
+ if(Array.isArray(os.dists)&&os.dists.length){S.dists.forEach(d=>{if(d&&typeof d=='object'){d.cv=V;d.cb=A}});pwFix=S.dists.length>1;return}
+ if(kind=='edison'){S.dists=[{id:'d1',type:'house',name:'House power',cv:V,cb:A,outl:+os.pwall||0,hb:+os.pwallA||20,edison:48}];return}
+ const sys=V==120||V==208?'120/208 V 3-phase wye':V==230?'230/400 V 3-phase wye':V==240&&kind=='l1430'?'120/240 V split phase':'Single phase',d={id:'d1',name:'Distro 1',sys,cv:V,cb:A};if(kind=='l1430')d.l1430=4;S.dists=[d]}
 function dsSanAll(){S.dists=Array.isArray(S.dists)?S.dists.slice(0,12).map(dsSan):[];const seen=new Set;S.dists.forEach((d,i)=>{let j=i+1;while(seen.has(d.id))d.id='d'+(++j);seen.add(d.id)});
  if(!S.pcab||typeof S.pcab!='object'||Array.isArray(S.pcab))S.pcab={};
  for(const k of Object.keys(S.pcab)){const p=S.pcab[k];if(!/^\d+:\d+$/.test(k)||!p||typeof p!='object'){delete S.pcab[k];continue}S.pcab[k]={d:typeof p.d=='string'?p.d.slice(0,20):'',o:typeof p.o=='string'?p.o.slice(0,12):'',r:Math.max(0,Math.min(2,p.r|0))}}
@@ -3929,34 +4014,41 @@ function dsSanAll(){S.dists=Array.isArray(S.dists)?S.dists.slice(0,12).map(dsSan
  if(!PLOAD.includes(S.pload))S.pload=PLOAD[0]}
 function dsOuts(d){const o=[];for(const k in OUTK)for(let j=1;j<=(d[k]|0);j++)o.push({key:k+j,kind:k,j,name:OUTK[k][0]+' '+j});return o}
 // a circuit at the distro's line-to-line voltage (208 V on 120/208 V, 240 V on 120/240 V) takes two phases; others take one
-const dsLL=d=>{const s=PSYS[d.sys];return s.ph>1&&Math.abs(S.pvolt-s.ll)/s.ll<.06},dsVok=d=>{const s=PSYS[d.sys];return s.ph==1||[s.ln,s.ll].some(x=>Math.abs(S.pvolt-x)/x<.06)};
+const dsLL=d=>{const s=PSYS[d.sys];return s.ph>1&&Math.abs(d.cv-s.ll)/s.ll<.06},dsVok=d=>supVolts(d).includes(+d.cv);
 // the phase(s) of leg `leg` (0-based) of a cable on output kind `kind`, turned by r: Socapex follows the distro's leg map
 // (default A B C A B C), L21-30 X/Y/Z = A/B/C, L14-30 X/Y = A/B, an Edison plug sits on one phase
 function dsPhase(d,kind,leg,r){const n=PSYS[d.sys].ph;if(n==1)return[0];const b=kind=='soca'?Math.max(0,PHN.indexOf(d.map[leg%6])):kind=='edison'?0:leg,p=(b+(r|0))%n;return dsLL(d)?[p,(p+1)%n]:[p]}
 const phTxt=ph=>ph?ph.map(i=>PHN[i]).join(''):'';
-function dsRunPhase(k){const p=S.pcab&&S.pcab[cc+':'+cCab(k)],d=p&&p.d&&dsOn()&&dsById(p.d);return d?dsPhase(d,outKind(),(k-1)%PD().n,p.r):null}
+function dsRunPhase(k){const p=S.pcab&&S.pcab[cc+':'+cCab(k)],d=p&&p.d&&dsOn()&&dsById(p.d);return d&&PSYS[d.sys].ph>1?dsPhase(d,segK(k).kind,cLegI(k),p.r):null}
 // phasor sum. items: [{I amps, ph:[p] (line to neutral) or [p,q] (line to line)}] on an n-phase system -> line amps and neutral.
 // Phases sit at 0, -120 and +120 degrees (split phase: 0 and 180); a line-to-line current flows out of p and back on q.
 function legSum(items,n){const ang=n==3?[0,-2*Math.PI/3,2*Math.PI/3]:n==2?[0,Math.PI]:[0],lx=[0,0,0],ly=[0,0,0];let nx=0,ny=0;
  items.forEach(({I,ph})=>{if(ph.length==1){const a=ang[ph[0]],x=I*Math.cos(a),y=I*Math.sin(a);lx[ph[0]]+=x;ly[ph[0]]+=y;nx+=x;ny+=y}
   else{const[p,q]=ph,vx=Math.cos(ang[p])-Math.cos(ang[q]),vy=Math.sin(ang[p])-Math.sin(ang[q]),m=Math.hypot(vx,vy)||1,x=I*vx/m,y=I*vy/m;lx[p]+=x;ly[p]+=y;lx[q]-=x;ly[q]-=y}});
  return{legs:lx.slice(0,n).map((x,i)=>Math.hypot(x,ly[i])),neutral:Math.hypot(nx,ny)}}
-// every cable of every canvas with its circuits: [{key:'canvas:cable', cv, cab, kind, name, walls, runs:[{k, leg, watts, dw, wall, wi}]}]
-function dsCables(){const out=[],kind=outKind(),D=PD(),one=c=>{const plan=powerPlan(),by={};plan.forEach((runs,wi)=>runs.forEach(ci=>{const cab=cCab(ci.k);(by[cab]=by[cab]||{key:c+':'+cab,cv:c,cab,kind,runs:[]}).runs.push({k:ci.k,leg:(ci.k-1)%D.n,watts:ci.watts,dw:ci.dw,wall:walls[wi].name||'Wall '+(wi+1),wi})}));
-  pcEmpty(plan,by,c,kind);
-  Object.keys(by).map(Number).sort((a,b)=>a-b).forEach(cab=>{const x=by[cab];x.name=(CVS.length>1?(CVS[c]&&CVS[c].name||'Canvas '+(c+1))+' · ':'')+(D.one?'Edison plug '+cab:D.name+' '+cab);x.walls=[...new Set(x.runs.map(r=>r.wall))].join(', ')||x.ew||'';out.push(x)})};
+// every cable of every canvas with its circuits: [{key:'canvas:cable', cv, cab, kind, sid (the supply its walls are fed from),
+// wis (those walls), name, walls, runs:[{k, leg, watts, dw, V, wall, wi}]}]
+function dsCables(){const out=[],one=c=>{const plan=powerPlan(),by={};plan.forEach((runs,wi)=>runs.forEach(ci=>{const cab=cCab(ci.k);(by[cab]=by[cab]||{key:c+':'+cab,cv:c,cab,runs:[]}).runs.push({k:ci.k,leg:cLegI(ci.k),watts:ci.watts,dw:ci.dw,V:ci.V,wall:walls[wi].name||'Wall '+(wi+1),wi})}));
+  pcEmpty(plan,by,c);
+  Object.keys(by).map(Number).sort((a,b)=>a-b).forEach(cab=>{const x=by[cab],s=cabSeg(cab);x.kind=s.kind;x.sid=s.d?s.d.id:'';x.wis=SEG.map((g,i)=>g===s?i:-1).filter(i=>i>=0);x.name=(CVS.length>1?(CVS[c]&&CVS[c].name||'Canvas '+(c+1))+' · ':'')+cabName(cab);x.walls=[...new Set(x.runs.map(r=>r.wall))].join(', ')||x.ew||'';out.push(x)})};
  if(CVX||CVS.length<2)one(cc);else CVS.forEach((c,i)=>withCv(i,()=>one(i)));return out}
-// patch every cable that has no valid output to the first free output of its type (distros in list order)
+// patch every cable that has no valid output to the first free output of its type on the supply its wall is fed from. A
+// patch to another supply is dropped (moving a cable to another supply in the tray changes the wall's Fed from instead).
 function dsPatch(cables,full){const P=S.pcab,keys=new Set(cables.map(c=>c.key)),used={};
  for(const k of Object.keys(P)){if(keys.has(k))continue;if(full||+k.split(':')[0]===cc)delete P[k];else if(P[k].d)used[P[k].d+'|'+P[k].o]=k}
- cables.forEach(c=>{const p=P[c.key];if(!p||p.d==='')return;const d=dsById(p.d),o=d&&dsOuts(d).find(x=>x.key==p.o);if(!o||o.kind!=c.kind||used[p.d+'|'+p.o]){delete P[c.key];return}used[p.d+'|'+p.o]=c.key});
- cables.forEach(c=>{if(P[c.key])return;for(const d of S.dists){const o=dsOuts(d).find(x=>x.kind==c.kind&&!used[d.id+'|'+x.key]);if(o){used[d.id+'|'+o.key]=c.key;P[c.key]={d:d.id,o:o.key,r:c.kind=='edison'?(o.j-1)%PSYS[d.sys].ph:0};return}}})}
-function dsLoad(cables){const R={},A=S.pvolt*(S.pf||1);(S.dists||[]).forEach(d=>R[d.id]={d,s:PSYS[d.sys],it:[],cab:[]});
- cables.forEach(c=>{const p=S.pcab[c.key],L=p&&p.d&&R[p.d];if(!L)return;L.cab.push(c);c.runs.forEach(r=>L.it.push({I:r.dw/A,ph:dsPhase(L.d,c.kind,r.leg,p.r)}))});
- Object.values(R).forEach(L=>{const q=legSum(L.it,L.s.ph);L.legs=q.legs;L.neutral=q.neutral;L.lim=L.d.amps*(S.derate?.8:1);L.max=Math.max(0,...L.legs);const avg=L.legs.reduce((a,b)=>a+b,0)/L.legs.length;L.imb=avg>1e-9?(L.max-avg)/avg:0;L.over=L.legs.filter(a=>a>L.lim+1e-6).length});
+ cables.forEach(c=>{const p=P[c.key];if(!p||p.d==='')return;const d=dsById(p.d),o=d&&dsOuts(d).find(x=>x.key==p.o);if(!o||o.kind!=c.kind||used[p.d+'|'+p.o]||c.sid&&p.d!==c.sid){delete P[c.key];return}used[p.d+'|'+p.o]=c.key});
+ cables.forEach(c=>{if(P[c.key])return;const d=dsById(c.sid);if(!d)return;const o=dsOuts(d).find(x=>x.kind==c.kind&&!used[d.id+'|'+x.key]);if(o){used[d.id+'|'+o.key]=c.key;P[c.key]={d:d.id,o:o.key,r:c.kind=='edison'?(o.j-1)%PSYS[d.sys].ph:0}}})}
+function dsLoad(cables){const R={},pf=S.pf||1;(S.dists||[]).forEach(d=>R[d.id]={d,s:PSYS[d.sys],it:[],cab:[],groups:{}});
+ cables.forEach(c=>{const p=S.pcab[c.key],L=p&&p.d&&R[p.d];if(!L)return;L.cab.push(c);const o=dsOuts(L.d).find(x=>x.key==p.o),g=L.d.type=='house'&&L.d.outl>0&&o?Math.ceil(o.j/L.d.outl):0;
+  c.runs.forEach(r=>{const I=r.dw/((r.V||S.pvolt)*pf);L.it.push({I,ph:dsPhase(L.d,c.kind,r.leg,p.r)});if(g)L.groups[g]=(L.groups[g]||0)+I})});
+ Object.values(R).forEach(L=>{const q=legSum(L.it,L.s.ph);L.legs=q.legs;L.neutral=q.neutral;L.lim=L.d.amps*(S.derate?.8:1);L.max=Math.max(0,...L.legs);const avg=L.legs.reduce((a,b)=>a+b,0)/L.legs.length;L.imb=avg>1e-9?(L.max-avg)/avg:0;L.over=L.legs.filter(a=>a>L.lim+1e-6).length;
+  // house power: each house circuit (outl outlets) is checked against its breaker instead of a leg rating
+  if(L.d.type=='house'){L.lim=L.d.hb*(S.derate?.8:1);L.over=Object.values(L.groups).filter(a=>a>L.lim+1e-6).length}});
  return R}
 let DSX={cables:[],load:{},on:false},dsBalSig='';
-function dsState(){if(!dsOn())return{cables:[],load:{},on:false};dsSanAll();const full=CVS.length<2||!CVX,cables=dsCables();dsPatch(cables,full);return{cables,load:dsLoad(cables),on:true}}
+function dsState(){if(!dsOn())return{cables:[],load:{},on:false};dsSanAll();const full=CVS.length<2||!CVX;let cables=dsCables();
+ // a project from before Fed from with several distros: each wall is fed from the distro its first cable was patched to
+ if(pwFix&&full){pwFix=false;const set=new Set;cables.forEach(c=>{const p=S.pcab[c.key],d=p&&p.d&&dsById(p.d);if(d)withCv(c.cv,()=>c.wis.forEach(i=>{const k=c.cv+':'+i;if(set.has(k)||!walls[i])return;set.add(k);walls[i].pfeed=d.id;if(i==cur)S.pfeed=d.id}))});cables=dsCables()}dsPatch(cables,full);return{cables,load:dsLoad(cables),on:true}}
 // Balance: only the leg each cable starts on changes (circuit order inside every cable stays). Heaviest cable first, each takes
 // the start leg that keeps the highest leg lowest (then the lowest neutral), then passes until nothing improves. Never worse.
 function dsBalance(id,X){X=X||dsState();const d=dsById(id);if(!d||PSYS[d.sys].ph<2)return false;const mine=X.cables.filter(c=>{const p=S.pcab[c.key];return p&&p.d===id});if(!mine.length)return false;
@@ -3971,13 +4063,17 @@ function dsBalance(id,X){X=X||dsState();const d=dsById(id);if(!d||PSYS[d.sys].ph
 function shareApply(P){const G=pdOn()&&Array.isArray(S.pshare)?S.pshare.filter(g=>g[0]===cc):[];if(!G.length)return P;const lead=new Map;
  G.forEach(g=>{const mem=g.slice(1).map(m=>P[m[0]]&&P[m[0]][m[1]]).filter(Boolean);if(mem.length<2||mem.length!=g.length-1||mem.some(x=>lead.has(x)))return;mem.sort((a,b)=>a.k-b.k);mem.forEach(x=>lead.set(x,mem))});
  if(!lead.size)return P;const all=P.flat().sort((a,b)=>a.k-b.k),nk=new Map;let n=0;all.forEach(x=>{const g=lead.get(x);if(!g||g[0]===x)nk.set(x,++n)});
- all.forEach(x=>{const g=lead.get(x);if(!g){x.k=nk.get(x);return}x.k=nk.get(g[0]);x.share=g.length;x.sidx=g.indexOf(x);x.shareW=g.reduce((a,y)=>a+y.watts,0);if(x.shareW>circW()+1e-6)x.over=true});return P}
-function dsRows(X){if(!X||!X.on)return[];const r=[],A=S.pvolt*(S.pf||1),P=S.pcab;
+ all.forEach(x=>{const g=lead.get(x);if(!g){x.k=nk.get(x);return}x.k=nk.get(g[0]);x.share=g.length;x.sidx=g.indexOf(x);x.shareW=g.reduce((a,y)=>a+y.watts,0);if(x.shareW>Math.min(...g.map(y=>y.cw||circW()))+1e-6)x.over=true});return P}
+function dsRows(X){if(!X||!X.on)return[];const r=[],P=S.pcab;
  r.push(['Design load',`${S.pload}${S.pload==PLOAD[1]?': '+S.ptyp+'%':S.pload==PLOAD[2]?': '+(S.pmeas>0?S.pmeas+' W per tile':'not set, using max'):''} · power factor ${(S.pf||1).toFixed(2)}`]);
- const tot=X.cables.reduce((a,c)=>a+c.runs.reduce((b,q)=>b+q.dw,0),0);r.push(['Design load power',`${(tot/1000).toFixed(2)} kW · ${(tot/A).toFixed(1)} A at ${S.pvolt} V`]);
+ const tot=X.cables.reduce((a,c)=>a+c.runs.reduce((b,q)=>b+q.dw,0),0),tA=X.cables.reduce((a,c)=>a+c.runs.reduce((b,q)=>b+q.dw/((q.V||S.pvolt)*(S.pf||1)),0),0);r.push(['Design load power',`${(tot/1000).toFixed(2)} kW · ${tA.toFixed(1)} A`]);
  const un=X.cables.filter(c=>!(P[c.key]&&P[c.key].d));if(un.length)r.push(['Cables not patched',un.map(c=>c.name).join(', '),'warn']);
- S.dists.forEach(d=>{const L=X.load[d.id];if(!L)return;r.push([d.name,'','head']);r.push(['System',`${d.sys} · ${d.amps} A per leg${S.derate?' · loaded to 80%':''}`]);
-  if(!dsVok(d))r.push(['Voltage',`Circuit voltage ${S.pvolt} V does not match this distro`,'warn']);
+ S.dists.forEach(d=>{const L=X.load[d.id];if(!L)return;r.push([d.name,'','head']);
+  if(d.type=='house'){r.push(['Supply',`House power · ${d.cv} V · outlets rated ${d.cb} A`]);const G=Object.keys(L.groups).sort((a,b)=>a-b);
+   if(d.outl>0){r.push(['House circuits',`${G.length} (${d.outl} outlet${d.outl==1?'':'s'} each, ${d.hb} A${S.derate?' loaded to 80%':''} = ${+L.lim.toFixed(1)} A usable)`]);if(G.length)r.push(['Load per house circuit',G.map(g=>`house circuit ${g} ${L.groups[g].toFixed(1)} A${L.groups[g]>L.lim+1e-6?' (over)':''}`).join(' · ')])}
+   r.push(['Outlets used',`${L.cab.length} of ${d.edison}`]);if(L.cab.length)r.push(['Plugs',L.cab.map(c=>`${c.name} → ${(dsOuts(d).find(x=>x.key==P[c.key].o)||{}).name}`).join(' · ')]);
+   if(L.over)r.push(['Over capacity',`${L.over} house circuit${L.over>1?'s':''} over ${+L.lim.toFixed(1)} A`,'warn']);return}
+  r.push(['System',`${d.sys} · ${d.amps} A per leg${S.derate?' · loaded to 80%':''}`],['Circuits',`${d.cv} V · ${d.cb} A breaker`]);
   L.legs.forEach((a,i)=>r.push(['Leg '+PHN[i],`${a.toFixed(1)} A · ${Math.round(a/d.amps*100)}% of rating${a>L.lim+1e-6?' (over)':''}`]));
   if(L.s.ph>1&&!dsLL(d))r.push(['Neutral',L.neutral.toFixed(1)+' A']);if(L.s.ph>1)r.push(['Imbalance',Math.round(L.imb*100)+'%']);
   const used={};L.cab.forEach(c=>{const o=dsOuts(d).find(x=>x.key==P[c.key].o);if(o)used[o.kind]=(used[o.kind]||0)+1});
@@ -3986,7 +4082,8 @@ function dsRows(X){if(!X||!X.on)return[];const r=[],A=S.pvolt*(S.pf||1),P=S.pcab
   if(L.over)r.push(['Over capacity',`${L.over} leg${L.over>1?'s':''} over ${Math.round(L.lim)} A`,'warn'])});
  return r}
 function distAct(a,v){dsSanAll();
- if(a=='dadd'){const i=S.dists.length;let j=i+1;while(S.dists.some(d=>d.id=='d'+j))j++;S.dists.push(dsSan({id:'d'+j,name:'Distro '+(i+1)},i));if(!S.pdist)S.pdist=true}
+ if(a=='dadd'||a=='hadd'){const i=S.dists.length;if(i>=12){toast('Up to 12 supplies.',2500);return}let j=i+1;while(S.dists.some(d=>d.id=='d'+j))j++;const h=a=='hadd',nm=h?'House power':'Distro';let k=S.dists.filter(d=>(d.type=='house')==h).length+1;while(S.dists.some(d=>d.name==nm+(h&&k==1?'':' '+k)))k++;
+  S.dists.push(dsSan({id:'d'+j,type:h?'house':'distro',name:nm+(h&&k==1?'':' '+k)},i));{const sd=[...document.querySelectorAll('#left summary')].find(x=>x.textContent.trim()=='Supply');if(sd)sd.parentElement.open=true}if(h&&!walls.some(w=>pwSup(w)&&pwSup(w).type!='house'))walls.forEach((w,wi)=>{w.pfeed='d'+j;w.pdt=OUTK.edison[1];if(wi==cur){S.pfeed=w.pfeed;S.pdt=w.pdt}})}
  else if(a=='drm'){const i=+v,d=S.dists[i];if(d){S.dists.splice(i,1);for(const k in S.pcab)if(S.pcab[k].d===d.id)delete S.pcab[k]}}
  else if(a=='bal'){const d=dsById(v),ch=dsBalance(v);toast(ch?`${d.name} balanced`:`${d?d.name:'The distro'} is already as even as it can be`,2500)}
  else if(a=='balall'){let ch=false;const X=dsState();S.dists.forEach(d=>{if(dsBalance(d.id,X))ch=true});toast(ch?'Distros balanced':'Already as even as they can be',2500)}
@@ -3994,13 +4091,20 @@ function distAct(a,v){dsSanAll();
  else if(a=='tray')S.trayOpen=!S.trayOpen;
  else if(a=='shadd')shareAdd();
  else if(a=='shrm'){const G=S.pshare.filter(g=>g[0]===cc),g=G[+v];if(g)S.pshare.splice(S.pshare.indexOf(g),1)}}
+// Supply cards: a distro (system, rating per leg, circuit voltage and breaker, Socapex leg map, outputs) or house power
+// (voltage, outlet rating, outlets you can use, outlets per house circuit and its breaker), with the live load under each
 function distUI(X){const b=$('#distBox');if(!b)return;const f=document.activeElement;if(!(b.contains(f)&&/INPUT|SELECT/.test(f.tagName))){
- const h=(S.dists||[]).map((d,i)=>{const sel=(k,opts)=>`<select data-dk="${k}" data-di="${i}">${opts.map(o=>`<option${o==d[k]?' selected':''}>${esc(o)}</option>`).join('')}</select>`,num=(k,l,a,b2)=>`<label>${l}<input type="number" data-dk="${k}" data-di="${i}" min="${a}" max="${b2}" value="${d[k]}"></label>`;
-  return`<div class="dcard"><div class="g"><label class="w">Distro name<input type="text" maxlength="30" data-dk="name" data-di="${i}" value="${esc(d.name)}"></label><label class="w">System${sel('sys',Object.keys(PSYS))}</label>${num('amps','Rating per leg (A)',1,4000)}<label>Socapex leg map<input type="text" maxlength="6" data-dk="map" data-di="${i}" value="${d.map}" title="The phase each Socapex circuit 1-6 lands on, e.g. ABCABC"></label>${num('soca','Socapex outputs',0,24)}${num('l2130','L21-30 outputs',0,24)}${num('l1430','L14-30 outputs',0,24)}${num('edison','Edison outputs',0,48)}</div><div class="dbars" data-dbars="${d.id}"></div><div class="row"><button data-dact="bal" data-v="${d.id}">Balance</button><button data-dact="drm" data-v="${i}">Remove distro</button></div></div>`}).join('')+`<div class="row"><button data-dact="dadd">Add distro</button></div>`;
+ const h=(S.dists||[]).map((d,i)=>{const sel=(k,opts)=>`<select data-dk="${k}" data-di="${i}">${opts.map(o=>{const[v,l,dis]=Array.isArray(o)?o:[o,o];return`<option value="${esc(v)}"${v==d[k]?' selected':''}${dis?' disabled title="'+esc(dis)+'"':''}>${esc(l)}</option>`}).join('')}</select>`,num=(k,l,a,b2)=>`<label>${l}<input type="number" data-dk="${k}" data-di="${i}" min="${a}" max="${b2}" value="${d[k]}"></label>`;
+  const s=PSYS[d.sys],fed=walls.filter(w=>pwSup(w)===d),vo=supVolts(d).map(v=>{const bad=fed.find(w=>!vOkTile(w,v));return[v,d.type!='house'&&s.ph>1?`${v} V (${v==s.ll?'line to line':'line to neutral'})`:v+' V',bad?bad.preset+' does not take '+v+' V':'']}),
+   fw=fed.length?`<div class="mu" style="font-size:12px">Feeds ${esc(fed.map(w=>w.name||'Wall '+(walls.indexOf(w)+1)).join(', '))}</div>`:`<div class="mu" style="font-size:12px">No wall on this canvas is fed from it yet (set Fed from in This wall).</div>`;
+  if(d.type=='house')return`<div class="dcard"><div class="g"><label class="w">House power name<input type="text" maxlength="30" data-dk="name" data-di="${i}" value="${esc(d.name)}"></label><label class="w">Circuit voltage${sel('cv',vo)}</label>${num('cb','Outlet rating (A)',1,20)}${num('edison','Outlets you can use',0,48)}${num('outl','Outlets on one house circuit (0 = do not check)',0,48)}${num('hb','House circuit breaker (A)',1,400)}</div>${fw}<div class="dbars" data-dbars="${d.id}"></div><div class="row"><button data-dact="drm" data-v="${i}">Remove</button></div></div>`;
+  return`<div class="dcard"><div class="g"><label class="w">Distro name<input type="text" maxlength="30" data-dk="name" data-di="${i}" value="${esc(d.name)}"></label><label class="w">System${sel('sys',Object.keys(PSYS))}</label>${num('amps','Rating per leg (A)',1,4000)}<label class="w">Circuit voltage${sel('cv',vo)}</label>${num('cb','Circuit breaker (A)',1,400)}<label>Socapex leg map<input type="text" maxlength="6" data-dk="map" data-di="${i}" value="${d.map}" title="The phase each Socapex circuit 1-6 lands on, e.g. ABCABC"></label>${num('soca','Socapex outputs',0,24)}${num('l2130','L21-30 outputs',0,24)}${num('l1430','L14-30 outputs',0,24)}${num('edison','Edison outputs',0,48)}</div>${fw}<div class="dbars" data-dbars="${d.id}"></div><div class="row"><button data-dact="bal" data-v="${d.id}">Balance</button><button data-dact="drm" data-v="${i}">Remove distro</button></div></div>`}).join('');
  if(b.__h!==h){b.innerHTML=h;b.__h=h}}
  (S.dists||[]).forEach(d=>{const e=document.querySelector(`[data-dbars="${d.id}"]`),L=X&&X.load[d.id];if(!e)return;if(!L){e.innerHTML='';e.__h='';return}
-  const h=L.legs.map((a,i)=>{const pc=a/d.amps*100,col=a>L.lim+1e-6?'#ef4444':pc>(S.derate?64:80)?'#ffb300':'var(--ac)';return`<div class="dleg"><b style="color:${i?PHC[i]:'var(--tx)'}">${PHN[i]}</b><span class="dbar"><i style="width:${Math.min(100,pc).toFixed(1)}%;background:${col}"></i><u style="left:${S.derate?80:99.5}%"></u></span><span>${a.toFixed(1)} A</span></div>`}).join('')
-   +`<div class="dsum">${L.s.ph>1&&!dsLL(d)?`Neutral ${L.neutral.toFixed(1)} A · `:''}${L.s.ph>1?`Imbalance ${Math.round(L.imb*100)}% · `:''}${L.cab.length} cable${L.cab.length==1?'':'s'}${dsVok(d)?'':` · <span class="bad">${S.pvolt} V circuits do not match this distro</span>`}</div>`;
+  const bar=(lab,a,full,lc)=>{const pc=a/full*100,col=a>L.lim+1e-6?'#ef4444':pc>(S.derate?64:80)?'#ffb300':'var(--ac)';return`<div class="dleg"><b style="color:${lc}">${lab}</b><span class="dbar"><i style="width:${Math.min(100,pc).toFixed(1)}%;background:${col}"></i><u style="left:${S.derate?80:99.5}%"></u></span><span>${a.toFixed(1)} A</span></div>`};
+  let h;if(d.type=='house'){const G=Object.keys(L.groups).sort((a,b)=>a-b);h=(d.outl>0?G.map(g=>bar('H'+g,L.groups[g],d.hb,'var(--tx)')).join(''):'')+`<div class="dsum">${L.cab.length} outlet${L.cab.length==1?'':'s'} used${d.outl>0?` · ${G.length} house circuit${G.length==1?'':'s'} (${d.outl} outlet${d.outl==1?'':'s'} each, ${d.hb} A)`:''}${L.over?` · <span class="bad">${L.over} house circuit${L.over==1?'':'s'} over</span>`:''}</div>`}
+  else h=L.legs.map((a,i)=>bar(PHN[i],a,d.amps,i?PHC[i]:'var(--tx)')).join('')
+   +`<div class="dsum">${L.s.ph>1&&!dsLL(d)?`Neutral ${L.neutral.toFixed(1)} A · `:''}${L.s.ph>1?`Imbalance ${Math.round(L.imb*100)}% · `:''}${L.cab.length} cable${L.cab.length==1?'':'s'}</div>`;
   if(e.__h!==h){e.innerHTML=h;e.__h=h}})}
 // shared circuits (2fer / 3fer) list and the add row, in Power wiring
 function shareRuns(){if(!pdOn())return[];const P=walls.map(w=>{const t=tpcW(w);return keepTiles(w,powChains(w),t,w.pmode=='Manual',w.pfill==PFILL[2]).filter(ch=>ch.length).map(ch=>ch.reduce((a,e)=>{const x=pieceOf(w,e);return a+(x?x.sp.W:0)},0))});
@@ -4014,30 +4118,35 @@ function shareUI(){const b=$('#shareBox');if(!b)return;const f=document.activeEl
 function shareAdd(){const R=shareRuns(),v=['shA','shB','shC'].map(id=>{const e=$('#'+id);return e?e.value:''}).filter(Boolean),msg=t=>{const e=$('#shmsg');if(e)e.textContent=t};
  if(new Set(v).size!=v.length||v.length<2){msg('Pick two or three different runs.');return}const mem=v.map(s=>s.split(',').map(Number)),G=S.pshare.filter(g=>g[0]===cc);
  if(mem.some(m=>G.some(g=>g.slice(1).some(q=>q[0]==m[0]&&q[1]==m[1])))){msg('One of these runs already shares a circuit.');return}
- const W=mem.reduce((a,m)=>{const x=R.find(q=>q.wi==m[0]&&q.ri==m[1]);return a+(x?x.W:0)},0),man=mem.some(m=>walls[m[0]]&&walls[m[0]].pmode=='Manual');
- if(W>circW()+1e-6&&!man){msg(`Together they draw ${Math.round(W).toLocaleString()} W, more than one circuit supplies (${Math.round(circW()).toLocaleString()} W).`);return}
+ const W=mem.reduce((a,m)=>{const x=R.find(q=>q.wi==m[0]&&q.ri==m[1]);return a+(x?x.W:0)},0),man=mem.some(m=>walls[m[0]]&&walls[m[0]].pmode=='Manual'),cw=Math.min(...mem.map(m=>circW(walls[m[0]])));
+ if(new Set(mem.map(m=>{const c=pwC(walls[m[0]]);return(c.d&&c.d.id)+'|'+c.kind})).size>1){msg('These runs come from different supplies or cable types, so they cannot share one circuit.');return}
+ if(W>cw+1e-6&&!man){msg(`Together they draw ${Math.round(W).toLocaleString()} W, more than one circuit supplies (${Math.round(cw).toLocaleString()} W).`);return}
  S.pshare.push([cc].concat(mem));msg('')}
 // the power tray under the viewport: every distro output as a slot; drag a cable onto a slot (or click the cable, then the slot)
 let trayPick='',trayHi='',trayDrag='';
 function trayUI(X,force){const b=$('#ptray');if(!b)return;const on=dsOn();b.hidden=!on;if(!on){trayPick=trayHi='';return}if(trayDrag&&!force)return;X=X||DSX;
- const cab=X.cables,P=S.pcab,un=cab.filter(c=>!(P[c.key]&&P[c.key].d)),A=S.pvolt*(S.pf||1);
- const chip=c=>{const p=P[c.key],D=p&&p.d&&dsById(p.d),amps=c.runs.reduce((a,r)=>a+r.dw/A,0),seen=new Set;
-  const circ=c.runs.filter(r=>!seen.has(r.k)&&seen.add(r.k)).map(r=>{const ph=D?dsPhase(D,c.kind,r.leg,p.r):null,I=c.runs.filter(q=>q.k==r.k).reduce((a,q)=>a+q.dw/A,0);return`<span class="pc" style="border-color:${ph?(ph[0]?PHC[ph[0]]:'var(--tx)'):'var(--ln)'}">${esc(cLabel(r.k))}${ph?' '+phTxt(ph):''} ${I.toFixed(1)}</span>`}).join('');
-  return`<button class="ptchip${trayPick==c.key?' on':''}" draggable="true" data-tpick="${esc(c.key)}" title="Drag onto a distro output, or click it and then click an output"><span class="ptn">${esc(c.name)} <i>→ ${esc(c.walls)} · ${amps.toFixed(1)} A</i></span><span class="pcs">${circ}</span></button>`};
- const kind=outKind(),cards=S.dists.map(d=>{const L=X.load[d.id],oth=Object.keys(OUTK).filter(k=>k!=kind&&d[k]>0).map(k=>`${d[k]} × ${OUTK[k][0]}`),slots=dsOuts(d).filter(o=>o.kind==kind).map(o=>{const ck=Object.keys(P).find(k=>P[k].d===d.id&&P[k].o===o.key),c=ck&&cab.find(x=>x.key==ck);
+ const cab=X.cables,P=S.pcab,un=cab.filter(c=>!(P[c.key]&&P[c.key].d)),pf=S.pf||1,A=r=>(r.V||S.pvolt)*pf;
+ const chip=c=>{const p=P[c.key],D=p&&p.d&&dsById(p.d),amps=c.runs.reduce((a,r)=>a+r.dw/A(r),0),seen=new Set;
+  const circ=c.runs.filter(r=>!seen.has(r.k)&&seen.add(r.k)).map(r=>{const ph=D?dsPhase(D,c.kind,r.leg,p.r):null,I=c.runs.filter(q=>q.k==r.k).reduce((a,q)=>a+q.dw/A(q),0);return`<span class="pc" style="border-color:${ph?(ph[0]?PHC[ph[0]]:'var(--tx)'):'var(--ln)'}">${esc(cLabel(r.k))}${ph?' '+phTxt(ph):''} ${I.toFixed(1)}</span>`}).join('');
+  return`<button class="ptchip${trayPick==c.key?' on':''}" draggable="true" data-tpick="${esc(c.key)}" title="Drag onto an output, or click it and then click an output"><span class="ptn">${esc(c.name)} <i>→ ${esc(c.walls)} · ${amps.toFixed(1)} A</i></span><span class="pcs">${circ}</span></button>`};
+ const kinds=new Set(cab.map(c=>c.kind)),cards=S.dists.map(d=>{const L=X.load[d.id],oth=Object.keys(OUTK).filter(k=>!kinds.has(k)&&d[k]>0).map(k=>`${d[k]} × ${OUTK[k][0]}`),slots=dsOuts(d).filter(o=>kinds.has(o.kind)).map(o=>{const ck=Object.keys(P).find(k=>P[k].d===d.id&&P[k].o===o.key),c=ck&&cab.find(x=>x.key==ck);
    return`<div class="ptslot${c?'':' empty'}" data-tslot="${d.id}|${o.key}"><div class="pto">${esc(o.name)}<span class="ptp"></span></div>${c?chip(c)+`<button class="ptx" data-dact="unpatch" data-v="${esc(c.key)}" aria-label="Unpatch ${esc(c.name)}">×</button>`:'<span class="mu">empty</span>'}</div>`}).join('');
-   return`<div class="ptd"><div class="pth"><b>${esc(d.name)}</b> <span class="mu">${d.amps} A · ${esc(d.sys)}${L?' · '+L.legs.map((a,i)=>PHN[i]+' '+a.toFixed(1)+' A').join(' · '):''}</span></div><div class="ptslots">${slots||`<span class="mu">No ${OUTK[kind][0]} outputs on this distro: set them in Engineering › Power › Distros.</span>`}</div>${oth.length?`<div class="mu" style="margin-top:4px;font-size:11px">Also ${oth.join(', ')} (for other cable types)</div>`:''}</div>`}).join('');
+   return`<div class="ptd"><div class="pth"><b>${esc(d.name)}</b> <span class="mu">${d.type=='house'?'House power · '+d.cv+' V':d.amps+' A · '+esc(d.sys)}${L?' · '+(d.type=='house'?Object.keys(L.groups).map(g=>'house circuit '+g+' '+L.groups[g].toFixed(1)+' A').join(' · '):L.legs.map((a,i)=>PHN[i]+' '+a.toFixed(1)+' A').join(' · ')):''}</span></div><div class="ptslots">${slots||(cab.length?`<span class="mu">No outputs for these cables: set them in Engineering › Power › Supply.</span>`:`<span class="mu">No cables yet: wire a wall in Engineering › Power › This wall.</span>`)}</div>${oth.length?`<div class="mu" style="margin-top:4px;font-size:11px">Also ${oth.join(', ')} (for other cable types)</div>`:''}</div>`}).join('');
  const h=`<div class="ptbar"><b>Power tray</b><span class="ptflag${un.length?' bad':''}">${un.length?`${un.length} cable${un.length>1?'s':''} not patched`:'✓ every cable patched'}</span><span class="mu" style="flex:1">${trayPick?'Now click an output for '+esc((cab.find(c=>c.key==trayPick)||{}).name||'the cable'):'Drag a cable onto an output (or click the cable, then the output).'}</span><button data-dact="balall">Balance</button><button data-dact="tray">${S.trayOpen?'Hide':'Show'}</button></div>`
   +(S.trayOpen?`<div class="ptbody">${cards}<div class="ptd ptun" data-tslot=""><div class="pth"><b>Not patched</b> <span class="mu">drop a cable here to unpatch it</span></div><div class="ptslots">${un.map(c=>`<div class="ptslot">${chip(c)}</div>`).join('')||'<span class="mu">none</span>'}</div></div></div>`:'');
  if(b.__h!==h){b.innerHTML=h;b.__h=h}}
 // what a cable would add to each leg if it went on each free output (shown while it is dragged or picked)
-function trayPreview(key){const c=DSX.cables.find(x=>x.key==key),A=S.pvolt*(S.pf||1);document.querySelectorAll('.ptslot[data-tslot]').forEach(s=>{const e=s.querySelector('.ptp');if(!e)return;
+function trayPreview(key){const c=DSX.cables.find(x=>x.key==key),A=r=>(r.V||S.pvolt)*(S.pf||1);document.querySelectorAll('.ptslot[data-tslot]').forEach(s=>{const e=s.querySelector('.ptp');if(!e)return;
  const[d,o]=s.dataset.tslot.split('|'),D=dsById(d),oo=D&&dsOuts(D).find(x=>x.key==o);if(!c||!oo){e.textContent='';return}if(oo.kind!=c.kind){e.textContent=' · takes '+OUTK[oo.kind][0];return}
- const p=S.pcab[key],r=p&&p.d===d?p.r:oo.kind=='edison'?(oo.j-1)%PSYS[D.sys].ph:0,q=legSum(c.runs.map(x=>({I:x.dw/A,ph:dsPhase(D,c.kind,x.leg,r)})),PSYS[D.sys].ph);
+ const p=S.pcab[key],r=p&&p.d===d?p.r:oo.kind=='edison'?(oo.j-1)%PSYS[D.sys].ph:0,q=legSum(c.runs.map(x=>({I:x.dw/A(x),ph:dsPhase(D,c.kind,x.leg,r)})),PSYS[D.sys].ph);
  e.textContent=' +'+q.legs.map((a,i)=>a>.05?PHN[i]+' '+a.toFixed(1):'').filter(Boolean).join(' ')+' A'})}
 function trayPatch(key,slot){const P=S.pcab,old=P[key]?{...P[key]}:null;if(!slot){P[key]={d:'',o:'',r:0};return}const[d,o]=slot.split('|'),D=dsById(d);if(!D)return;
  const c=DSX.cables.find(x=>x.key==key),oo=dsOuts(D).find(x=>x.key==o);if(!c||!oo)return;if(oo.kind!=c.kind){toast(`${oo.name} takes ${OUTK[oo.kind][0]} cables; this is ${OUTK[c.kind][0]}.`,3000);return}
- const other=Object.keys(P).find(k=>k!=key&&P[k].d===d&&P[k].o===o);if(other)P[other]=old&&old.d?{...old}:{d:'',o:'',r:0};
+ // a cable moved to another supply: its walls are now fed from that supply (their other cables follow on the next patch)
+ const mv=c.sid&&d!==c.sid;
+ if(mv){if(c.wis.some(i=>{const w=withCv(c.cv,()=>walls[i]);return w&&!vOkTile(w,D.cv)})){toast(`${D.name} gives ${D.cv} V circuits, which the tiles on this cable do not take.`,4000);return}
+  withCv(c.cv,()=>c.wis.forEach(i=>{if(walls[i])walls[i].pfeed=d;if(i==cur)S.pfeed=d}));toast(`${c.walls||c.name} now fed from ${D.name}.`,3000)}
+ const other=Object.keys(P).find(k=>k!=key&&P[k].d===d&&P[k].o===o);if(other){if(mv)delete P[other];else P[other]=old&&old.d?{...old}:{d:'',o:'',r:0}}
  P[key]={d,o,r:old&&old.d===d?old.r:oo.kind=='edison'?(oo.j-1)%PSYS[D.sys].ph:0}}
 // ---------- editing the tiles of the selected wall (S). Plain grids keep removed cells in S.gone; half-tile layouts keep
 // their pieces in S.lay ({s: split, uc/ur: unit grid when last edited, p: [[u, v, units wide, units tall], ...]}).
@@ -4097,14 +4206,16 @@ function pwMsg(t){const e=$('#pmsg');if(e)e.textContent=t||''}
 // circuit; a dashed chip is a spare circuit on the wall's cable and starts a new circuit. Each chip shows tiles / the limit.
 let pcSel=-1;
 const pcIdx=()=>{const m=S.pman||[];return pcSel>=0&&pcSel<m.length?pcSel:m.length-1};
+// the first cable of the selected wall and the circuit number k of circuit q (1..n) on its cable c
+const pcFirst=i=>{const s=SEG[i]||segDef();return s.c0+Math.floor(((PCK0[i]||0)-s.k0)/s.n)+1},pcK=(s,c,q)=>s.k0+(c-s.c0-1)*s.n+q;
 function pcabUI(){const box=$('#pcabCards'),nb=$('#pcabNote');if(!box||!nb)return;const w=walls[cur];if(!w||!pdOn()){box.innerHTML='';box.__h='';nb.innerHTML='';nb.__h='';return}
- const D=PD(),n=D.n,plan=powerPlan(),mine=plan[cur]||[],t=tpcW(w),k0=PCK0[cur]||0,first=Math.floor(k0/n)+1,used=mine.map(x=>cCab(x.k)),last=Math.max(first+Math.max(1,w.pcabs|0)-1,...used),nm=D.one?'Edison':D.name,man=w.pmode=='Manual',sel=man?pcIdx():-1;
+ const plan=powerPlan(),s=SEG[cur]||segDef(),D=s.D,n=D.n,mine=plan[cur]||[],t=tpcW(w),first=pcFirst(cur),used=mine.map(x=>cCab(x.k)),last=Math.max(first+Math.max(1,w.pcabs|0)-1,...used),nm=D.one?'Edison':D.name,man=w.pmode=='Manual',sel=man?pcIdx():-1;
  let h='',j=0;const ix=new Map();mine.forEach((x,i)=>ix.set(x,i));
  // manual: the chain index in S.pman of each plan entry (non-empty chains in order)
  const mi=[];if(man)(S.pman||[]).forEach((c,i)=>{if(c.length)mi.push(i)});
  for(let c=first;c<=last;c++){const pk=dsOn()&&S.pcab[cc+':'+c],d=pk&&pk.d&&dsById(pk.d),o=d&&dsOuts(d).find(x=>x.key==pk.o);
-  h+=`<div class="pcab"><div class="pcabh"><b>${esc(D.one?'Edison plug '+c:D.name+' '+c)}</b><span>${d&&o?' → '+esc(d.name)+' · '+esc(o.name):dsOn()?' · not patched':''}</span>${c>first&&c==last&&!used.includes(c)?`<button data-pcx="rm" title="Remove this cable">×</button>`:''}</div><div class="row">`;
-  for(let q=1;q<=n;q++){const k=(c-1)*n+q,e=mine.find(x=>x.k==k);
+  h+=`<div class="pcab"><div class="pcabh"><b>${esc(cabName(c))}</b><span>${d&&o?' → '+esc(d.name)+' · '+esc(o.name):dsOn()?' · not patched':''}</span>${c>first&&c==last&&!used.includes(c)?`<button data-pcx="rm" title="Remove this cable">×</button>`:''}</div><div class="row">`;
+  for(let q=1;q<=n;q++){const k=pcK(s,c,q),e=mine.find(x=>x.k==k);
    if(e){const i=ix.get(e),ci=man?mi[i]:i;h+=`<button data-pc="${ci}" class="pchip${man&&ci==sel&&pwiring?' on':''}${e.over?' bad':''}" title="Draw onto this circuit">${esc(cLabel(k))} · ${e.tiles.length}/${t}</button>`}
    else h+=`<button data-pc="new" class="pchip sp" title="Start a new circuit">${esc(cLabel(k))} spare</button>`}
   h+='</div></div>'}
@@ -4113,11 +4224,11 @@ function pcabUI(){const box=$('#pcabCards'),nb=$('#pcabNote');if(!box||!nb)retur
  let note='';if(mine.some(x=>x.nocab))note=`<span class="bad">This wall needs more circuits than the cables run to it carry. Add a cable or use fewer tiles.</span>`;
  if(nb.__h!==note){nb.__h=note;nb.innerHTML=note}}
 // cables added to a wall that carry no circuit yet still go in the tray, so they get a distro output
-function pcEmpty(plan,by,c,kind){const nc=powerTotals(plan).cables;for(let q=1;q<=nc;q++)if(!by[q]){const n=PD().n;let wi=-1;PCK0.forEach((k,i)=>{if(k<q*n)wi=i});by[q]={key:c+':'+q,cv:c,cab:q,kind,runs:[],ew:wi>=0?(walls[wi].name||'Wall '+(wi+1)):''}}}
+function pcEmpty(plan,by,c){const nc=powerTotals(plan).cables;for(let q=1;q<=nc;q++)if(!by[q]){const wi=SEG.lastIndexOf(cabSeg(q));by[q]={key:c+':'+q,cv:c,cab:q,runs:[],ew:wi>=0?(walls[wi].name||'Wall '+(wi+1)):''}}}
 // Draw circuit / a chip on a wall with an automatic pattern: the pattern's circuits become Manual circuits to draw on
 function pcToManual(){storeWall();const w=walls[cur];if(w.pmode=='Manual')return;const P=powerPlan()[cur]||[];S.pman=P.map(x=>x.tiles.map(e=>Array.isArray(e)?e.slice():e));S.pmode='Manual';storeWall()}
 function pcDraw(){if(!pwiring){pwiring=true;S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg('Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.')}
-document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest('[data-pcx]');if(!x)return;const a=x.dataset.pcx,w=walls[cur],D=PD(),k0=PCK0[cur]||0,first=Math.floor(k0/D.n)+1,mine=powerPlan()[cur]||[],need=Math.max(1,...mine.map(q=>cCab(q.k)-first+1)),have=Math.max(need,S.pcabs|0);
+document.addEventListener('click',e=>{const x=e.target.closest&&e.target.closest('[data-pcx]');if(!x)return;const a=x.dataset.pcx,w=walls[cur],mine=powerPlan()[cur]||[],first=pcFirst(cur),need=Math.max(1,...mine.map(q=>cCab(q.k)-first+1)),have=Math.max(need,S.pcabs|0);
  if(a=='add')S.pcabs=Math.min(24,have+1);else if(a=='rm')S.pcabs=Math.max(need,have-1);
  else if(a=='draw'){if(pwiring){pwiring=false;pwMsg('')}else{pcToManual();pcSel=-1;if(!Array.isArray(S.pman))S.pman=[];const l=S.pman[S.pman.length-1];if(!l||l.length)S.pman.push([]);pcDraw()}}
  storeWall();forceRen=true;sync();saveSoon()});
@@ -4126,7 +4237,7 @@ function pmanAdd(p,how){storeWall();const w=walls[cur],t=tpcW(w);if(!Array.isArr
  if(manChains(w,'pman').some(ch=>ch.some(q=>elKey(q)==p.key))){pwMsg(manWired([S.pman[pcIdx()]||[]],p.key,how)?'That tile already has power.':'');return}
  if(t<1){pwMsg('One tile draws more than a circuit can supply at these settings.');return}
  if(!S.pman.length)S.pman.push([]);const last=S.pman[pcIdx()],P2=pieces(w);
- if(P2.lay||P2.nh){const W=last.reduce((a,q)=>{const x=pieceOf(w,q);return a+(x?x.sp.W:0)},0)+p.sp.W;if(W>circW()+1e-6||w.plink>0&&last.length>=w.plink){pwMsg(`This circuit is full (${Math.round(circW()).toLocaleString()} W${w.plink>0?' or '+w.plink+' tiles':''}). Click New circuit to start the next one.`);return}}
+ if(P2.lay||P2.nh){const W=last.reduce((a,q)=>{const x=pieceOf(w,q);return a+(x?x.sp.W:0)},0)+p.sp.W;if(W>circW(w)+1e-6||w.plink>0&&last.length>=w.plink){pwMsg(`This circuit is full (${Math.round(circW(w)).toLocaleString()} W${w.plink>0?' or '+w.plink+' tiles':''}). Click New circuit to start the next one.`);return}}
  else if(last.length>=t){pwMsg(`This circuit is full (${t} tiles). Click New circuit to start the next one.`);return}
  last.push(elCopy(p));pwMsg('')}
 // crew rotate through a shared pool; a tech already working on another wall is skipped
@@ -4785,9 +4896,9 @@ function cabRuns(plan,pplan){const out=[],stD=cLens(S.clenD),stP=cLens(S.clenP),
    [['d','P',T[0]]].concat(hasR(RP.got[wi])?[['r','R',T[n-1]]]:[]).forEach(([k,l,e])=>{if(F.fib){const m=cTailM(w,e);out.push({kind:k,id:l+pt.p,wi,m,fib:1,cab:cPick(cToU(m),stT)})}else add(k,l+pt.p,wi,cRunM(w,e))})});
   if(F.fib){const k=(runs||[]).length,g=RP.got[wi],own=g=='Full',ports=k*(hasR(g)?2:1),bxx=Math.ceil(k/S.fibBox),boxes=own?2*bxx:Math.ceil(ports/S.fibBox),trunks=own?2*Math.ceil(bxx/(S.fibTr=='opticalCON DUO'?1:2)):Math.ceil(boxes/(S.fibTr=='opticalCON DUO'?1:2)),m=cM(w.cdD)*(1+(S.cslack||0)/100);
    out.fib.push({wi,F,ports,boxes,trunks,own,m,cab:cPick(cToU(m),stF)})}});
- const d=PD(),by=new Map;pplan.forEach((runs,wi)=>{const w=walls[wi];(runs||[]).forEach(ci=>{jp+=ci.tiles.length-1;const g=d.one?ci.k:cCab(ci.k),m=cRunM(w,ci.tiles[0],1),b=by.get(g);if(!b||m>b.m)by.set(g,{wi,m})})});
- [...by.keys()].sort((a,b)=>a-b).forEach(g=>{const b=by.get(g);add('p',d.one?'Circuit '+g:d.name+' '+g,b.wi,b.m)});
- out.jd=jd;out.jp=jp;out.cables=d.one?0:by.size;return out}
+ const by=new Map;pplan.forEach((runs,wi)=>{const w=walls[wi];(runs||[]).forEach(ci=>{jp+=ci.tiles.length-1;const g=cCab(ci.k),m=cRunM(w,ci.tiles[0],1),b=by.get(g);if(!b||m>b.m)by.set(g,{wi,m})})});
+ [...by.keys()].sort((a,b)=>a-b).forEach(g=>{const b=by.get(g),s=cabSeg(g);add('p',s.D.one?'Circuit '+cabNo(g):cabName(g),b.wi,b.m);out[out.length-1].pk=s.kind});
+ out.jd=jd;out.jp=jp;out.cables=[...by.keys()].filter(g=>!cabSeg(g).D.one).length;return out}
 // ---------- locations (code name: zones): named places the show stages its gear (stage left, upstage, FOH video world...). A project-wide list S.zones
 // [{id,name,c}] in pull sheet order; each wall (w.zone), distro (d.zone) and the processor (S.zProc) picks one, 0 = no zone.
 // Engineering totals each zone, the pull sheet has a block per zone, the binder orders the wall pages by zone and adds a zone map.
@@ -4857,7 +4968,7 @@ function cabRows(R){const r=[],cnt=(k,f)=>{const o={};R.filter(x=>k.includes(x.k
    r.push(['Fibre trunks',Object.keys(tr).sort((a,b)=>a-b).map(c=>`${tr[c]} × ${S.fibTr} ${c} ${cU()}`).join(' · ')||'-']);if(!cLens(S.fibLen).length)r.push(['Fibre trunks','Add the fibre lengths you own','warn']);
    r.push(['Copper tails (box to tile)',cnt('dr',1)||'-']);if(!cLens(S.fibTail).length)r.push(['Copper tails','Add the copper tail lengths you own','warn'])}
   r.push(['Data jumpers (tile to tile)',R.jd])}
- if(np){r.push([(PD().one?'Power':PD().name)+' cables',cnt('p')||'-']);if(!cLens(S.clenP).length)r.push(['Power cables','Add the power cable lengths you own','warn']);if(R.cables)r.push([PD().name+' breakouts',R.cables]);r.push(['Power jumpers (tile to tile)',R.jp])}
+ if(np){r.push(['Power cables',cnt('p')||'-']);if(!cLens(S.clenP).length)r.push(['Power cables','Add the power cable lengths you own','warn']);if(R.cables)r.push(['Power breakouts',R.cables]);r.push(['Power jumpers (tile to tile)',R.jp])}
  const fl=(R.fib||[]).reduce((a,x)=>a+x.trunks*x.cab.reduce((p,q)=>p+q,0),0);if(nd||np)r.push(['Cable on the truck',[nd?'data '+cFmt(sum('dr')):'',fl?'fibre '+cFmt(fl):'',np?'power '+cFmt(sum('p')):''].filter(Boolean).join(' · ')]);
  const j=R.filter(x=>x.cab.length>1);if(j.length)r.push(['Runs made of joined cables',j.map(x=>`${x.id} (${cabTxt(x.cab)})`).join(' · ')]);
  const far=R.filter(x=>x.kind!='p'&&!x.fib&&x.m>100);if(far.length)r.push(['Over 100 m',`Copper Ethernet stops at 100 m. Set Data to this wall to Fibre or Auto for ${[...new Set(far.map(x=>walls[x.wi].name||'Wall '+(x.wi+1)))].join(', ')} (${far.map(x=>x.id).join(', ')}).`,'warn']);
@@ -4961,30 +5072,25 @@ function cabWallRows(R,wi){const r=[],w=walls[wi],m=R.filter(x=>x.wi==wi);if(!m.
  if(D&&fb){const fm=Math.round(cToU(fb.F.far)*10)/10;r.push(['Data to this wall',fb.F.by?'Fibre (set by hand)':`Fibre (longest copper run ${fm} ${cU()} > ${cFmt(S.fibLim)})`],
    ['Breakout boxes',`${fb.boxes} × ${S.fibBox}-port at the wall (${fb.ports} port${fb.ports==1?'':'s'})`],['Fibre trunk',`${fb.trunks} × ${S.fibTr} ${cFmt(cToU(fb.m))} → ${cabTxt(fb.cab)}${fb.own?' (half on their own route for R#)':''}`],['Copper tails from the box',ln('dr')])}
  else if(D){const c=m.filter(x=>x.kind!='p').reduce((a,x)=>Math.max(a,x.m),0);r.push(['Data to this wall',`Copper (longest run ${cFmt(cToU(c))})${w.wfib=='Copper'?', set by hand':''}`],['Data home runs',ln('dr')])}if(m.some(x=>x.kind=='p'))r.push(['Power home runs',ln('p')]);return r}
-function powRowsCanvas(plan){const T=powerTotals(plan),need=walls.reduce((a,w)=>{const t=tpcW(w);return a+(t>0?Math.ceil(wst(w).pk*1000/w.wmax/t-1e-9):Infinity)},0);
- const r=[['Power distribution',S.pdt],['Circuit',`${S.pvolt} V · ${S.pamps} A${S.derate?' · loaded to 80%':''}${(S.pf||1)<1?' · power factor '+S.pf.toFixed(2):''} = ${Math.round(circW()).toLocaleString()} W usable`],
-  ['Circuits used',T.n?T.n:'Not wired'],['Min. circuits if every circuit is full',isFinite(need)?need:'A tile exceeds one circuit']];
- if(PD().one){r.push(['Edison plugs needed',T.n?T.n:'-']);if(T.n)r.push(['Peak load per plug',Object.keys(T.cab).map(c=>`plug ${c} ${T.cab[c].toFixed(1)} A`).join(' · ')]);
-  if(T.wall){r.push(['Wall circuits needed',`${T.wn} (${S.pwall} plug${S.pwall>1?'s':''} each, ${S.pwallA} A${S.derate?' loaded to 80%':''} = ${(+T.wlim.toFixed(1))} A usable)`]);
-   r.push(['Peak load per wall circuit',Object.keys(T.wall).map(g=>`wall circuit ${g} ${T.wall[g].toFixed(1)} A${T.wall[g]>T.wlim+1e-6?' (over)':''}`).join(' · ')]);
-   if(T.wover)r.push(['Wall circuit over capacity',`${T.wover} wall circuit${T.wover>1?'s':''}`])}}
- else{r.push([PD().name+' cables',T.n?`${T.cables}${T.spare?` (${T.spare} spare circuit${T.spare>1?'s':''})`:''}`:'-']);
-  if(T.n&&!dsOn()){const P=PD().ph==2?['A','B']:PHN,fa=c=>P.map(p=>`${p} ${((T.cph[c]||{})[p]||0).toFixed(1)}`).join(' · ');
-   r.push(['Peak amps per phase, each cable',Object.keys(T.cph).map(c=>`cable ${c}: ${fa(c)} A`).join('  |  ')]);
-   const v=P.map(p=>T.ph[p]||0),mx=Math.max(...v),av=v.reduce((a,b)=>a+b,0)/v.length;
-   r.push(['Peak amps per phase, all cables',P.map((p,i)=>`${p} ${v[i].toFixed(1)} A`).join(' · ')+(av>0?` (busiest ${((mx-av)/av*100).toFixed(0)}% above average)`:'')]);
-   if(PD().ph==3)r.push([`Balanced 3-phase current @${svcVLL()} V`,`${(T.watts/(svcVLL()*Math.sqrt(3)*(S.pf||1))).toFixed(1)} A per phase`])}}
- if(T.over)r.push(['Over capacity',`${T.over} circuit${T.over>1?'s':''}`]);powWarn().forEach(t=>r.push(['Check power settings',t,'warn']));return r}
+function powRowsCanvas(plan){const T=powerTotals(plan),need=walls.reduce((a,w)=>{const t=tpcW(w);return a+(t>0?Math.ceil(wst(w).pk*1000/w.wmax/t-1e-9):Infinity)},0),pf=S.pf||1,r=[];
+ // one row per supply and cable type in use on this canvas: the circuit it gives
+ const cs=new Map;walls.forEach(w=>{const c=pwC(w);if(c.d)cs.set(c.d.id+'|'+c.kind,c)});
+ cs.forEach(c=>r.push([`Circuit: ${c.d.name}, ${c.D.name}`,`${c.V} V · ${c.A} A${S.derate?' · loaded to 80%':''}${pf<1?' · power factor '+pf.toFixed(2):''} = ${Math.round(c.cw).toLocaleString()} W usable`]));
+ r.push(['Circuits used',T.n?T.n:'Not wired'],['Min. circuits if every circuit is full',isFinite(need)?need:'A tile exceeds one circuit']);
+ Object.keys(OUTK).filter(k=>T.kinds[k]).forEach(k=>{const D=PDT[OUTK[k][1]];r.push([D.one?'Edison plugs':D.name+' cables',T.kinds[k]])});
+ if(T.n&&T.spare)r.push(['Spare circuits',T.spare]);
+ if(T.n&&T.kinds.edison)r.push(['Peak load per plug',Object.keys(T.cab).filter(c=>cabSeg(+c).D.one).map(c=>`plug ${cabNo(+c)} ${T.cab[c].toFixed(1)} A`).join(' · ')]);
+ if(T.over)r.push(['Over capacity',`${T.over} circuit${T.over>1?'s':''}`]);const wn=new Set;walls.forEach(w=>powWarn(w).forEach(t=>wn.add(t)));wn.forEach(t=>r.push(['Check power settings',t,'warn']));return r}
 function procRowsCanvas(plan){const m=PROC[S.proc],all=plan.flat(),prim=all.length,RP=redPlan(plan),over=all.filter(x=>x.over).length,ex=RP.loops+RP.backs;
  return[['Processor',S.proc],['Pixels per port',`${S.ppx.toLocaleString()} (${S.fps} Hz, ${S.bpc}-bit${m.sc=='brompton'&&S.ull?', ULL':''})`],['Data ports used',prim?`${prim} primary${RP.loops?` + ${RP.loops} loop`:''}${RP.backs?` + ${RP.backs} on backup`:''}${ex?` = ${prim+ex}`:''}`:'Not wired'],[m.unit=='card'?'Ports per card':'Ports per processor',S.pports],[m.unit=='card'?'Sending cards needed':'Processors needed',prim?`${RP.main}${RP.back?` + ${RP.back} backup`:''}${RP.spare?' + 1 spare':''}`:'-']].concat(over?[['Over capacity',`${over} port${over>1?'s':''}`]]:[],RP.shortP?[['Not enough processors',`${RP.shortP} primary port${RP.shortP>1?'s':''} not patched`,'warn']]:[])}
 function canvasRows(){const q=gcd(S.cw,S.ch),T=walls.map(wst).reduce((a,s)=>{for(const k in s)a[k]=(a[k]||0)+s[k];return a},{});
  return[['Canvas',`${S.cw} × ${S.ch}`],['Aspect',`${S.cw/q}:${S.ch/q} (${(S.cw/S.ch).toFixed(2)})`],['Canvas pixels',(S.cw*S.ch).toLocaleString()+` (${(S.cw*S.ch/1e6).toFixed(2)} MP)`],['LED walls',walls.length],['Tiles',T.nh||T.ng?`${T.N} (${[T.nh?`${T.N-T.nh} full + ${T.nh} half`:'',T.ng?`${T.ng} removed`:''].filter(Boolean).join(', ')})`:T.N],['LED pixels',`${T.px.toLocaleString()} (${(T.px/1e6).toFixed(2)} MP)`],
  ['Area',`${T.A.toFixed(2)} m² / ${(T.A*10.7639).toFixed(1)} sq ft`],['Weight',`${T.kg.toFixed(1)} kg / ${(T.kg*2.20462).toFixed(0)} lbs`],['Peak power',kw(T.pk)],['Typical (40%)',kw(T.pk*.4)]]
- .concat(pdOn()?[[`Current peak @${S.pvolt} V`,amp(T.pk,S.pvolt)]]:[])}
+ .concat(pdOn()?[...new Set(walls.map(w=>pwC(w).V))].map(V=>[`Current peak @${V} V`,amp(T.pk,V)]):[])}
 function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',w.preset]].concat(PEST[w.preset]?[['MISSING DATA','Not published by the manufacturer, so ESTIMATED from similar panels: '+PEST[w.preset].join(', ')+'. Check with the manufacturer before relying on weight, power or circuit counts.','warn']]:[]).concat(RC.get(w.rcfg)?[['Receiving card file',rcLabel(RC.get(w.rcfg))]]:[]).concat(hangRows(w,s)).concat([['Wall pixels',`${s.pw} × ${s.ph} (${(s.px/1e6).toFixed(2)} MP)`],['Position',`${w.ox}, ${w.oy}`],['Tiles',`${s.N} (${[s.nh?`${s.N-s.nh} full + ${s.nh} half`:'',s.ng?`${s.ng} removed`:'',`${w.cols} × ${w.rows}`].filter(Boolean).join(', ')})`],['Wall size',`${s.mw.toFixed(2)} × ${s.mh.toFixed(2)} m`],['Wall size',`${ft(s.mw)} × ${ft(s.mh)} ft`],['Area',`${s.A.toFixed(2)} m² / ${(s.A*10.7639).toFixed(1)} sq ft`],
  ['Weight',`${s.kg.toFixed(1)} kg / ${(s.kg*2.20462).toFixed(0)} lbs`],['Peak power',kw(s.pk)],['Typical (40%)',kw(s.pk*.4)]]);
  if(pdOn()){const t=tpcW(w),pw=pmine.reduce((a,c)=>a+c.tiles.length,0),po=pmine.filter(x=>x.over).length;
-  r.push([`Current peak @${S.pvolt} V`,amp(s.pk,S.pvolt)],['Tiles per circuit',t>0?t+(w.plink>0&&w.plink<tpcCalc(w)?' (power link limit)':''):'One tile exceeds a circuit'],['Min. circuits if every circuit is full',t>0?Math.ceil(s.pk*1000/w.wmax/t-1e-9):'-'],
+  const pc=pwC(w);r.push(['Fed from',pc.d?`${pc.d.name} · ${pc.D.one?'powerCON to Edison':pc.D.name} · ${pc.V} V ${pc.A} A`:'-'],[`Current peak @${pc.V} V`,amp(s.pk,pc.V)],['Tiles per circuit',t>0?t+(w.plink>0&&w.plink<tpcCalc(w)?' (power link limit)':''):'One tile exceeds a circuit'],['Min. circuits if every circuit is full',t>0?Math.ceil(s.pk*1000/w.wmax/t-1e-9):'-'],
    ['Power wiring',w.pmode=='None'?'None':w.pmode=='Manual'?'Manual':`${w.pmode}, ${w.pcorner.toLowerCase()} start, ${w.pwdir.toLowerCase()}, ${fillTxt(w.pfill,PFILL)}`]);
   if(pmine.length)r.push(['Circuits',pmine.length>1?`${cLabel(pmine[0].k)} … ${cLabel(pmine[pmine.length-1].k)} (${pmine.length})`:cLabel(pmine[0].k)]);
   if(w.pmode!='None'&&pw<s.N)r.push(['Tiles without power',s.N-pw]);if(po)r.push(['Over capacity',`${po} circuit${po>1?'s':''}`])}
@@ -4995,7 +5101,7 @@ function wallRows(w,mine,pmine){pmine=pmine||[];const s=wst(w),r=[['Tile model',
  return r.concat(zOn()?[['Location',(zById(w.zone)||{name:'No location'}).name]]:[],[['Test pattern',w.pat],['Build start',isFly(w)?`${w.bmode}, top ${/right/i.test(w.corner)?'right':'left'}, row by row`:`Ground stack, ${w.corner}, ${w.dir=='Vertical'?'column by column':'row by row'}`]])}
 const trs=rows=>rows.map(r=>r[2]=='head'?`<tr class="thd"><th colspan="2">${esc(r[0])}</th></tr>`:`<tr${r[2]=='warn'?' class="warn"':''}><td>${esc(r[0])}</td><td>${esc(r[1])}</td></tr>`).join(''),thr=t=>`<tr><th colspan="2">${esc(t)}</th></tr>`;
 const engOpen={};document.addEventListener('toggle',e=>{const k=e.target&&e.target.dataset&&e.target.dataset.eng;if(k)engOpen[k]=e.target.open},true);
-function info(){storeWall();DSX=dsState();if(S.autoBal&&DSX.on){const sig=JSON.stringify([S.dists,S.pvolt,S.pf,S.pload,S.ptyp,S.pmeas,DSX.cables.map(c=>[c.key,(S.pcab[c.key]||{}).d,(S.pcab[c.key]||{}).o,c.runs.map(r=>Math.round(r.dw))])]);if(sig!==dsBalSig){dsBalSig=sig;let ch=false;S.dists.forEach(d=>{if(dsBalance(d.id,DSX))ch=true});if(ch)DSX.load=dsLoad(DSX.cables)}}
+function info(){storeWall();DSX=dsState();if(S.autoBal&&DSX.on){const sig=JSON.stringify([S.dists,S.pf,S.pload,S.ptyp,S.pmeas,DSX.cables.map(c=>[c.key,(S.pcab[c.key]||{}).d,(S.pcab[c.key]||{}).o,c.runs.map(r=>Math.round(r.dw))])]);if(sig!==dsBalSig){dsBalSig=sig;let ch=false;S.dists.forEach(d=>{if(dsBalance(d.id,DSX))ch=true});if(ch)DSX.load=dsLoad(DSX.cables)}}
 const w=walls[cur],s=wst(w),fits=w.ox>=0&&w.oy>=0&&w.ox+s.pw<=S.cw&&w.oy+s.ph<=S.ch,plan=procOn()?portPlan():walls.map(()=>[]),pplan=pdOn()?powerPlan():walls.map(()=>[]);
 const ov=walls.filter((o,i)=>i!=cur&&o.ox<w.ox+s.pw&&w.ox<o.ox+wW(o)&&o.oy<w.oy+s.ph&&w.oy<o.oy+wH(o)).map(o=>o.name);
 $('#cov').innerHTML=(fits?'<span class="ok">✔ Wall fits inside canvas</span>':'<span class="bad">✖ Wall extends beyond raster: '+[w.ox<0&&'left',w.oy<0&&'top',w.ox+s.pw>S.cw&&'right by '+(w.ox+s.pw-S.cw)+'px',w.oy+s.ph>S.ch&&'bottom by '+(w.oy+s.ph-S.ch)+'px'].filter(Boolean).join(', ')+'</span>')+(ov.length?'<br><span class="bad">✖ Overlaps '+esc(ov.join(', '))+'</span>':'');
@@ -5010,7 +5116,7 @@ const LBLLAY=['Two identical panels','Flag fold-over (second panel upside down)'
 function lblHas(){const d=procOn()&&portPlan().flat().length>0,p=pdOn()&&powerPlan().flat().length>0;return{d,p,on:d||p}}
 function lblVis(){const h=lblHas(),b=$('#lblBox');if(!b)return;const dt=b.closest('details');if(dt)dt.style.display=h.on?'':'none';if(!h.on)return;
  const sel=b.querySelector('[data-k=lblWhat]'),lw=sel&&sel.closest('label');if(lw)lw.style.display=h.d&&h.p?'':'none';
- const pw=$('#lblPowW');if(pw)pw.style.display=h.p&&S.lblWhat!='Data only'&&!PD().one?'':'none';const g=LBL[S.lblSize]||LBL[Object.keys(LBL)[0]],cu=$('#lblCustom');if(cu)cu.style.display=g.custom?'':'none';const kw=$('#lblKeepW');if(kw)kw.style.display=g.roll?'none':'';
+ const pw=$('#lblPowW');if(pw)pw.style.display=h.p&&S.lblWhat!='Data only'&&!walls.every(w=>pwC(w).D.one)?'':'none';const g=LBL[S.lblSize]||LBL[Object.keys(LBL)[0]],cu=$('#lblCustom');if(cu)cu.style.display=g.custom?'':'none';const kw=$('#lblKeepW');if(kw)kw.style.display=g.roll?'none':'';
  const sk=b.querySelector('[data-k=lblSkip]'),sl=sk&&sk.closest('label');if(sl)sl.style.display=g.roll?'none':'';
  const L=labelList(),n=L.reduce((a,c)=>a+c.length,0)*S.lblCopies,st=$('#lblStat');if(st){const pg=labelPages(L).length;st.textContent=`${L.length} cable${L.length==1?'':'s'}, ${n} label${n==1?'':'s'}, ${pg} page${pg==1?'':'s'}.`}}
 // one entry per cable: [processor/distro end, tile end]
@@ -5026,18 +5132,19 @@ function labelList(){const h=lblHas(),W=S.lblWhat,out=[],dOn=h.d&&W!='Power only
   if(S.lblJump)for(let i=0;i<n-1;i++){const x=ch[i],y=ch[i+1],id=`P${pt.p}-${i+1}`;
    out.push([{big:id,tag:'1/2 OUT END',col,lines:[`${T(w,x)} DATA OUT`,`to ${T(w,y)} DATA IN`,`${W2}, link ${i+1} of ${n-1}`],kind:'d',wl:[w,wi]},
              {big:id,tag:'2/2 IN END',col,lines:[`${T(w,y)} DATA IN`,`from ${T(w,x)} DATA OUT`,`${W2}, link ${i+1} of ${n-1}`],kind:'d',wl:[w,wi]}])}}));
- const D=PD(),flat=[];walls.forEach((w,wi)=>(pp[wi]||[]).forEach(ci=>flat.push({w,wi,ci})));flat.sort((x,y)=>x.ci.k-y.ci.k);
- const nCab=flat.length?Math.max(...flat.map(f=>f.ci.k).map(cCab)):0,seen={},PW=S.lblPow,wantCab=PW!='Circuit labels only',wantLeg=PW!='Cable labels only',v=`${S.pvolt} V, ${S.pamps} A breaker`;
- flat.forEach(({w,wi,ci})=>{const ch=ci.tiles,n=ch.length,a=ch[0],lab=cLabel(ci.k)+(ci.share?'abc'[ci.sidx]:''),cab=cCab(ci.k),leg=cLeg(ci.k),W2=nm(w,wi),ph=dsRunPhase(ci.k),pdn=ph?(dsById(S.pcab[cc+':'+cab].d)||{}).name:'',
+ const flat=[];walls.forEach((w,wi)=>(pp[wi]||[]).forEach(ci=>flat.push({w,wi,ci})));flat.sort((x,y)=>x.ci.k-y.ci.k);
+ const nOf={};[...new Set(flat.map(f=>cCab(f.ci.k)))].forEach(q=>{const k=cabSeg(q).kind;nOf[k]=Math.max(nOf[k]||0,cabNo(q))});
+ const seen={},PW=S.lblPow,wantCab=PW!='Circuit labels only',wantLeg=PW!='Cable labels only';
+ flat.forEach(({w,wi,ci})=>{const D=segK(ci.k).D,pc=pwC(w),v=`${pc.V} V, ${pc.A} A breaker`,nCab=nOf[segK(ci.k).kind]||0,ch=ci.tiles,n=ch.length,a=ch[0],lab=cLabel(ci.k)+(ci.share?'abc'[ci.sidx]:''),cab=cCab(ci.k),cno=cabNo(cab),leg=cLeg(ci.k),W2=nm(w,wi),ph=dsRunPhase(ci.k),pk=S.pcab[cc+':'+cab],pd=pk&&dsById(pk.d),pdn=ph&&pd?pd.name:'',
   info=`${n} tile${n==1?'':'s'}, ${Math.round(ci.watts)} W${ci.share?`, ${ci.share==2?'2fer':'3fer'} on ${cLabel(ci.k)}`:''}`,
-  cabTxt=`${D.name} cable ${cab} of ${nCab}`,legTxt=(D.leg=='circuit'?`circuit ${leg} of ${D.n}`:`leg ${leg}`)+(ph?`, ${pdn} phase ${phTxt(ph)}`:'');
-  if(wantCab&&!D.one&&!seen[cab]){seen[cab]=1;const mem=flat.filter(f=>cCab(f.ci.k)==cab),used=[...new Set(mem.map(f=>cLeg(f.ci.k)))],wn=[...new Set(mem.map(f=>nm(f.w,f.wi)))].join(', '),kw=Math.round(mem.reduce((t,f)=>t+f.ci.watts,0)),id=D.pre+cab,
+  cabTxt=`${D.name} cable ${cno} of ${nCab}`,legTxt=(D.leg=='circuit'?`circuit ${leg} of ${D.n}`:`leg ${leg}`)+(ph?`, ${pdn} phase ${phTxt(ph)}`:'');
+  if(wantCab&&!D.one&&!seen[cab]){seen[cab]=1;const mem=flat.filter(f=>cCab(f.ci.k)==cab),used=[...new Set(mem.map(f=>cLeg(f.ci.k)))],wn=[...new Set(mem.map(f=>nm(f.w,f.wi)))].join(', '),kw=Math.round(mem.reduce((t,f)=>t+f.ci.watts,0)),id=D.pre+cno,
    ul=D.leg=='circuit'?`circuits ${used.join(', ')} (${used.length} of ${D.n} used)`:`legs ${used.join(', ')} (${used.length} of ${D.n} used)`;
    out.push([{big:id,tag:'1/2 '+D.src,lines:[cabTxt,ul,`${wn}, ${kw.toLocaleString()} W`],kind:'p',wl:[w,wi]},
              {big:id,tag:'2/2 '+D.end,lines:[cabTxt,ul,`${wn}, ${kw.toLocaleString()} W`],kind:'p',wl:[w,wi]}])}
-  if(D.one){const g=S.pwall>0?Math.ceil(ci.k/S.pwall):0;
-   out.push([{big:lab,tag:'1/2 '+D.src,lines:[`Edison plug ${lab}${g?`, wall circuit ${g}`:''}${ph?`, ${pdn} phase ${phTxt(ph)}`:''}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,`${info}, ${v}`],kind:'p',ph,wl:[w,wi]},
-             {big:lab,tag:'2/2 '+D.end,lines:[`${W2} ${T(w,a)} POWER IN`,`from Edison plug ${lab}${g?` (wall circuit ${g})`:''}`,info],kind:'p',ph,wl:[w,wi]}])}
+  if(D.one){const o=pd&&pd.type=='house'&&pd.outl>0&&dsOuts(pd).find(x=>x.key==pk.o),g=o?Math.ceil(o.j/pd.outl):0;
+   out.push([{big:lab,tag:'1/2 '+D.src,lines:[`Edison plug ${lab}${g?`, house circuit ${g}`:''}${ph?`, ${pdn} phase ${phTxt(ph)}`:''}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,`${info}, ${v}`],kind:'p',ph,wl:[w,wi]},
+             {big:lab,tag:'2/2 '+D.end,lines:[`${W2} ${T(w,a)} POWER IN`,`from Edison plug ${lab}${g?` (house circuit ${g})`:''}`,info],kind:'p',ph,wl:[w,wi]}])}
   else if(wantLeg){out.push([{big:lab,tag:'1/2 SOURCE END',lines:[`${cabTxt}, ${legTxt}`,`to ${W2} ${T(w,a)} (${at(w,a)})`,`${info}, ${v}`],kind:'p',ph,wl:[w,wi]},
             {big:lab,tag:'2/2 TILE END',lines:[`${W2} ${T(w,a)} POWER IN`,`from ${lab} (${cabTxt}, ${legTxt})`,info],kind:'p',ph,wl:[w,wi]}])}
   if(S.lblJump)for(let i=0;i<n-1;i++){const x=ch[i],y=ch[i+1],id=`${lab}-${i+1}`;
@@ -5231,21 +5338,20 @@ function lyrSave(){const keys=[...document.querySelectorAll('#lyrList input[data
 // jumpers (rounded up), S.spC per cable length, breakouts and home-run cables. Cables are listed by length when Cable lengths is on.
 // zid: only the walls and gear in that location (0 = none); left out = the whole show
 function pullItems(zid){const inZ=w=>zid==null||zOf(w)===zid,gHere=id=>zid==null||(zById(id)?id:0)===zid;const sT=S.spT||0,sC=S.spC||0,sp=n=>n>0?Math.ceil(n*sT/100-1e-9):0,V=new Map,add=(k,n)=>V.set(k,(V.get(k)||0)+n),cab={d:{},p:{},t:{}},fb={box:0,conv:0,tr:{}};
- let proc=0,bproc=0,sproc=0,lnk=0,jd=0,jp=0,brk=0,dHome=0,pHome=0,lbl=0,byLen=false,pn='';const RG=new Map;
+ let proc=0,bproc=0,sproc=0,lnk=0,jd=0,jp=0,dHome=0,lbl=0,byLen=false;const RG=new Map,brk={},pHome={},inc=(o,k,n)=>o[k]=(o[k]||0)+n;
  eachCv(()=>{walls.filter(inZ).forEach(w=>{let f=0,h=0;pieces(w).list.forEach(p=>p.half?h++:f++);if(f)add(w.preset,f);if(h)add(w.preset+' (half tile)',h)});
   const plan=procOn()?portPlan():walls.map(()=>[]),pplan=pdOn()?powerPlan():walls.map(()=>[]),zp=plan.map((x,i)=>inZ(walls[i])?x:[]),zpp=pplan.map((x,i)=>inZ(walls[i])?x:[]),all=zp.flat(),pp=zpp.flat(),full=plan.flat();
   const RP=full.length?redPlan(plan):null;if(RP&&gHere(S.zProc)){proc+=RP.main;bproc+=RP.back;sproc+=RP.spare;if(S.rlink)lnk+=RP.back}
-  if(pp.length)pn=PD().one?'powerCON to Edison':PD().name;
-  if(cabOn()){byLen=true;const R0=cabRuns(plan,pplan),R=R0.filter(x=>inZ(walls[x.wi]));R.forEach(x=>x.cab.forEach(c=>{const o=cab[x.fib?'t':x.kind=='p'?'p':'d'];o[c]=(o[c]||0)+1}));R0.fib.filter(x=>inZ(walls[x.wi])).forEach(x=>{fb.box+=x.boxes;if(!S.fibNat)fb.conv+=x.boxes;x.cab.forEach(c=>fb.tr[c]=(fb.tr[c]||0)+x.trunks)});
-   if(zid==null){jd+=R0.jd;jp+=R0.jp;brk+=R0.cables}else{jd+=all.reduce((a,x)=>a+x.tiles.length-1,0);jp+=pp.reduce((a,x)=>a+x.tiles.length-1,0);if(!PD().one)brk+=R.filter(x=>x.kind=='p').length}}
-  else{dHome+=all.length+(RP?(zid==null?RP.loops+RP.backs:zp.reduce((a,x,i)=>a+(x.length&&hasR(RP.got[i])?x.length:0),0)):0);jd+=all.reduce((a,x)=>a+x.tiles.length-1,0);jp+=pp.reduce((a,x)=>a+x.tiles.length-1,0);if(pp.length){if(zid==null){const T=powerTotals(pplan);pHome+=PD().one?T.n:T.cables;if(!PD().one)brk+=T.cables}
-   else{const own=new Map;pplan.forEach((runs,wi)=>runs.forEach(ci=>{const g=PD().one?ci.k:cCab(ci.k);if(!own.has(g))own.set(g,wi)}));const n=[...own.values()].filter(wi=>inZ(walls[wi])).length;pHome+=n;if(!PD().one)brk+=n}}}
+  if(cabOn()){byLen=true;const R0=cabRuns(plan,pplan),R=R0.filter(x=>inZ(walls[x.wi]));R.forEach(x=>x.cab.forEach(c=>{const o=x.kind=='p'?(cab.p[x.pk]=cab.p[x.pk]||{}):cab[x.fib?'t':'d'];o[c]=(o[c]||0)+1}));R.filter(x=>x.kind=='p'&&!PDT[OUTK[x.pk][1]].one).forEach(x=>inc(brk,x.pk,1));R0.fib.filter(x=>inZ(walls[x.wi])).forEach(x=>{fb.box+=x.boxes;if(!S.fibNat)fb.conv+=x.boxes;x.cab.forEach(c=>fb.tr[c]=(fb.tr[c]||0)+x.trunks)});
+   if(zid==null){jd+=R0.jd;jp+=R0.jp}else{jd+=all.reduce((a,x)=>a+x.tiles.length-1,0);jp+=pp.reduce((a,x)=>a+x.tiles.length-1,0)}}
+  else{dHome+=all.length+(RP?(zid==null?RP.loops+RP.backs:zp.reduce((a,x,i)=>a+(x.length&&hasR(RP.got[i])?x.length:0),0)):0);jd+=all.reduce((a,x)=>a+x.tiles.length-1,0);jp+=pp.reduce((a,x)=>a+x.tiles.length-1,0);if(pp.length){const add2=k=>{inc(pHome,k,1);if(!PDT[OUTK[k][1]].one)inc(brk,k,1)};if(zid==null){const T=powerTotals(pplan);Object.keys(T.kinds).forEach(k=>{for(let i=0;i<T.kinds[k];i++)add2(k)})}
+   else{const own=new Map;pplan.forEach((runs,wi)=>runs.forEach(ci=>{const g=cCab(ci.k);if(!own.has(g))own.set(g,wi)}));[...own].filter(([g,wi])=>inZ(walls[wi])).forEach(([g])=>add2(cabSeg(g).kind))}}}
   if(lblHas().on&&gHere(S.zProc))lbl+=labelPages(labelList()).length;if(S.rigOn)walls.filter(inZ).forEach(w=>rigCalc(w).pull.forEach(([n,q,t])=>{const o=RG.get(n)||[0,false];o[0]+=q;o[1]=o[1]||!!t;RG.set(n,o)}))});
  const vid=[...V].map(([k,n])=>[k+' tile',n,sp(n)]);if(proc)vid.push([S.proc,proc,0]);if(bproc)vid.push([`Backup ${S.proc}`,bproc,0]);if(sproc)vid.push([`Spare ${S.proc} (not patched)`,sproc,0]);if(lnk)vid.push(['Processor link / sync cable',lnk,0]);
  const lens=(o,nm)=>Object.keys(o).sort((a,b)=>a-b).map(c=>[`${nm} ${c} ${cU()}`,o[c],sC]),data=[],pow=[];
  if(byLen)data.push(...lens(cab.d,'Data cable (etherCON)'));else if(dHome)data.push(['Data home-run cable (etherCON), length not set',dHome,sC]);if(fb.box)data.push([`Fibre breakout box, ${S.fibBox} ports`,fb.box,0]);if(fb.conv)data.push([`Fibre converter at the processor, ${S.fibBox} ports`,fb.conv,0]);data.push(...lens(fb.tr,S.fibTr+' fibre'),...lens(cab.t,'etherCON tail'));if(jd)data.push(['Data jumper, tile to tile',jd,Math.max(sC,sp(jd))]);
- if(byLen)pow.push(...lens(cab.p,pn+' cable'));else if(pHome)pow.push([pn+' cable, length not set',pHome,sC]);if(brk)pow.push([pn+' breakout',brk,sC]);if(jp)pow.push(['Power jumper, tile to tile',jp,Math.max(sC,sp(jp))]);
- (S.pdist&&Array.isArray(S.dists)?S.dists:[]).filter(d=>gHere(d.zone)).forEach(d=>pow.push([`Distro: ${d.name||'Distro'} (${d.sys||''})`,1,0]));
+ Object.keys(OUTK).forEach(k=>{const pn=k=='edison'?'powerCON to Edison':OUTK[k][0];if(byLen&&cab.p[k])pow.push(...lens(cab.p[k],pn+' cable'));else if(!byLen&&pHome[k])pow.push([pn+' cable, length not set',pHome[k],sC]);if(brk[k])pow.push([pn+' breakout',brk[k],sC])});if(jp)pow.push(['Power jumper, tile to tile',jp,Math.max(sC,sp(jp))]);
+ (Array.isArray(S.dists)?S.dists:[]).filter(d=>d.type!='house'&&gHere(d.zone)).forEach(d=>pow.push([`Distro: ${d.name||'Distro'} (${d.sys||''})`,1,0]));
  return[['Video',vid],['Rigging',[...RG].map(([n,[q,t]])=>[n,q,t?sp(q):0])],['Data',data],['Power',pow],['Labels',lbl?[[`Cable label sheets, ${S.lblSize}`,lbl,0]]:[]]].filter(d=>d[1].length)}
 const pullWalls=id=>{let n=0;eachCv(()=>walls.forEach(w=>{if(zOf(w)===id)n++}));return n};
 const bSub=()=>{let w=0,t=0;eachCv(()=>{w+=walls.length;walls.forEach(x=>t+=pieces(x).list.length)});return[S.bVenue,S.bDate?'load-in '+S.bDate:'',`${w} LED wall${w==1?'':'s'}`,`${t} tiles`].filter(Boolean).join(' · ')};
@@ -5344,7 +5450,7 @@ function binderFront(cv,ct,toc,n,PW,PH,mg,stamp){const L=[];let w=0,t=0;eachCv(c
  let y=PH*.3;pdfWrap(S.bShow||'LED wall binder',30,1,PW-2*mg).forEach(s=>{cv.text(s,mg,y,30,1,'#000');y+=36});
  [S.bVenue,S.bDate?'Load-in '+S.bDate:''].filter(Boolean).forEach(s=>{cv.text(s,mg,y+4,14,0,'#333');y+=20});y+=16;cv.line(mg,y,PW-mg,y,'#0a6f80',1.5);y+=22;
  cv.text(`${w} LED wall${w==1?'':'s'} · ${t} tiles`,mg,y,11,1,'#000');y+=18;L.slice(0,24).forEach(s=>{cv.text(s,mg,y,9.5,0,'#333');y+=13});if(L.length>24){cv.text(`… and ${L.length-24} more`,mg,y,9.5,0,'#333');y+=13}
- y+=8;if(procOn())cv.text('Processor: '+S.proc,mg,y,9.5,0,'#333'),y+=13;if(pdOn())cv.text(`Power: ${S.pdt}, ${S.pvolt} V ${S.pamps} A`,mg,y,9.5,0,'#333');
+ y+=8;if(procOn())cv.text('Processor: '+S.proc,mg,y,9.5,0,'#333'),y+=13;if(pdOn())cv.text('Power: '+S.dists.map(d=>`${d.name} (${d.type=='house'?'house power':d.sys}, ${d.cv} V circuits)`).join(', '),mg,y,9.5,0,'#333');
  cv.text(`Made with TileSmith · ${stamp} · ${n} pages`,mg,PH-mg,8.5,0,'#777');
  ct.text('Contents',mg,mg+20,20,1,'#000');let yy=mg+56;toc.forEach(([s,p])=>{ct.text(s,mg,yy,12,0,'#000');const q=String(p);ct.text(q,PW-mg-pdfW(q,12,0),yy,12,0,'#000');ct.line(mg+pdfW(s,12,0)+6,yy,PW-mg-pdfW(q,12,0)-6,yy,'#bbbbbb',.5,1.5);yy+=22})}
 async function exportPDF(binder){storeWall();toast('Building the PDF…',2500);await new Promise(r=>setTimeout(r,30));
@@ -6158,7 +6264,7 @@ function applyState(o){const nm0='Canvas 1';applyCore(o);const LIMc=(k,v)=>Math.
    if(Array.isArray(x.walls)&&x.walls.length){applyCore({sv:o.sv,S:{},walls:x.walls,cur:x.cur});ws=walls;c0=cur}list.push(cvMake(nm,LIMc('cw',x.cw),LIMc('ch',x.ch),ws,c0))});
   walls=A.walls;cur=A.cur;WK.forEach(k=>S[k]=sk[k]);list[ac]=cvFromGlobals(String(o.cvs[ac]&&o.cvs[ac].name||'Canvas '+(ac+1)).slice(0,40));CVS=list;cc=ac;CVS.forEach((c,i)=>{if(i!=cc)withCv(i,()=>showAll())})}
  else{CVS=[cvFromGlobals(nm0)];cc=0}}
-function applyCore(o){{utFromProject(o);rcFromProject(o);if(o.S&&o.S.tstyle&&!TSTY.includes(o.S.tstyle))o.S.tstyle='Classic';if(o.S&&typeof o.S.pdist=='string')o.S.pdist=o.S.pdist!='None';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}dsSanAll();zSan();
+function applyCore(o){{utFromProject(o);rcFromProject(o);if(o.S&&o.S.tstyle&&!TSTY.includes(o.S.tstyle))o.S.tstyle='Classic';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}pwMigrate(o.S);dsSanAll();zSan();
 const mk=src=>{if(!src)return null;const im=new Image();im.__src=src;im.onload=()=>{forceRen=true};im.src=src;return im};
 if(Array.isArray(o.crew)&&o.crew.length)crew=o.crew.map((c,i)=>[String(c[0]||''),c[1]||'#e0ac69',mk(c[2]),c[3]||HAIR[i%HAIR.length],String(c[4]||'')]);
 if(o.logo)logoImg=mk(o.logo);if(o.dvd){dvdImg=mk(o.dvd);dvdImg.__id=++imgId}

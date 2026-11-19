@@ -18,7 +18,7 @@ async def main():
         b = await p.chromium.launch(); pg = await b.new_page(viewport={'width': 1500, 'height': 1000}, accept_downloads=True); errs = []
         pg.on('pageerror', lambda e: errs.append(str(e))); await pg.goto(APP); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(600)
         # two walls with tile IDs, positions, data and power runs, every tile built
-        await pg.evaluate("""()=>{S.cols=8;S.rows=4;S.name='Main';storeWall();S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';S.pdist=true;S.pmode='Snake';S.showData=true;S.showPow=true;S.ids=true;S.tpos=true;storeWall();
+        await pg.evaluate("""()=>{S.cols=8;S.rows=4;S.name='Main';storeWall();S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';(S.dists.length||distAct('dadd'));S.pmode='Snake';S.showData=true;S.showPow=true;S.ids=true;S.tpos=true;storeWall();
           addWall(false);S.name='Side';S.cols=3;S.rows=4;S.ox=1600;S.oy=0;storeWall();sync();sims.forEach(s=>{s.done=true});render()}""")
         r = await pg.evaluate("()=>({av:lyrAvail(),ports:portPlan().map(x=>x.length),circ:powerPlan().map(x=>x.length),flat:M.toDataURL('image/png')})")
         print('avail', r['av'], r['ports'], r['circ']); ok &= r['av'] == ['bg', 'pat', 'grid', 'lab', 'data', 'pow'] and all(r['ports']) and all(r['circ'])

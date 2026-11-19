@@ -15,7 +15,7 @@ async def main():
         b = await p.chromium.launch(); pg = await b.new_page(viewport={'width': 1500, 'height': 1000}, accept_downloads=True); errs = []
         pg.on('pageerror', lambda e: errs.append(str(e))); await pg.goto(APP); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(600)
         await pg.evaluate("""()=>{S.cw=3840;S.ch=2160;S.cols=12;S.rows=6;S.name='Main';storeWall();addWall(false);S.name='Side';S.cols=8;S.rows=5;S.ox=2500;S.oy=0;storeWall();sync();
-          S.proc='NovaStar VX1000 Pro';applySpec();S.pdist=true;S.pdt='Socapex (6 circuits per cable)';walls.forEach(w=>{w.wmode='Snake';w.pmode='Snake'});loadWall(0);
+          S.proc='NovaStar VX1000 Pro';applySpec();(S.dists.length||distAct('dadd'));S.pdt='Socapex (6 circuits per cable)';walls.forEach(w=>{w.wmode='Snake';w.pmode='Snake'});loadWall(0);
           S.bShow='Spring Tour 2027';S.bVenue='Hall B';S.bDate='2027-03-14';S.spT=5;S.spC=1;S.showData=false;sync()}""")
         # pull sheet without cable lengths: home runs without a length; tiles + spares
         r = await pg.evaluate("()=>pullItems()"); print('items', json.dumps(r))

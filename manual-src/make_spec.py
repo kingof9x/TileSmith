@@ -53,25 +53,24 @@ KEYDESC = {
   'zHide': 'Zone ids whose walls are hidden in the viewport only.',
   'zProc': 'Zone of the processor (0 = no zone).',
   'zone': 'Wall key: the wall\'s zone id (0 = no zone).',
-  'pdist': 'Power distribution ticked. Gates all power features.',
   'pf': 'Power factor 0.5-1 (default 1). Usable watts per circuit = V x A x (0.8) x PF; amps everywhere = W / (V x PF).',
   'pload': 'Design load for distro and leg totals: Max (spec) | Typical (% of max) | Measured (W per tile). Circuits are always checked at max.',
   'ptyp': 'Typical design load in % of each tile\'s max watts (1-100, default 40).',
   'pmeas': 'Measured design load in watts per tile (0-5000; 0 = use max; never above a tile\'s max).',
-  'dists': 'Distros: [{id, name, sys (120/208 V 3-phase wye | 127/220 V 3-phase wye | 230/400 V 3-phase wye | 120/240 V split phase | Single phase), amps per leg, soca, l2130, l1430, edison (output counts), map (Socapex leg map, default ABCABC)}], at most 12.',
+  'dists': 'Distros: [{id, name, sys (120/208 V 3-phase wye | 127/220 V 3-phase wye | 230/400 V 3-phase wye | 120/240 V split phase | Single phase), amps per leg, soca, l2130, l1430, edison (output counts), map (Socapex leg map, default ABCABC), type (distro | house), cv (circuit voltage), cb (circuit breaker A), outl (house: outlets per house circuit), hb (house breaker A)}], at most 12. Power is on while there is at least one.',
   'pcab': 'Power patch: "canvas index:cable number" -> {d: distro id (\'\' = left unpatched on purpose), o: output key (soca1, l21302, edison3 ...), r: leg rotation 0-2}.',
   'pshare': 'Shared circuits (2fer / 3fer): [canvas index, [wall, run], [wall, run](, [wall, run])].',
   'autoBal': 'Rebalance every distro after every wiring change.',
   'phaseView': 'Colour power runs by phase (A white, B amber, C blue) and label them "1-1 A" when distros exist.',
   'trayOpen': 'Power tray under the viewport expanded.',
-  'pdt': 'Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)". Choosing Edison sets pvolt 120 and pamps 15.',
-  'pwall': 'Edison only: plugs per wall circuit (0-100, default 0 = no wall-circuit check).',
-  'pwallA': 'Edison only: wall circuit breaker in amps (1-400, default 20).',
+  'pdt': 'Wall key: the wall\'s cable, "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)"; only types its supply has outputs for.',
+  'pfeed': 'Wall key: id of the supply (S.dists) that feeds the wall (\'\' = the first supply).',
+  'pwv': 'Power settings version: 2 = supplies own the circuit voltage and breaker. Older projects (no pwv) are migrated by pwMigrate.',
   'gx': 'Wall key: how far (px) the top-left of the wall\'s real tiles sits right of the full tile grid. Set by the app, not the user; ox/oy are the canvas position of those tiles.',
   'gy': 'Wall key: like gx, downwards (a converted top row makes it half a tile).',
   'lblPow': 'Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only".',
-  'pvolt': 'Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V.',
-  'pamps': 'Breaker size in amps (1-400).',
+  'pvolt': 'Mirror of the current wall\'s circuit voltage (its supply\'s cv); set by pwMirror, not the user.',
+  'pamps': 'Mirror of the current wall\'s breaker (its supply\'s cb, capped at the connector rating); set by pwMirror.',
   'derate': 'Load circuits to 80% (continuous load rule).',
   'showPow': 'Draw power runs on the canvas.',
   'resSl': 'Resolume XML slice mode: One slice per LED wall | One slice per tile.',
@@ -602,22 +601,31 @@ each segment midpoint; a filled circle badge "P#" at the first tile and a dark r
 
 ## 11. Power
 
-Tick **Power distribution** to enable and choose the Distribution cable (setting pdt). Usable watts per circuit = V x A x (0.8 if
-"Load circuits to 80%"). Tiles per circuit t = floor(usable / wmax), capped by the power link limit if set. Note text:
-"One 120 V 20 A circuit loaded to 80% supplies 1,920 W, enough for 12 tiles of ... at 150 W max each."
+Engineering > Power has four parts (2026-11-19 rethink): **Supply** (distro and house power cards), **Load** (Design load, Power
+factor, Load circuits to 80%), **This wall** (Fed from, Cable, then the wiring settings) and **Show** (Show power runs, Colour by
+phase, Rebalance after every change). Power is on while S.dists holds a supply (pdOn); "+ Add distro" / "+ Add house power"
+add one. Each supply sets the circuit voltage cv (a multi-phase distro offers its line-to-neutral and line-to-line voltage) and
+the breaker cb, capped at the connector rating; each wall picks its supply (pfeed) and its cable (pdt, only types that supply
+has). pwC(w) returns the wall's {{d supply, kind, D cable type, V, A, cw usable W}}. Usable watts per circuit cw = V x A x
+(0.8 if "Load circuits to 80%") x pf. Tiles per circuit t = floor(usable / wmax), capped by the power link limit if set.
+Note text: "One 120 V 20 A circuit loaded to 80% supplies 1,920 W, enough for 12 tiles of ... at 150 W max each."
+A tile that does not take a supply's voltage moves the supply to its other voltage (toast).
 
-Circuits are numbered k = 1, 2, ... across walls; with n circuits per cable (Socapex 6, L14-30 2, L21-30 3) circuit k is on cable ceil(k/n) as leg (k-1) mod n (legs 1-6 for Socapex, X,Y for
-L14-30, X,Y,Z for L21-30); labels cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ... Without distros no phase is assigned.
-powerCON to Edison (n = 1, no PDU): every circuit is its own cable and is labelled just k (1, 2, 3 ...); cables needed = circuits, no spares. Selecting it sets pvolt 120 and pamps 15. Edison shows two extra
-fields, "Edison plugs per wall circuit (0 = do not check)" (pwall) and "Wall circuit breaker (A)" (pwallA). With pwall > 0, plug k is on wall circuit ceil(k / pwall); its load in amps is watts / pvolt, summed per wall circuit and
-compared with pwallA x (0.8 if "Load circuits to 80%"). Engineering rows: "Edison plugs needed", "Peak load per plug" ("plug 3 9.4 A"), and with pwall > 0 "Wall circuits needed", "Peak load per wall circuit" ("(over)" after any
-over its limit) and "Wall circuit over capacity". Labels: one pair per circuit, tags "1/2 EDISON PLUG END" (lines "Edison plug k[, wall circuit g]", "to <wall> <tile> (col, row)", tiles/watts/volts/breaker) and
+Circuits are numbered per wall segment (SEG): a wall starts new cables of its own type unless it shares the previous wall's
+cable (pown off, same supply, type and voltage). With n circuits per cable (Socapex 6, L14-30 2, L21-30 3) circuit k is on
+cable ceil(k/n) of its type as leg (k-1) mod n (legs 1-6 for Socapex, X,Y for L14-30, X,Y,Z for L21-30); labels
+cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ...
+**House power** (type house, single phase, default 120 V 15 A, 12 Edison outlets): walls on it use powerCON to Edison (n = 1),
+every circuit is its own plug. Outlets per house circuit (outl) and House breaker (hb): plug j is on house circuit
+ceil(j / outl), its amps (W / (V x pf)) are summed per house circuit and compared with hb x (0.8 if derated); a house
+breaker above 20 A is a warning. Engineering rows per house supply: Supply, House circuits, Load per house circuit, Outlets
+used, Plugs, Over capacity. Labels: one pair per circuit, tags "1/2 EDISON PLUG END" (lines "Edison plug k[, wall circuit g]", "to <wall> <tile> (col, row)", tiles/watts/volts/breaker) and
 "2/2 POWERCON END" ("<wall> <tile> POWER IN", "from Edison plug k", tiles/watts); the Power labels select is hidden. Power wiring works
 like data wiring with the same patterns, corners and areas (Fewest circuits / Whole rows or columns / One continuous
 path), capacity t, plus the power link limit; on half-tile layouts by each piece's own watts (circuit full when watts >
 usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "This circuit is full (12 tiles)."
 
-Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
+Canvas rows: one "Circuit: <supply>, <cable>" row per supply and cable type ("120 V · 20 A · loaded to 80% = 1,920 W usable"),
 Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak amps per phase, each cable "cable 1: A 32.0 · B 32.0 · C 32.0 A" (circuit amps = watts / V; circuits land A, B, C
 repeating within a cable, so Socapex 1 and 4 on A, 2 and 5 on B, 3 and 6 on C; L14-30 X, Y on the two legs A, B; a 208 V circuit,
 or 240 V on L14-30, is line to line and counts its full current on two phases: circuit i on PHN[i%3] and PHN[(i+1)%3]),

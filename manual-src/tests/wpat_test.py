@@ -4,7 +4,7 @@ async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1500,'height':1100})
         await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html'); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(800)
-        await pg.evaluate("()=>{S.cols=8;S.rows=6;S.pdist=true;S.showPow=true;S.pmode='Snake';storeWall();sync()}")
+        await pg.evaluate("()=>{S.cols=8;S.rows=6;(S.dists.length||distAct('dadd'));S.showPow=true;S.pmode='Snake';storeWall();sync()}")
         for i in range(8):
             await pg.evaluate(f"()=>document.querySelector('[data-pp=\"{i+8}\"]').click()")
             assert await pg.evaluate("()=>S.pmode=='Snake'&&document.querySelectorAll('#ppat .wpb').length==16")

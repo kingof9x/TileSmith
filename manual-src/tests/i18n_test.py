@@ -78,7 +78,7 @@ async def main():
 
         # --- the binder PDF stays Latin in Japanese (Helvetica has no CJK) ---
         await pg.evaluate("()=>{localStorage.clear()}"); await pg.reload(); await pg.wait_for_timeout(700)
-        await pg.evaluate("""()=>{S.cols=8;S.rows=4;S.proc='NovaStar VX1000 Pro';applySpec();S.pdist=true;S.bShow='Tour';sync();setLang('ja')}"""); await pg.wait_for_timeout(300)
+        await pg.evaluate("""()=>{S.cols=8;S.rows=4;S.proc='NovaStar VX1000 Pro';applySpec();(S.dists.length||distAct('dadd'));S.bShow='Tour';sync();setLang('ja')}"""); await pg.wait_for_timeout(300)
         out = tempfile.mkdtemp(prefix='i18n')
         async with pg.expect_download() as d: await pg.click('[data-a=binder]:visible')
         dl = await d.value; f = os.path.join(out, dl.suggested_filename); await dl.save_as(f)

@@ -7,7 +7,7 @@
 - shared circuits (2fer): two runs take one circuit number, the circuit count drops by one, over capacity flagged.
 - tray: click a cable then an output patches it (and swaps with the cable that was there); unpatch with the x button.
 - design load Typical 40% scales leg amps; circuits are still checked at max.
-- labels carry the distro phase; project without distros (sv 23) gives the same power rows as before; save/open keeps distros.
+- labels carry the distro phase; a project without distros (sv 23) gets Distro 1 with the same circuit; save/open keeps distros.
 """
 import asyncio, json, random
 from playwright.async_api import async_playwright
@@ -36,14 +36,14 @@ async def main():
         chk('240 V on split phase: both lines carry the current', all(abs(x - 10) < 1e-9 for x in r['d']), r['d'])
         chk('single phase: line = neutral', abs(r['e'][0] - 7) < 1e-9 and abs(r['e'][1] - 7) < 1e-9, r['e'])
 
-        r = await pg.evaluate("""()=>{S.pdist=true;S.pf=0.95;storeWall();sync();const a=amp(2.88,120),t=tpcCalc(walls[cur]);S.pf=1;sync();return{a,t,t1:tpcCalc(walls[cur])}}""")
+        r = await pg.evaluate("""()=>{distAct('dadd');S.pf=0.95;storeWall();sync();const a=amp(2.88,120),t=tpcCalc(walls[cur]);S.pf=1;sync();return{a,t,t1:tpcCalc(walls[cur])}}""")
         chk('2,880 W at 120 V, PF 0.95 = 25.3 A', r['a'] == '25.3 A', r['a'])
         chk('PF 0.95 gives 15 tiles per circuit, PF 1 gives 16', r['t'] == 15 and r['t1'] == 16, r)
 
         # L14-30: three 12-tile walls, one circuit each -> cable 1 legs X,Y (A,B), cable 2 leg X (A)
         await fresh(pg)
-        setup = """()=>{S.pdist=true;S.pdt='L14-30 (2 circuits per cable)';S.pmode='Snake';S.cols=4;S.rows=3;S.name='A';storeWall();showAll();
-          for(const n of ['B','C']){addWall(false);S.cols=4;S.rows=3;S.pmode='Snake';S.name=n;storeWall()}showAll();distAct('dadd');S.dists[0].l1430=4;sync()}"""
+        setup = """()=>{S.pdt='L14-30 (2 circuits per cable)';S.pmode='Snake';S.cols=4;S.rows=3;S.name='A';storeWall();showAll();
+          for(const n of ['B','C']){addWall(false);S.cols=4;S.rows=3;S.pmode='Snake';S.pown=false;S.name=n;storeWall()}showAll();distAct('dadd');S.dists[0].l1430=4;sync()}"""
         await pg.evaluate(setup)
         r = await pg.evaluate("()=>{const L=DSX.load[S.dists[0].id];return{legs:L.legs,n:L.neutral,p:JSON.parse(JSON.stringify(S.pcab))}}")
         chk('L14-30 before Balance: 24 / 12 / 0 A', [round(x, 1) for x in r['legs']] == [24.0, 12.0, 0.0], r['legs'])
@@ -64,7 +64,7 @@ async def main():
         random.seed(7); worse = 0; moved = 0; unp = 0
         for trial in range(12):
             cols, rows, n = random.randint(2, 9), random.randint(2, 6), random.randint(1, 3)
-            r = await pg.evaluate("""([cols,rows,n,lim])=>{newCanvas();S.pdist=true;S.pdt='Socapex (6 circuits per cable)';S.pmode='Snake';S.plink=lim;S.cols=cols;S.rows=rows;storeWall();showAll();
+            r = await pg.evaluate("""([cols,rows,n,lim])=>{newCanvas();S.pdt='Socapex (6 circuits per cable)';S.pmode='Snake';S.plink=lim;S.cols=cols;S.rows=rows;storeWall();showAll();
               for(let i=1;i<n;i++){addWall(false);S.cols=cols+i;S.rows=rows;S.pmode='Snake';S.plink=lim;storeWall()}showAll();distAct('dadd');S.dists[0].soca=24;sync();
               const id=S.dists[0].id,b4=DSX.load[id].max,o4=JSON.stringify(Object.fromEntries(Object.entries(S.pcab).map(([k,v])=>[k,v.o])));dsBalance(id);sync();
               return{b4,af:DSX.load[id].max,same:o4==JSON.stringify(Object.fromEntries(Object.entries(S.pcab).map(([k,v])=>[k,v.o]))),un:DSX.cables.filter(c=>!(S.pcab[c.key]&&S.pcab[c.key].d)).length}}""",
@@ -77,7 +77,7 @@ async def main():
         chk('every cable patched (24 Socapex outputs)', unp == 0, unp)
 
         # a full distro leaves cables unpatched and says so
-        r = await pg.evaluate("""()=>{newCanvas();S.pdist=true;S.pmode='Snake';S.plink=1;S.cols=5;S.rows=5;storeWall();showAll();distAct('dadd');S.dists[0].soca=2;sync();
+        r = await pg.evaluate("""()=>{newCanvas();S.pmode='Snake';S.plink=1;S.cols=5;S.rows=5;storeWall();showAll();distAct('dadd');S.dists[0].soca=2;sync();
           return{n:DSX.cables.length,un:DSX.cables.filter(c=>!(S.pcab[c.key]&&S.pcab[c.key].d)).length,row:dsRows(DSX).find(r=>r[0]=='Cables not patched')}}""")
         chk('25 one-tile circuits = 5 Socapex; 2 outputs -> 3 not patched', r['n'] == 5 and r['un'] == 3 and r['row'] is not None, r)
 
@@ -96,25 +96,25 @@ async def main():
         chk('tray: drag and drop patches the cable (undo step recorded)', r['p']['o'] == 'soca1' and '(' in r['u'], r)
 
         # shared circuit (2fer): two small walls on one circuit
-        r = await pg.evaluate("""()=>{newCanvas();S.pdist=true;S.pmode='Snake';S.cols=2;S.rows=2;S.name='Riser';storeWall();showAll();addWall(false);S.cols=3;S.rows=2;S.pmode='Snake';S.name='Logo';storeWall();showAll();sync();
+        r = await pg.evaluate("""()=>{newCanvas();distAct('dadd');S.pmode='Snake';S.cols=2;S.rows=2;S.name='Riser';storeWall();showAll();addWall(false);S.cols=3;S.rows=2;S.pmode='Snake';S.name='Logo';storeWall();showAll();sync();
           const n0=powerTotals(powerPlan()).n;document.querySelectorAll('#left details').forEach(d=>d.open=true);sync();return n0}""")
         await pg.select_option('#shA', '0,0'); await pg.select_option('#shB', '1,0'); await pg.click('[data-dact=shadd]')
         r = await pg.evaluate("()=>{const P=powerPlan(),T=powerTotals(P);return{n:T.n,ks:P.flat().map(x=>x.k),share:P.flat().map(x=>x.share),over:T.over,lab:(sync(),labelList().filter(p=>p[0].kind=='p').map(p=>p[0].big))}}")
         chk('2fer: 2 runs on one circuit number', r['n'] == 1 and r['ks'] == [1, 1] and r['share'] == [2, 2] and r['over'] == 0, r)
-        r = await pg.evaluate("""()=>{const W=S.pman;newCanvas();S.pdist=true;S.pmode='Manual';S.cols=4;S.rows=5;storeWall();showAll();S.pman=[[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[3,1],[0,2],[1,2]],[[2,2],[3,2],[0,3],[1,3],[2,3],[3,3],[0,4],[1,4]]];storeWall();sync();
+        r = await pg.evaluate("""()=>{const W=S.pman;newCanvas();distAct('dadd');S.pmode='Manual';S.cols=4;S.rows=5;storeWall();showAll();S.pman=[[[0,0],[1,0],[2,0],[3,0],[0,1],[1,1],[2,1],[3,1],[0,2],[1,2]],[[2,2],[3,2],[0,3],[1,3],[2,3],[3,3],[0,4],[1,4]]];storeWall();sync();
           S.pshare=[[0,[0,0],[0,1]]];sync();const P=powerPlan();return{over:powerTotals(P).over,n:powerTotals(P).n}}""")
         chk('2fer over the circuit (Manual): flagged over capacity', r['over'] == 1 and r['n'] == 1, r)
 
         # design load
-        r = await pg.evaluate("""()=>{newCanvas();S.pdist=true;S.pmode='Snake';S.cols=4;S.rows=4;storeWall();showAll();distAct('dadd');sync();const a=DSX.load[S.dists[0].id].max,t=tpcCalc(walls[cur]);
+        r = await pg.evaluate("""()=>{newCanvas();S.pmode='Snake';S.cols=4;S.rows=4;storeWall();showAll();distAct('dadd');sync();const a=DSX.load[S.dists[0].id].max,t=tpcCalc(walls[cur]);
           S.pload=PLOAD[1];S.ptyp=40;sync();const b=DSX.load[S.dists[0].id].max;return{a,b,t,t2:tpcCalc(walls[cur])}}""")
         chk('Typical 40% scales leg amps; tiles per circuit unchanged', abs(r['b'] - r['a'] * .4) < 1e-6 and r['t'] == r['t2'], r)
 
-        # old project without distros: power rows identical to v3.5 maths
+        # old project without distros (power settings 2026-11-19): the old circuit settings become Distro 1, same circuit maths
         r = await pg.evaluate("""()=>{newCanvas();const o={sv:23,S:{pdist:true,pvolt:120,pamps:20,derate:true},walls:[Object.assign(wallDef(),{cols:6,rows:4,pmode:'Snake',preset:'Unilumin UpadIV 2.6'})],cur:0};
           applyState(o);sync();return{rows:powRowsCanvas(powerPlan()).map(r=>r.join(' | ')),ds:S.dists.length,tray:document.querySelector('#ptray').hidden}}""")
-        chk('sv 23 project: no distros, tray hidden', r['ds'] == 0 and r['tray'], r)
-        chk('sv 23 project: same circuit row as v3.5', 'Circuit | 120 V · 20 A · loaded to 80% = 1,920 W usable' in r['rows'], r['rows'])
+        chk('sv 23 project: one distro made from the old settings, tray shown', r['ds'] == 1 and not r['tray'], r)
+        chk('sv 23 project: same circuit as v3.5', 'Circuit: Distro 1, Socapex | 120 V · 20 A · loaded to 80% = 1,920 W usable' in r['rows'], r['rows'])
 
         # save and open keeps distros and patch
         r = await pg.evaluate("""()=>{distAct('dadd');S.dists[0].name='Distro SL';S.dists[0].amps=200;sync();const o=JSON.parse(JSON.stringify(stateObj()));newCanvas();applyState(o);sync();return{sv:o.sv,d:S.dists,p:S.pcab}}""")
@@ -125,7 +125,7 @@ async def main():
         chk('bad saved values are cleaned', r['d'][0]['amps'] == 100 and r['d'][0]['map'] == 'ABCABC' and r['d'][0]['sys'] == '120/208 V 3-phase wye' and r['p'] == {} and r['s'] == [] and r['l'] == 'Max (spec)', r)
 
         # PDF export still works with distros
-        r = await pg.evaluate("""()=>{newCanvas();S.pdist=true;S.pmode='Snake';storeWall();showAll();distAct('dadd');sync();let ok=true;try{specSections();dsRows(dsState())}catch(e){ok=String(e)}return ok}""")
+        r = await pg.evaluate("""()=>{newCanvas();S.pmode='Snake';storeWall();showAll();distAct('dadd');sync();let ok=true;try{specSections();dsRows(dsState())}catch(e){ok=String(e)}return ok}""")
         chk('spec sections build with distros', r is True, r)
 
         chk('no page errors', not errs, errs)
