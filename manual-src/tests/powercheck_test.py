@@ -22,10 +22,10 @@ async def main():
         ok &= r['k1'] == ['A', 'B'] and r['k3'] == ['C', 'A'] and r['v'] == 208 and not r['warn']
         # 230 V Socapex (EU): line to neutral on a 400 V service
         r = await pg.evaluate("()=>{S.pvolt=230;S.derate=false;sync();return{k2:cPhases(2),v:svcVLL()}}"); print('230V', r); ok &= r['k2'] == ['B'] and r['v'] == 400
-        # breaker above the connector rating, and a voltage the connector is not made for
+        # breaker above the connector rating (now clamped to the rating: power cabling 2026-11-19), and a voltage the connector is not made for
         r = await pg.evaluate("()=>{S.pvolt=120;S.pamps=30;sync();const a=powWarn();S.pdt='L21-30 (3 circuits per cable)';S.pvolt=230;S.pamps=30;sync();const b=powWarn();S.pdt='L14-30 (2 circuits per cable)';S.pvolt=240;sync();return{a,b,c:powWarn(),l14:cPhases(1),note:document.querySelector('#pwnote').innerHTML}}")
-        print('WARN', json.dumps(r)[:600]); ok &= len(r['a']) == 1 and '20 A' in r['a'][0] and len(r['b']) == 1 and '230 V' in r['b'][0] and r['c'] == [] and r['l14'] == ['A', 'B']
-        r = await pg.evaluate("()=>{S.pdt='L21-30 (3 circuits per cable)';S.pvolt=120;S.pamps=40;sync();return document.querySelector('#pwnote').innerHTML}"); print('NOTE', r[:300]); ok &= 'bad' in r and '30 A' in r
+        print('WARN', json.dumps(r)[:600]); ok &= r['a'] == [] and len(r['b']) == 1 and '230 V' in r['b'][0] and r['c'] == [] and r['l14'] == ['A', 'B']
+        r = await pg.evaluate("()=>{S.pdt='L21-30 (3 circuits per cable)';S.pvolt=120;S.pamps=40;sync();return document.querySelector('#pwnote').innerHTML}"); print('NOTE', r[:300]); ok &= '30 A' in r and (await pg.evaluate('()=>S.pamps')) == 30  # clamped to the L21-30 rating
         await pg.evaluate("()=>{S.pamps=20;sync()}")
         # HELIOS: published table, next row up, nothing above 240 Hz
         r = await pg.evaluate("""()=>{const out={};for(const [f,d] of [[60,12],[60,10],[60,8],[50,12],[100,12],[120,12],[240,12],[24,10]]){S.fps=f;S.bpc=d;out[f+'/'+d]=specPx(PROC['HELIOS Jr'])}

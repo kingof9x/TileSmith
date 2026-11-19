@@ -12,6 +12,6 @@
   /mnt/project-files/power-cabling/research/.
 - Max W corrected from maker sheets: ROE Meru MR1.9 (300) and Half (150), INFiLED DB2.6 (150), AR4.8 (270), Absen KL1.5 II
   (129), PL2.5 Pro V10 (170), Unilumin UpadIV 1.9 (150), YES TECH MG6S 2.84 (105).
-- Open: INFiLED GXmk2 / NX voltage (website 100-240 V vs brochure 200-240 V; 200-240 used). Power vs Distros
-  reconciliation waits on Callum's pick (demo /mnt/project-files/power-cabling/power-cabling-demo.html).
+- Option A (Callum 2026-11-19, card): the distros set the rules. dsRules/dsVolts/dsKinds: voltage only one every distro supplies, cable only a type with distro outputs, breaker clamped to the connector rating (rA), #dsSrc shows the source. powercheck_test now expects the clamp instead of a breaker warning.
+- Open: INFiLED GXmk2 / NX voltage (website 100-240 V vs brochure 200-240 V; 200-240 used).
 - Test: tests/powercabling_test.py.

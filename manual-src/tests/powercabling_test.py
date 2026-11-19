@@ -38,6 +38,16 @@ async def main():
         chk(r['v'] == 208 and r['dis'] == [100, 110, 120], 'GX mk2 (200-240 V): 120 V is blocked and the circuits move to 208 V')
         chk(r['ruby'][0] == r['ruby'][1] and r['ruby'][0] > 0, f'ROE TRUE1 loop-through 16 A gives V x A / W panels {r["ruby"]}')
         chk('Power input' in r['rows'] and 'Panels per power link' in r['rows'] and 'Power source' in r['rows'], 'Engineering shows the maker power rows')
+        # option A: the distros set the rules (voltage, cable type, breaker)
+        r = await pg.evaluate("""()=>{const o={};S.preset='ROE Black Pearl BP2V2';applyPreset();storeWall();S.dists=[];S.pdt='Socapex (6 circuits per cable)';S.pamps=20;S.pvolt=230;sync();distAct('dadd');sync();
+          o.v=S.pvolt;o.dis=[...document.querySelectorAll('select[data-k="pvolt"] option')].filter(x=>x.disabled).map(x=>+x.value);o.src=$('#dsSrc').textContent;
+          S.dists[0].edison=0;S.pdt='powerCON to Edison (1 circuit per cable)';sync();o.kind=outKind();o.kdis=[...document.querySelectorAll('select[data-k="pdt"] option')].filter(x=>x.disabled).map(x=>x.value);
+          S.pamps=30;sync();o.amps=S.pamps;S.dists.push(dsSan({id:'d9',sys:'230/400 V 3-phase wye'},1));sync();o.mixed=$('#dsSrc').textContent;return o}""")
+        print(json.dumps(r))
+        chk(r['v'] == 208 and r['dis'] == [100, 110, 220, 230, 240] and 'Distro 1' in r['src'], 'with a 120/208 V distro only 120 and 208 V can be picked')
+        chk(r['kind'] == 'soca' and r['kdis'] == ['L14-30 (2 circuits per cable)', 'powerCON to Edison (1 circuit per cable)'], 'a cable type no distro has outputs for is blocked')
+        chk(r['amps'] == 20, 'the breaker cannot go above the Socapex rating')
+        chk('do not share a circuit voltage' in r['mixed'], 'distros on different systems are flagged')
         n = await pg.evaluate("()=>Object.keys(PWR).filter(k=>!P[k]).length"); chk(n == 0, 'every PWR key is a catalog model')
         chk(not errs, f'no page errors {errs}'); await b.close()
     print('ALL OK' if ok else 'FAILED')
