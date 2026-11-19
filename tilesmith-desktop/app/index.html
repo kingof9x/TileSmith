@@ -3944,7 +3944,7 @@ function legSum(items,n){const ang=n==3?[0,-2*Math.PI/3,2*Math.PI/3]:n==2?[0,Mat
 // every cable of every canvas with its circuits: [{key:'canvas:cable', cv, cab, kind, name, walls, runs:[{k, leg, watts, dw, wall, wi}]}]
 function dsCables(){const out=[],kind=outKind(),D=PD(),one=c=>{const plan=powerPlan(),by={};plan.forEach((runs,wi)=>runs.forEach(ci=>{const cab=cCab(ci.k);(by[cab]=by[cab]||{key:c+':'+cab,cv:c,cab,kind,runs:[]}).runs.push({k:ci.k,leg:(ci.k-1)%D.n,watts:ci.watts,dw:ci.dw,wall:walls[wi].name||'Wall '+(wi+1),wi})}));
   pcEmpty(plan,by,c,kind);
-  Object.keys(by).map(Number).sort((a,b)=>a-b).forEach(cab=>{const x=by[cab];x.name=(CVS.length>1?(CVS[c]&&CVS[c].name||'Canvas '+(c+1))+' · ':'')+(D.one?'Edison plug '+cab:D.name+' '+cab);x.walls=[...new Set(x.runs.map(r=>r.wall))].join(', ');out.push(x)})};
+  Object.keys(by).map(Number).sort((a,b)=>a-b).forEach(cab=>{const x=by[cab];x.name=(CVS.length>1?(CVS[c]&&CVS[c].name||'Canvas '+(c+1))+' · ':'')+(D.one?'Edison plug '+cab:D.name+' '+cab);x.walls=[...new Set(x.runs.map(r=>r.wall))].join(', ')||x.ew||'';out.push(x)})};
  if(CVX||CVS.length<2)one(cc);else CVS.forEach((c,i)=>withCv(i,()=>one(i)));return out}
 // patch every cable that has no valid output to the first free output of its type (distros in list order)
 function dsPatch(cables,full){const P=S.pcab,keys=new Set(cables.map(c=>c.key)),used={};
@@ -4113,7 +4113,7 @@ function pcabUI(){const box=$('#pcabCards'),nb=$('#pcabNote');if(!box||!nb)retur
  let note='';if(mine.some(x=>x.nocab))note=`<span class="bad">This wall needs more circuits than the cables run to it carry. Add a cable or use fewer tiles.</span>`;
  if(nb.__h!==note){nb.__h=note;nb.innerHTML=note}}
 // cables added to a wall that carry no circuit yet still go in the tray, so they get a distro output
-function pcEmpty(plan,by,c,kind){const nc=powerTotals(plan).cables;for(let q=1;q<=nc;q++)if(!by[q])by[q]={key:c+':'+q,cv:c,cab:q,kind,runs:[]}}
+function pcEmpty(plan,by,c,kind){const nc=powerTotals(plan).cables;for(let q=1;q<=nc;q++)if(!by[q]){const n=PD().n;let wi=-1;PCK0.forEach((k,i)=>{if(k<q*n)wi=i});by[q]={key:c+':'+q,cv:c,cab:q,kind,runs:[],ew:wi>=0?(walls[wi].name||'Wall '+(wi+1)):''}}}
 // Draw circuit / a chip on a wall with an automatic pattern: the pattern's circuits become Manual circuits to draw on
 function pcToManual(){storeWall();const w=walls[cur];if(w.pmode=='Manual')return;const P=powerPlan()[cur]||[];S.pman=P.map(x=>x.tiles.map(e=>Array.isArray(e)?e.slice():e));S.pmode='Manual';storeWall()}
 function pcDraw(){if(!pwiring){pwiring=true;S.showPow=true;wiring=false;halfEdit=false;goneEdit=false}pwMsg('Click or drag across tiles of '+(S.name||'this wall')+' in the viewport.')}
