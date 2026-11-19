@@ -178,6 +178,10 @@ KEYDESC = {
   'fibTr': 'Fibre trunk type: opticalCON DUO (1 breakout box per trunk) | opticalCON QUAD (2 boxes per trunk).',
   'fibLen': 'Fibre trunk lengths you own, comma separated, in cunit.',
   'fibTail': 'Copper tail lengths you own (breakout box to the first tile), comma separated, in cunit.',
+  # Power cabling
+  'pown': 'Per wall: start this wall on its own cable (default on), so walls too far apart never share a Socapex; unused circuits on it are spare.',
+  'pcabs': 'Per wall: cables run to this wall (0 = as many as it needs). Circuits past them are marked over capacity.',
+  'pmk': 'Per wall, internal: the power link limit TileSmith last set from the maker data (PWR), so a limit the user lowered is kept.',
   # Redundancy
   'wred': 'Wall key: redundancy for this wall: Full (backup processor, own route) | Backup processor (same port numbers) | Loop (spare ports, same processor) | Spare processor (on the truck) | None. Old projects get Loop, or None when ret was off.',
   'wpri': 'Wall key: redundancy priority (1-99, 1 = covered first when gear is short).',
