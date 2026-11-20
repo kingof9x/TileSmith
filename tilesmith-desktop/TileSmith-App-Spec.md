@@ -1,6 +1,6 @@
-# TileSmith 3.8 - app specification for building a clone
+# TileSmith 3.9 - app specification for building a clone
 
-Generated 2026-11-18 from TileSmith v3.8 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-11-20 from TileSmith v3.9 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -39,7 +39,7 @@ Mac (Syphon.framework via node-syphon) and video export (via ffmpeg). All settin
 
 Desktop: three columns. Left panel (settings, 350 px), centre (top bar + viewport), right panel (engineering, 310 px).
 Below 900 px wide the columns stack. Colours: dark UI (`--bg`, `--pn` panel, `--ac` teal accent #22a0ac-ish, `--am`
-amber for the version). Header: "TileSmith v3.8" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
+amber for the version). Header: "TileSmith v3.9" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
 
 ### 3.1 Left panel sections and submenus (in order)
 
@@ -65,8 +65,9 @@ others open. Add canvas opens the new canvas alone. Header text is not selectabl
     - Data wiring
   - Cabinet IDs
   - Power
-    - Distros
-    - Power wiring
+    - Supply
+    - Load
+    - This wall
   - Cable lengths
   - Rigging
   - Locations
@@ -222,9 +223,8 @@ dialog) deletes the state and reloads.
 | `pports` | 1 | Ports per processor / sending card (editable). |
 | `ret` | true | Old global Return lines switch (no UI now); only seeds wred for walls in old projects. |
 | `showData` | true | Draw data paths on the canvas. |
-| `pdist` | false | Power distribution ticked. Gates all power features. |
-| `pvolt` | 120 | Circuit voltage: 100, 110, 120, 208, 220, 230 or 240 V. |
-| `pamps` | 20 | Breaker size in amps (1-400). |
+| `pvolt` | 120 | Mirror of the current wall's circuit voltage (its supply's cv); set by pwMirror, not the user. |
+| `pamps` | 20 | Mirror of the current wall's breaker (its supply's cb, capped at the connector rating); set by pwMirror. |
 | `derate` | true | Load circuits to 80% (continuous load rule). |
 | `showPow` | true | Draw power runs on the canvas. |
 | `resSl` | One slice per LED wall | Resolume XML slice mode: One slice per LED wall \| One slice per tile. |
@@ -239,9 +239,6 @@ dialog) deletes the state and reloads.
 | `shGpu` | Automatic | Spout graphics card (Windows): Automatic (the high-performance card) or a card name from the list. The receiver must be on the same card. |
 | `lblWhat` | Data and power | Label printing: which cables to label: Data and power (default), Data only, Power only. |
 | `lblPow` | Cable and circuit labels | Power labels: "Cable and circuit labels" (default), "Circuit labels only", "Cable labels only". |
-| `pdt` | Socapex (6 circuits per cable) | Distribution cable: "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)". Choosing Edison sets pvolt 120 and pamps 15. |
-| `pwall` | 0 | Edison only: plugs per wall circuit (0-100, default 0 = no wall-circuit check). |
-| `pwallA` | 20 | Edison only: wall circuit breaker in amps (1-400, default 20). |
 | `lblSize` | Avery 5163 (10 per US Letter sheet) | Label sheet preset: Avery 5160 (30 per US Letter), Avery 5163 (10 per US Letter), Avery L7160 (21 per A4), Label roll 62 x 29 mm, or Custom label roll. |
 | `lblLayout` | Two identical panels | Wrap layout: Two identical panels (default), Flag fold-over (second panel rotated 180 degrees), Text in the middle, colour on the ends. |
 | `lblFlag` | Big end blocks | Colour flag style: Big end blocks (default), Top and bottom bars, Big corner squares. |
@@ -288,12 +285,13 @@ dialog) deletes the state and reloads.
 | `pload` | Max (spec) | Design load for distro and leg totals: Max (spec) \| Typical (% of max) \| Measured (W per tile). Circuits are always checked at max. |
 | `ptyp` | 40 | Typical design load in % of each tile's max watts (1-100, default 40). |
 | `pmeas` | 0 | Measured design load in watts per tile (0-5000; 0 = use max; never above a tile's max). |
-| `dists` | [] | Distros: [{id, name, sys (120/208 V 3-phase wye \| 127/220 V 3-phase wye \| 230/400 V 3-phase wye \| 120/240 V split phase \| Single phase), amps per leg, soca, l2130, l1430, edison (output counts), map (Socapex leg map, default ABCABC)}], at most 12. |
+| `dists` | [] | Distros: [{id, name, sys (120/208 V 3-phase wye \| 127/220 V 3-phase wye \| 230/400 V 3-phase wye \| 120/240 V split phase \| Single phase), amps per leg, soca, l2130, l1430, edison (output counts), map (Socapex leg map, default ABCABC), type (distro \| house), cv (circuit voltage), cb (circuit breaker A), outl (house: outlets per house circuit), hb (house breaker A)}], at most 12. Power is on while there is at least one. |
 | `pcab` | {} | Power patch: "canvas index:cable number" -> {d: distro id ('' = left unpatched on purpose), o: output key (soca1, l21302, edison3 ...), r: leg rotation 0-2}. |
 | `pshare` | [] | Shared circuits (2fer / 3fer): [canvas index, [wall, run], [wall, run](, [wall, run])]. |
 | `autoBal` | false | Rebalance every distro after every wiring change. |
 | `phaseView` | true | Colour power runs by phase (A white, B amber, C blue) and label them "1-1 A" when distros exist. |
 | `trayOpen` | true | Power tray under the viewport expanded. |
+| `pwv` | 2 | Power settings version: 2 = supplies own the circuit voltage and breaker. Older projects (no pwv) are migrated by pwMigrate. |
 | `gOn` | false | Limit the plan to the gear on hand (gProc, gTr, gBox): walls step down from their method, in priority order, with the reason shown. |
 | `gProc` | 2 | Processors on hand (0-50). |
 | `gTr` | 2 | Fibre trunks on hand (0-50). |
@@ -362,6 +360,11 @@ dialog) deletes the state and reloads.
 | `cin` | Bottom left | Wall key: where the cables arrive at the wall: Bottom left \| Bottom centre \| Bottom right \| Top left \| Top centre \| Top right. Each run = distance + climb along the wall to its first tile (no diagonals) + cslack, rounded up to a length you own. |
 | `wfib` | Auto | Wall key: data to this wall: Auto (fibre when the longest copper data run is over fibLim) \| Fibre \| Copper. |
 | `zone` | 0 | Wall key: the wall's zone id (0 = no zone). |
+| `pown` | true | Per wall: start this wall on its own cable (default on), so walls too far apart never share a Socapex; unused circuits on it are spare. |
+| `pcabs` | 0 | Per wall: cables run to this wall (0 = as many as it needs). Circuits past them are marked over capacity. |
+| `pmk` | 0 | Per wall, internal: the power link limit TileSmith last set from the maker data (PWR), so a limit the user lowered is kept. |
+| `pfeed` |  | Wall key: id of the supply (S.dists) that feeds the wall ('' = the first supply). |
+| `pdt` | Socapex (6 circuits per cable) | Wall key: the wall's cable, "Socapex (6 circuits per cable)" (default), "L14-30 (2 circuits per cable)" "L21-30 (3 circuits per cable)" or "powerCON to Edison (1 circuit per cable)"; only types its supply has outputs for. |
 | `wred` | Loop | Wall key: redundancy for this wall: Full (backup processor, own route) \| Backup processor (same port numbers) \| Loop (spare ports, same processor) \| Spare processor (on the truck) \| None. Old projects get Loop, or None when ret was off. |
 | `wpri` | 1 | Wall key: redundancy priority (1-99, 1 = covered first when gear is short). |
 | `rbw` | 2 | Wall key: bumper width in tiles (1-4). |
@@ -465,8 +468,8 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | ROE Jet JT3.1 Half | 500 | 500 | 160 | 160 | 3.125 | 5.8 | 140 | 86 |
 | ROE Jet JT3.9 | 500 | 1000 | 128 | 256 | 3.91 | 10.3 | 290 | 86 |
 | ROE Jet JT3.9 Half | 500 | 500 | 128 | 128 | 3.91 | 5.8 | 145 | 86 |
-| ROE Meru MR1.9 | 500 | 1000 | 256 | 512 | 1.9 | 14.8 | 220 | 48 |
-| ROE Meru MR1.9 Half | 500 | 500 | 256 | 256 | 1.9 | 7.4 | 110 | 48 |
+| ROE Meru MR1.9 | 500 | 1000 | 256 | 512 | 1.9 | 14.8 | 300 | 48 |
+| ROE Meru MR1.9 Half | 500 | 500 | 256 | 256 | 1.9 | 7.4 | 150 | 48 |
 | ROE Meru MR2.6 | 500 | 1000 | 192 | 384 | 2.6 | 14.8 | 230 | 48 |
 | ROE Meru MR2.6 Half | 500 | 500 | 192 | 192 | 2.6 | 7.4 | 115 | 48 |
 | ROE Obsidian OB2.6 | 500 | 500 | 192 | 192 | 2.6 | 5.4 | 220 | 74.6 |
@@ -527,7 +530,7 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | ROE Vanish Acoustics VC2.6 | 500 | 1000 | 192 | 384 | 2.604 | 9.26 | 210 | 85.6 |
 | Absen Polaris PL2.5 Pro | 500 | 500 | 200 | 200 | 2.5 | 9.6 | 128 | 87 |
 | Unilumin UpadIV 2.6 | 500 | 500 | 192 | 192 | 2.6 | 6.3 | 120 | 70 |
-| INFiLED Deep Black DB2.6 | 500 | 500 | 192 | 192 | 2.6 | 8 | 170 | 75 |
+| INFiLED Deep Black DB2.6 | 500 | 500 | 192 | 192 | 2.6 | 8 | 150 | 75 |
 | YES TECH MG10 1.9 | 500 | 500 | 256 | 256 | 1.95 | 6.6 | 113 | 71 |
 | YES TECH MG10 1.9 (1000-1200 nit) | 500 | 500 | 256 | 256 | 1.95 | 6.6 | 140 | 71 |
 | YES TECH MG10 2.6 | 500 | 500 | 192 | 192 | 2.6 | 6.6 | 113 | 71 |
@@ -555,7 +558,7 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | YES TECH MG6S Plus 3.9 | 500 | 750 | 128 | 192 | 3.91 | 7.6 | 158 | 73 |
 | YES TECH MG6S Plus 5.2 | 500 | 750 | 96 | 144 | 5.21 | 7.5 | 158 | 73 |
 | YES TECH MG6S 2.6 | 500 | 500 | 192 | 192 | 2.6 | 6.7 | 150 | 73 |
-| YES TECH MG6S 2.84 | 500 | 500 | 176 | 176 | 2.84 | 6.2 | 120 | 73 |
+| YES TECH MG6S 2.84 | 500 | 500 | 176 | 176 | 2.84 | 6.2 | 105 | 73 |
 | YES TECH MG6S 3.9 | 500 | 500 | 128 | 128 | 3.91 | 5.8 | 130 | 73 |
 | YES TECH Mega 3.9 outdoor | 500 | 1000 | 128 | 256 | 3.91 | 12.5 | 400 | 86 |
 | YES TECH Mega 4.6 outdoor | 500 | 1000 | 108 | 216 | 4.63 | 12.5 | 400 | 86 |
@@ -585,10 +588,10 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | Absen Polaris PL1.9 Pro V10 | 500 | 500 | 256 | 256 | 1.953 | 9 | 180 | 88 |
 | Absen Polaris PL2.9 Lite | 500 | 500 | 168 | 168 | 2.97 | 7.6 | 135 | 87 |
 | Absen Polaris PL3.9 V10 | 500 | 500 | 128 | 128 | 3.906 | 7.7 | 135 | 88 |
-| Absen KL1.5 II | 640 | 360 | 416 | 234 | 1.53 | 6 | 106 | 65 |
+| Absen KL1.5 II | 640 | 360 | 416 | 234 | 1.53 | 6 | 129 | 65 |
 | Absen A27 1.5 (A2715 V3) | 610 | 343 | 384 | 216 | 1.58 | 5 | 113 | 44.5 |
 | Absen NX2.5 | 960 | 540 | 384 | 216 | 2.5 | 10.4 | 233 | 43.5 |
-| Unilumin UpadIV 1.9 | 500 | 500 | 256 | 256 | 1.953 | 6.3 | 120 | 70.1 |
+| Unilumin UpadIV 1.9 | 500 | 500 | 256 | 256 | 1.953 | 6.3 | 150 | 70.1 |
 | Unilumin UpadIV 1.9 MIP | 500 | 500 | 256 | 256 | 1.953 | 6.3 | 80 | 70.1 |
 | Unilumin UpadIV 2.6 (8 scan) | 500 | 500 | 192 | 192 | 2.604 | 6.3 | 165 | 70.1 |
 | INFiLED Deep Black DB1.9 M2 MK2 | 500 | 500 | 256 | 256 | 1.95 | 7.8 | 140 | 75.5 |
@@ -605,7 +608,7 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | INFiLED HR1.5 M4 | 600 | 337.5 | 384 | 216 | 1.5625 | 7.8 | 150 | 73 |
 | INFiLED WP1.5 MT4 MK2 | 600 | 337.5 | 384 | 216 | 1.5625 | 5.2 | 52 | 29.7 |
 | INFiLED AR3.4 Mini | 500 | 500 | 144 | 144 | 3.47 | 8 | 150 | 66 |
-| INFiLED AR4.8 | 500 | 1000 | 104 | 208 | 4.81 | 12.5 | 300 | 66 |
+| INFiLED AR4.8 | 500 | 1000 | 104 | 208 | 4.81 | 12.5 | 270 | 66 |
 | INFiLED AR4.6 Mini outdoor | 500 | 500 | 108 | 108 | 4.63 | 13 | 150 | 131 |
 | YES TECH MG6S Pro 2.6 | 500 | 500 | 192 | 192 | 2.604 | 6 | 113 | 73 |
 | YES TECH MG6S 4.8 | 500 | 500 | 104 | 104 | 4.807 | 5.6 | 105 | 73 |
@@ -794,7 +797,7 @@ up. ROE figures come from the cabinet pages on roevisual.com (per panel, as prin
 | AOTO C1.8 | 480 | 480 | 256 | 256 | 1.875 | 3.88 | 110 | 82 |
 | AOTO C2.5 | 480 | 480 | 192 | 192 | 2.5 | 3.88 | 100 | 82 |
 | AOTO C3 | 480 | 480 | 160 | 160 | 3 | 3.88 | 116 | 82 |
-| Absen Polaris PL2.5 Pro V10 | 500 | 500 | 200 | 200 | 2.5 | 8.6 | 192 | 88 |
+| Absen Polaris PL2.5 Pro V10 | 500 | 500 | 200 | 200 | 2.5 | 8.6 | 170 | 88 |
 | Absen Polaris PL2.9 V10 | 500 | 500 | 168 | 168 | 2.97 | 8 | 135 | 88 |
 | Absen Polaris PL2.9 XL V10 | 500 | 1000 | 168 | 336 | 2.97 | 12.6 | 270 | 88 |
 | Absen Polaris PL3.9 XL V10 | 500 | 1000 | 128 | 256 | 3.906 | 12.6 | 270 | 88 |
@@ -1142,22 +1145,31 @@ each segment midpoint; a filled circle badge "P#" at the first tile and a dark r
 
 ## 11. Power
 
-Tick **Power distribution** to enable and choose the Distribution cable (setting pdt). Usable watts per circuit = V x A x (0.8 if
-"Load circuits to 80%"). Tiles per circuit t = floor(usable / wmax), capped by the power link limit if set. Note text:
-"One 120 V 20 A circuit loaded to 80% supplies 1,920 W, enough for 12 tiles of ... at 150 W max each."
+Engineering > Power has four parts (2026-11-19 rethink): **Supply** (distro and house power cards), **Load** (Design load, Power
+factor, Load circuits to 80%), **This wall** (Fed from, Cable, then the wiring settings) and **Show** (Show power runs, Colour by
+phase, Rebalance after every change). Power is on while S.dists holds a supply (pdOn); "+ Add distro" / "+ Add house power"
+add one. Each supply sets the circuit voltage cv (a multi-phase distro offers its line-to-neutral and line-to-line voltage) and
+the breaker cb, capped at the connector rating; each wall picks its supply (pfeed) and its cable (pdt, only types that supply
+has). pwC(w) returns the wall's {d supply, kind, D cable type, V, A, cw usable W}. Usable watts per circuit cw = V x A x
+(0.8 if "Load circuits to 80%") x pf. Tiles per circuit t = floor(usable / wmax), capped by the power link limit if set.
+Note text: "One 120 V 20 A circuit loaded to 80% supplies 1,920 W, enough for 12 tiles of ... at 150 W max each."
+A tile that does not take a supply's voltage moves the supply to its other voltage (toast).
 
-Circuits are numbered k = 1, 2, ... across walls; with n circuits per cable (Socapex 6, L14-30 2, L21-30 3) circuit k is on cable ceil(k/n) as leg (k-1) mod n (legs 1-6 for Socapex, X,Y for
-L14-30, X,Y,Z for L21-30); labels cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ... Without distros no phase is assigned.
-powerCON to Edison (n = 1, no PDU): every circuit is its own cable and is labelled just k (1, 2, 3 ...); cables needed = circuits, no spares. Selecting it sets pvolt 120 and pamps 15. Edison shows two extra
-fields, "Edison plugs per wall circuit (0 = do not check)" (pwall) and "Wall circuit breaker (A)" (pwallA). With pwall > 0, plug k is on wall circuit ceil(k / pwall); its load in amps is watts / pvolt, summed per wall circuit and
-compared with pwallA x (0.8 if "Load circuits to 80%"). Engineering rows: "Edison plugs needed", "Peak load per plug" ("plug 3 9.4 A"), and with pwall > 0 "Wall circuits needed", "Peak load per wall circuit" ("(over)" after any
-over its limit) and "Wall circuit over capacity". Labels: one pair per circuit, tags "1/2 EDISON PLUG END" (lines "Edison plug k[, wall circuit g]", "to <wall> <tile> (col, row)", tiles/watts/volts/breaker) and
+Circuits are numbered per wall segment (SEG): a wall starts new cables of its own type unless it shares the previous wall's
+cable (pown off, same supply, type and voltage). With n circuits per cable (Socapex 6, L14-30 2, L21-30 3) circuit k is on
+cable ceil(k/n) of its type as leg (k-1) mod n (legs 1-6 for Socapex, X,Y for L14-30, X,Y,Z for L21-30); labels
+cable-circuit with no type letter: 1-1 ... 1-6, 2-1 ... or 1-X, 1-Y, 2-X ...
+**House power** (type house, single phase, default 120 V 15 A, 12 Edison outlets): walls on it use powerCON to Edison (n = 1),
+every circuit is its own plug. Outlets per house circuit (outl) and House breaker (hb): plug j is on house circuit
+ceil(j / outl), its amps (W / (V x pf)) are summed per house circuit and compared with hb x (0.8 if derated); a house
+breaker above 20 A is a warning. Engineering rows per house supply: Supply, House circuits, Load per house circuit, Outlets
+used, Plugs, Over capacity. Labels: one pair per circuit, tags "1/2 EDISON PLUG END" (lines "Edison plug k[, wall circuit g]", "to <wall> <tile> (col, row)", tiles/watts/volts/breaker) and
 "2/2 POWERCON END" ("<wall> <tile> POWER IN", "from Edison plug k", tiles/watts); the Power labels select is hidden. Power wiring works
 like data wiring with the same patterns, corners and areas (Fewest circuits / Whole rows or columns / One continuous
 path), capacity t, plus the power link limit; on half-tile layouts by each piece's own watts (circuit full when watts >
 usable or tiles > link limit). Manual: Wire tiles, New circuit, Undo, Clear; "This circuit is full (12 tiles)."
 
-Canvas rows: Power distribution (the chosen cable type), Circuit "120 V · 20 A · loaded to 80% = 1,920 W usable",
+Canvas rows: one "Circuit: <supply>, <cable>" row per supply and cable type ("120 V · 20 A · loaded to 80% = 1,920 W usable"),
 Circuits used, Min. circuits if every circuit is full, <cable name> cables "2 (3 spare circuits)", Peak amps per phase, each cable "cable 1: A 32.0 · B 32.0 · C 32.0 A" (circuit amps = watts / V; circuits land A, B, C
 repeating within a cable, so Socapex 1 and 4 on A, 2 and 5 on B, 3 and 6 on C; L14-30 X, Y on the two legs A, B; a 208 V circuit,
 or 240 V on L14-30, is line to line and counts its full current on two phases: circuit i on PHN[i%3] and PHN[(i+1)%3]),
