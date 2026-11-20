@@ -52,16 +52,16 @@ https://github.com/user-attachments/assets/3fe2f407-80e1-4f42-a2f5-a2593f6d69d9
 
 ## How to: give each LED wall its own Socapex cable
 
-Walls that are too far apart to share a power run each get their own cable. In this screenshot, Main uses Socapex 1 and 2, IMAG Left uses Socapex 3, and the legs a wall does not need show as dashed *spare* chips.
+Walls that are too far apart to share a power run each get their own cable. In this screenshot, Main uses Socapex 1 and 2, IMAG Left uses Socapex 3, and the legs a wall does not need show as dashed *spare* chips. The numbers match the steps below.
 
 <img src="docs/screenshots/features/power-per-wall.png" alt="Each LED wall on its own Socapex cable: This wall panel and the power tray">
 
 1. Open **Engineering › Power** and click **+ Add distro** (or **+ Add house power**). Supply, Load and This wall only appear once there is a supply.
 2. Select a wall in **Canvases › LED walls**, open **Power › This wall** and pick a **Pattern**, or draw circuits by hand with **Draw circuit**.
-3. Make sure **Start this wall on its own cable (walls too far apart to share a power run)** is ticked. It sits under Power link limit, so you may need to scroll the left panel down to see it. New walls have it ticked.
-4. Select the next wall and do the same. The power tray under the viewport shows each cable, the wall it runs to and the distro output it is patched to.
+3. Make sure **Start this wall on its own cable (walls too far apart to share a power run)** is ticked (**3** in the screenshot). It sits under Power link limit, so you may need to scroll the left panel down to see it. New walls have it ticked.
+4. Select the next wall and do the same. The power tray under the viewport shows each cable, the wall it runs to and the distro output it is patched to (**4**).
 
-**Spare legs.** A wall uses only the circuits it needs, and the rest of its cable stays spare. To leave more legs free, keep **Power link limit** at 0 or the maker's count (a lower limit spreads the tiles over more legs). You can also raise **Cables run to this wall** to run an extra, empty cable, or draw the circuits yourself and leave the chips you want spare unused. There is no setting yet that reserves a number of legs on every cable.
+**Spare legs.** A wall uses only the circuits it needs, and the rest of its cable stays spare (**S**). To leave more legs free, keep **Power link limit** at 0 or the maker's count (a lower limit spreads the tiles over more legs). You can also raise **Cables run to this wall** to run an extra, empty cable, or draw the circuits yourself and leave the chips you want spare unused. There is no setting yet that reserves a number of legs on every cable.
 
 ## What's new in 3.7 and 3.8
 

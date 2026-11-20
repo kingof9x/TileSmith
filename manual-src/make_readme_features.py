@@ -6,6 +6,8 @@
 # to someone on the release before it. Without it the shots use the version in index.html.
 import asyncio, json, re, sys, os
 from playwright.async_api import async_playwright
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from annotate import annotate
 APP = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else '../tilesmith-desktop/app/index.html')
 OUT = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else 'readme-shots')
 os.makedirs(OUT, exist_ok=True)
@@ -32,13 +34,14 @@ BASE = """()=>{S.cw=3000;S.ch=1500;S.preset='ROE Black Pearl BP2V2';applyPreset(
  S.proc='NovaStar VX1000 Pro';applySpec();walls.forEach(w=>{w.wmode='Snake';w.pmode='Snake'});S.wmode='Snake';S.pmode='Snake';S.showData=true;storeWall();
  selWall(0);showAll();sync();fit()}"""
 
-async def shot(pg, name, setup, open_names, scroll=None, wait=1200, eng=None):
+async def shot(pg, name, setup, open_names, scroll=None, wait=1200, eng=None, annot=None):
     await pg.evaluate(setup)
     if open_names is not None: await pg.evaluate(OPEN, open_names)
     if scroll: await pg.evaluate(SCROLL, scroll)
     await pg.evaluate("()=>{sync();fit()}")
     await pg.wait_for_timeout(wait)
     if eng: await pg.evaluate("(q)=>{const e=document.querySelector(q);if(e)e.scrollIntoView({block:'start'})}", eng); await pg.wait_for_timeout(300)
+    if annot: await annotate(pg, annot)  # circles and arrows on the controls the README's steps name
     await pg.screenshot(path=os.path.join(OUT, name + '.png'))
     print('wrote', name + '.png')
 
@@ -56,7 +59,10 @@ async def main():
         await pg.close(); pg = await fresh()
         # two walls, each on its own Socapex cable: This wall (Start this wall on its own cable) and the power tray
         await shot(pg, 'power-per-wall', """()=>{S.showPow=true;S.showData=false;S.proc='None';walls.forEach(w=>{w.wmode='None'});S.wmode='None';distAct('dadd');storeWall();selWall(0);sync();
-          setTimeout(()=>{const k=document.querySelector('#pcabSet');if(k)k.scrollIntoView({block:'center'})},300)}""", ['Power', 'This wall'], None, 1500)
+          setTimeout(()=>{const k=document.querySelector('#pcabSet');if(k)k.scrollIntoView({block:'center'})},300)}""", ['Power', 'This wall'], None, 1500,
+                   annot=[{'sel': 'label:has([data-k=pown])', 'n': 3, 'dx': 230, 'dy': 0, 'pad': 4},
+                          {'sel': '#pcabCards .pchip.sp', 'all': True, 'n': 'S', 'dx': 230, 'dy': -45, 'pad': 4},
+                          {'sel': '#ptray .ptchip', 'all': True, 'n': 4, 'dx': 120, 'dy': 95, 'pad': 6}])
         await pg.close(); pg = await fresh()
         await shot(pg, 'cable-fibre', """()=>{S.cabOn=true;S.cunit='m';S.cslack=10;selWall(0);S.cdD=140;S.cdP=20;S.wfib='Auto';storeWall();selWall(1);S.cdD=30;S.cdP=15;storeWall();selWall(0);sync()}""",
                    ['Cable lengths'], 'Cable lengths')

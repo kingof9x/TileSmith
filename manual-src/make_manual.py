@@ -4,6 +4,8 @@
 # Run: python3 make_manual.py   (fails if a pattern, fit mode or video format has no description here)
 import asyncio, json, html, pathlib, datetime, base64, os
 from playwright.async_api import async_playwright
+import sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from annotate import annotate, ANNOT_CLEAR
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = pathlib.Path(os.environ.get('TILESMITH_ROOT', HERE.parent / 'tilesmith-desktop'))   # the app folder (next to manual-src)
@@ -158,9 +160,16 @@ async def shots_and_data():
            document.querySelectorAll('#left details.subd').forEach(x=>{if(!x.contains(d)&&!d.contains(x)&&!x.contains(d))x.open=false});for(let e=d;e;e=e.parentElement&&e.parentElement.closest('details'))e.open=true;
            const a=d.querySelector('[data-k=pmode]').closest('label,div'),z=document.querySelector('#pcabCards'),L=document.querySelector('#left');
            L.scrollTop+=a.getBoundingClientRect().top-L.getBoundingClientRect().top-30;const A=a.getBoundingClientRect(),Z=z.getBoundingClientRect(),R=L.getBoundingClientRect();
-           return {x:R.left,y:A.top-30,width:R.width,height:Math.min(Z.bottom+60,R.bottom)-(A.top-30)}}"""); await pg.wait_for_timeout(300)
-        await shot('sec_pown', rc)
-        await shot('ptray', el='#ptray'); crop('ptray', 420)
+           return {x:R.left,y:A.top-30,width:R.width+70,height:Math.min(Z.bottom+60,R.bottom)-(A.top-30)}}"""); await pg.wait_for_timeout(300)
+        # circles and arrows on the controls the steps name (numbers match the steps in the text)
+        await annotate(pg, [{'sel': 'label:has([data-k=pown])', 'n': 3, 'side': 'right', 'gap': 34, 'pad': 4},
+                            {'sel': '#pcabCards .pchip.sp', 'all': True, 'n': 'S', 'side': 'right', 'gap': 34, 'pad': 4},
+                            {'sel': '[data-pcx=draw]', 'n': 'D', 'side': 'right', 'gap': 34, 'pad': 4}])
+        await shot('sec_pown', rc); await ev(ANNOT_CLEAR)
+        await ev("()=>document.querySelector('#ptray').scrollIntoView({block:'center'})"); await pg.wait_for_timeout(200)
+        await annotate(pg, [{'sel': '#ptray .ptchip', 'all': True, 'n': 4, 'dx': 0, 'dy': 70, 'pad': 6}])
+        tr = await ev("()=>{const r=document.querySelector('#ptray').getBoundingClientRect();return {x:r.left,y:r.top,width:r.width,height:Math.min(r.height,420)}}")
+        await shot('ptray', tr); await ev(ANNOT_CLEAR)
         await ev("()=>{selWall(1);delWall();selWall(0)}")
         await ev("()=>{S.pmode='None';S.dists=[];S.ids=true;storeWall();sync()}")
         # branded pattern with centre box text
@@ -414,11 +423,11 @@ table.small{{font-size:8.4pt}} tr{{break-inside:avoid}} code{{font-family:'DejaV
 <p><b>Two walls on two Socapex cables, step by step:</b></p>
 <ol><li>Open <span class="key">Engineering › Power</span> and click <b>+ Add distro</b> (or <b>+ Add house power</b>). Supply, Load and This wall only appear once there is a supply.</li>
 <li>Select the first wall in <span class="key">Canvases › LED walls</span>, open <span class="key">Power › This wall</span> and pick a <b>Pattern</b> (or draw circuits by hand, below).</li>
-<li>Make sure <b>Start this wall on its own cable (walls too far apart to share a power run)</b> is ticked. It sits under Power link limit; scroll the left panel down if you do not see it. New walls have it ticked.</li>
-<li>Select the second wall and do the same. The power tray now shows <i>Socapex 1 → Main</i> and <i>Socapex 2 → Side</i>, each patched to its own distro output.</li></ol>
-{img('sec_pown', 'This wall with Start this wall on its own cable ticked, the wall’s cable card with its circuit chips, + Add Socapex cable and Draw circuit.', '60%')}
-{img('ptray', 'The power tray: Socapex 1 runs to Main, Socapex 2 to Side.', '90%')}
-<p><b>Spare legs.</b> A wall uses only the circuits it needs; the rest of its cable stays spare (dashed <i>spare</i> chips on the cable card, and <i>Spare circuits</i> in Engineering). To leave more legs free on purpose, keep <b>Power link limit</b> at 0 or the maker’s count (a lower limit spreads the tiles over more legs), raise <b>Cables run to this wall</b> to run an extra, empty cable, or draw the circuits yourself with <b>Draw circuit</b> and leave the chips you want spare unused. There is no setting yet that reserves a number of legs on every cable.</p>
+<li>Make sure <b>Start this wall on its own cable (walls too far apart to share a power run)</b> is ticked (3 in the picture below). It sits under Power link limit; scroll the left panel down if you do not see it. New walls have it ticked.</li>
+<li>Select the second wall and do the same. The power tray now shows <i>Socapex 1 → Main</i> and <i>Socapex 2 → Side</i>, each patched to its own distro output (4).</li></ol>
+{img('sec_pown', 'This wall: (3) Start this wall on its own cable, ticked; (S) the spare circuits on the wall’s cable card; (D) Draw circuit.', '60%')}
+{img('ptray', 'The power tray: (4) Socapex 1 runs to Main, Socapex 2 to Side.', '90%')}
+<p><b>Spare legs.</b> A wall uses only the circuits it needs; the rest of its cable stays spare (dashed <i>spare</i> chips on the cable card, S in the picture, and <i>Spare circuits</i> in Engineering). To leave more legs free on purpose, keep <b>Power link limit</b> at 0 or the maker’s count (a lower limit spreads the tiles over more legs), raise <b>Cables run to this wall</b> to run an extra, empty cable, or draw the circuits yourself with <b>Draw circuit</b> (D) and leave the chips you want spare unused. There is no setting yet that reserves a number of legs on every cable.</p>
 <p>Each LED wall starts on its own cable, so two walls too far apart to share a power run never end up on the same Socapex; the circuits a wall does not use are spare. Untick <b>Start this wall on its own cable</b> to carry on from the wall before. Each cable of the wall is a card with a chip per circuit, showing its tiles against the circuit's limit and the distro output it is patched to. <b>+ Add Socapex cable</b> runs one more cable to the wall (the × on an empty last cable takes it away again); it gets a distro output even before it carries a circuit. <b>Cables run to this wall</b> holds the same number (0 = as many as it needs); circuits past them are shown as over capacity. <b>Draw circuit</b> starts a new circuit and lets you click or drag across tiles in the viewport; click a chip to draw onto that circuit instead, or a dashed <i>spare</i> chip to start the next one. If the wall had an automatic pattern, its circuits are kept as Manual circuits. A full circuit refuses the next tile.</p>
 <h3>Maker power limits</h3><p>TileSmith knows the input voltage and the panels allowed on one power link for most tile models, from each maker's own spec sheets and manuals (shown as <i>Power source</i> in Engineering). Circuit voltages a tile model is not made for are greyed out, and the <b>Power link limit</b> is set to the maker's count for the circuit voltage: you can set it lower, never higher. Where a maker gives only a loop-through current, the limit is that current × the voltage ÷ the tile's max watts.</p>
 <h3>Shared circuits (2fer / 3fer)</h3><p>Under <b>This wall › Shared circuits</b>, pick two or three runs and click <b>Share one circuit</b> to feed them from one circuit through a 2fer or 3fer. They take one circuit number and the labels read <i>1-3a</i>, <i>1-3b</i>. TileSmith refuses a share that draws more than one circuit supplies, except with Manual wiring, where it is allowed and shown as over capacity.</p>
