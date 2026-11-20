@@ -3,7 +3,8 @@
 # Each item: {"sel": css selector} or {"text": start of the element's text} (optionally "within": css selector to search in),
 # "n": the step number shown in the badge, "dx"/"dy": where the badge sits relative to the circle (pixels),
 # "pad": extra space around the element, "all": true to circle every match of "sel" together,
-# "side": "right"/"left" puts the badge just outside the box on that side ("gap" pixels away). The overlay is removed again with  await pg.evaluate(ANNOT_CLEAR).
+# "side": "right"/"left" puts the badge just outside the box on that side ("gap" pixels away).
+# "corner": "tl"/"tr"/"bl"/"br" puts the badge inside that corner of the box with no arrow (for big areas such as whole panels). The overlay is removed again with  await pg.evaluate(ANNOT_CLEAR).
 ANNOT = r"""(items)=>{
  document.getElementById('tsAnnot')?.remove();
  const NS='http://www.w3.org/2000/svg',W=innerWidth,H=innerHeight;
@@ -25,11 +26,13 @@ ANNOT = r"""(items)=>{
   const r=e.getBoundingClientRect(),pd=it.pad??8,cx=r.left+r.width/2,cy=r.top+r.height/2,rx=r.width/2+pd,ry=r.height/2+pd;
   mk('rect',{x:cx-rx,y:cy-ry,width:2*rx,height:2*ry,rx:Math.min(14,ry),fill:'none',stroke:'#ff3b30','stroke-width':4});
   if(it.n==null)continue;
-  const ox=it.side=='right'?rx+(it.gap??42):it.side=='left'?-(rx+(it.gap??42)):(it.dx??-(rx+60));
-  const bx=Math.max(18,Math.min(W-18,cx+ox)),by=Math.max(18,Math.min(H-18,cy+(it.dy??0)));
+  const cn=it.corner||'',ci=26;
+  const ox=cn?(cn.includes('l')?-rx+ci:rx-ci)+(it.dx??0):it.side=='right'?rx+(it.gap??42):it.side=='left'?-(rx+(it.gap??42)):(it.dx??-(rx+60));
+  const oy=cn?(cn.includes('t')?-ry+ci:ry-ci)+(it.dy??0):(it.dy??0);
+  const bx=Math.max(18,Math.min(W-18,cx+ox)),by=Math.max(18,Math.min(H-18,cy+oy));
   const ang=Math.atan2(cy-by,cx-bx),c=Math.abs(Math.cos(ang)),sn=Math.abs(Math.sin(ang)),k=Math.min(c?rx/c:1e9,sn?ry/sn:1e9)+4,ex=cx-Math.cos(ang)*k,ey=cy-Math.sin(ang)*k;
   const sx=bx+Math.cos(ang)*18,sy=by+Math.sin(ang)*18;
-  if(Math.hypot(ex-sx,ey-sy)>8)mk('line',{x1:sx,y1:sy,x2:ex,y2:ey,stroke:'#ff3b30','stroke-width':4,'marker-end':'url(#tsArr)'});
+  if(!cn&&Math.hypot(ex-sx,ey-sy)>8)mk('line',{x1:sx,y1:sy,x2:ex,y2:ey,stroke:'#ff3b30','stroke-width':4,'marker-end':'url(#tsArr)'});
   mk('circle',{cx:bx,cy:by,r:16,fill:'#ff3b30',stroke:'#fff','stroke-width':2.5});
   const t=mk('text',{x:bx,y:by+6.5,'text-anchor':'middle','font-family':'Arial,Helvetica,sans-serif','font-size':19,'font-weight':'bold',fill:'#fff'});t.textContent=String(it.n)}
  document.body.appendChild(svg);return miss}"""
