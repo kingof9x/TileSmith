@@ -2,7 +2,7 @@
 
 **[TLDR I just want to download it](#download)**
 
-Pre production software for LED walls. Engineering specs, cable labels, pixel maps and test patterns with some fun animation for vidiots. Yes it is vibe coded.
+Pre production software for LED walls. Engineering specs, cable labels, pixel maps and test patterns with some fun animation for vidiots. Yes it is vibe coded. I was on tour and I kept seeing similar, obviously vibe coded software, that had a cute animation of a tech building a led wall. Everyone was charging an annual fee, distributing .exe files that couldn't pass an antivirus scan and wouldn't share source code, or wanting an email address and other info in exchange for their app. So I decided to do it myself and release the project with an open source license.
 
 ## Videos
 
