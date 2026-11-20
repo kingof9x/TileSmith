@@ -83,7 +83,10 @@ async def m():
             f'Update now installs in-app: setup.exe silently, portable/AppImage swapped, Mac app from .dmg (or .pkg when not writable); else Download {plans}')
         chk(await pg.evaluate("()=>updPlan({assets:[{name:'TileSmith-windows-setup.exe'}]})") is None, 'the web page never tries to install (Download only)')
         src = await pg.evaluate("()=>updInstall.toString()")
-        chk("'/S','--force-run'" in src and 'Wait-Process' in src and "ts-quit" in src, 'Windows: waits for TileSmith to close, runs setup silently and restarts it')
+        chk("'/S','--force-run'" in src and 'Wait-Process' in src and "ts-update-run" in src and 'update.log' in src, 'Windows: waits for TileSmith to close, runs setup silently and restarts it')
+        main_js = open(os.path.join(os.path.dirname(__file__), '..', '..', 'tilesmith-desktop', 'main.js'), encoding='utf-8').read()
+        chk("ipcMain.on('ts-update-run'" in main_js and 'detached: true' in main_js and '%TSPID%' in main_js,
+            'Update now: the main process starts the installer job (not the page) and quits')
         # the note at start (what the desktop app shows when a newer release exists)
         await pg.click('#cls')
         await pg.evaluate("()=>checkUpdates(true)"); await pg.wait_for_timeout(400)

@@ -5898,18 +5898,19 @@ async function updInstall(u){if(UPD_BUSY)return;const plan=updPlan(u);if(!plan)r
   await addonGet(plan.url,file,f=>say(f<0?`Downloading TileSmith ${tag}…`:`Downloading TileSmith ${tag}… ${Math.round(f*100)}%`));
   try{saveNow()}catch(e){}
   say(`Installing TileSmith ${tag}. TileSmith closes now and opens again when it is done.`);
-  const pid=process.pid,q=s=>"'"+String(s).replace(/'/g,"''")+"'",sq=s=>"'"+String(s).replace(/'/g,"'\\''")+"'";
-  const run=(cmd,args)=>cp.spawn(cmd,args,{detached:true,stdio:'ignore',windowsHide:true}).unref();
+  const pid='%TSPID%',exe=process.execPath,q=s=>"'"+String(s).replace(/'/g,"''")+"'",sq=s=>"'"+String(s).replace(/'/g,"'\\''")+"'";
+  let job=null;const run=(cmd,args)=>{job={cmd,args}};
   if(plan.mode=='win-setup')run('powershell.exe',['-NoProfile','-NonInteractive','-WindowStyle','Hidden','-Command',
-   `try{Wait-Process -Id ${pid} -Timeout 60 -ErrorAction SilentlyContinue}catch{};Start-Process -FilePath ${q(file)} -ArgumentList '/S','--force-run'`]);
+   `$L=${q(path.join(dir,'update.log'))};try{Wait-Process -Id ${pid} -Timeout 60 -ErrorAction SilentlyContinue}catch{};for($i=0;$i -lt 60 -and (Get-Process -ErrorAction SilentlyContinue|?{$_.Path -eq ${q(exe)}});$i++){Start-Sleep 1};Add-Content $L ('closed '+(Get-Date));try{$r=Start-Process -FilePath ${q(file)} -ArgumentList '/S','--force-run' -Wait -PassThru;Add-Content $L ('setup exit '+$r.ExitCode)}catch{Add-Content $L ('setup failed '+$_)}`]);
   else if(plan.mode=='win-portable'){const old=process.env.PORTABLE_EXECUTABLE_FILE;run('powershell.exe',['-NoProfile','-NonInteractive','-WindowStyle','Hidden','-Command',
    `try{Wait-Process -Id ${pid} -Timeout 60 -ErrorAction SilentlyContinue}catch{};for($i=0;$i -lt 20;$i++){try{Copy-Item -Force ${q(file)} ${q(old)};break}catch{Start-Sleep 1}};Start-Process -FilePath ${q(old)}`])}
   else if(plan.mode=='mac-app'){const app=updMacApp(),sh=path.join(dir,'update.sh');
-   fs.writeFileSync(sh,`#!/bin/sh\nwhile kill -0 ${pid} 2>/dev/null; do sleep 0.5; done\nM=$(mktemp -d)\nhdiutil attach -nobrowse -quiet -mountpoint "$M" ${sq(file)} || { open ${sq(app)}; exit 1; }\nrm -rf ${sq(app+'.new')}\nditto "$M/TileSmith.app" ${sq(app+'.new')} && rm -rf ${sq(app)} && mv ${sq(app+'.new')} ${sq(app)}\nhdiutil detach -quiet "$M"\nxattr -cr ${sq(app)} 2>/dev/null\nopen ${sq(app)}\n`,{mode:0o755});run('/bin/sh',[sh])}
+   fs.writeFileSync(sh,`#!/bin/sh\nwhile kill -0 "$1" 2>/dev/null; do sleep 0.5; done\nM=$(mktemp -d)\nhdiutil attach -nobrowse -quiet -mountpoint "$M" ${sq(file)} || { open ${sq(app)}; exit 1; }\nrm -rf ${sq(app+'.new')}\nditto "$M/TileSmith.app" ${sq(app+'.new')} && rm -rf ${sq(app)} && mv ${sq(app+'.new')} ${sq(app)}\nhdiutil detach -quiet "$M"\nxattr -cr ${sq(app)} 2>/dev/null\nopen ${sq(app)}\n`,{mode:0o755});run('/bin/sh',[sh,pid])}
   else if(plan.mode=='mac-pkg')run('/usr/bin/open',[file]);
   else if(plan.mode=='appimage'){const old=process.env.APPIMAGE,sh=path.join(dir,'update.sh');
-   fs.writeFileSync(sh,`#!/bin/sh\nwhile kill -0 ${pid} 2>/dev/null; do sleep 0.5; done\nchmod +x ${sq(file)}\nmv -f ${sq(file)} ${sq(old)} || cp -f ${sq(file)} ${sq(old)}\nchmod +x ${sq(old)}\nnohup ${sq(old)} >/dev/null 2>&1 &\n`,{mode:0o755});run('/bin/sh',[sh])}
-  setTimeout(()=>{try{require('electron').ipcRenderer.send('ts-quit')}catch(e){window.close()}},800)}
+   fs.writeFileSync(sh,`#!/bin/sh\nwhile kill -0 "$1" 2>/dev/null; do sleep 0.5; done\nchmod +x ${sq(file)}\nmv -f ${sq(file)} ${sq(old)} || cp -f ${sq(file)} ${sq(old)}\nchmod +x ${sq(old)}\nnohup ${sq(old)} >/dev/null 2>&1 &\n`,{mode:0o755});run('/bin/sh',[sh,pid])}
+  // the main process starts the job and quits: a process started from this page can be closed together with the page on Windows
+  setTimeout(()=>{try{require('electron').ipcRenderer.send('ts-update-run',job)}catch(e){if(job)cp.spawn(job.cmd,job.args.map(a=>a.split('%TSPID%').join(String(process.pid))),{detached:true,stdio:'ignore',windowsHide:true}).unref();window.close()}},800)}
  catch(e){UPD_BUSY=false;say('Update failed: '+(e.message||e));document.querySelectorAll('#updDl,#updToast [data-u=dl]').forEach(b=>b.disabled=false)}}
 // at start (desktop and phone apps only): at most once a day, a few seconds after the app opens
 setTimeout(()=>{if(!(DESK||MOBILE)||!S.updAuto)return;let last=0;try{last=+localStorage.getItem(UPD_LAST)||0}catch(e){}if(Date.now()-last>864e5)checkUpdates(true)},4000);

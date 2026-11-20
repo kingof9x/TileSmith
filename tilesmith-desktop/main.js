@@ -24,6 +24,15 @@ ipcMain.handle('ts-displays', (e) => {
 // Report a bug: a screenshot of the whole app window (panels, toolbar and canvases), not just the wall canvas
 // Update now: the page has started the new version's installer and asks to close (the installer waits for this process)
 ipcMain.on('ts-quit', () => app.quit());
+// Update now: start the installer job from this (main) process, which keeps running after the window closes, then quit.
+// The job waits for this process (%TSPID%) to end before it installs.
+ipcMain.on('ts-update-run', (e, job) => {
+  try {
+    if (job && job.cmd) require('child_process').spawn(job.cmd, job.args.map((a) => String(a).split('%TSPID%').join(String(process.pid))),
+      { detached: true, stdio: 'ignore', windowsHide: true }).unref();
+  } catch (err) { console.error('update job', err); }
+  app.quit();
+});
 ipcMain.handle('ts-capture', async (e) => (await e.sender.capturePage()).toDataURL());
 // an output window: borderless and full screen on the display named in its frame name ("tsout:<display id>:<canvas>")
 const outDisplay = (name) => { const m = /^tsout:([^:]+):/.exec(name || ''); return m ? screen.getAllDisplays().find((d) => String(d.id) === m[1]) : null; };
