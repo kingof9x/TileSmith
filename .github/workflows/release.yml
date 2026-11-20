@@ -54,7 +54,10 @@ jobs:
             if [ "$INPUT" = next ]; then
               last=$(gh api "repos/$REPO/releases?per_page=100" --jq '[.[] | select(.draft == false and .prerelease == false) | .tag_name][0] // ""')
               num=$(printf '%s' "$last" | grep -oE '[0-9]+(\.[0-9]+)*$' || true)
-              if [ -z "$num" ]; then v=1.0; else v=$(printf '%s' "$num" | awk -F. -v OFS=. '{$NF=$NF+1; print}'); fi
+              if [ -z "$num" ]; then
+                echo "::error::There is no release yet, so there is nothing to add 1 to. Run again and type the first version (for example 1.0)."; exit 1
+              fi
+              v=$(printf '%s' "$num" | awk -F. -v OFS=. '{$NF=$NF+1; print}')
               echo "Last release: ${last:-none}"
             else
               v="${INPUT#[vV]}"
