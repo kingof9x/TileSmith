@@ -83,6 +83,15 @@ async def main():
         chk(r['a'] == [[['120/208 V 3-phase wye', 208, 30]], 'L21-30 (3 circuits per cable)', 208, 30], 'an old 208 V L21-30 project gets a 120/208 V distro with 208 V 30 A circuits')
         chk(r['b'] == [['house', 120, 15, 3, 20]] and r['c'] is False, 'old Edison wall circuits become house power; power that was off stays off')
         chk(r['d'] == ['d1', 'd2'], 'an old project with two distros feeds each wall from the distro its cable was patched to')
+        # (2026-11-20) a copied or new wall never shares power circuits with the wall it came from; an empty tray says so
+        r = await pg.evaluate("""()=>{selWall(0);walls.splice(1);sync();S.pmode='Manual';S.pman=[];storeWall();addWall(true);S.ox=4000;storeWall();addWall();S.ox=8000;storeWall();selWall(0);sync();
+          const L=pieces(walls[0]).list;[0,1,2].forEach(i=>pmanAdd(L[i],'click'));storeWall();sync();
+          pcabUI();return{chips:[...document.querySelectorAll('#pcabCards [data-pc]')].map(b=>b.textContent),own:walls.map(w=>(w.pman||[]).flat().length),plan:powerPlan().map(x=>x.length),mode:walls[2].pmode,sh:walls[0].pman===walls[1].pman}}""")
+        print(json.dumps(r))
+        chk(r['chips'] and all(c.startswith('1') for c in r['chips']), f'spare chips are named after the wall\'s own cable {r["chips"]}')
+        chk(r['own'] == [3, 0, 0] and r['plan'][1:] == [0, 0] and not r['sh'] and r['mode'] == 'None', 'drawing on one wall never wires a copied or new wall')
+        r = await pg.evaluate("""()=>{walls.forEach(w=>{w.pman=[];w.pmode='None'});S.pman=[];S.pmode='None';sync();trayUI(DSX,true);return document.querySelector('#ptray .ptflag').textContent}""")
+        chk(r == 'No cables yet', f'the tray says No cables yet when no wall is wired ({r})')
         n = await pg.evaluate("()=>Object.keys(PWR).filter(k=>!P[k]).length"); chk(n == 0, 'every PWR key is a catalog model')
         chk(not errs, f'no page errors {errs}'); await b.close()
     print('ALL OK' if ok else 'FAILED')
