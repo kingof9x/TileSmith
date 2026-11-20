@@ -1,6 +1,6 @@
-# TileSmith 3.9 - app specification for building a clone
+# TileSmith 3.10 - app specification for building a clone
 
-Generated 2026-11-20 from TileSmith v3.9 (`app/index.html`). This file describes what the app does, how it looks,
+Generated 2026-11-20 from TileSmith v3.10 (`app/index.html`). This file describes what the app does, how it looks,
 how every feature behaves and the exact numbers and formulas behind it, so another AI model or developer can rebuild it,
 for example as an Android app. Tables of presets, processors, patterns, settings and formats are read from the app
 itself when this file is generated, so they match the version it ships with. Section 15 has notes for Android.
@@ -39,7 +39,7 @@ Mac (Syphon.framework via node-syphon) and video export (via ffmpeg). All settin
 
 Desktop: three columns. Left panel (settings, 350 px), centre (top bar + viewport), right panel (engineering, 310 px).
 Below 900 px wide the columns stack. Colours: dark UI (`--bg`, `--pn` panel, `--ac` teal accent #22a0ac-ish, `--am`
-amber for the version). Header: "TileSmith v3.9" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
+amber for the version). Header: "TileSmith v3.10" and subtitle "LED Wall Pixel Map & Test Pattern Generator".
 
 ### 3.1 Left panel sections and submenus (in order)
 
