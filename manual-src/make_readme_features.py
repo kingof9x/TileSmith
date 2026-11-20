@@ -1,6 +1,6 @@
 # Feature screenshots for the README "What's new" section, taken from the running app:
 #   python3 make_readme_features.py <app index.html> <output folder>
-# Writes one PNG per feature (power-distros, cable-fibre, redundancy, rigging, cabinet-ids, locations, tile-faults, tile-catalog,
+# Writes one PNG per feature (power-distros, power-per-wall, cable-fibre, redundancy, rigging, cabinet-ids, locations, tile-faults, tile-catalog,
 # languages, updates). Set CHROME to a Chromium binary if Playwright has no browser of its own.
 # Set VERSION (e.g. VERSION=3.8) to show that version in the app header; the updates shot then shows VERSION offered
 # to someone on the release before it. Without it the shots use the version in index.html.
@@ -53,6 +53,10 @@ async def main():
         pg = await fresh()
         await shot(pg, 'power-distros', """()=>{S.pdist=true;S.showPow=true;S.showData=false;distAct('dadd');distAct('dadd');S.phaseView=true;S.autoBal=true;storeWall();sync()}""",
                    ['Power', 'Distros'], 'Distros')
+        await pg.close(); pg = await fresh()
+        # two walls, each on its own Socapex cable: This wall (Start this wall on its own cable) and the power tray
+        await shot(pg, 'power-per-wall', """()=>{S.showPow=true;S.showData=false;S.proc='None';walls.forEach(w=>{w.wmode='None'});S.wmode='None';distAct('dadd');storeWall();selWall(0);sync();
+          setTimeout(()=>{const k=document.querySelector('#pcabSet');if(k)k.scrollIntoView({block:'center'})},300)}""", ['Power', 'This wall'], None, 1500)
         await pg.close(); pg = await fresh()
         await shot(pg, 'cable-fibre', """()=>{S.cabOn=true;S.cunit='m';S.cslack=10;selWall(0);S.cdD=140;S.cdP=20;S.wfib='Auto';storeWall();selWall(1);S.cdD=30;S.cdP=15;storeWall();selWall(0);sync()}""",
                    ['Cable lengths'], 'Cable lengths')
