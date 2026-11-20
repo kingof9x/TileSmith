@@ -3,8 +3,9 @@
 # When one of this repo's build workflows (listed under `workflows:` below)
 # finishes for a branch that has an open pull request, this:
 #   1. copies that build's files into a pre-release called `pr-<number>`
-#   2. keeps ONE comment on the PR with direct download links (no login needed
-#      on public repos) and the build status of each workflow
+#   2. puts the build status and direct download links at the top of the PR
+#      description, and in ONE comment on the PR (the comment sends you a
+#      notification). While a build is running the description says so.
 # When the PR is merged or closed, the pre-release and its tag are deleted.
 #
 # Only branches in this repo are handled; forks never get write access.
@@ -18,7 +19,7 @@ on:
     workflows: ["Build and release"]
     types: [completed]
   pull_request:
-    types: [closed]
+    types: [opened, reopened, synchronize, closed]
 
 permissions:
   contents: write
@@ -108,6 +109,23 @@ jobs:
           def gh(*args):
               return subprocess.run(["gh", *args], capture_output=True, text=True)
 
+          def set_pr_section(text):
+              start, end = "<!-- pr-test-builds:start -->", "<!-- pr-test-builds:end -->"
+              pr = json.loads(gh("api", f"repos/{repo}/pulls/{n}").stdout)
+              desc = pr.get("body") or ""
+              block = f"{start}\n{text}\n{end}"
+              if start in desc and end in desc:
+                  desc = desc[:desc.index(start)] + block + desc[desc.index(end) + len(end):]
+              else:
+                  # Keep any leading hidden HTML comment lines (tools use them) above the block.
+                  head = ""
+                  rest = desc
+                  while rest.lstrip().startswith("<!--") and "-->" in rest:
+                      i = rest.index("-->") + 3
+                      head, rest = head + rest[:i], rest[i:]
+                  desc = (head + "\n" if head else "") + block + "\n\n" + rest.lstrip("\n")
+              gh("api", "-X", "PATCH", f"repos/{repo}/pulls/{n}", "-f", f"body={desc}")
+
           # Existing comment (if any) and the per-workflow status lines it holds.
           comments = json.loads(gh("api", f"repos/{repo}/issues/{n}/comments", "--paginate").stdout or "[]")
           mine = next((c for c in comments if c["body"].startswith(marker)), None)
@@ -147,6 +165,52 @@ jobs:
           else:
               gh("api", "-X", "POST", f"repos/{repo}/issues/{n}/comments", "-f", f"body={body}")
 
+          # Same section at the top of the PR description.
+          section = "\n".join(lines[1:-1]).replace("## 🧪 Test builds", "### 🧪 Test builds", 1)
+          set_pr_section(section)
+
+  building:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.action != 'closed' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REPO: ${{ github.repository }}
+      N: ${{ github.event.pull_request.number }}
+      SHA: ${{ github.event.pull_request.head.sha }}
+      BRANCH: ${{ github.event.pull_request.head.ref }}
+    steps:
+      - name: Say in the PR description that a build is running
+        shell: python
+        run: |
+          import json, os, subprocess
+          repo, n, sha, branch = os.environ["REPO"], os.environ["N"], os.environ["SHA"], os.environ["BRANCH"]
+          def gh(*args):
+              return subprocess.run(["gh", *args], capture_output=True, text=True)
+          def set_pr_section(text):
+              start, end = "<!-- pr-test-builds:start -->", "<!-- pr-test-builds:end -->"
+              pr = json.loads(gh("api", f"repos/{repo}/pulls/{n}").stdout)
+              desc = pr.get("body") or ""
+              block = f"{start}\n{text}\n{end}"
+              if start in desc and end in desc:
+                  desc = desc[:desc.index(start)] + block + desc[desc.index(end) + len(end):]
+              else:
+                  # Keep any leading hidden HTML comment lines (tools use them) above the block.
+                  head = ""
+                  rest = desc
+                  while rest.lstrip().startswith("<!--") and "-->" in rest:
+                      i = rest.index("-->") + 3
+                      head, rest = head + rest[:i], rest[i:]
+                  desc = (head + "\n" if head else "") + block + "\n\n" + rest.lstrip("\n")
+              gh("api", "-X", "PATCH", f"repos/{repo}/pulls/{n}", "-f", f"body={desc}")
+
+          runs = f"https://github.com/{repo}/actions?query=branch%3A{branch}"
+          set_pr_section("### 🧪 Test builds\n\n"
+                         f"⏳ **Building `{sha[:7]}`.** Download links will appear here when the build finishes. "
+                         f"Wait for ✅ before testing or merging. [Watch the build]({runs})")
+
   cleanup:
     if: >-
       github.event_name == 'pull_request' &&
@@ -160,3 +224,16 @@ jobs:
       - name: Delete the PR's pre-release and tag
         run: |
           gh release delete "pr-$N" -R "$REPO" --cleanup-tag -y || echo "No test build to delete."
+      - name: Note it in the PR description
+        shell: python
+        run: |
+          import json, os, subprocess
+          repo, n = os.environ["REPO"], os.environ["N"]
+          def gh(*args):
+              return subprocess.run(["gh", *args], capture_output=True, text=True)
+          start, end = "<!-- pr-test-builds:start -->", "<!-- pr-test-builds:end -->"
+          desc = json.loads(gh("api", f"repos/{repo}/pulls/{n}").stdout).get("body") or ""
+          if start in desc and end in desc:
+              note = f"{start}\n_🧪 Test builds were deleted when this PR closed._\n{end}"
+              desc = desc[:desc.index(start)] + note + desc[desc.index(end) + len(end):]
+              gh("api", "-X", "PATCH", f"repos/{repo}/pulls/{n}", "-f", f"body={desc}")
