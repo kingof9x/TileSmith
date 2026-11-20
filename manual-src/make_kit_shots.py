@@ -125,13 +125,13 @@ async def main():
         await opensub('Data wiring'); await full('t06-manual-data-wiring.png', 'Manual data wiring', 'Pattern = Manual, Wire tiles pressed (button reads Stop wiring). Port P1 is full (17 tiles); P2 is being drawn.')
         await ev("()=>document.querySelector('[data-a=wedit]').click()")
 
-        await ev(f"""()=>{{S.pdist=true;S.pmode='Snake';walls.forEach(w=>{{w.pmode='Snake'}});{PREP}}}""")
+        await ev(f"""()=>{{S.dists=[];distAct('dadd');S.pmode='Snake';walls.forEach(w=>{{w.pmode='Snake'}});{PREP}}}""")
         await ui('Power', 'ui-power.png', 'Power submenu (with Power wiring)', '')
-        await ui('Power wiring', 'ui-power-wiring.png', 'Power wiring submenu', '')
+        await ui('This wall', 'ui-power-wiring.png', 'This wall submenu (power cable, pattern and wiring preference for the selected wall)', '')
         await full('t07-power-and-data.png', 'Data and power on the same wall', 'Data paths run left of the tile centres, power runs (white on black) right and below; circuit badges show a lightning icon.')
         await ev(f"""()=>{{S.proc='None';S.wmode='None';{PREP}}}""")
-        await opensub('Power wiring'); await full('t08-power-wiring.png', 'Engineering > Power > Power wiring', 'Power only: dashed runs in circuit colours.')
-        await ev(f"""()=>{{S.pdist=false;S.pmode='None';S.cols=6;S.rows=4;{PREP}}}""")
+        await opensub('This wall'); await full('t08-power-wiring.png', 'Engineering > Power > This wall', 'Power only: dashed runs in circuit colours.')
+        await ev(f"""()=>{{S.dists=[];S.pmode='None';S.cols=6;S.rows=4;{PREP}}}""")
 
         # test pattern + overlays
         await ui('Test pattern', 'ui-test-pattern.png', 'Test pattern section', 'Pattern list, Tile-shade color (tileshade patterns only), Image fit (image patterns), Scroll, Scroll speed, upload support.')

@@ -15,7 +15,7 @@ async def main():
         await ev("""()=>{S.preset='ROE Black Pearl BP2V2';applyPreset();S.name='Main';S.cols=6;S.rows=5;S.ox=0;S.oy=0;S.pat='tileshade';S.ids=true;storeWall();showAll();
           addWall(false);S.name='Side';S.pat='tileshade';S.cols=4;S.rows=5;S.ox=1100;S.oy=0;storeWall();showAll();
           S.proc='Brompton Tessera S8';applySpec();S.showData=true;S.pdist=true;S.showPow=true;walls.forEach(w=>{w.wmode='Snake';w.pmode='Snake';w.pfill='Fewest circuits'});S.wmode='Snake';S.pmode='Snake';storeWall();sync();fit()}""")
-        await ev(open_sec, ['Engineering', 'Data wiring', 'Power wiring']); await pg.wait_for_timeout(1200)
+        await ev(open_sec, ['Engineering', 'Data wiring', 'This wall']); await pg.wait_for_timeout(1200)
         await pg.screenshot(path=os.path.join(OUT, 'wiring.png'))
         # 2. DVD screensaver over SMPTE bars
         await ev("""()=>{selWall(1);delWall();S.showData=false;S.showPow=false;S.ids=false;S.tpos=false;S.cols=10;S.rows=6;S.pat='SMPTEbars';S.dvdOn=true;S.dvdSize=22;storeWall();showAll();sync();fit();

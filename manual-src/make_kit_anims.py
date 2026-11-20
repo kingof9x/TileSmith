@@ -74,7 +74,7 @@ async def main():
             await ev(f"()=>{{window.__now={t * 1000};lastStep=window.__now;__step(1)}}")
 
         # ------------------------------------------------------------------ test patterns, one 6x4 wall filling the canvas
-        base = "walls=[walls[0]];loadWall(0);S.preset='Unilumin UpadIV 2.6';applyPreset();S.cols=6;S.rows=4;S.ox=0;S.oy=0;S.cw=1152;S.ch=768;M.width=1152;M.height=768;S.lay={};S.gone=[];S.pdir='none';S.ids=false;S.tpos=false;S.addr=false;S.mm=false;S.dvdOn=false;S.proc='None';S.pdist=false;S.wmode='None';S.pmode='None'"
+        base = "walls=[walls[0]];loadWall(0);S.preset='Unilumin UpadIV 2.6';applyPreset();S.cols=6;S.rows=4;S.ox=0;S.oy=0;S.cw=1152;S.ch=768;M.width=1152;M.height=768;S.lay={};S.gone=[];S.pdir='none';S.ids=false;S.tpos=false;S.addr=false;S.mm=false;S.dvdOn=false;S.proc='None';S.dists=[];S.wmode='None';S.pmode='None'"
         pats = await ev("PAT_LIST")
         pat_imgs = []
         for i, pn in enumerate(pats):
@@ -100,13 +100,13 @@ async def main():
         fills = await ev("WFILL"); pfills = await ev("PFILL")
         imgs = []
         for i, f in enumerate(fills):
-            await setup(f"{wbase};S.proc='NovaStar VX1000 Pro';applySpec();S.pdist=false;S.pmode='None';S.wmode='Snake';S.wcorner='Top-left';S.wdir='Horizontal';S.wfill={json.dumps(f)}"); await at(100)
+            await setup(f"{wbase};S.proc='NovaStar VX1000 Pro';applySpec();S.dists=[];S.pmode='None';S.wmode='Snake';S.wcorner='Top-left';S.wdir='Horizontal';S.wfill={json.dumps(f)}"); await at(100)
             im = await cv(); fn = f'cv-data-wiring-{i + 1}-{f.lower().replace(" ", "-")}.png'; K.save(im, fn); imgs.append(im)
             add(fn, 'wiring', f'Data wiring preference: {f}', '10 x 5 wall, NovaStar VX1000 Pro at 60 Hz 8-bit = 650,000 px per port = 17 tiles per port; Snake from the top-left, horizontal.')
         K.save(grid(imgs, fills, 3, 420, 'Data wiring preferences (Snake, top-left, horizontal, 17 tiles per port)'), 'cv-data-wiring-all.png'); add('cv-data-wiring-all.png', 'wiring', 'All data wiring preferences side by side', '')
         imgs = []
         for i, f in enumerate(pfills):
-            await setup(f"{wbase};S.proc='None';S.wmode='None';S.pdist=true;S.pvolt=120;S.pamps=20;S.derate=true;S.plink=0;S.pmode='Snake';S.pcorner='Top-left';S.pwdir='Horizontal';S.pfill={json.dumps(f)}"); await at(100)
+            await setup(f"{wbase};S.proc='None';S.wmode='None';S.dists=[];distAct('dadd');S.pvolt=120;S.pamps=20;S.derate=true;S.plink=0;S.pmode='Snake';S.pcorner='Top-left';S.pwdir='Horizontal';S.pfill={json.dumps(f)}"); await at(100)
             im = await cv(); fn = f'cv-power-wiring-{i + 1}-{f.lower().replace(" ", "-")}.png'; K.save(im, fn); imgs.append(im)
             add(fn, 'wiring', f'Power wiring preference: {f}', '10 x 5 wall, 120 V 20 A loaded to 80% = 1,920 W = 16 tiles of 120 W per circuit; Snake from the top-left, horizontal.')
         K.save(grid(imgs, pfills, 3, 420, 'Power wiring preferences (Snake, top-left, horizontal, 16 tiles per circuit)'), 'cv-power-wiring-all.png'); add('cv-power-wiring-all.png', 'wiring', 'All power wiring preferences side by side', '')
@@ -114,15 +114,15 @@ async def main():
         for mode in ('Snake', 'Linear'):
             imgs = []; labs = []
             for c, d in wpat:
-                await setup(f"{wbase};S.cols=6;S.rows=4;S.cw=1152;S.ch=768;M.width=1152;M.height=768;S.proc='NovaStar VX1000 Pro';applySpec();S.pdist=false;S.wmode='{mode}';S.wcorner='{c}';S.wdir='{d}';S.wfill='One continuous path'"); await at(100)
+                await setup(f"{wbase};S.cols=6;S.rows=4;S.cw=1152;S.ch=768;M.width=1152;M.height=768;S.proc='NovaStar VX1000 Pro';applySpec();S.dists=[];S.wmode='{mode}';S.wcorner='{c}';S.wdir='{d}';S.wfill='One continuous path'"); await at(100)
                 imgs.append(await cv()); labs.append(f'{c}, {d.lower()}')
             fn = f'cv-data-{mode.lower()}-8-starts.png'; K.save(grid(imgs, labs, 4, 300, f'{mode}: the 8 start corners and directions'), fn)
             add(fn, 'wiring', f'{mode} data wiring from each of the 8 starts', '6 x 4 wall, One continuous path (17 tiles per port), so the path order is easy to follow.')
-        await setup(f"{wbase};S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';S.wfill='Fewest ports';S.pdist=true;S.pmode='Snake';S.pfill='Fewest circuits';S.ids=true"); await at(100)
+        await setup(f"{wbase};S.proc='NovaStar VX1000 Pro';applySpec();S.wmode='Snake';S.wfill='Fewest ports';S.dists=[];distAct('dadd');S.pmode='Snake';S.pfill='Fewest circuits';S.ids=true"); await at(100)
         K.save(await cv(), 'cv-data-and-power.png'); add('cv-data-and-power.png', 'wiring', 'Data and power on one wall', 'Data runs at the tile centre minus 0.2 tile width; power at plus 0.2 width and 0.2 height, white on a black casing, with lightning-bolt circuit badges.')
 
         # ------------------------------------------------------------------ wall shapes and multiple walls
-        await setup("walls=[walls[0]];loadWall(0);S.proc='None';S.wmode='None';S.pdist=false;S.pmode='None';S.preset='ROE Carbon CB5';applyPreset();S.cols=6;S.rows=3;S.ox=0;S.oy=0;S.cw=624;S.ch=624;M.width=624;M.height=624;S.pat='tileshade';S.ids=true;S.tpos=true;S.gone=[];S.half=[];S.lay={s:'h',uc:6,ur:6,p:[[0,1,1,1],[1,0,1,2],[2,0,1,2],[3,0,1,2],[4,0,1,2],[5,1,1,1],[0,2,1,2],[1,2,1,2],[2,2,2,1],[2,3,1,1],[3,3,1,1],[4,2,1,2],[5,2,1,2],[0,4,1,2],[1,4,1,2],[2,4,1,2],[3,4,1,2],[4,4,1,2],[5,4,1,2]]}"); await at(100)
+        await setup("walls=[walls[0]];loadWall(0);S.proc='None';S.wmode='None';S.dists=[];S.pmode='None';S.preset='ROE Carbon CB5';applyPreset();S.cols=6;S.rows=3;S.ox=0;S.oy=0;S.cw=624;S.ch=624;M.width=624;M.height=624;S.pat='tileshade';S.ids=true;S.tpos=true;S.gone=[];S.half=[];S.lay={s:'h',uc:6,ur:6,p:[[0,1,1,1],[1,0,1,2],[2,0,1,2],[3,0,1,2],[4,0,1,2],[5,1,1,1],[0,2,1,2],[1,2,1,2],[2,2,2,1],[2,3,1,1],[3,3,1,1],[4,2,1,2],[5,2,1,2],[0,4,1,2],[1,4,1,2],[2,4,1,2],[3,4,1,2],[4,4,1,2],[5,4,1,2]]}"); await at(100)
         K.save(await cv(), 'cv-half-tiles.png'); add('cv-half-tiles.png', 'shape', 'Half tiles (ROE Carbon CB5)', 'Top row: half tiles at both ends, full tiles offset by half a tile between them; row 2: one full tile turned on its side over two halves. IDs of half tiles end in ½.')
         await setup("S.preset='Unilumin UpadIV 2.6';applyPreset();S.lay={};S.cols=8;S.rows=4;S.cw=1536;S.ch=768;M.width=1536;M.height=768;S.gone=[[0,0],[1,0],[6,0],[7,0],[0,1],[7,1]]"); await at(100)
         K.save(await cv(), 'cv-removed-tiles.png'); add('cv-removed-tiles.png', 'shape', 'Removed tiles', '8 x 4 wall with six corner tiles removed; tile IDs keep their grid numbers.')
@@ -131,7 +131,7 @@ async def main():
 
         # ------------------------------------------------------------------ build animation
         # one 6 x 3 wall filling a 1152 x 576 canvas: the technician is 0.42 x 576 = 242 px tall
-        bbase = "walls=[walls[0]];loadWall(0);S.preset='Unilumin UpadIV 2.6';applyPreset();S.cols=6;S.rows=3;S.ox=0;S.oy=0;S.cw=1152;S.ch=576;M.width=1152;M.height=576;S.pat='tileshade';S.ids=true;S.tpos=false;S.addr=false;S.mm=false;S.lay={};S.gone=[];S.dvdOn=false;S.speed=1;S.loop=false;S.corner='Top-left';S.dir='Horizontal';S.cd=true;S.proc='None';S.pdist=false"
+        bbase = "walls=[walls[0]];loadWall(0);S.preset='Unilumin UpadIV 2.6';applyPreset();S.cols=6;S.rows=3;S.ox=0;S.oy=0;S.cw=1152;S.ch=576;M.width=1152;M.height=576;S.pat='tileshade';S.ids=true;S.tpos=false;S.addr=false;S.mm=false;S.lay={};S.gone=[];S.dvdOn=false;S.speed=1;S.loop=false;S.corner='Top-left';S.dir='Horizontal';S.cd=true;S.proc='None';S.dists=[]"
         await setup(bbase); await at(100); await ev("()=>{reset();S.play=true;lastStep=window.__now;__step(1)}")
         frames = []; labels = []; info = []
         fps = 15; total = 10.0
