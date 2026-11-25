@@ -32,7 +32,9 @@ def main():
     if a: names = [n for n in names if n[:-5] in a or n in a]
     os.makedirs(os.path.join(tempfile.gettempdir(), 'tilesmith-tests'), exist_ok=True)
     with ThreadPoolExecutor(jobs) as ex: res = list(ex.map(run, names))
-    for n, ok, s, last, log in res: print(f"{'ok  ' if ok else 'FAIL'} {n:<22} {s:5.1f}s  {'' if ok else last}")
+    for n, ok, s, last, log in res:
+        skip = ok and last.startswith('SKIPPED')
+        print(f"{'skip' if skip else 'ok  ' if ok else 'FAIL'} {n:<22} {s:5.1f}s  {last if skip or not ok else ''}")
     bad = [r for r in res if not r[1]]
     print(f'\n{len(res) - len(bad)} of {len(res)} passed' + (''.join(f'\n  {r[0]}: see {r[4]}' for r in bad)))
     sys.exit(1 if bad else 0)
