@@ -1,7 +1,9 @@
 # Rigging (Engineering › Rigging): hang method = Build mode, bumpers / truss / ground bases, parts rules, loads, pull sheet
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 async def main():
     ok = True
     async with async_playwright() as p:

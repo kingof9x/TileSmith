@@ -1,8 +1,10 @@
 # Aluvision Hi-LED 55 tiles: every model is in the list with its sheet, pixels agree with size / pitch, the Model menu
 # groups flat and curved tiles, and only NovaStar processors are offered (the brochure names NovaStar boxes only).
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, os
 from playwright.async_api import async_playwright
-APP = os.environ.get('TS_APP', 'file:///home/claude/tilesmith-desktop/app/index.html')
+APP = os.environ.get('TS_APP', TS_APP_URL)
 async def main():
     ok = True
     async with async_playwright() as p:

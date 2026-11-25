@@ -1,8 +1,10 @@
 """ROE presets: every ROE preset is complete and self-consistent (pixels x pitch = size), every model with a half panel gets the half
 controls and converts a row correctly, the preset menu is grouped by series. Prints ALL OK."""
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 async def main():
     ok = True
     def chk(c, name=''):

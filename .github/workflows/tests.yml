@@ -1,0 +1,48 @@
+# Tests: runs every manual-src/tests/*_test.py (Playwright + Chromium against tilesmith-desktop/app/index.html)
+# on every pull request and every push to main, so a change that breaks a feature shows up on the PR.
+# The same command works on your own computer: python3 manual-src/tests/run_all.py
+# electron_test.py skips here (it needs npm install in tilesmith-desktop); run it locally for the desktop checks.
+
+name: Tests
+
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'VIRUSTOTAL.md']
+  pull_request:
+    paths-ignore: ['**.md', 'docs/**', 'VIRUSTOTAL.md']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install test tools
+        run: |
+          sudo apt-get update -q && sudo apt-get install -y -q poppler-utils
+          pip install -q playwright pillow pypdf
+          python -m playwright install --with-deps chromium
+          cd manual-src/tools && npm install --no-audit --no-fund
+      - name: Run all tests
+        run: python3 manual-src/tests/run_all.py -j 4
+      - name: Test logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: /tmp/tilesmith-tests/

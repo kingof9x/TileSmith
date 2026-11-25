@@ -1,8 +1,10 @@
 """Cable labels: menu hidden until wiring is defined, shows below Animation Options, label counts, both ends, sheet geometry,
 copies/skip/keep-together, mobile save, no page errors. Prints ALL OK."""
-import asyncio, sys, json
+import os
+from _paths import TS_APP_URL, TS_DESK
+import asyncio, sys, json, os, tempfile
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 async def main():
     ok = True
     async with async_playwright() as p:
@@ -17,8 +19,8 @@ async def main():
         print('DATA wired', json.dumps(r)[:700]); ok &= r['vis'] and r['n'] == 2 * r['pl'] and r['after']
         # power
         await pg.evaluate("()=>{(S.dists.length||distAct('dadd'));S.pmode='Snake';sync()}"); await pg.wait_for_timeout(200)
-        r = await pg.evaluate("()=>({n:labelList().length,pw:powerPlan().flat().length,pl:portPlan().flat().length,p:labelList().filter(x=>x[0].kind=='p')[0]})")
-        print('DATA+POWER', json.dumps(r)[:500]); ok &= r['n'] == 2 * r['pl'] + r['pw'] + -(-r['pw'] // 6) and r['p'][0]['big'] == '1' and 'Socapex cable 1 of' in r['p'][0]['lines'][0] and 'Distro 1 phase A' in json.dumps(r['p'])
+        r = await pg.evaluate("()=>({n:labelList().length,pw:powerPlan().flat().length,pl:portPlan().flat().length,p:labelList().filter(x=>x[0].kind=='p')[0],all:labelList().filter(x=>x[0].kind=='p')})")
+        print('DATA+POWER', json.dumps(r)[:500]); ok &= r['n'] == 2 * r['pl'] + r['pw'] + -(-r['pw'] // 6) and r['p'][0]['big'] == '1' and 'Socapex cable 1 of' in r['p'][0]['lines'][0] and 'Distro 1 phase A' in json.dumps(r['all'])  # the first power label is now the cable's own (since #44); circuits carry the phase
         # power distribution types and the three power label scopes
         for pdt, per, first, leg in (('Socapex (6 circuits per cable)', 6, '1-1', 'circuit 1 of 6'), ('L14-30 (2 circuits per cable)', 2, '1-X', 'leg X'), ('L21-30 (3 circuits per cable)', 3, '1-X', 'leg X')):
             r = await pg.evaluate("([t,sc])=>{S.dists[0].l1430=4;S.pdt=t;S.lblWhat='Power only';const out={};for(const m of ['Cable and circuit labels','Circuit labels only','Cable labels only']){S.lblPow=m;sync();out[m]=labelList().length}S.lblPow='Cable and circuit labels';sync();const L=labelList(),legs=L.filter(q=>q[0].big!=null&&/-[X1-6YZ]$/.test(q[0].big)),cab=powerTotals(powerPlan()).cables;return{out,n:powerPlan().flat().length,cab,leg:L.find(q=>q[0].big==sc)&&L.find(q=>q[0].big==sc)[0].lines[0],cols:L.every(q=>q[0].col==q[0].wall.col),noph:!/hase/.test(JSON.stringify(L)),rep:powRowsCanvas(powerPlan()).map(x=>x.join(':')).join('|')}}", [pdt, first])
@@ -66,7 +68,7 @@ async def main():
         await pg.evaluate("()=>{S.lblColor=true;S.lblWall=LBLWAL[0];S.lblLayout=LBLLAY[0];S.lblFlag=LBLFLG[0];sync()}")
         # screenshot of an Avery sheet for a look
         await pg.evaluate("()=>{S.lblSize='Avery 5160 (30 per US Letter sheet)';S.lblKeep=true;S.lblSkip=1;sync()}")
-        h = await pg.evaluate("()=>labelsHTML()"); open('/tmp/claude-0/-home-claude/bbcc68aa-c062-5897-954c-d77804faf3e4/scratchpad/labels.html', 'w').write(h)
+        h = await pg.evaluate("()=>labelsHTML()"); open(os.path.join(tempfile.gettempdir(), 'tilesmith-labels.html'), 'w').write(h)  # for a look
         # print action opens a window (desktop path)
         async with pg.expect_popup() as pop:
             await pg.evaluate("()=>printLabels()")

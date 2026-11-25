@@ -1,8 +1,10 @@
 # Cabinet IDs (Engineering › Cabinet IDs): each tile's address from the data wiring, the "cabinet IDs" test pattern,
 # the printable sheet (a map and a list per wall), stickers on the label sheet and the binder pages
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, os, re, subprocess, tempfile
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 OUT = os.environ.get('CABID_OUT') or tempfile.mkdtemp(prefix='cabid')
 SHOT = os.environ.get('CABID_SHOT')
 def txt(path, first=None, last=None):

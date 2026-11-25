@@ -1,11 +1,13 @@
 # Test pattern submenu in both the canvas menu and Animation Options: one set of controls follows the submenu that is opened
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio
 from playwright.async_api import async_playwright
 async def main():
     ok=True
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1400,'height':1000}); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html'); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(700)
+        await pg.goto(TS_APP_URL); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(700)
         where="()=>document.querySelector('#tpCtl').closest('.tpSlot').dataset.tp"
         ok=ok and await pg.evaluate("()=>document.querySelectorAll('.tpSlot').length")==2
         await pg.click("#left>details>summary:has-text('Animation Options')")

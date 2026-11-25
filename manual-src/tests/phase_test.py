@@ -9,9 +9,11 @@
 - design load Typical 40% scales leg amps; circuits are still checked at max.
 - labels carry the distro phase; a project without distros (sv 23) gets Distro 1 with the same circuit; save/open keeps distros.
 """
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, random
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 ok = True
 def chk(name, cond, info=''):
     global ok

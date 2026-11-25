@@ -1,5 +1,7 @@
 # NovaStar .scr writer: rebuilding the real NovaLCT sample (sarakusha/novastar cfg/test.scr) must give the same bytes; a generated file
 # must decode (checksums, lengths, regions) the way the open-source decoder reads it; the config zip must hold .scr + CSV + JSON
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, struct, json, os, zipfile, io, sys
 from playwright.async_api import async_playwright
 SAMPLE=os.environ.get('SCR_SAMPLE','/tmp/res/novastar/cfg/test.scr')
@@ -21,7 +23,7 @@ async def main():
     ok=True
     async with async_playwright() as p:
         b=await p.chromium.launch(); ctx=await b.new_context(accept_downloads=True); pg=await ctx.new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html'); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(700)
+        await pg.goto(TS_APP_URL); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(700)
         if os.path.exists(SAMPLE):
             raw=open(SAMPLE,'rb').read(); gw,gh,sc=decode(raw)
             out=await pg.evaluate("([w,h,s])=>Array.from(scrBytes(w,h,s))",[gw,gh,sc]); same=bytes(out)==raw

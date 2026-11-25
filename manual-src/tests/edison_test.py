@@ -2,9 +2,11 @@
 120 V / 15 A outlets, one number per plug, one label pair per plug (Edison plug end / powerCON end), engineering rows
 (plugs, load per plug), house circuits (outlets per house circuit and its breaker, overload), saved and restored, and a
 regression for Socapex from a distro. Prints ALL OK."""
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 ED = 'powerCON to Edison (1 circuit per cable)'
 async def main():
     ok = True
