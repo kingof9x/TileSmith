@@ -4,6 +4,16 @@
 
 Pre production software for LED walls. Engineering specs, cable labels, pixel maps and test patterns with some fun animation for vidiots. Yes it is vibe coded. I was on tour and I kept seeing similar, obviously vibe coded software, that had a cute animation of a tech building a led wall. Everyone was charging an annual fee, distributing .exe files that couldn't pass an antivirus scan and wouldn't share source code, or wanting an email address and other info in exchange for their app. So I decided to do it myself and release the project with an open source license.
 
+**At a glance**
+
+- **What it does:** lays out LED walls on a canvas and gives you pixel maps, test patterns, processor ports and data paths, power circuits and distros, cable lengths, rigging, labels, a pull sheet and a show binder, plus live NDI®, Spout and Syphon output and an animated crew that builds the wall.
+- **Runs on:** Windows, Mac and Linux (Electron desktop app), Android and iOS (the same page in a native wrapper), or any modern browser for everything except the live outputs and video export.
+- **Current version:** 3.10. Only the Windows build has been used on real shows; the others are experimental.
+- **Licence:** GPL-3.0-or-later for the code; the animated technician artwork and the name are all rights reserved (see [Licence](#licence)).
+- **For reviewers:** [docs/REVIEW-GUIDE.md](docs/REVIEW-GUIDE.md) explains how the app is built, how to run the tests and what is known to be weak; [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md) has the code review findings. [docs/MEMORY.md](docs/MEMORY.md) has measured memory use.
+
+**Contents:** [Videos](#videos) · [Screenshots](#screenshots) · [How to: own Socapex cable per wall](#how-to-give-each-led-wall-its-own-socapex-cable) · [How to: draw power circuits](#how-to-draw-power-circuits-by-hand) · [What's new](#whats-new-in-39-and-310) · [How it works](#how-it-works) · [Memory use](#memory-use) · [Download](#download) · [Software to install](#software-to-install-before-you-use-a-downloaded-build) · [Building](#building) · [Licence](#licence)
+
 ## Videos
 
 > **Note:** these videos show a very early version of TileSmith. The app has changed a lot since they were filmed.
@@ -62,6 +72,47 @@ Walls that are too far apart to share a power run each get their own cable. In t
 4. Select the next wall and do the same. The power tray under the viewport shows each cable, the wall it runs to and the distro output it is patched to (**4**).
 
 **Spare legs.** A wall uses only the circuits it needs, and the rest of its cable stays spare (**S**). To leave more legs free, keep **Power link limit** at 0 or the maker's count (a lower limit spreads the tiles over more legs). You can also raise **Cables run to this wall** to run an extra, empty cable, or draw the circuits yourself and leave the chips you want spare unused. There is no setting yet that reserves a number of legs on every cable.
+
+## How to: draw power circuits by hand
+
+When an automatic pattern does not match how the crew will cable the wall, draw the circuits yourself. The numbers match the screenshot.
+
+<img src="docs/screenshots/features/power-draw-circuit.png" alt="Drawing power circuits by hand: Draw circuit, the viewport and a spare circuit chip">
+
+1. With a supply added (see the steps above), select the wall and open **Engineering › Power › This wall**. Click **Draw circuit** under the wall's cable card. The wall switches to Manual power wiring, keeping any circuits its pattern had, and the button now reads **Stop drawing**.
+2. Click tiles in the viewport in power-link order, or press on a tile and drag across the others. Each circuit's chip counts its tiles against the limit (here **1-1 · 8/10**), and a full circuit refuses more tiles.
+3. Click a dashed **spare** chip to start the next circuit on that leg, or click an existing chip to add tiles to that circuit. Click **Stop drawing** when you are done.
+
+**+ Add Socapex cable** runs one more cable to the wall. The power tray under the viewport shows which distro output each cable is patched to.
+
+## What's new in 3.9 and 3.10
+
+<table>
+<tr>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/power-per-wall.png" alt="Each wall on its own Socapex cable">
+
+<b>Power cables per wall.</b> Each LED wall starts on its own cable, so walls too far apart to share a power run never end up on the same Socapex, and the legs a wall does not use show as spare. Each cable is a card with a chip per circuit, and <b>Draw circuit</b> lets you draw circuits by hand.
+
+</td>
+<td width="50%" valign="top">
+
+<img src="docs/screenshots/features/build-running.png" alt="The LED build running, with the Stop LED Build button lit">
+
+<b>Effect buttons light up.</b> Start LED Build, Start DVD Screensaver and Start Tile Faults turn green and read Stop while their effect runs. The LED build stays on or off across a restart, and a looped build no longer restarts itself after you stop it.
+
+</td>
+</tr>
+</table>
+
+Also new in 3.9 and 3.10:
+
+- **Power settings in the order a power tech works.** Engineering › Power is now **Supply** (distros or house power, each with its own circuit voltage and breaker), **Load**, **This wall** (which supply and which cable feeds the selected wall) and **Show**. Older projects are converted when they open.
+- **Maker power limits.** For 369 of the 402 built-in tile models TileSmith knows the input voltage range and how many panels the maker allows on one power link, from the makers' own sheets. Voltages a tile is not made for are greyed out and the power link limit can be lowered but not raised.
+- **The distros set the rules.** Circuit voltage, cable type and breaker can only be what the distros supply; a breaker is capped at its connector's rating.
+- **Walls never share power circuits.** A copied wall used to share its power wiring with the original, so drawing on one rewired the other. Fixed; an empty power tray now says *No cables yet*.
+- **Update now works on Windows.** The installer is started by TileSmith's main process and waits for TileSmith to close before it installs, and it writes a log next to the download.
 
 ## What's new in 3.7 and 3.8
 
@@ -173,6 +224,21 @@ Also new in 3.6:
 
 <sub>These screenshots are made from the app with `manual-src/make_readme_features.py`.</sub>
 
+## How it works
+
+The whole app is one web page, [`tilesmith-desktop/app/index.html`](tilesmith-desktop/app/index.html): HTML, CSS and plain JavaScript with no framework and no build step. Every platform runs that same file.
+
+- The **desktop app** is that page in an [Electron](https://www.electronjs.org/) window. In the desktop app the page can also reach the computer directly: it sends frames to the NDI® runtime and to Spout (Windows) through [koffi](https://koffi.dev/), to Syphon (Mac) through node-syphon, and pipes frames into ffmpeg for video export.
+- The **phone and tablet apps** wrap the same page with Capacitor (Android and iOS), or a Kotlin WebView (`android-aistudio`).
+- Inside the page, one settings object holds the project, `render()` draws every wall onto the master canvas, and a 60 frames-a-second loop redraws only when something changes or moves, so a still picture costs very little CPU. Every change is saved automatically to `state.json` in your TileSmith folder.
+- The **manuals, the spec and the README screenshots** are made from the running app by the Python scripts in `manual-src/`, so they show the real interface.
+
+[docs/REVIEW-GUIDE.md](docs/REVIEW-GUIDE.md) goes into more detail, including the tests and known limitations.
+
+## Memory use
+
+TileSmith 3.10 uses about **380 to 410 MB** of RAM with the default project and about **500 MB** with a large show (four walls of 200 tiles on a 4K canvas), measured on Linux by adding up all six of its processes. An empty Electron window on the same machine uses about 286 MB, so most of that is the Electron runtime rather than TileSmith itself. Task Manager and Activity Monitor show each process on its own line, so look at all of them. How this was measured, and how to repeat it, is in [docs/MEMORY.md](docs/MEMORY.md).
+
 ## Virus scan and documentation
 
 **Virus scan:** every program file in each release is scanned on VirusTotal after it is built. See the results, with a link to each full report and the SHA-256 of every file, in **[VIRUSTOTAL.md](VIRUSTOTAL.md)**.
@@ -246,13 +312,14 @@ After every release the files are scanned on VirusTotal and the results are writ
 | Folder or file | What it is |
 |---|---|
 | `tilesmith-desktop/app/index.html` | The whole app in one page (HTML, CSS, JavaScript). Every build uses this same page. |
-| `tilesmith-desktop/` | The Windows and Mac desktop app (Electron): `main.js`, `package.json`, `scripts/`, `build/` icons, `bin/` (Spout and Syphon). |
+| `tilesmith-desktop/` | The Windows, Mac and Linux desktop app (Electron): `main.js`, `package.json`, `scripts/`, `build/` icons, `bin/` (Spout and Syphon). |
 | `tilesmith-desktop/mobile/` | The Android and iOS app (Capacitor 8). |
 | `tilesmith-desktop/android-aistudio/` | The Android app as Kotlin + Jetpack Compose (for Google AI Studio or Android Studio). |
 | `tilesmith-desktop/BUILD-*.txt` | Step-by-step build guides: Windows, Mac, Android, iOS. |
 | `tilesmith-desktop/TileSmith-Manual.pdf` | User manual (desktop). |
 | `tilesmith-desktop/TileSmith-Mobile-Manual.pdf` | User manual (Android and iOS). |
 | `tilesmith-desktop/TileSmith-App-Spec.md` | Full specification of the app, for rebuilding it elsewhere. |
+| `docs/` | README screenshots, [REVIEW-GUIDE.md](docs/REVIEW-GUIDE.md) (how the app is built, tests, known limitations) and [MEMORY.md](docs/MEMORY.md) (measured memory use). |
 | `manual-src/` | The tools that make the manuals, the spec, the Google AI Studio kit and the version bump, plus their tests. `WORKFLOW.md` explains how a release is put together. |
 
 ## Building
@@ -278,16 +345,14 @@ Spout (`bin/spout`) and Syphon (`bin/mac/syphon`) are included, with their licen
 On a Mac, clone the repository rather than downloading a ZIP. `Syphon.framework` contains symbolic links that a clone
 keeps.
 
-## Licence and third-party notices
-
-No licence has been chosen yet, so all rights are reserved. This repository is private.
+## Third-party notices
 
 - **Spout** SDK (SpoutDX.dll) by Lynn Jarvis, https://spout.zeal.co/, Simplified BSD licence (`bin/spout/Spout-licence.txt`).
 - **Syphon** framework, BSD licence; **node-syphon**, MIT licence (`bin/mac/syphon/`).
 - **NDI®** is a registered trademark of Vizrt NDI AB, https://ndi.video/. The NDI® runtime is not stored here. Builds take
   it from the NDI® SDK under the NDI® SDK License Agreement (https://ndi.link/ndisdk_license). NDI® Tools:
   https://ndi.video/tools/.
-- The built-in disguise test-pattern images and ffmpeg need checking before any public release.
+- Still to check: the licence terms of the built-in disguise test-pattern images. ffmpeg is not shipped in the downloads; *Info › Add-ons* fetches it from its publishers.
 
 ## Licence
 
@@ -322,14 +387,13 @@ afterwards.
 
 ## Project status
 
-**Status:** Waiting on developer  
-**Waiting on:** Developer: testing NovaStar export; Brompton data from a live system  
-**Notes:** LED wall pixel-map and engineering tool. Open PR #4.  
-**Last updated:** 2026-11-02
+**Status:** Active. Version 3.10 released 2026-11-20.  
+**Waiting on:** Developer: testing NovaStar .scr export; Brompton project files and data from a live system.  
+**Notes:** One developer, built with AI coding tools. Only the Windows build has been used on real shows. A native rewrite (Rust) is an idea for later, once features settle; nothing has been written yet.  
+**Last updated:** 2026-11-25
 
 ### Task list
 
 - [ ] Test NovaStar .scr file export
 - [ ] Get Brompton project files and data from a working system with live tiles
 - [ ] Resume reverse engineering Brompton project files once that data is in hand (blocked)
-
