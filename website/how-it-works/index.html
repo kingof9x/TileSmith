@@ -39,9 +39,9 @@ a { color: var(--cyan); }
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; }
 
 /* ---------- deck ---------- */
-.deck { height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+.deck { height: 100%; overflow-y: auto; scroll-behavior: smooth; }
 .slide {
-  min-height: 100%; scroll-snap-align: start; position: relative;
+  min-height: 100%; position: relative;
   display: grid; align-content: center;
   padding-block: 64px 80px;
   padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
@@ -62,7 +62,7 @@ h3 { font: 700 22px/1.2 var(--display); letter-spacing: .04em; text-transform: u
 p { margin: 0; max-width: 62ch; }
 .lead { font-size: clamp(19px, 2.1vw, 23px); color: #c9d4de; }
 .mu { color: var(--mu); }
-code, .mono { font-family: var(--mono); font-size: .86em; }
+code, .mono { font-family: var(--mono); font-size: .86em; font-variant-ligatures: none; }
 code { background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; color: var(--yellow); overflow-wrap: anywhere; }
 ul.list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; max-width: 62ch; }
 ul.list li { padding-left: 26px; position: relative; }
@@ -72,7 +72,7 @@ ul.list li::before { content: ""; position: absolute; left: 0; top: .55em; width
 .xlate { border: 1px solid #5a4410; background: linear-gradient(180deg, #1a1408, #120e06); border-radius: 10px; padding: 16px 18px; display: grid; gap: 6px; max-width: 62ch; }
 .xlate b { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--amber); }
 
-pre { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font: 400 14.5px/1.6 var(--mono); color: #cfe3ef; }
+pre { font-variant-ligatures: none; margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font: 400 14.5px/1.6 var(--mono); color: #cfe3ef; }
 pre .c { color: #6f7f8e; } pre .k { color: var(--cyan); } pre .s { color: var(--yellow); } pre .n { color: #f59e9e; }
 
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
@@ -139,6 +139,24 @@ kbd { font: 600 12px/1 var(--mono); border: 1px solid var(--line); border-bottom
 .hero-wall { width: 100%; max-width: 100%; aspect-ratio: 16 / 7; max-height: 42vh; object-fit: contain; }
 .tag { display: inline-block; font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--bg); background: var(--yellow); padding: 5px 8px; border-radius: 3px; }
 
+
+/* part sections: "what it does", then "how the code works" */
+.what { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 16px 18px; display: grid; gap: 6px; }
+.what b, .how b { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--cyan); }
+.how { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+.how::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+ol.walk { margin: 0; padding: 0; list-style: none; counter-reset: walk; display: grid; gap: 12px; max-width: 78ch; }
+ol.walk li { counter-increment: walk; position: relative; padding-left: 40px; }
+ol.walk li::before { content: counter(walk); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%; background: var(--panel-2); border: 1px solid var(--cyan); color: var(--cyan); font: 700 14px/24px var(--mono); text-align: center; }
+ol.toc { margin: 0; padding: 0; list-style: none; columns: 2 300px; column-gap: 40px; }
+ol.toc li { break-inside: avoid; padding: 7px 0; border-bottom: 1px dashed var(--line); }
+ol.toc a { color: var(--fg); text-decoration: none; }
+ol.toc a:hover { color: var(--cyan); }
+.pipe { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.pipe .box { flex: 1 1 140px; min-width: 0; }
+.pipe .arrow::before { content: "→ "; }
+@media (max-width: 700px) { .pipe { flex-direction: column; align-items: stretch; } .pipe .arrow::before { content: "↓ "; } }
+
 @media (max-width: 600px) {
   body { font-size: 17px; }
   .slide { padding-block: 64px 84px; }
@@ -153,351 +171,1221 @@ kbd { font: 600 12px/1 var(--mono); border: 1px solid var(--line); border-bottom
 
 <main class="deck" id="deck">
 
-<!-- 1 -->
-<section class="slide" id="s1" aria-label="Title">
+<!-- ======================= INTRO ======================= -->
+<section class="slide" id="start" aria-label="Title">
   <div class="inner">
-    <div class="cue">Cue 1 · Doors at 8 AM</div>
+    <div class="cue">Cue 0 · Doors</div>
     <h1>How <em>TileSmith</em> works</h1>
-    <p class="lead">A backstage tour of an LED wall app, for people who run servers, write the odd script and wonder what actually happens inside a program. No developer degree needed. Hard hat optional.</p>
+    <p class="lead">A backstage tour of the code. Each part of the app gets two halves: <b>what it does</b>, then <b>how the code does it</b>, with the real code from <code>tilesmith-desktop/app/index.html</code> and a plain-English walk through it. Written for people who run servers and write the odd script, not for developers.</p>
     <canvas class="demo hero-wall" id="heroWall" width="1280" height="560" aria-label="An LED wall being built tile by tile"></canvas>
-    <p class="keys">Scroll, swipe, or use <kbd>←</kbd> <kbd>→</kbd> / <kbd>Space</kbd> to move between cues. Some slides have things you can click.</p>
+    <p class="keys">Scroll, swipe, or use <kbd>←</kbd> <kbd>→</kbd> / <kbd>Space</kbd> to jump between sections. Code is from TileSmith 3.10.</p>
   </div>
 </section>
 
-<!-- 2 -->
-<section class="slide" id="s2" aria-label="What the app does">
-  <div class="inner two">
-    <div class="inner">
-      <div class="cue">Cue 2 · The gig</div>
-      <h2>What the app is <em>for</em></h2>
-      <p class="lead">An LED wall is a grid of tiles (cabinets) bolted together. A processor feeds them video over network cable. Before load-in, somebody has to work out the pixel map, the weight, the power and the cabling.</p>
-      <ul class="list">
-        <li>Lay out one or more walls on a <b>canvas</b>, the video raster a media server sends (say 1920 × 1080).</li>
-        <li>Paint test patterns on them so the crew can spot a bad tile from across the arena.</li>
-        <li>Do the engineering maths: pixels, kilos, watts, amps, processor ports, power circuits.</li>
-        <li>Send the result out live over the network (NDI®), to other apps on the same machine (Spout / Syphon), or to video, PNG, PSD and PDF.</li>
-        <li>And, because touring is long, a little technician walks out and builds the wall tile by tile.</li>
-      </ul>
-    </div>
-    <div class="xlate">
-      <b>Sysadmin translation</b>
-      <p>Think of it as capacity planning for a rack, with a live dashboard bolted on. Tiles are servers, the processor is the core switch, power circuits are PDUs, and the test pattern is the blinkenlights that tell you which box is dead.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 3 -->
-<section class="slide" id="s3" aria-label="One web page">
+<section class="slide" id="contents" aria-label="Running order">
   <div class="inner">
-    <div class="cue">Cue 3 · The big reveal</div>
-    <h2>The whole app is <em>one web page</em></h2>
-    <p class="lead">Nearly everything TileSmith does lives in a single file: <code>tilesmith-desktop/app/index.html</code>. HTML for the layout, CSS for the looks and JavaScript for the brains, all in one place. No framework, no build step, no server.</p>
-    <div class="stats">
-      <div class="stat"><span class="v">~6,300</span><span class="l">lines in index.html (some of them very long)</span></div>
-      <div class="stat"><span class="v">~2 MB</span><span class="l">file size, of which about 0.8 MB is pictures stored as text (base64)</span></div>
-      <div class="stat"><span class="v">0</span><span class="l">frameworks. Plain JavaScript and the browser's own 2D drawing canvas</span></div>
-    </div>
-    <div class="xlate">
-      <b>Sysadmin translation</b>
-      <p>It is the one-giant-bash-script approach, done on purpose. Like a self-extracting installer with its payload glued to the end, the test pattern images ride inside the file as base64 text. You can copy one file to a USB stick and the app goes with it. Open it in Chrome or Firefox and it runs in web mode.</p>
-    </div>
+    <div class="cue">Running order</div>
+    <h2>The <em>parts</em> of the app</h2>
+    <ol class="toc">
+      <li><a href="#read">Reading the code on these slides</a></li>
+      <li><a href="#map">The map: one file, two scripts</a></li>
+      <li><a href="#boot">1 · Startup</a></li>
+      <li><a href="#state">2 · Settings: the S object</a></li>
+      <li><a href="#panels">3 · The settings panels</a></li>
+      <li><a href="#save">4 · Saving, projects and undo</a></li>
+      <li><a href="#tiles">5 · Walls and tiles</a></li>
+      <li><a href="#viewport">6 · The viewport: mouse and touch</a></li>
+      <li><a href="#loop">7 · The main loop</a></li>
+      <li><a href="#render">8 · Drawing a frame</a></li>
+      <li><a href="#patterns">9 · Test patterns</a></li>
+      <li><a href="#data">10 · Processors and data wiring</a></li>
+      <li><a href="#power">11 · Power</a></li>
+      <li><a href="#eng">12 · The engineering panel</a></li>
+      <li><a href="#crew">13 · The build animation</a></li>
+      <li><a href="#dvd">14 · The DVD screensaver</a></li>
+      <li><a href="#outputs">15 · NDI®, Spout and display outputs</a></li>
+      <li><a href="#record">16 · Recording video</a></li>
+      <li><a href="#exports">17 · PDF and PSD exports</a></li>
+      <li><a href="#canvases">18 · Several canvases</a></li>
+      <li><a href="#i18n">19 · Ten languages</a></li>
+      <li><a href="#updates">20 · Updates</a></li>
+      <li><a href="#electron">21 · The desktop shell (Electron)</a></li>
+      <li><a href="#mobile">22 · Phones and tablets</a></li>
+      <li><a href="#ship">23 · Tests and releases</a></li>
+      <li><a href="#yours">Try it yourself</a></li>
+    </ol>
   </div>
 </section>
 
-<!-- 4 -->
-<section class="slide" id="s4" aria-label="Electron">
+<section class="slide" id="read" aria-label="Reading the code">
   <div class="inner two">
     <div class="inner">
-      <div class="cue">Cue 4 · The road case</div>
-      <h2>Electron: a browser that <em>thinks it's an app</em></h2>
-      <p class="lead">A web page can't talk to network video drivers or write files wherever it likes. So the desktop app ships the page inside <b>Electron</b>: a copy of the Chromium browser plus Node.js, the JavaScript runtime people use for servers.</p>
-      <p>The part outside the page, <code>main.js</code>, is only <b>66 lines</b>. It opens the window, loads <code>index.html</code>, keeps the app awake while it is sending video, opens full-screen output windows on other displays, takes bug-report screenshots, and hands over to the installer when you update.</p>
+      <div class="cue">Before we start</div>
+      <h2>How to read the <em>code</em> on these slides</h2>
+      <p class="lead">TileSmith is written in JavaScript. If you've written bash or PowerShell, you already know most of the ideas. The syntax is just different.</p>
+      <p>The real file is written very densely, with short names like <code>S</code>, <code>M</code> and <code>w</code> and many statements on one line. On these slides the code is spread out over more lines and lightly trimmed (a <code>// …</code> marks a cut). The names and logic are the real ones.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>JavaScript runs the same way wherever it is: in a browser tab, in Electron, or in Node.js on a server. There's no compile step. The browser reads the text and runs it, like <code>bash script.sh</code>.</p></div>
     </div>
-    <div class="flow" aria-label="Diagram of Electron's two processes">
-      <div class="box amb"><strong>Main process</strong><small>main.js · window manager, displays, power blocker, updater</small></div>
-      <div class="arrow">IPC messages ("ts-displays", "ts-capture", "output-active")</div>
-      <div class="box"><strong>Renderer: index.html</strong><small>the whole app: UI, maths, drawing, patterns, animation</small></div>
-      <div class="arrow">Node.js calls straight from the page</div>
-      <div class="box gry"><strong>Your computer</strong><small>files, ffmpeg, NDI® runtime, SpoutDX.dll, Syphon</small></div>
-      <div class="xlate" style="margin-top:6px">
-        <b>Sysadmin translation</b>
-        <p>Chromium in kiosk mode, with a tiny supervisor daemon next to it. IPC is like a local socket between the two: one side asks "which monitors are plugged in?", the other answers.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 5 -->
-<section class="slide" id="s5" aria-label="State">
-  <div class="inner two">
-    <div class="inner">
-      <div class="cue">Cue 5 · The show file</div>
-      <h2>Everything you set lives in <em>one object</em> called <code style="font-size:.7em">S</code></h2>
-      <p class="lead">Canvas size, border colour, which processor, the crew's names: every setting is a key in one JavaScript object. Each wall has its own object too. The UI always edits <code>S</code>; when you pick another wall, that wall's settings are copied in and out.</p>
-      <p>Change anything and, 400 ms after you stop fiddling, the app writes it all to disk as JSON. On load it checks every value's type and clamps it to its limits, so a hand-edited file can't set the canvas to minus four pixels.</p>
-    </div>
-    <div class="inner">
-<pre><span class="c">// state.json (shortened)</span>
-{
-  <span class="k">"sv"</span>: <span class="n">23</span>,            <span class="c">// save format version</span>
-  <span class="k">"S"</span>: {
-    <span class="k">"cw"</span>: <span class="n">1920</span>, <span class="k">"ch"</span>: <span class="n">1080</span>, <span class="c">// canvas size</span>
-    <span class="k">"bc"</span>: <span class="s">"#22d3ee"</span>,      <span class="c">// tile border colour</span>
-    <span class="k">"ids"</span>: <span class="k">true</span>,          <span class="c">// show tile IDs</span>
-    <span class="k">"speed"</span>: <span class="n">1</span>            <span class="c">// build animation speed</span>
-  },
-  <span class="k">"walls"</span>: [ { <span class="c">/* one per LED wall */</span> } ],
-  <span class="k">"crew"</span>: [ <span class="c">/* Marcus, Elena, ... */</span> ]
-}</pre>
-      <div class="xlate">
-        <b>Sysadmin translation</b>
-        <p>A config file that rewrites itself, with input validation on read. It lives in <code>%APPDATA%\TileSmith</code> on Windows and <code>~/Library/Application Support/TileSmith</code> on a Mac. In a browser it goes in localStorage instead. "Reset saved settings" is <code>rm state.json</code> with a nicer button.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 6 -->
-<section class="slide" id="s6" aria-label="Draw loop">
-  <div class="inner two">
-    <div class="inner">
-      <div class="cue">Cue 6 · The render loop</div>
-      <h2>Redraw the wall <em>60 times a second</em></h2>
-      <p class="lead">The picture you see is not stored anywhere. Each frame the app wipes the canvas black and paints it again, layer by layer, like a scenic painter who works back to front.</p>
-      <p>When nothing moves it slows down to four redraws a second, a safety net that costs almost nothing. Tick the layers on the right to see each one go on.</p>
-      <div class="xlate">
-        <b>Sysadmin translation</b>
-        <p>A cron job that fires every 16.7 ms and regenerates a report from scratch. Stateless and dumb on purpose: if something goes wrong in one frame, the next one fixes it.</p>
-      </div>
-    </div>
-    <div class="panel">
-      <canvas class="demo" id="layers" width="800" height="450" aria-label="Wall drawn in layers"></canvas>
-      <div class="toggles" id="layerToggles">
-        <label><input type="checkbox" id="L1" checked> 1 · Unbuilt outlines</label>
-        <label><input type="checkbox" id="L2" checked> 2 · Test pattern</label>
-        <label><input type="checkbox" id="L3" checked> 3 · Borders + IDs</label>
-        <label><input type="checkbox" id="L4" checked> 4 · Position arrows</label>
-        <label><input type="checkbox" id="L5" checked> 5 · Data path</label>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- 7 -->
-<section class="slide" id="s7" aria-label="Test patterns">
-  <div class="inner two">
-    <div class="inner">
-      <div class="cue">Cue 7 · Test patterns</div>
-      <h2>A test pattern is <em>just arithmetic</em></h2>
-      <p class="lead">There are about 25 patterns. Most aren't pictures at all; they're a few lines of maths run for every tile. Take <b>tileshade-cycle</b>: every tile cycles red, green, blue, and no tile ever matches its neighbour.</p>
-<pre>colour = [red, green, blue][(col + 2 × row + k) mod 3]
-<span class="c">// k goes up by one every 2.5 seconds</span></pre>
-      <p>Step one column right and the number goes up by 1. Step one row down and it goes up by 2. Neither is a multiple of 3, so neighbours always differ. That's the whole trick.</p>
-    </div>
-    <div class="panel">
-      <canvas class="demo" id="cyc" width="800" height="450" aria-label="Tiles cycling red, green and blue"></canvas>
-      <p class="mu" style="font-size:15px">Live: the same formula, running in your browser right now.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 8 -->
-<section class="slide" id="s8" aria-label="Data wiring">
-  <div class="inner two">
-    <div class="inner">
-      <div class="cue">Cue 8 · Data</div>
-      <h2>Processor ports are <em>uplinks</em></h2>
-      <p class="lead">Each processor port drives a daisy chain of tiles over a network cable. A port can only carry so many pixels (a NovaStar 1G port: 650,000 at 60 Hz, 8-bit). Fill it and you need another port.</p>
-<pre>tile pixels    = tile width × tile height
-tiles per port = floor( port pixels ÷ tile pixels )</pre>
-      <p>TileSmith knows the figures for about 30 processors (Brompton, NovaStar, Megapixel, ROE), adjusts them for frame rate and bit depth, then snakes the cable through the wall and labels the ends <b>P1</b> (port) and <b>R1</b> (return).</p>
-      <div class="xlate">
-        <b>Sysadmin translation</b>
-        <p>Bandwidth planning. A 1 Gb uplink can only carry so much, and a return cable at the end of the chain is your redundant path, like closing a ring.</p>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>Try it</h3>
-      <div class="ctl">
-        <label for="dpPort">Processor port
-          <select id="dpPort">
-            <option value="650000">NovaStar 1G port (650,000 px)</option>
-            <option value="525000">Brompton 1G port (525,000 px)</option>
-            <option value="401000">Megapixel HELIOS (401,000 px)</option>
-          </select>
-        </label>
-        <label for="dpTile">Tile size (px)
-          <select id="dpTile">
-            <option value="176x176">176 × 176 (500 mm, 2.8 mm pitch)</option>
-            <option value="192x192" selected>192 × 192 (500 mm, 2.6 mm pitch)</option>
-            <option value="256x256">256 × 256 (500 mm, 1.9 mm pitch)</option>
-            <option value="128x128">128 × 128 (500 mm, 3.9 mm pitch)</option>
-          </select>
-        </label>
-        <label for="dpCols">Columns <input id="dpCols" type="number" min="1" max="60" value="20"></label>
-        <label for="dpRows">Rows <input id="dpRows" type="number" min="1" max="40" value="10"></label>
-      </div>
-      <div class="readout" id="dpOut" aria-live="polite"></div>
-    </div>
-  </div>
-</section>
-
-<!-- 9 -->
-<section class="slide" id="s9" aria-label="Power">
-  <div class="inner two">
-    <div class="inner">
-      <div class="cue">Cue 9 · Power</div>
-      <h2>Don't trip the <em>breaker</em></h2>
-      <p class="lead">Each circuit can only feed so many watts. TileSmith works out how many tiles fit on one, chains them up, and spreads circuits across the three phases of a distro so no leg is overloaded.</p>
-<pre>usable watts = volts × amps × 0.8 × power factor
-tiles per circuit = floor( usable watts ÷ tile max watts )</pre>
-      <p>The 0.8 is the "load circuits to 80%" rule electricians use for continuous loads. A Socapex cable carries 6 circuits, so circuit 7 starts cable 2.</p>
-      <div class="xlate">
-        <b>Sysadmin translation</b>
-        <p>Exactly the sum you do before racking another server on a PDU, with the same 80% headroom habit.</p>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>Try it</h3>
-      <div class="ctl">
-        <label for="pwV">Volts
-          <select id="pwV"><option>120</option><option>208</option><option selected>230</option><option>240</option></select>
-        </label>
-        <label for="pwA">Breaker amps <input id="pwA" type="number" min="5" max="63" value="16"></label>
-        <label for="pwW">Tile max watts <input id="pwW" type="number" min="10" max="1500" value="150"></label>
-        <label for="pwN">Tiles on the wall <input id="pwN" type="number" min="1" max="2000" value="200"></label>
-      </div>
-      <div class="readout" id="pwOut" aria-live="polite"></div>
-    </div>
-  </div>
-</section>
-
-<!-- 10 -->
-<section class="slide" id="s10" aria-label="Outputs">
-  <div class="inner">
-    <div class="cue">Cue 10 · Getting the picture out</div>
-    <h2>Three ways <em>out of the box</em></h2>
-    <p class="lead">Every frame, the app reads the finished canvas back as raw pixels (red, green, blue, alpha: 4 bytes each, so a 1920 × 1080 frame is about 8 MB) and hands the same buffer to whoever wants it.</p>
-    <div class="rowflow">
-      <div class="box"><strong>NDI®</strong><small>video over your network. Media servers on the LAN see "TileSmith" as a source.</small></div>
-      <div class="arrow">same frame</div>
-      <div class="box"><strong>Spout / Syphon</strong><small>shares the picture with other apps on the same computer through the graphics card. No network, no compression.</small></div>
-      <div class="arrow">same frame</div>
-      <div class="box"><strong>ffmpeg</strong><small>raw frames are piped into ffmpeg, which writes MP4 or HAP video.</small></div>
-    </div>
-    <div class="two" style="gap:20px">
-      <div class="xlate">
-        <b>Sysadmin translation</b>
-        <p>ffmpeg is driven exactly like you'd drive it from a shell: <code>... | ffmpeg -f rawvideo -pix_fmt rgba -i - out.mp4</code>. The app is just the thing on the left of the pipe.</p>
-      </div>
-      <div class="xlate">
-        <b>Sysadmin translation</b>
-        <p>NDI® and Spout are C libraries (a <code>.dll</code> / <code>.so</code>). A small add-on called koffi lets JavaScript call their functions directly, the way Python's ctypes does. No compiler involved.</p>
-      </div>
-    </div>
-    <p class="mu">The status line shows the per-frame budget, for example: <span class="mono" style="color:var(--yellow)">render 0.4 ms, read 10.1 ms, send 0.0 ms</span>. Reading pixels back off the graphics card is the slow part.</p>
-  </div>
-</section>
-
-<!-- 11 -->
-<section class="slide" id="s11" aria-label="Technician">
-  <div class="inner two">
-    <div class="inner">
-      <div class="cue">Cue 11 · Enter the crew</div>
-      <h2>The technician is a <em>state machine</em></h2>
-      <p class="lead">For every tile, the tech goes through the same five phases, then starts on the next tile. The tile only "lights" (shows the pattern) once it locks in.</p>
-      <div class="phases" role="img" aria-label="Phases: walk in 0.8 s, move 1.1 s, place 0.8 s, lock 0.6 s, walk out 1.5 s">
-        <div style="flex:0.8;background:#22d3ee">walk in<span>0.8 s</span></div>
-        <div style="flex:1.1;background:#67e8f9">move<span>1.1 s</span></div>
-        <div style="flex:0.8;background:#ffb020">place<span>0.8 s</span></div>
-        <div style="flex:0.6;background:#ffe066">lock<span>0.6 s</span></div>
-        <div style="flex:1.5;background:#8b98a5">walk out<span>1.5 s</span></div>
-      </div>
-      <p>Each wall runs at a slightly different speed and starts a little later than the last, so a show with four walls doesn't look like a synchronised swimming team. The crew rotates so one person is never on two walls at once.</p>
-      <p>The <b>Hand-drawn</b> style uses real motion-captured workers rendered in 3D (three.js), then inked like a cartoon. Those files are about 5 MB, so they only load when you pick that style.</p>
-    </div>
-    <div class="xlate">
-      <b>Sysadmin translation</b>
-      <p>Same idea as a service going <code>starting → running → stopping → stopped</code>. Each phase has a timer; when it runs out, move to the next state. Loading the 3D crew only when asked is lazy loading, like a kernel module that is only inserted when the hardware shows up.</p>
-    </div>
-  </div>
-</section>
-
-<!-- 12 -->
-<section class="slide" id="s12" aria-label="DVD screensaver">
-  <div class="inner two">
-    <div class="inner">
-      <div class="cue">Cue 12 · Intermission</div>
-      <h2>Yes, it <em>hits the corner</em></h2>
-      <p class="lead">There is a DVD screensaver. Of course there is. And because this is a serious engineering tool, it has a dial for how often the logo lands exactly in the corner.</p>
-      <p>After each bounce the app rolls the dice. On a hit it "unfolds" the walls like mirrors and picks a straight line that reaches a corner. On a miss it nudges the angle just enough to dodge one.</p>
-      <p>The <b>perfect loop</b> option picks two whole numbers with no common factor so the logo ends up exactly where it started, in the same colour, after a set time. Export that as a video and it loops forever without a seam.</p>
-    </div>
-    <div class="panel">
-      <canvas class="demo" id="dvd" width="800" height="450" aria-label="A logo bouncing around a wall"></canvas>
-      <div class="toggles"><label for="dvdChance">Corner chance <input id="dvdChance" type="range" min="0" max="100" value="60" style="width:140px"></label><span class="mono mu" id="dvdStats" style="font-size:13px;align-self:center"></span></div>
-    </div>
-  </div>
-</section>
-
-<!-- 13 -->
-<section class="slide" id="s13" aria-label="Everywhere">
-  <div class="inner">
-    <div class="cue">Cue 13 · On tour</div>
-    <h2>One page, <em>every platform</em></h2>
-    <p class="lead">Because the app is a web page, the same file becomes every version you can download.</p>
     <div class="tablewrap">
       <table class="t">
-        <thead><tr><th>Where</th><th>Wrapped in</th><th>What it adds</th></tr></thead>
+        <thead><tr><th>You'll see</th><th>It means</th><th>Shell-ish</th></tr></thead>
         <tbody>
-          <tr><td>Windows, Mac, Linux</td><td>Electron, packaged by electron-builder</td><td>NDI®, Spout (Windows), Syphon (Mac), video export, saving files</td></tr>
-          <tr><td>Android, iPhone, iPad</td><td>Capacitor, a native shell around a web view</td><td>Share sheet, keep screen awake, phone storage</td></tr>
-          <tr><td>Any browser</td><td>Nothing</td><td>Everything that doesn't need the operating system</td></tr>
+          <tr><td><code>const x = 5</code></td><td>a named value</td><td><code>x=5</code></td></tr>
+          <tr><td><code>let n = 0</code></td><td>a value that will change</td><td><code>n=0</code></td></tr>
+          <tr><td><code>function f(a, b) {…}</code></td><td>a reusable command with arguments</td><td><code>f() { …; }</code></td></tr>
+          <tr><td><code>w =&gt; w.cols * w.rows</code></td><td>a one-line function</td><td>a tiny alias</td></tr>
+          <tr><td><code>{cw: 1920, ch: 1080}</code></td><td>an object: named fields</td><td>JSON / a dict</td></tr>
+          <tr><td><code>[a, b, c]</code></td><td>an array: a list</td><td><code>arr=(a b c)</code></td></tr>
+          <tr><td><code>S.cw</code></td><td>field <code>cw</code> of object <code>S</code></td><td><code>jq .cw</code></td></tr>
+          <tr><td><code>a ? b : c</code></td><td>if a then b else c</td><td><code>[ a ] &amp;&amp; b || c</code></td></tr>
+          <tr><td><code>list.forEach(x =&gt; …)</code></td><td>do something for each item</td><td><code>for x in …</code></td></tr>
+          <tr><td><code>list.map / filter</code></td><td>transform / keep some items</td><td><code>sed</code> / <code>grep</code></td></tr>
+          <tr><td><code>a &amp;&amp; b</code></td><td>run b only if a is true</td><td><code>a &amp;&amp; b</code></td></tr>
         </tbody>
       </table>
     </div>
-    <p>The page also speaks 10 languages. Every piece of on-screen text is looked up in a table by key, so switching to Deutsch or 日本語 is a dictionary swap, not a second app.</p>
-    <div class="xlate">
-      <b>Sysadmin translation</b>
-      <p>One container image, three runtimes. The phone build even has a script, <code>sync-web.js</code>, that copies the desktop page in before each build, so there's only ever one copy of the code to fix.</p>
-    </div>
   </div>
 </section>
 
-<!-- 14 -->
-<section class="slide" id="s14" aria-label="Release pipeline">
-  <div class="inner two">
-    <div class="inner">
-      <div class="cue">Cue 14 · Load-out</div>
-      <h2>How a release <em>ships itself</em></h2>
-      <p class="lead">Nobody builds TileSmith on their laptop. Pressing one button on GitHub starts a chain of robots (GitHub Actions) on rented machines.</p>
-      <ul class="list">
-        <li>Every proposed change gets a test build before it is merged, so a broken build never reaches the main branch.</li>
-        <li>The app's <b>Check for updates</b> reads the latest GitHub release and offers the file that matches your system.</li>
-        <li>The builds are unsigned (certificates cost money every year), which is why every file is scanned on VirusTotal and the results are published next to the code.</li>
-      </ul>
+<section class="slide" id="map" aria-label="The map">
+  <div class="inner">
+    <div class="cue">The map</div>
+    <h2>One file, <em>two scripts</em></h2>
+    <p class="lead">Almost the whole app is <code>tilesmith-desktop/app/index.html</code>: about 6,300 lines and 2 MB. Open it in a text editor and this is the order you'll find things in.</p>
+    <div class="tablewrap">
+      <table class="t">
+        <thead><tr><th>Lines</th><th>What's there</th></tr></thead>
+        <tbody>
+          <tr><td>1 – 122</td><td>The page skeleton: the top bar, the three columns, dialogs, and the CSS that styles them.</td></tr>
+          <tr><td>123 – 1537</td><td>Script 1: the translation table. Every English sentence in the app, with its nine translations.</td></tr>
+          <tr><td>1538 – 6295</td><td>Script 2: the app itself. About 440 named functions. Settings, drawing, wiring, power, animation, outputs, exports.</td></tr>
+          <tr><td>3557 – 3560</td><td>Four enormous lines (up to 370,000 characters each): the built-in test pattern pictures, stored as base64 text.</td></tr>
+        </tbody>
+      </table>
     </div>
-    <div class="flow">
-      <div class="box amb"><strong>Build and release</strong><small>Windows .exe, Mac .dmg/.pkg, Linux AppImage, .deb, .rpm, .pacman, Snap, Flatpak, Android .apk</small></div>
-      <div class="arrow">then, by itself</div>
-      <div class="box"><strong>Build documentation</strong><small>Python drives a headless browser, takes screenshots of the real app, circles the buttons and writes the PDF manuals</small></div>
-      <div class="arrow">then, by itself</div>
-      <div class="box gry"><strong>VirusTotal scan</strong><small>uploads every file and writes the results to VIRUSTOTAL.md</small></div>
-      <div class="xlate" style="margin-top:6px">
-        <b>Sysadmin translation</b>
-        <p>A CI pipeline, or three Ansible playbooks chained with handlers. Each stage only starts when the last one succeeds.</p>
+    <h3>How a click becomes a picture</h3>
+    <div class="pipe" aria-label="Data flow from input to output">
+      <div class="box gry"><strong>You</strong><small>type, click, drag</small></div>
+      <div class="arrow">event</div>
+      <div class="box amb"><strong>S</strong><small>the settings object</small></div>
+      <div class="arrow">loop</div>
+      <div class="box"><strong>render()</strong><small>draws the frame</small></div>
+      <div class="arrow">into</div>
+      <div class="box"><strong>M</strong><small>hidden full-size canvas</small></div>
+      <div class="arrow">copied to</div>
+      <div class="box gry"><strong>Screen, NDI®, Spout, video, PNG, PDF</strong><small>everything reads M</small></div>
+    </div>
+    <p>Keep that chain in mind. Almost every part below is one link in it. The key idea: there is <b>one hidden canvas</b>, <code>M</code>, at the real output size (say 1920 × 1080). Everything is drawn there once, and every output reads from it.</p>
+  </div>
+</section>
+
+<!-- ======================= 1 STARTUP ======================= -->
+<section class="slide" id="boot" aria-label="Startup">
+  <div class="inner">
+    <div class="cue">Part 1 · Startup</div>
+    <h2>What happens when you <em>open the app</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>The window opens, your last project reappears exactly as you left it, the panels fill in, and the wall starts drawing. If you'd left the LED build running, it starts again.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>This is the app's init script. It runs once, top to bottom, at the very end of the file, after every function has been defined.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+<pre><span class="c">// last lines of index.html (spread out)</span>
+<span class="k">const</span> DESK = <span class="k">typeof</span> require == <span class="s">'function'</span> &amp;&amp; !!process.versions.electron;  <span class="c">// line 5599: are we inside Electron?</span>
+<span class="c">// …</span>
+CVS = [cvFromGlobals(<span class="s">'Canvas 1'</span>)]; cc = <span class="n">0</span>;   <span class="c">// one canvas to start with</span>
+loadState();               <span class="c">// read state.json into S and walls</span>
+build();                   <span class="c">// write the left panel's HTML</span>
+outInit();                 <span class="c">// ask Electron which displays are plugged in</span>
+showAll();                 <span class="c">// every wall starts fully built</span>
+M.width = S.cw; M.height = S.ch;   <span class="c">// size the hidden master canvas</span>
+fit();                     <span class="c">// zoom so the canvas fits the window</span>
+unBase();                  <span class="c">// first undo snapshot</span>
+requestAnimationFrame(loop);       <span class="c">// start the drawing loop</span>
+<span class="k">if</span> (bldRun) { eachCv(() =&gt; reset()); S.play = <span class="k">true</span> }  <span class="c">// resume the LED build</span></pre>
+    <ol class="walk">
+      <li><b>DESK</b> checks whether Node.js's <code>require</code> exists and Electron's version is set. The same page runs in a browser, on a phone and on the desktop, so dozens of features ask <code>if (DESK)</code> before touching files or drivers. A second flag, <code>MOBILE</code>, checks for Capacitor, the phone wrapper.</li>
+      <li><b>loadState()</b> reads the saved settings (part 4). It runs before the panels are built so they show your values, not the defaults.</li>
+      <li><b>build()</b> generates the HTML for the left panel from text templates (part 3).</li>
+      <li><b>requestAnimationFrame(loop)</b> asks the browser to call <code>loop</code> before the next screen refresh. <code>loop</code> asks again every time, so it runs forever (part 7).</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 2 STATE ======================= -->
+<section class="slide" id="state" aria-label="Settings">
+  <div class="inner">
+    <div class="cue">Part 2 · Settings</div>
+    <h2>Everything lives in <em>one object</em>, S</h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>Every setting you can touch, about 200 of them (canvas size, tile model, border colour, which processor, NDI® name, label size…), has one home. Each wall also remembers its own settings, so two walls can have different tiles and patterns.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p><code>S</code> is the running config. The wall list is like per-host overrides in Ansible: some keys belong to the whole app, some to one wall.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 2690: the defaults, one key per line</span>
+<span class="k">const</span> S = {
+  cw: <span class="n">1920</span>,
+  ch: <span class="n">1080</span>,
+  ox: <span class="n">0</span>, oy: <span class="n">0</span>,        <span class="c">// wall position</span>
+  cols: <span class="n">6</span>, rows: <span class="n">4</span>,
+  preset: <span class="s">'Unilumin UpadIV 2.6'</span>,
+  tw: <span class="n">192</span>,            <span class="c">// tile width in px</span>
+  <span class="c">// … about 200 keys</span>
+};
+<span class="c">// line 2924: which keys belong to a wall</span>
+<span class="k">const</span> WK = [<span class="s">'half'</span>, <span class="s">'gone'</span>, <span class="s">'lay'</span>, <span class="c">/* … */</span>];</pre>
+<pre><span class="c">// the selected wall's keys are copied in and out</span>
+<span class="k">function</span> storeWall() {
+  <span class="k">if</span> (walls[cur])
+    WK.forEach(k =&gt; walls[cur][k] = S[k]);
+}
+<span class="k">function</span> loadWall(i) {
+  cur = i;
+  WK.forEach(k =&gt; S[k] = walls[cur][k]);
+}
+<span class="k">function</span> selWall(i) {   <span class="c">// you clicked a wall</span>
+  storeWall();   <span class="c">// save the old one</span>
+  loadWall(i);   <span class="c">// bring in the new one</span>
+  sync();        <span class="c">// refresh the panels</span>
+}</pre>
+    </div>
+    <ol class="walk">
+      <li><b>S</b> holds the settings the panels show. <b>walls</b> is a list of objects, one per LED wall, and <b>cur</b> is the number of the selected wall.</li>
+      <li>The panels only ever edit <code>S</code>. When you pick another wall, <code>storeWall</code> copies the wall keys (<code>WK</code>) from <code>S</code> back into the old wall, and <code>loadWall</code> copies the new wall's keys into <code>S</code>. That's why the same "Tile model" box edits whichever wall is selected.</li>
+      <li>A second list, <code>LIM</code> (line 3357), gives each number its allowed range, for example <code>lblCopies: [1, 4]</code>. Every value typed in or loaded from a file is clamped to it.</li>
+      <li>The comment "one key per line" is deliberate: when two changes are made at once, they add different lines, so git can merge them without a conflict.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 3 PANELS ======================= -->
+<section class="slide" id="panels" aria-label="Panels">
+  <div class="inner">
+    <div class="cue">Part 3 · The settings panels</div>
+    <h2>Panels built from <em>text templates</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>The left column has collapsible sections (Canvases, LED walls, Test pattern, Engineering…). Change any box and the wall, the engineering numbers and every output update straight away.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>Instead of wiring up 200 boxes one by one, every input is tagged with the name of the setting it edits, and one event handler serves them all. Like one generic script that reads <code>key=value</code> lines rather than one script per setting.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 3120: F() writes the HTML for one box (simplified)</span>
+<span class="k">const</span> F = (k, label, type = <span class="s">'number'</span>) =&gt;
+  <span class="s">`&lt;label&gt;${label}
+     &lt;input data-k="${k}" type="${type}"&gt;
+   &lt;/label&gt;`</span>;
+
+<span class="c">// build() uses it hundreds of times:</span>
+$(<span class="s">'#left'</span>).innerHTML = sect(<span class="s">`
+  &lt;h2&gt;Canvases&lt;/h2&gt;
+  ${F('cw', 'Width px')} ${F('ch', 'Height px')}
+  …`</span>);</pre>
+<pre><span class="c">// line 3455: ONE handler for every box</span>
+document.addEventListener(<span class="s">'input'</span>, e =&gt; {
+  <span class="c">/* a few special boxes are handled first */</span>
+  applyKey(e.target); sync();
+});
+<span class="c">// line 3426 (trimmed)</span>
+
+<span class="k">function</span> applyKey(t) {
+  <span class="k">const</span> k = t.dataset.k;       <span class="c">// which setting?</span>
+  <span class="k">let</span> v = t.type == <span class="s">'checkbox'</span> ? t.checked : +t.value;
+  <span class="k">const</span> L = LIM[k];
+  <span class="k">if</span> (L) v = Math.max(L[<span class="n">0</span>], Math.min(L[<span class="n">1</span>], v)); <span class="c">// clamp</span>
+  S[k] = v;                     <span class="c">// store it</span>
+  <span class="k">if</span> (k == <span class="s">'preset'</span>) applyPreset();  <span class="c">// side effects</span>
+  <span class="k">if</span> ([<span class="s">'proc'</span>,<span class="s">'fps'</span>,<span class="s">'bpc'</span>].includes(k)) applySpec();
+  storeWall();
+}</pre>
+    </div>
+    <ol class="walk">
+      <li><b>Template strings</b> (text in backticks with <code>${…}</code> holes) build the HTML as one long string. <code>sect()</code> turns every <code>&lt;h2&gt;</code> into a collapsible <code>&lt;details&gt;</code> section.</li>
+      <li>Every input carries <code>data-k="cw"</code>, the name of its key in <code>S</code>. <code>applyKey</code> reads that tag, converts the value (number, tick box or text), clamps it with <code>LIM</code> and stores it.</li>
+      <li>A few keys have knock-on effects. Picking a tile model (<code>preset</code>) copies that tile's size, weight and watts into the wall. Changing the processor or frame rate recalculates pixels per port.</li>
+      <li><b>sync()</b> (line 3251) then walks the other way: it pushes <code>S</code> back into every box, shows or hides sections, and rebuilds the engineering table. It's a list with one call per line, one per feature.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 4 SAVE ======================= -->
+<section class="slide" id="save" aria-label="Saving">
+  <div class="inner">
+    <div class="cue">Part 4 · Saving, projects and undo</div>
+    <h2>Save <em>400 ms</em> after you stop</h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>There's no Save button for everyday use. Settings are written to disk by themselves. You can also save and open whole <code>.tilesmith</code> project files, and undo or redo the last 20 changes with <kbd>Ctrl</kbd>+<kbd>Z</kbd>.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>The 400 ms wait is a debounce: like a log shipper that batches lines instead of making a network call per line. Drag a slider and you get one write at the end, not 60 a second.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 6210: restart a 400 ms timer on every change</span>
+<span class="k">function</span> saveSoon() {
+  clearTimeout(saveT);
+  saveT = setTimeout(saveNow, <span class="n">400</span>);
+}
+[<span class="s">'input'</span>,<span class="s">'change'</span>,<span class="s">'click'</span>,<span class="s">'pointerup'</span>]
+  .forEach(ev =&gt; document.addEventListener(ev, saveSoon));
+
+<span class="k">function</span> saveNow() {
+  <span class="k">const</span> j = JSON.stringify(stateObj());
+  <span class="k">if</span> (DESK) {
+    <span class="k">const</span> {d, f} = stFile();   <span class="c">// the folder for this OS</span>
+    fs.mkdirSync(d, {recursive: <span class="k">true</span>});
+    fs.writeFileSync(f, j);
+  } <span class="k">else</span> localStorage.setItem(SKEY, j);
+  <span class="c">// if that fails (disk full, browser quota):</span>
+  <span class="c">// drop the uploaded images and try again</span>
+}</pre>
+<pre><span class="c">// line 6227: called after every edit</span>
+<span class="k">function</span> unCheck(label) {
+  <span class="k">const</span> sn = unSnap();          <span class="c">// copy of everything</span>
+  <span class="k">const</span> k = unKey(sn);          <span class="c">// …as one JSON string</span>
+  <span class="k">if</span> (k === UN.key) <span class="k">return</span>;      <span class="c">// nothing changed</span>
+  <span class="c">// typing in the same box within 1.5 s = one step</span>
+  <span class="k">if</span> (!(label === UN.lbl &amp;&amp; now - UN.t &lt; <span class="n">1500</span>))
+    UN.st.push({label, snap: UN.last});
+  <span class="k">if</span> (UN.st.length &gt; UN.MAX) UN.st.shift(); <span class="c">// keep 20</span>
+  UN.last = sn; UN.key = k;
+}
+
+<span class="c">// loading checks every value (line 6275)</span>
+<span class="k">for</span> (<span class="k">const</span> k <span class="k">in</span> o.S)
+  <span class="k">if</span> (k <span class="k">in</span> S &amp;&amp; <span class="k">typeof</span> S[k] == <span class="k">typeof</span> o.S[k])
+    S[k] = clamp(o.S[k], LIM[k]);</pre>
+    </div>
+    <ol class="walk">
+      <li><b>stFile()</b> picks the folder: <code>%APPDATA%\TileSmith</code> on Windows, <code>~/Library/Application Support/TileSmith</code> on a Mac, <code>$XDG_CONFIG_HOME/TileSmith</code> (or <code>~/.config</code>) on Linux. The browser version uses localStorage instead.</li>
+      <li><b>stateObj()</b> gathers <code>S</code>, every wall on every canvas, the crew and uploaded logos (as <code>data:</code> text) into one object, tagged <code>sv: 24</code>, the save-format version. A Save Project file is the same JSON with a header added.</li>
+      <li><b>Loading</b> never trusts the file. It only takes keys the app knows, only if the type matches (a number stays a number), and clamps numbers to <code>LIM</code>. Old formats are upgraded: patterns renamed in v2.7 are mapped to their new names, and half tiles from older versions are converted.</li>
+      <li><b>Undo</b> keeps whole snapshots, not individual edits. After every click or keystroke it takes a new snapshot, turns it into one JSON string, and compares that with the last one. If they differ, the old snapshot goes on the undo stack. Simple and hard to get wrong, at the cost of some memory.</li>
+      <li>The app also saves on <code>beforeunload</code>, <code>pagehide</code> and when the window is hidden, so closing it never loses the last 400 ms.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 5 TILES ======================= -->
+<section class="slide" id="tiles" aria-label="Walls and tiles">
+  <div class="inner">
+    <div class="cue">Part 5 · Walls and tiles</div>
+    <h2>A wall is a list of <em>pieces</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>You pick a tile model from a catalog of about 400 real products (ROE, Absen, INFiLED, Unilumin…), set columns and rows, and can remove tiles or use half tiles to make stepped or offset walls. Each tile gets an ID, a pixel address and a build order.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p><code>pieces()</code> is like generating an inventory from a template: give it the rack layout and it hands back a list of every unit with its position, size, weight and power. And it caches the result until the layout changes.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// the catalog: one line per model</span>
+<span class="c">// [mm wide, mm high, px wide, px high,</span>
+<span class="c">//  pitch, kg, max watts, depth]</span>
+<span class="k">const</span> P = {
+  <span class="s">'ROE Black Pearl BP2V2'</span>:
+     [<span class="n">500</span>,<span class="n">500</span>, <span class="n">176</span>,<span class="n">176</span>, <span class="n">2.84</span>, <span class="n">9.35</span>, <span class="n">190</span>, <span class="n">90</span>],
+  <span class="c">// … about 400 more</span>
+};</pre>
+<pre><span class="c">// line 3075 (plain grid, trimmed)</span>
+<span class="k">function</span> pieces(w) {
+  <span class="k">const</span> key = [w.cols, w.rows, w.tw, w.th, <span class="c">/*…*/</span>].join(<span class="s">'|'</span>);
+  <span class="k">let</span> e = PCQ.get(w);
+  <span class="k">if</span> (e &amp;&amp; e.k === key) <span class="k">return</span> e.v;  <span class="c">// cached</span>
+  <span class="k">const</span> gs = goneSet(w), list = [];    <span class="c">// removed tiles</span>
+  <span class="k">for</span> (<span class="k">let</span> r = <span class="n">0</span>; r &lt; w.rows; r++)
+    <span class="k">for</span> (<span class="k">let</span> c = <span class="n">0</span>; c &lt; w.cols; c++) {
+      <span class="k">if</span> (gs.has(r * w.cols + c)) <span class="k">continue</span>;
+      list.push({ key: c + <span class="s">','</span> + r, c, r,
+        x: c * w.tw, y: r * w.th, w: w.tw, h: w.th,
+        o: ord.get(r * w.cols + c),       <span class="c">// build order</span>
+        sp: {kg: w.kg, W: w.wmax} });
+    }
+  <span class="k">const</span> seq = [...list].sort((p, q) =&gt; p.o - q.o);
+  PCQ.set(w, {k: key, v: {list, seq, <span class="c">/*…*/</span>}});
+}</pre>
+    </div>
+    <ol class="walk">
+      <li>Each <b>piece</b> is one physical tile: its column and row, its place in wall pixels (<code>x, y, w, h</code>), its weight and watts (<code>sp</code>) and its place in the build order (<code>o</code>). Rendering, wiring, power, labels and the animation all read this one list.</li>
+      <li><b>Caching:</b> working out a 40 × 20 wall every frame would be wasteful. The function makes a text key from everything that affects the layout. If the key matches last time, it returns the stored answer. <code>PCQ</code> is a <code>WeakMap</code>, a cache that forgets a wall's entry when the wall is deleted.</li>
+      <li><b>Build order</b> comes from <code>seqRC(w, k)</code>: "the k-th tile placed is at column c, row r", given the start corner, row-by-row or column-by-column, and ground stack or flown (flown walls always hang the top row first).</li>
+      <li><b>Half tiles</b> use a finer grid where each cell is half a tile. A full tile takes two cells, upright or (for some ROE models) on its side, so walls can step by half a tile. The same <code>pieces()</code> handles both and hands back the same kind of list.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 6 VIEWPORT ======================= -->
+<section class="slide" id="viewport" aria-label="Viewport">
+  <div class="inner">
+    <div class="cue">Part 6 · The viewport</div>
+    <h2>One pointer, <em>many modes</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>The centre of the window shows the canvas. Drag empty space to pan, scroll or pinch to zoom, drag a wall to move it (it snaps to edges and other walls), or click tiles to wire them, remove them, mark half tiles or pick faulty ones.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>A small state machine: press decides the mode (pan, move wall, wire…), move does that mode's job, release ends it. Like a CLI that picks a subcommand from the first word.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 3530: pointer pressed on the viewport</span>
+vp.onpointerdown = e =&gt; {
+  <span class="k">const</span> i = hitWall(e);          <span class="c">// which wall is under it?</span>
+  drag = {mode: <span class="s">'pan'</span>, <span class="c">/* start position */</span>};
+  <span class="k">if</span> (glEdit   &amp;&amp; i == cur) { drag.mode = <span class="s">'glk'</span>;  <span class="k">return</span> }
+  <span class="k">if</span> (goneEdit &amp;&amp; i == cur) { drag.mode = <span class="s">'gone'</span>; <span class="k">return</span> }
+  <span class="k">if</span> (halfEdit &amp;&amp; i == cur) { drag.mode = <span class="s">'half'</span>; <span class="k">return</span> }
+  <span class="k">if</span> (manWiring() &amp;&amp; i == cur) { drag.mode = <span class="s">'wire'</span>; <span class="k">return</span> }
+  <span class="k">if</span> (i &gt;= <span class="n">0</span>) { selWall(i); drag.mode = <span class="s">'wall'</span> }
+};
+vp.onpointermove = e =&gt; {
+  <span class="k">if</span> (drag.mode == <span class="s">'wall'</span>) {
+    <span class="k">let</span> [x, y] = <span class="c">/* start + how far you moved */</span>;
+    <span class="k">if</span> (!e.altKey) [x, y] = snapPos(cur, x, y);
+    S.ox = x; S.oy = y; sync();
+  }
+  <span class="c">// … pan, wire, half, gone</span>
+};</pre>
+<pre><span class="c">// screen pixels → canvas pixels</span>
+<span class="c">// V = {x, y, z}: pan offset and zoom</span>
+toCv(e) = [(e.x - V.x) / V.z,
+           (e.y - V.y) / V.z]
+
+<span class="c">// line 3495: last wall drawn wins</span>
+<span class="k">function</span> hitWall(e) {
+  <span class="k">const</span> [x, y] = toCv(e);
+  <span class="k">for</span> (<span class="k">let</span> i = walls.length - <span class="n">1</span>; i &gt;= <span class="n">0</span>; i--) {
+    <span class="k">const</span> w = walls[i];
+    <span class="k">if</span> (x &gt;= w.ox &amp;&amp; y &gt;= w.oy &amp;&amp;
+        x &lt; w.ox + wW(w) &amp;&amp; y &lt; w.oy + wH(w))
+      <span class="k">return</span> i;
+  }
+  <span class="k">return</span> -<span class="n">1</span>;
+}</pre>
+    </div>
+    <ol class="walk">
+      <li><b>toCv</b> converts a mouse position on screen into canvas pixels by undoing the pan (<code>V.x</code>, <code>V.y</code>) and zoom (<code>V.z</code>). Everything after that works in real canvas pixels, whatever the zoom.</li>
+      <li><b>hitWall</b> checks walls from last to first, because later walls are drawn on top. The first rectangle that contains the point wins.</li>
+      <li><b>snapPos</b> compares the wall's edges with the canvas edges and every other wall's edges. Anything within 10 screen pixels snaps, including "beside it with a 2 px gap". Magenta guide lines show what it snapped to. Holding <kbd>Alt</kbd> skips snapping.</li>
+      <li>Two fingers on a touch screen go through a separate pinch handler that zooms around the point between your fingers.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 7 LOOP ======================= -->
+<section class="slide" id="loop" aria-label="Main loop">
+  <div class="inner">
+    <div class="cue">Part 7 · The main loop</div>
+    <h2>Redraw only when <em>something changed</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>The picture moves smoothly at up to 60 frames a second while something is animating, and goes almost idle when nothing is. A still wall costs almost no CPU, so a laptop stays cool during a long show.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>A scheduler with a dirty flag. It wakes every screen refresh, but only does the expensive work (a full redraw) when something is marked as changed, plus a 4-per-second health check.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 6199: runs on every screen refresh</span>
+<span class="k">function</span> loop() {
+  requestAnimationFrame(loop);      <span class="c">// book the next call</span>
+  <span class="k">const</span> now = performance.now();
+  <span class="c">// cap at 60 per second (on a 144 Hz screen too)</span>
+  <span class="k">if</span> (now &gt;= nextT - F * <span class="n">.25</span>) { tick(now); nextT += F }
+  <span class="c">// copy the master canvas to the screen</span>
+  <span class="k">if</span> (RG !== vpGen) { vpDraw(); vpGen = RG }
+}
+
+<span class="k">function</span> tick(now) {
+  <span class="k">const</span> dt = (now - lastStep) / <span class="n">1000</span>;  <span class="c">// seconds since last</span>
+  <span class="k">const</span> per = now - lastRen &gt;= <span class="n">250</span>;   <span class="c">// 4× a second anyway</span>
+  eachCv(() =&gt; {                       <span class="c">// every canvas</span>
+    step(dt);                          <span class="c">// move the crew</span>
+    dvdStep(dt);                       <span class="c">// move the DVD logo</span>
+    <span class="k">if</span> (forceRen || per || busyNow(now)) {
+      render(); gen++;                 <span class="c">// draw a new frame</span>
+    }
+  });
+}</pre>
+<pre><span class="c">// line 6189: is anything moving?</span>
+<span class="k">function</span> animNow() {
+  <span class="k">if</span> (S.dvdOn || REC || S.play &amp;&amp; !allDone())
+    <span class="k">return true</span>;
+  <span class="k">if</span> (sims.some(x =&gt; x.sp.length))   <span class="c">// sparkles</span>
+    <span class="k">return true</span>;
+  <span class="k">return</span> walls.some(w =&gt;
+    MOVE_PAT.includes(w.pat) || scrolls(w));
+}
+<span class="k">function</span> busyNow(now) {
+  <span class="k">return</span> !!drag                <span class="c">// you're dragging</span>
+    || now - lastAct &lt; <span class="n">1200</span>    <span class="c">// you touched it</span>
+    || animNow();
+}</pre>
+    </div>
+    <ol class="walk">
+      <li><b>requestAnimationFrame</b> is the browser's "call me before the next screen refresh". Calling it again at the top of <code>loop</code> keeps it going forever.</li>
+      <li><b>tick</b> does the work: it moves every animation forward by <code>dt</code> seconds (so speed is the same at 30 or 60 fps), then decides whether to redraw.</li>
+      <li>It redraws if something forced it (<code>forceRen</code>, set when a setting or image changes), if 250 ms have passed, if you touched the app in the last 1.2 s, or if <code>animNow()</code> finds anything moving.</li>
+      <li>Every redraw bumps a counter, <code>gen</code>. Outputs remember the last <code>gen</code> they sent, so a still picture is never read or sent twice (part 15).</li>
+      <li>While NDI® or Spout is running, a separate output timer calls <code>tick</code> instead, at exactly the output's frame rate, even when the window is hidden (browsers slow down hidden tabs; <code>main.js</code> turns that off).</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 8 RENDER ======================= -->
+<section class="slide" id="render" aria-label="Drawing a frame">
+  <div class="inner">
+    <div class="cue">Part 8 · Drawing a frame</div>
+    <h2>Paint it <em>back to front</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>Each frame shows every wall: its pattern on built tiles, dashed outlines where tiles are still missing, borders, tile IDs, pixel addresses, position arrows, data and power runs, then the technicians and the lock sparkles on top.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>Like regenerating a report from scratch on every run instead of patching yesterday's. No pixel is kept from the last frame, so nothing can get stuck on screen.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 4304 (heavily trimmed)</span>
+<span class="k">function</span> render() {
+  <span class="k">const</span> c = mc;                    <span class="c">// M's drawing context</span>
+  c.fillStyle = <span class="s">'#050608'</span>;
+  c.fillRect(<span class="n">0</span>, <span class="n">0</span>, S.cw, S.ch);       <span class="c">// 1. wipe</span>
+  walls.forEach((w, wi) =&gt; {
+    <span class="k">const</span> PW = pieces(w), sm = sims[wi];
+    <span class="c">// which tiles are built so far?</span>
+    <span class="k">for</span> (<span class="k">let</span> k = <span class="n">0</span>; k &lt; sm.inst; k++) inst.add(PW.seq[k].key);
+    <span class="c">// 2. dashed outline on unbuilt tiles</span>
+    <span class="c">// 3. pattern, clipped to built tiles</span>
+    c.save(); litClip(); c.translate(w.ox, w.oy);
+    pat(c, w, wW(w), wH(w)); dvdDraw(c, w);
+    c.restore();
+    <span class="c">// 4. per tile: border, corner marks, labels</span>
+    PW.list.forEach(R =&gt; { <span class="c">/* strokeRect, fillText */</span> });
+    <span class="c">// 5. data paths: coloured lines + P#/R# badges</span>
+    <span class="c">// 6. power runs: dashed lines + ⚡ circuit badges</span>
+  });
+  busy.forEach(wi =&gt; drawWallTech(c, walls[wi], sims[wi]));
+  <span class="c">// 7. lock sparkles: expanding rings</span>
+}</pre>
+      <div class="panel">
+        <canvas class="demo" id="layers" width="800" height="450" aria-label="Wall drawn in layers"></canvas>
+        <div class="toggles" id="layerToggles">
+          <label><input type="checkbox" id="L1" checked> 2 · Unbuilt outlines</label>
+          <label><input type="checkbox" id="L2" checked> 3 · Pattern</label>
+          <label><input type="checkbox" id="L3" checked> 4 · Borders + IDs</label>
+          <label><input type="checkbox" id="L4" checked> 4 · Position arrows</label>
+          <label><input type="checkbox" id="L5" checked> 5 · Data path</label>
+        </div>
+        <p class="mu" style="font-size:15px">Untick a layer to take it out of the frame. The numbers match the steps in the code.</p>
       </div>
     </div>
+    <ol class="walk">
+      <li><b>A canvas</b> is a grid of pixels you draw on with commands like <code>fillRect</code> (filled box), <code>strokeRect</code> (outline), <code>fillText</code> and <code>drawImage</code>. <code>mc</code> is the drawing handle for the hidden master canvas <code>M</code>.</li>
+      <li><b>Clipping</b> is how half-built walls work. <code>litClip()</code> marks out only the built tiles; while the clip is on, drawing outside it is thrown away. So the pattern is drawn for the whole wall, but only shows on tiles that are in place.</li>
+      <li><b>translate</b> moves the drawing origin to the wall's corner, so the pattern code can always draw from (0, 0) without knowing where the wall sits on the canvas. <code>save()</code> and <code>restore()</code> undo the clip and the move afterwards.</li>
+      <li>Label sizes scale with the tile (<code>fs = max(8, min(tw/9, th/7))</code>), so a 128 px tile and a 512 px tile both get readable text.</li>
+      <li>The screen never sees <code>M</code> directly. <code>vpDraw()</code> copies it into the visible viewport at your zoom with one <code>drawImage</code>, then draws the editing aids (amber wall outlines, snap guides) on top. Those aids never reach the LED wall.</li>
+    </ol>
   </div>
 </section>
 
-<!-- 15 -->
-<section class="slide" id="s15" aria-label="Try it yourself">
+<!-- ======================= 9 PATTERNS ======================= -->
+<section class="slide" id="patterns" aria-label="Test patterns">
+  <div class="inner">
+    <div class="cue">Part 9 · Test patterns</div>
+    <h2>Most patterns are <em>arithmetic</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>About 25 patterns: the tileshade pixel map, SMPTE bars, ramps, gradients, a zone plate, colour cycles, cabinet IDs, disguise and branded test cards, or your own image. Any of them can scroll.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p><code>pat()</code> is a dispatcher, like a <code>case</code> statement that hands each pattern to its own handler. Pictures are cached, maths is just run again.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 3624: pick the right drawer</span>
+<span class="k">function</span> pat(c, L, w, h) {
+  <span class="k">if</span> (L.pat == <span class="s">'cabinet IDs'</span>) <span class="k">return</span> cidPat(c, L, w, h);
+  <span class="k">if</span> (isImgPat(L.pat))       <span class="k">return</span> drawImgPat(c, L, w, h);
+  <span class="k">if</span> (!scrolls(L))           <span class="k">return</span> patRaw(c, L, w, h);
+  <span class="c">// scrolling: draw once into an offscreen canvas,</span>
+  <span class="c">// then stamp it 4 times, shifted, so it wraps</span>
+  blitWrap(c, e.cv, w, h, scrollOff(L, w, h));
+}
+<span class="c">// line 3629: the maths patterns</span>
+<span class="k">function</span> patRaw(c, L, w, h) {
+  <span class="k">if</span> (p == <span class="s">'ramp'</span>)            <span class="c">// 16 grey steps</span>
+    <span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; <span class="n">16</span>; i++) {
+      <span class="k">const</span> g = Math.round(i * <span class="n">255</span> / <span class="n">15</span>);
+      c.fillStyle = <span class="s">`rgb(${g},${g},${g})`</span>;
+      c.fillRect(i * w / <span class="n">16</span>, <span class="n">0</span>, w / <span class="n">16</span> + <span class="n">1</span>, h);
+    }
+  <span class="k">else if</span> (p == <span class="s">'cycle'</span>)        <span class="c">// new colour every 1.5 s</span>
+    c.fillStyle = [<span class="s">'#f00'</span>,<span class="s">'#0f0'</span>,<span class="s">'#00f'</span>,<span class="c">/*…*/</span>]
+                  [Math.floor(T / <span class="n">1.5</span>) % <span class="n">8</span>];
+  <span class="k">else if</span> (isShade(p))            <span class="c">// tileshade family</span>
+    <span class="k">for</span> (r…) <span class="k">for</span> (q…)
+      c.fillStyle = (q + r) % <span class="n">2</span> ? mixW(L.shadeC, <span class="n">.5</span>) : L.shadeC;
+  <span class="c">// …</span>
+}</pre>
+      <div class="panel">
+        <canvas class="demo" id="cyc" width="800" height="450" aria-label="Tiles cycling red, green and blue"></canvas>
+        <p class="mu" style="font-size:15px"><b>tileshade-cycle</b>, live: tile colour = <code>[red, green, blue][(col + 2×row + k) mod 3]</code>, where k goes up every 2.5 s. One step right adds 1, one step down adds 2. Neither is a multiple of 3, so neighbours never match. The number on each tile is that sum mod 3.</p>
+      </div>
+    </div>
+    <ol class="walk">
+      <li><b>T</b> is the time in seconds, set once per frame. Every moving pattern is a formula of <code>T</code>, which is also what lets video export run frame by frame faster or slower than real time and still look right.</li>
+      <li><b>The checkerboard</b>: <code>(q + r) % 2</code> is 0 or 1 alternately across columns <code>q</code> and rows <code>r</code>. Even tiles get your colour, odd ones get it mixed 50% with white.</li>
+      <li><b>Images</b> (SMPTE, disguise cards, your upload) are drawn with <code>drawImage</code> using one of five fit modes. Very large walls render the cached image at a reduced scale so it stays under 25 megapixels.</li>
+      <li><b>Scrolling</b>: drawing a complex pattern 60 times a second is slow, so it's drawn once into a spare offscreen canvas. Each frame stamps that canvas four times, shifted by the scroll offset, so whatever slides off one edge reappears on the other.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 10 DATA ======================= -->
+<section class="slide" id="data" aria-label="Data wiring">
+  <div class="inner">
+    <div class="cue">Part 10 · Processors and data wiring</div>
+    <h2>Fill each port, <em>snake</em> the cable</h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>Pick an LED processor (Brompton, NovaStar, Megapixel, ROE) and the app works out how many tiles each port can drive at your frame rate and bit depth, then plans the cable runs in one of 16 patterns (start corner × direction × snake or linear), or lets you draw them by hand.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>Bandwidth planning. Each port is a 1 Gb uplink with a pixel budget. Higher frame rate or bit depth means fewer pixels fit, exactly like higher bitrate means fewer streams per link.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 3763: pixels per port for your settings</span>
+<span class="k">function</span> specPx(m) {
+  <span class="k">let</span> v = m.px * m.hz / S.fps;     <span class="c">// scale by frame rate</span>
+  <span class="k">if</span> (m.sc == <span class="s">'brompton'</span>) {
+    v *= <span class="n">8</span> / S.bpc;                  <span class="c">// scale by bit depth</span>
+    <span class="k">if</span> (S.ull) v /= <span class="n">2</span>;               <span class="c">// ultra low latency</span>
+  } <span class="k">else if</span> (m.sc == <span class="s">'novastar'</span>) {
+    <span class="k">if</span> (S.bpc &gt; <span class="n">8</span>) v = m.px10 ? m.px10 * m.hz / S.fps : v / <span class="n">2</span>;
+  }
+  <span class="k">return</span> Math.floor(v);
+}
+<span class="c">// tiles per port</span>
+<span class="k">const</span> tpp = w =&gt; Math.floor(S.ppx / (w.tw * w.th));
+
+<span class="c">// line 3812: lay a cable through a block</span>
+<span class="k">function</span> blockPath(len, nl, snake) {
+  <span class="k">const</span> o = [];
+  <span class="k">for</span> (<span class="k">let</span> l = <span class="n">0</span>; l &lt; nl; l++)          <span class="c">// each line</span>
+    <span class="k">for</span> (<span class="k">let</span> k = <span class="n">0</span>; k &lt; len; k++)       <span class="c">// along it</span>
+      o.push([snake &amp;&amp; l % <span class="n">2</span> ? len - <span class="n">1</span> - k : k, l]);
+  <span class="k">return</span> o;
+}</pre>
+      <div class="panel">
+        <h3>Try it</h3>
+        <div class="ctl">
+          <label for="dpPort">Processor port
+            <select id="dpPort">
+              <option value="650000">NovaStar 1G port (650,000 px)</option>
+              <option value="525000">Brompton 1G port (525,000 px)</option>
+              <option value="401000">Megapixel HELIOS (401,000 px)</option>
+            </select>
+          </label>
+          <label for="dpTile">Tile size (px)
+            <select id="dpTile">
+              <option value="176x176">176 × 176 (500 mm, 2.8 mm pitch)</option>
+              <option value="192x192" selected>192 × 192 (500 mm, 2.6 mm pitch)</option>
+              <option value="256x256">256 × 256 (500 mm, 1.9 mm pitch)</option>
+              <option value="128x128">128 × 128 (500 mm, 3.9 mm pitch)</option>
+            </select>
+          </label>
+          <label for="dpCols">Columns <input id="dpCols" type="number" min="1" max="60" value="20"></label>
+          <label for="dpRows">Rows <input id="dpRows" type="number" min="1" max="40" value="10"></label>
+        </div>
+        <div class="readout" id="dpOut" aria-live="polite"></div>
+      </div>
+    </div>
+    <ol class="walk">
+      <li><b>PROC</b> is a table of about 30 processors with ports, pixels per port, the frame rate and bit depth that figure is quoted at, and a scaling rule (<code>sc</code>). Each brand scales differently, so <code>specPx</code> has one branch per rule.</li>
+      <li><b>blockPath</b> produces the order tiles are visited in one block: line by line, and with <code>snake</code> on, every second line runs backwards (the <code>len - 1 - k</code>). That's the zig-zag you see on the wall.</li>
+      <li><b>autoChains</b> (line 3832) splits the wall into blocks, one per port. <code>blockGrid</code> tries every way of cutting the wall into <code>nx × ny</code> blocks that fit in a port and scores them: fewest ports first, then at least two lines per block when snaking, then the longest lines. The best one wins and is cached.</li>
+      <li><b>portPlan</b> (line 3865) numbers the chains P1, P2… across all walls, totals the pixels on each, and marks any that are over budget with <code>over: true</code>. The renderer draws those dashed red.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 11 POWER ======================= -->
+<section class="slide" id="power" aria-label="Power">
+  <div class="inner">
+    <div class="cue">Part 11 · Power</div>
+    <h2>Same planner, <em>different budget</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>Add a distro or house power, pick the cable (Socapex, L14-30, L21-30, powerCON to Edison) and the app plans circuits through each wall, counts cables and spare legs, balances the load across phases and warns about anything over capacity.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>PDU planning with the 80% rule for continuous load. Data wiring and power wiring share the same route planner; only the budget changes, from pixels per port to watts per circuit. Good code reuse.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 3900: what one circuit can carry</span>
+<span class="k">function</span> pwC(w) {
+  <span class="k">const</span> d = pwSup(w);                <span class="c">// the supply it's fed from</span>
+  <span class="k">const</span> V = d ? +d.cv : <span class="n">120</span>;          <span class="c">// circuit volts</span>
+  <span class="k">const</span> A = Math.min(+d.cb, D.rA);     <span class="c">// breaker, capped at</span>
+                                        <span class="c">// the connector rating</span>
+  <span class="k">return</span> {V, A,
+    cw: V * A * (S.derate ? <span class="n">.8</span> : <span class="n">1</span>) * (S.pf || <span class="n">1</span>)};
+}
+<span class="k">const</span> tpcCalc = w =&gt;
+  Math.floor(circW(w) / Math.max(<span class="n">1</span>, w.wmax));
+
+<span class="c">// line 3939: reuse the data planner</span>
+<span class="k">function</span> powChains(w) {
+  <span class="k">if</span> (w.pmode == <span class="s">'Manual'</span>) <span class="k">return</span> manChains(w, <span class="s">'pman'</span>);
+  <span class="k">const</span> t = tpcW(w);                 <span class="c">// tiles per circuit</span>
+  <span class="k">return</span> autoChains({cols: w.cols, rows: w.rows,
+    wcorner: w.pcorner, wmode: w.pmode, pw: <span class="n">1</span>}, t);
+}</pre>
+      <div class="panel">
+        <h3>Try it</h3>
+        <div class="ctl">
+          <label for="pwV">Volts
+            <select id="pwV"><option>120</option><option>208</option><option selected>230</option><option>240</option></select>
+          </label>
+          <label for="pwA">Breaker amps <input id="pwA" type="number" min="5" max="63" value="16"></label>
+          <label for="pwW">Tile max watts <input id="pwW" type="number" min="10" max="1500" value="150"></label>
+          <label for="pwN">Tiles on the wall <input id="pwN" type="number" min="1" max="2000" value="200"></label>
+        </div>
+        <div class="readout" id="pwOut" aria-live="polite"></div>
+        <p class="mu" style="font-size:14px">Power factor 1, loaded to 80%. The app also lets you set the power factor and the design load.</p>
+      </div>
+    </div>
+    <ol class="walk">
+      <li><b>pwC</b> returns the usable watts per circuit: volts × amps × 0.8 (when "Load circuits to 80%" is on) × power factor. Dividing by the tile's maximum watts and rounding down gives tiles per circuit. A maker's power-link limit can lower it further.</li>
+      <li><b>powChains</b> calls the same <code>autoChains</code> as data wiring, but passes <code>pw: 1</code>. That switches block choice to <code>powGrid</code>, which scores layouts by <code>circuits + (largest − smallest) / largest</code>: fewest circuits first, then the most even split. One extra circuit is only used if it evens the load out completely.</li>
+      <li><b>Cables and phases:</b> with <code>n</code> circuits per cable (6 for Socapex), circuit <code>k</code> is on cable <code>ceil(k/n)</code>, leg <code>(k−1) mod n + 1</code>. Legs land on phases A, B, C in turn, so the app can add up amps per phase and rebalance.</li>
+      <li>Each wall starts its own cable by default, because walls far apart can't share a Socapex run. Its unused legs show as spare.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 12 ENGINEERING ======================= -->
+<section class="slide" id="eng" aria-label="Engineering panel">
+  <div class="inner">
+    <div class="cue">Part 12 · The engineering panel</div>
+    <h2>Rows of <em>[label, value]</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>The right-hand column lists every number for the selected wall and the whole canvas: pixels, size, area, weight, peak and typical power, amps, tiles per port and circuit, ports and circuits used, warnings. The same numbers go into the PDF spec sheet.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>One function produces the data, two "formatters" print it: one as an HTML table, one as PDF text. Like a script with <code>--format html</code> and <code>--format pdf</code> that share one query.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+<pre><span class="c">// line 5093: the whole canvas, as a list of [label, value] pairs</span>
+<span class="k">function</span> canvasRows() {
+  <span class="k">const</span> T = walls.map(wst).reduce(<span class="c">/* add up every wall's totals */</span>);
+  <span class="k">return</span> [
+    [<span class="s">'Canvas'</span>,        <span class="s">`${S.cw} × ${S.ch}`</span>],
+    [<span class="s">'LED walls'</span>,     walls.length],
+    [<span class="s">'LED pixels'</span>,    <span class="s">`${T.px.toLocaleString()} (${(T.px / 1e6).toFixed(2)} MP)`</span>],
+    [<span class="s">'Area'</span>,          <span class="s">`${T.A.toFixed(2)} m² / ${(T.A * 10.7639).toFixed(1)} sq ft`</span>],
+    [<span class="s">'Weight'</span>,        <span class="s">`${T.kg.toFixed(1)} kg / ${(T.kg * 2.20462).toFixed(0)} lbs`</span>],
+    [<span class="s">'Peak power'</span>,    kw(T.pk)],
+    [<span class="s">'Typical (40%)'</span>, kw(T.pk * <span class="n">.4</span>)],
+  ];
+}
+<span class="c">// turn rows into table HTML</span>
+<span class="k">const</span> trs = rows =&gt; rows.map(r =&gt; <span class="s">`&lt;tr&gt;&lt;td&gt;${esc(r[0])}&lt;/td&gt;&lt;td&gt;${esc(r[1])}&lt;/td&gt;&lt;/tr&gt;`</span>).join(<span class="s">''</span>);</pre>
+    <ol class="walk">
+      <li><b>wst(w)</b> adds up one wall's pieces: count, pixels, area (each piece's mm × mm ÷ 1,000,000), kilos and peak watts. Half tiles bring their own figures from the catalog.</li>
+      <li><b>wallRows(w)</b> builds the per-wall list the same way, adding power rows only when a supply exists and processor rows only when a processor is picked. A row can carry a third field, <code>'warn'</code>, which turns it red (for example when a tile's weight or power is estimated because the maker doesn't publish it).</li>
+      <li><b>esc()</b> escapes <code>&lt;</code> and <code>&amp;</code> before text goes into HTML, so a wall named <code>&lt;script&gt;</code> shows as text instead of running.</li>
+      <li>The PDF export calls the same <code>canvasRows</code> and <code>wallRows</code>, so the spec sheet can never disagree with the screen.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 13 CREW ======================= -->
+<section class="slide" id="crew" aria-label="Build animation">
+  <div class="inner">
+    <div class="cue">Part 13 · The build animation</div>
+    <h2>A crew of tiny <em>state machines</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>A technician carries each tile in, lifts it into place, locks it (with a sparkle), and walks off. Every wall has its own tech; flown walls are hoisted a row at a time. There are three drawing styles: Classic, Hand-drawn (motion-captured 3D workers) and Backlit.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>Each wall's tech is a service with states (<code>wait → walkin → move → place → lock → walkout</code>) and a timer per state. Like systemd moving a unit through starting, running and stopping.</p></div>
+    </div>
+    <div class="phases" role="img" aria-label="Phases: walk in 0.8 s, move 1.1 s, place 0.8 s, lock 0.6 s, walk out 1.5 s">
+      <div style="flex:0.8;background:#22d3ee">walkin<span>0.8 s</span></div>
+      <div style="flex:1.1;background:#67e8f9">move<span>1.1 s</span></div>
+      <div style="flex:0.8;background:#ffb020">place<span>0.8 s</span></div>
+      <div style="flex:0.6;background:#ffe066">lock<span>0.6 s</span></div>
+      <div style="flex:1.5;background:#8b98a5">walkout<span>1.5 s</span></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 3716: how long each phase lasts, and what's next</span>
+<span class="k">const</span> D  = {walkin: <span class="n">.8</span>, move: <span class="n">1.1</span>, place: <span class="n">.8</span>,
+            lock: <span class="n">.6</span>, walkout: <span class="n">1.5</span>, hoist: <span class="n">1.6</span>};
+<span class="k">const</span> NX = {walkin: <span class="s">'move'</span>, move: <span class="s">'place'</span>,
+            place: <span class="s">'lock'</span>, lock: <span class="s">'walkout'</span>};
+
+<span class="c">// line 4253: advance one wall's tech by dt seconds</span>
+<span class="k">function</span> stepSim(x, wi, dt) {
+  x.t += dt * S.speed * x.rate;      <span class="c">// time in this phase</span>
+  <span class="k">if</span> (x.ph == <span class="s">'wait'</span>) { <span class="c">/* staggered start */</span> }
+  <span class="k">if</span> (x.ph == <span class="s">'lock'</span> &amp;&amp; x.t &gt; D.lock * <span class="n">.4</span>)
+    x.sp.push({t: <span class="n">0</span>, i: x.i});          <span class="c">// sparkle</span>
+  <span class="k">if</span> (x.t &lt; D[x.ph]) <span class="k">return</span>;          <span class="c">// not finished yet</span>
+  x.t = <span class="n">0</span>;
+  <span class="k">if</span> (x.ph == <span class="s">'lock'</span>) x.inst = x.i + <span class="n">1</span>; <span class="c">// tile now lit</span>
+  <span class="k">if</span> (x.ph == <span class="s">'walkout'</span>) {
+    x.i++;                             <span class="c">// next tile</span>
+    <span class="k">if</span> (x.i &gt;= N) { x.done = <span class="k">true</span>; <span class="k">return</span> }
+    x.ph = <span class="s">'walkin'</span>; x.m = pickCrew(wi); <span class="k">return</span>;
+  }
+  x.ph = NX[x.ph];                    <span class="c">// next phase</span>
+}</pre>
+<pre><span class="c">// line 4541: Hand-drawn files load only when picked</span>
+<span class="k">function</span> libs() {
+  <span class="k">const</span> L = [<span class="s">'three.min.js'</span>, <span class="s">'fflate.min.js'</span>,
+             <span class="s">'FBXLoader.js'</span>, <span class="s">'rb-assets.js'</span>];
+  <span class="c">// one after another, each as a &lt;script&gt; tag</span>
+  <span class="k">const</span> one = i =&gt; {
+    <span class="k">const</span> s = document.createElement(<span class="s">'script'</span>);
+    s.src = <span class="s">'crew/'</span> + L[i];
+    s.onload  = () =&gt; one(i + <span class="n">1</span>);
+    s.onerror = () =&gt; { LIB = -<span class="n">1</span>; crewNote() };
+    document.head.appendChild(s);
+  };
+  one(<span class="n">0</span>);
+}</pre>
+    </div>
+    <ol class="walk">
+      <li><b>D</b> and <b>NX</b> are lookup tables, so the state machine is just "add time; if the phase is over, look up the next one". The phase lengths are scaled by your Speed setting and a small per-wall rate (0.84 – 1.14), and each wall starts 0.6 s after the last, so walls don't move in lock-step.</li>
+      <li><b>x.inst</b> is how many tiles are lit. <code>render()</code> reads it to decide which tiles show the pattern (part 8), so the animation and the picture are tied together by one number.</li>
+      <li><b>pickCrew</b> rotates through the crew list and skips anyone already busy on another wall.</li>
+      <li><b>Classic</b> is drawn with plain canvas shapes by <code>worker()</code>. <b>Hand-drawn</b> loads about 5.7 MB of files (three.js, a 3D model loader, and two motion-captured Microsoft Rocketbox workers, MIT licence) only when you pick it, renders them in 3D on a small hidden WebGL canvas with an ink-outline shader, then pastes that onto the wall like the Classic tech. If WebGL or the files are missing, it falls back to Classic and says why.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 14 DVD ======================= -->
+<section class="slide" id="dvd" aria-label="DVD screensaver">
+  <div class="inner">
+    <div class="cue">Part 14 · The DVD screensaver</div>
+    <h2>Yes, it <em>hits the corner</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>A logo bounces around each wall, changing colour on each bounce. A slider sets how often it lands exactly in a corner, and "perfect loop" makes a video that loops without a seam.</p></div>
+      <div class="panel">
+        <canvas class="demo" id="dvdc" width="800" height="450" aria-label="A logo bouncing around a wall"></canvas>
+        <div class="toggles"><label for="dvdChance">Corner chance <input id="dvdChance" type="range" min="0" max="100" value="60" style="width:140px"></label><span class="mono mu" id="dvdStats" style="font-size:13px;align-self:center"></span></div>
+      </div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+<pre><span class="c">// line 6116: after every bounce, roll the dice</span>
+<span class="k">function</span> dvdDecide(st) {
+  <span class="k">if</span> (S.dvdCorner &gt; <span class="n">0</span> &amp;&amp; Math.random() * <span class="n">100</span> &lt; S.dvdCorner * DVD_MAX)
+    dvdAim(st);                 <span class="c">// hit: steer into a corner</span>
+  <span class="k">else</span> { st.mode = <span class="s">'free'</span>; dvdAvoid(st) }   <span class="c">// miss: make sure it misses</span>
+}
+<span class="c">// dvdAim: list candidate corners, reached directly or after one more bounce</span>
+<span class="c">//   distance to a corner = (gap to the near wall) + (k - 1) × (wall size)</span>
+<span class="c">//   angle = atan2(distance Y, distance X); keep 2° … 88°</span>
+<span class="c">//   score = fewest bounces, then keep direction, then the smallest turn</span>
+<span class="c">// dvdAvoid: if the next hit lands too close to a corner, turn up to 60° until it doesn't</span></pre>
+    <ol class="walk">
+      <li><b>DVD_MAX = 0.45</b>: at 100% about 45% of bounces aim for a corner. Higher would look rigged.</li>
+      <li><b>Aiming</b> uses the mirror trick: a bounce off a wall is the same as carrying straight on into a mirrored copy of the wall. So "reach the corner after one bounce" becomes "reach the corner of the next mirrored copy", a straight line whose angle is one <code>atan2</code>.</li>
+      <li><b>Avoiding</b> matters just as much: at 0% the logo must never hit a corner by luck. <code>dvdMiss</code> works out where the next hit lands; if it's within a margin of a corner, <code>dvdAvoid</code> tries angles one degree at a time either side until it misses.</li>
+      <li><b>Perfect loop</b> picks two whole numbers <code>m</code> and <code>n</code> with no common factor. In T seconds the logo crosses the width 2m times and the height 2n times, so it's back at the start, going the same way. Colours come from a seeded list, so they repeat too.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 15 OUTPUTS ======================= -->
+<section class="slide" id="outputs" aria-label="Outputs">
+  <div class="inner">
+    <div class="cue">Part 15 · NDI®, Spout, Syphon and displays</div>
+    <h2>Read the pixels <em>once</em>, send them everywhere</h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>Each canvas can go out as an NDI® source on the network, as a Spout (Windows) or Syphon (Mac) source to apps on the same computer, and full-screen on any connected display. The status line shows how long each step takes.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>NDI® and Spout are C libraries (<code>.dll</code> / <code>.so</code> / <code>.dylib</code>). <code>koffi</code> lets JavaScript load one and call its functions directly, like Python's <code>ctypes</code>. No C compiler involved.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 5626: load the NDI® library and describe its C types</span>
+<span class="k">function</span> ndiLoad() {
+  <span class="k">const</span> koffi = require(<span class="s">'koffi'</span>);
+  <span class="k">const</span> lib = koffi.load(ndiFind(fs, path, process.env));
+  koffi.struct(<span class="s">'NDIlib_video_frame_v2_t'</span>, {
+    xres: <span class="s">'int'</span>, yres: <span class="s">'int'</span>, FourCC: <span class="s">'int'</span>,
+    frame_rate_N: <span class="s">'int'</span>, frame_rate_D: <span class="s">'int'</span>,
+    p_data: <span class="s">'uint8_t *'</span>, line_stride_in_bytes: <span class="s">'int'</span>,
+    <span class="c">/* … */</span> });
+  lib.func(<span class="s">'bool NDIlib_initialize()'</span>)();
+  <span class="k">return</span> { create: lib.func(<span class="s">'void *NDIlib_send_create(…)'</span>),
+           send:   lib.func(<span class="s">'void NDIlib_send_send_video_v2(…)'</span>) };
+}</pre>
+<pre><span class="c">// line 5654: one read per new frame, shared</span>
+<span class="k">function</span> grabFrame() {
+  <span class="k">if</span> (grabGen !== gen) {          <span class="c">// a new frame exists</span>
+    grabIm = mc.getImageData(<span class="n">0</span>, <span class="n">0</span>, W, H);
+    grabGen = gen;
+  }
+  <span class="k">return</span> grabIm;                  <span class="c">// else reuse</span>
+}
+<span class="c">// line 5656 (trimmed)</span>
+<span class="k">function</span> ndiFrame() {
+  <span class="k">if</span> (S.ndiIdle &amp;&amp; s.sent === gen) <span class="k">return</span>; <span class="c">// still</span>
+  <span class="k">const</span> im = grabFrame();
+  nd.send(s.inst, { xres: W, yres: H,
+    FourCC: <span class="n">0x58424752</span>,          <span class="c">// 'RGBX'</span>
+    frame_rate_N: <span class="n">60000</span>, frame_rate_D: <span class="n">1000</span>,
+    p_data: Buffer.from(im.data.buffer),
+    line_stride_in_bytes: W * <span class="n">4</span> });
+  s.sent = gen;
+}</pre>
+    </div>
+    <ol class="walk">
+      <li><b>Finding the library:</b> <code>ndiFind</code> looks in TileSmith's own <code>resources/ndi</code> folder first, then any <code>NDI_RUNTIME_DIR_V*</code> environment variable, then the usual install paths for each OS (on Linux, <code>/usr/local/lib</code>, <code>/usr/lib/x86_64-linux-gnu</code> and others). The search order is like <code>LD_LIBRARY_PATH</code>.</li>
+      <li><b>koffi.struct</b> describes the C structure field by field so koffi can lay the JavaScript object out in memory exactly as the C library expects.</li>
+      <li><b>getImageData</b> copies the canvas from the graphics card into memory: 4 bytes per pixel (red, green, blue, alpha), about 8 MB for 1080p. It's the slowest step (often around 10 ms), so it happens at most once per new frame and NDI®, Spout and recording all share the result. <code>gen</code> (part 7) tells them whether the frame is new.</li>
+      <li><b>RGBX</b> tells NDI® the 4th byte is padding, not transparency, so it doesn't compress or send an alpha channel.</li>
+      <li><b>Display outputs</b> use <code>window.open</code> with a name like <code>tsout:&lt;display id&gt;:&lt;canvas&gt;</code>. <code>main.js</code> spots that name and makes the window borderless, full screen and always on top on that display (part 21). Each redraw then copies <code>M</code> into it.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 16 RECORD ======================= -->
+<section class="slide" id="record" aria-label="Recording video">
+  <div class="inner">
+    <div class="cue">Part 16 · Recording video</div>
+    <h2>Pipe raw frames into <em>ffmpeg</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>Export the build animation, the DVD loop or any canvas as MP4 (H.264 / H.265) or HAP video for media servers. Files land in <code>Videos/TileSmith</code> (<code>Movies</code> on a Mac).</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>Exactly what you'd do in a shell: <code>something | ffmpeg -f rawvideo -pix_fmt rgba -s 1920x1080 -i - out.mp4</code>. TileSmith is the <i>something</i>. On phones, which can't run ffmpeg, the app uses the phone's built-in video recorder instead.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+<pre><span class="c">// line 6043: start ffmpeg as a child process</span>
+<span class="k">const</span> pr = cp.spawn(ff, [<span class="s">'-y'</span>, <span class="s">'-f'</span>, <span class="s">'rawvideo'</span>, <span class="s">'-pix_fmt'</span>, <span class="s">'rgba'</span>,
+  <span class="s">'-s'</span>, W + <span class="s">'x'</span> + H, <span class="s">'-framerate'</span>, <span class="s">'60'</span>, <span class="s">'-i'</span>, <span class="s">'pipe:0'</span>,   <span class="c">// frames arrive on stdin</span>
+  ...vcodec().args(), <span class="s">'-an'</span>, out]);                         <span class="c">// codec settings, no audio</span>
+r.tm = setInterval(() =&gt; recFrame(r), <span class="n">1000</span> / <span class="n">120</span>);           <span class="c">// check twice per frame</span>
+
+<span class="c">// line 6054: keep the video at exactly 60 fps of wall-clock time</span>
+<span class="k">function</span> recFrame(r) {
+  <span class="k">const</span> w = r.pr.stdin;
+  <span class="k">const</span> due = Math.floor((performance.now() - r.t0) * <span class="n">.06</span>) + <span class="n">1</span>;  <span class="c">// frames owed so far</span>
+  <span class="k">if</span> (r.written &gt;= due || w.writableLength &gt; <span class="n">256e6</span>) <span class="k">return</span>;      <span class="c">// up to date, or ffmpeg is behind</span>
+  <span class="k">const</span> buf = Buffer.from(grabFrame().data.buffer);
+  <span class="k">while</span> (r.written &lt; due) { w.write(buf); r.written++ }          <span class="c">// repeat to catch up</span>
+}</pre>
+    <ol class="walk">
+      <li><b>spawn</b> starts ffmpeg like typing the command in a terminal, but with its standard input connected to TileSmith. <code>windowsHide</code> stops a console window flashing up on Windows.</li>
+      <li><b>Timing:</b> 0.06 frames per millisecond is 60 fps. If the app fell behind (a slow frame), it writes the same picture again until the count catches up, so the video's length always matches real time.</li>
+      <li><b>Back-pressure:</b> if more than 256 MB is waiting in the pipe (ffmpeg can't keep up), it skips writing for now instead of filling the computer's memory. A sysadmin would recognise this as a bounded queue.</li>
+      <li>When ffmpeg exits, a code of 0 means success and the file is shown in its folder; anything else shows the last 200 characters of ffmpeg's error output.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 17 EXPORTS ======================= -->
+<section class="slide" id="exports" aria-label="Exports">
+  <div class="inner">
+    <div class="cue">Part 17 · PDF and PSD exports</div>
+    <h2>File formats <em>written by hand</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>Export PNG, a PDF (full raster, spec sheet, cable labels, cabinet ID sheets, a site binder), a layered PSD or SVG for Photoshop and Illustrator, and Resolume Advanced Output presets.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>No PDF or Photoshop libraries. TileSmith writes the bytes itself, the way you might write a <code>.ini</code> or CSV file by hand, because a PDF is mostly text with a table of byte offsets at the end.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 5224: a minimal PDF 1.4 writer (trimmed)</span>
+<span class="k">function</span> pdfBuild(pages) {
+  O.push(<span class="k">null</span>, <span class="k">null</span>, <span class="k">null</span>, <span class="k">null</span>);
+  <span class="c">// 1 catalog, 2 page list, 3 Helvetica, 4 Helvetica-Bold</span>
+  pages.forEach(pg =&gt; {
+    <span class="c">// the raster as a JPEG image object</span>
+    O.push({d: <span class="s">'&lt;&lt; /Subtype /Image /Filter /DCTDecode … &gt;&gt;'</span>,
+            b: pg.img.b});
+    <span class="c">// the drawing commands for this page</span>
+    O.push({d: <span class="s">`&lt;&lt; /Length ${cs.length} &gt;&gt;`</span>, b: cs});
+    O.push(<span class="s">`&lt;&lt; /Type /Page /MediaBox [0 0 w h] … &gt;&gt;`</span>);
+  });
+  put(<span class="s">'%PDF-1.4\n'</span>);
+  O.forEach((o, i) =&gt; {
+    off.push(len);                    <span class="c">// remember where</span>
+    put(<span class="s">`${i + 1} 0 obj\n`</span>); <span class="c">/* … */</span> put(<span class="s">'endobj\n'</span>);
+  });
+  <span class="c">// the xref table: byte offset of every object</span>
+  put(<span class="s">'xref\n'</span> + off.map(v =&gt;
+      String(v).padStart(<span class="n">10</span>, <span class="s">'0'</span>) + <span class="s">' 00000 n \n'</span>));
+}</pre>
+<pre><span class="c">// line 5311: PSD (Photoshop) run-length packing</span>
+<span class="c">// "PackBits": a run of equal bytes becomes</span>
+<span class="c">// [count, byte]; anything else is copied</span>
+<span class="k">function</span> psdPack(src, o, n, out) {
+  <span class="k">let</span> i = <span class="n">0</span>;
+  <span class="k">while</span> (i &lt; n) {
+    <span class="k">let</span> j = i;
+    <span class="k">while</span> (j &lt; n - <span class="n">1</span> &amp;&amp; j - i &lt; <span class="n">127</span>
+           &amp;&amp; src[o + j] == src[o + j + <span class="n">1</span>]) j++;
+    <span class="k">if</span> (j &gt; i) {                 <span class="c">// a repeat</span>
+      out.push(-(j - i) &amp; <span class="n">255</span>, src[o + i]);
+      i = j + <span class="n">1</span>; <span class="k">continue</span>;
+    }
+    <span class="c">// … otherwise copy literal bytes</span>
+  }
+}</pre>
+    </div>
+    <ol class="walk">
+      <li><b>A PDF</b> is a list of numbered objects (pages, fonts, images, drawing commands) followed by an <b>xref</b> table listing the byte offset of each one, so a reader can jump straight to any object. <code>pdfBuild</code> counts bytes as it writes (<code>len</code>) so it can fill in that table at the end.</li>
+      <li>It uses the two fonts every PDF reader has built in (Helvetica and Helvetica-Bold), so no font files have to be embedded, and the canvas goes in as a JPEG at 92% quality.</li>
+      <li><b>PSD layers:</b> the export re-draws the frame once per layer (background, grid, pattern, labels, data, power…) using the same <code>render()</code> with a flag (<code>LY('pat')</code>, <code>LY('lab')</code>…) that skips everything except that layer. Each layer is packed with PackBits, a simple compression Photoshop understands.</li>
+      <li><b>Downloads</b> go through one tiny helper, <code>dl()</code>: on a phone it hands the file to the share sheet; everywhere else it makes a temporary link to the bytes and clicks it, which starts a normal download.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 18 CANVASES ======================= -->
+<section class="slide" id="canvases" aria-label="Several canvases">
+  <div class="inner">
+    <div class="cue">Part 18 · Several canvases</div>
+    <h2>Swap the <em>globals</em> in and out</h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>A project can have several canvases, each its own output raster (say a 3840 × 1080 main screen and two 1920 × 1080 IMAG sides), each with its own walls, NDI® source and video file. They sit side by side in the viewport.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>Like switching a kubectl context: every command works on "the current one", and <code>withCv</code> switches context, runs one job, and switches back.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+<pre><span class="c">// line 3015: run f with canvas i as the current one, then put everything back</span>
+<span class="k">function</span> withCv(i, f) {
+  <span class="k">if</span> (i === cc) <span class="k">return</span> f(i);      <span class="c">// already current</span>
+  <span class="k">const</span> p = cc;
+  cvStore();                         <span class="c">// save S.cw, walls, sims, M … into CVS[cc]</span>
+  cvLoad(i);                         <span class="c">// load canvas i's into the globals</span>
+  <span class="k">try</span>     { <span class="k">return</span> f(i) }
+  <span class="k">finally</span> { cvStore(); cvLoad(p) }    <span class="c">// always switch back, even on an error</span>
+}
+<span class="k">function</span> eachCv(f) { <span class="k">for</span> (<span class="k">let</span> i = <span class="n">0</span>; i &lt; CVS.length; i++) withCv(i, f) }</pre>
+    <ol class="walk">
+      <li>Most of the app was written when there was one canvas, using globals: <code>S.cw</code>, <code>walls</code>, <code>sims</code>, <code>M</code>. Rather than rewrite hundreds of functions to take a "which canvas" argument, multiple canvases were added by <b>swapping</b> those globals.</li>
+      <li><code>CVS</code> is the list of canvases; <code>cc</code> is the current one. Each canvas has its own hidden master canvas <code>M</code>, so each can be drawn and sent separately.</li>
+      <li><b>try / finally</b> guarantees the switch back happens even if <code>f</code> throws an error, like a <code>trap … EXIT</code> in bash.</li>
+      <li>The trade-off: it's quick to add, but easy to forget a global. If someone adds a new per-canvas global and doesn't add it to <code>cvStore</code> and <code>cvLoad</code>, canvases leak into each other.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 19 I18N ======================= -->
+<section class="slide" id="i18n" aria-label="Translation">
+  <div class="inner">
+    <div class="cue">Part 19 · Ten languages</div>
+    <h2>Translate the page <em>as it's drawn</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>The whole interface can switch between English, Spanish, Portuguese, German, French, Simplified Chinese, Japanese, Korean, Italian and Dutch, and picks your system language on first run.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>A filter between the app and the screen, like piping output through <code>sed</code>. The code keeps working in English; the translator watches the page and rewrites any English text it recognises.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 128: English → [es, pt-BR, de, fr, zh, ja, ko, it, nl]</span>
+<span class="k">const</span> TR = {
+  <span class="s">"Not now"</span>: [<span class="s">"Ahora no"</span>, <span class="s">"Agora não"</span>, <span class="s">"Nicht jetzt"</span>,
+              <span class="s">"Pas maintenant"</span>, <span class="s">"以后再说"</span>, <span class="c">/* … */</span>],
+  <span class="c">// "{0} tiles" style keys hold numbers and names</span>
+};
+<span class="c">// line 1511</span>
+<span class="k">function</span> tr(s) {
+  <span class="k">if</span> (LG == <span class="s">'en'</span>) <span class="k">return</span> s;
+  <span class="k">let</span> r = TR_C.get(k);           <span class="c">// cache</span>
+  <span class="k">if</span> (r === undefined) r = trKey(k);
+  <span class="k">return</span> r == <span class="k">null</span> ? s : r;     <span class="c">// unknown: English</span>
+}</pre>
+<pre><span class="c">// watch the page for new or changed text</span>
+<span class="k">const</span> trObs = <span class="k">new</span> MutationObserver(ms =&gt; {
+  <span class="k">for</span> (<span class="k">const</span> m <span class="k">of</span> ms) {
+    <span class="k">if</span> (m.type == <span class="s">'characterData'</span>) trText(m.target);
+    <span class="k">else</span> m.addedNodes.forEach(n =&gt; trAll(n));
+  }
+});
+<span class="c">// trText remembers the English original</span>
+<span class="c">// (TR_EN), so switching language later puts</span>
+<span class="c">// the English back and translates again</span></pre>
+    </div>
+    <ol class="walk">
+      <li><b>TR</b> is one big dictionary keyed by the English sentence. Sentences with numbers in them use placeholders (<code>{0}</code>, <code>{1}</code>); <code>trKey</code> turns those into patterns that match "12 tiles" and fill in "12 paneles".</li>
+      <li><b>MutationObserver</b> is a browser feature that calls you whenever the page changes, like <code>inotifywait</code> on a folder. Any text the app writes gets translated on the way in, so feature code never has to remember to call <code>tr()</code>.</li>
+      <li>A test (<code>manual-src/tests/i18n_test.py</code>) lists any English string that's missing a language, so new features don't ship half translated.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 20 UPDATES ======================= -->
+<section class="slide" id="updates" aria-label="Updates">
+  <div class="inner">
+    <div class="cue">Part 20 · Updates</div>
+    <h2>Ask GitHub, <em>hand over</em> to the installer</h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>The Info window checks GitHub for a newer release (optionally at every start). "Update now" downloads the right file for your system, closes TileSmith, installs, and reopens it.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>The same pattern as a self-updating agent: query a release API, compare versions, download, start a detached job that waits for the old PID to exit, then replace the binary.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// line 5854: ask GitHub's API for the latest release</span>
+<span class="k">async function</span> updFetch() {
+  <span class="k">const</span> r = <span class="k">await</span> fetch(UPD_API,
+    {headers: {Accept: <span class="s">'application/vnd.github+json'</span>}});
+  <span class="k">const</span> j = <span class="k">await</span> r.json();
+  <span class="k">const</span> want = updAssetName();   <span class="c">// file for this OS</span>
+  <span class="k">const</span> pick = j.assets.find(a =&gt; a.name == want);
+  <span class="k">return</span> {tag: j.tag_name,
+          url: pick ? pick.browser_download_url : j.html_url};
+}
+<span class="c">// line 5845</span>
+<span class="k">function</span> updAssetName() {
+  <span class="k">if</span> (pl == <span class="s">'win32'</span>) <span class="k">return</span> env.PORTABLE_EXECUTABLE_FILE
+    ? <span class="s">'TileSmith-windows-portable.exe'</span>
+    : <span class="s">'TileSmith-windows-setup.exe'</span>;
+  <span class="k">if</span> (pl == <span class="s">'darwin'</span>) <span class="k">return</span> <span class="s">'TileSmith-mac-universal.dmg'</span>;
+  <span class="k">if</span> (pl == <span class="s">'linux'</span> &amp;&amp; env.APPIMAGE)
+    <span class="k">return</span> <span class="s">'TileSmith-linux-x64.AppImage'</span>;
+}</pre>
+<pre><span class="c">// main.js: run the installer job, then quit</span>
+ipcMain.on(<span class="s">'ts-update-run'</span>, (e, job) =&gt; {
+  spawn(job.cmd,
+    job.args.map(a =&gt; a.split(<span class="s">'%TSPID%'</span>)
+                       .join(String(process.pid))),
+    {detached: <span class="k">true</span>, stdio: <span class="s">'ignore'</span>}).unref();
+  app.quit();
+});</pre>
+    </div>
+    <ol class="walk">
+      <li><b>async / await</b> means "wait for the network without freezing the window". The app keeps drawing while the request is out.</li>
+      <li><b>Which file?</b> Electron's portable build sets <code>PORTABLE_EXECUTABLE_FILE</code> and the AppImage sets <code>APPIMAGE</code>, so the app can tell how it was installed and pick the matching download. That's why the release file names must never change.</li>
+      <li><b>The handover:</b> the page asks the main process to start the installer job <b>detached</b> (it keeps running after TileSmith closes) with <code>%TSPID%</code> replaced by TileSmith's process ID. The job waits for that PID to exit before it installs, so no files are in use.</li>
+      <li>The version comparison, <code>verNewer</code>, compares the three numbers of <code>major.minor.patch</code> in order, so 3.10 is correctly newer than 3.9 (a plain text comparison would get that wrong).</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 21 ELECTRON ======================= -->
+<section class="slide" id="electron" aria-label="Electron">
+  <div class="inner">
+    <div class="cue">Part 21 · The desktop shell</div>
+    <h2>Electron: <em>66 lines</em> of main.js</h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>Turns the web page into a Windows, Mac and Linux app: its own window and icon, access to files and drivers, full-screen output windows on other displays, and full speed while hidden.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>Electron is Chromium plus Node.js. <code>main.js</code> is a small supervisor process; the page is a separate renderer process. They talk over IPC, like two daemons on a local socket.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// tilesmith-desktop/main.js (trimmed)</span>
+<span class="c">// don't slow down when covered or minimised</span>
+app.commandLine.appendSwitch(<span class="s">'disable-renderer-backgrounding'</span>);
+app.commandLine.appendSwitch(<span class="s">'disable-background-timer-throttling'</span>);
+
+<span class="c">// while sending video, block sleep / App Nap</span>
+ipcMain.on(<span class="s">'output-active'</span>, (e, on) =&gt; {
+  <span class="k">if</span> (on &amp;&amp; blocker === <span class="k">null</span>)
+    blocker = powerSaveBlocker.start(<span class="s">'prevent-app-suspension'</span>);
+  <span class="k">else if</span> (!on &amp;&amp; blocker !== <span class="k">null</span>) {
+    powerSaveBlocker.stop(blocker); blocker = <span class="k">null</span>;
+  }
+});
+app.whenReady().then(() =&gt; {
+  <span class="k">const</span> w = <span class="k">new</span> BrowserWindow({ width: <span class="n">1500</span>, height: <span class="n">900</span>,
+    webPreferences: { nodeIntegration: <span class="k">true</span>,
+                      backgroundThrottling: <span class="k">false</span> } });
+  w.loadFile(<span class="s">'app/index.html'</span>);
+});</pre>
+<pre><span class="c">// a window named "tsout:&lt;display&gt;:…" becomes</span>
+<span class="c">// a borderless full-screen output</span>
+w.webContents.setWindowOpenHandler(({frameName}) =&gt; {
+  <span class="k">const</span> d = outDisplay(frameName);
+  <span class="k">if</span> (d) <span class="k">return</span> { action: <span class="s">'allow'</span>,
+    overrideBrowserWindowOptions: { ...d.bounds,
+      frame: <span class="k">false</span>, resizable: <span class="k">false</span>,
+      backgroundColor: <span class="s">'#000000'</span> } };
+  <span class="c">// anything else: a normal window</span>
+});
+w.webContents.on(<span class="s">'did-create-window'</span>, (child, {frameName}) =&gt; {
+  <span class="k">const</span> d = outDisplay(frameName); <span class="k">if</span> (!d) <span class="k">return</span>;
+  child.setBounds(d.bounds);
+  child.setFullScreen(<span class="k">true</span>);
+  child.setAlwaysOnTop(<span class="k">true</span>, <span class="s">'screen-saver'</span>);
+});</pre>
+    </div>
+    <ol class="walk">
+      <li><b>nodeIntegration: true</b> gives the page Node.js's <code>require</code>, which is how the page itself can use <code>fs</code>, <code>child_process</code> and <code>koffi</code>. It's convenient and fine for an app that only loads its own local file, but it would be unsafe for a window that loads websites, which is why links open in your normal browser instead.</li>
+      <li><b>The throttling switches</b> matter for a show: browsers slow down timers in hidden windows to save battery, which would make NDI® stutter when TileSmith is behind your media server.</li>
+      <li><b>IPC channels</b> are named strings: <code>ts-displays</code> (list monitors), <code>ts-capture</code> (screenshot for bug reports), <code>output-active</code>, <code>ts-update-run</code> and <code>ts-quit</code>. The page sends with <code>ipcRenderer.send</code> or <code>invoke</code>; main listens with <code>ipcMain.on</code> or <code>handle</code>.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 22 MOBILE ======================= -->
+<section class="slide" id="mobile" aria-label="Mobile">
+  <div class="inner">
+    <div class="cue">Part 22 · Phones and tablets</div>
+    <h2>The same page, <em>with a bridge</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>The Android and iOS apps are the same <code>index.html</code>, with touch controls, pinch zoom and the phone's share sheet for saving files.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>A build step copies the app into the phone project and injects two scripts at the top, like a deploy script templating a config before shipping it. The original file is never edited.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+<pre><span class="c">// mobile/scripts/sync-web.js (trimmed)</span>
+fs.rmSync(www, {recursive: <span class="k">true</span>, force: <span class="k">true</span>});
+fs.cpSync(app, www, {recursive: <span class="k">true</span>});   <span class="c">// copy ../app</span>
+<span class="k">let</span> html = fs.readFileSync(f, <span class="s">'utf8'</span>);
+<span class="c">// pinch zooms the viewport, never the page</span>
+html = html.replace(<span class="c">/viewport meta/</span>,
+  <span class="s">'…, maximum-scale=1, user-scalable=no'</span>);
+<span class="c">// put Capacitor and the bridge first</span>
+<span class="k">const</span> at = html.indexOf(<span class="s">'&lt;script&gt;'</span>);
+html = html.slice(<span class="n">0</span>, at)
+  + <span class="s">'&lt;script src="capacitor.js"&gt;&lt;/script&gt;'</span>
+  + <span class="s">'&lt;script src="mobile-bridge.js"&gt;&lt;/script&gt;'</span>
+  + html.slice(at);</pre>
+<pre><span class="c">// mobile/src/mobile-bridge.js (trimmed)</span>
+<span class="k">var</span> Filesystem = reg(<span class="s">'Filesystem'</span>),
+    Share = reg(<span class="s">'Share'</span>), KeepAwake = reg(<span class="s">'KeepAwake'</span>);
+<span class="k">var</span> CHUNK = <span class="n">3</span> * <span class="n">1024</span> * <span class="n">1024</span>;   <span class="c">// 3 MB pieces</span>
+<span class="k">async function</span> write(path, blob) {
+  <span class="k">for</span> (<span class="k">var</span> i = <span class="n">0</span>; i &lt; blob.size; i += CHUNK) {
+    <span class="k">var</span> data = <span class="k">await</span> b64(blob.slice(i, i + CHUNK));
+    <span class="k">await</span> Filesystem.appendFile({path, data});
+  }
+}
+<span class="c">// then Share.share({files: [uri]}) opens the</span>
+<span class="c">// share sheet: Files, Drive, AirDrop, e-mail</span></pre>
+    </div>
+    <ol class="walk">
+      <li><b>Capacitor</b> wraps a web page in a native Android or iOS app and offers "plugins" for phone features. The bridge registers the ones TileSmith needs and exposes them as <code>window.TSM</code>.</li>
+      <li>The app checks <code>MOBILE</code> (Capacitor present and <code>TSM</code> loaded). Where the desktop would write with <code>fs</code>, it calls the bridge instead.</li>
+      <li><b>Chunks:</b> phone plugins pass data as base64 text. Converting a 200 MB recording in one go would run a phone out of memory, so the bridge writes it 3 MB at a time.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 23 SHIP ======================= -->
+<section class="slide" id="ship" aria-label="Tests and releases">
+  <div class="inner">
+    <div class="cue">Part 23 · Tests and releases</div>
+    <h2>Robots <em>click every button</em></h2>
+    <div class="two">
+      <div class="what"><b>What it does</b><p>Every change gets test builds for every platform. A release is one button on GitHub: it builds all the installers, then the manuals (with fresh screenshots), then scans every file on VirusTotal.</p></div>
+      <div class="xlate"><b>Sysadmin translation</b><p>A CI pipeline. Three GitHub Actions workflows chained together, each starting only when the one before succeeds, like Ansible handlers.</p></div>
+    </div>
+    <div class="how"><b>How the code works</b></div>
+    <div class="two">
+      <div class="flow">
+        <div class="box amb"><strong>release.yml · Build and release</strong><small>electron-builder makes .exe, .dmg, .pkg, AppImage, .deb, .rpm, .pacman, Snap and Flatpak; Gradle makes the Android .apk. Runs on every pull request too, as a test build.</small></div>
+        <div class="arrow">when a release is published</div>
+        <div class="box"><strong>docs.yml · Build documentation</strong><small>Python + Playwright open the real app in a headless browser, click through it, take and annotate screenshots, and write the PDF manuals and the app spec.</small></div>
+        <div class="arrow">then</div>
+        <div class="box gry"><strong>virustotal.yml · VirusTotal scan</strong><small>uploads every file and commits the results to VIRUSTOTAL.md</small></div>
+      </div>
+<pre><span class="c"># manual-src/tests: 49 test scripts, e.g.</span>
+canvases_test.py    half_test.py
+i18n_test.py        labels_test.py
+output_test.py      pdf_test.py
+phase_test.py       <span class="c">…</span>
+
+<span class="c"># each one opens app/index.html in a</span>
+<span class="c"># headless Chromium, sets things up through</span>
+<span class="c"># the real UI, and checks the result</span>
+<span class="c"># (the numbers in the engineering panel,</span>
+<span class="c"># the pixels on the canvas, the PDF text)</span></pre>
+    </div>
+    <ol class="walk">
+      <li><b>Why test through the browser?</b> The app has no separate "engine" to test on its own. Everything lives in the page, so the tests drive the page like a user would, with Playwright, a library that remote-controls a browser.</li>
+      <li><b>The manuals are code too:</b> <code>make_manual.py</code> builds the PDF from the live app, and <code>annotate.py</code> draws the red circles and arrows on the screenshots. When the UI changes, the next release's manual changes with it.</li>
+      <li><b>Unsigned builds:</b> signing certificates cost money every year, so Windows and macOS warn on first run. Publishing the VirusTotal results next to the source is the trade-off for that.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= YOURS ======================= -->
+<section class="slide" id="yours" aria-label="Try it yourself">
   <div class="inner two">
     <div class="inner">
-      <div class="cue">Cue 15 · Your turn</div>
+      <div class="cue">Curtain call</div>
       <h2>Poke at it <em>yourself</em></h2>
-      <p class="lead">It's open source (GPL-3.0), so you can read every line. A good first evening:</p>
+      <p class="lead">It's open source (GPL-3.0), so you can read and change every line.</p>
 <pre><span class="c"># get the code</span>
 git clone https://github.com/kingof9x/TileSmith
 cd TileSmith/tilesmith-desktop
@@ -510,48 +1398,19 @@ npm start
 <span class="c"># (web mode: everything except NDI®, Spout, Syphon and video export)</span></pre>
     </div>
     <div class="inner">
-      <div class="xlate">
-        <b>Where to start reading</b>
-        <p><code>TileSmith-App-Spec.md</code> describes every feature, number and formula in plain English. It's written so that someone could rebuild the app from it, which also makes it the best map of the code.</p>
-      </div>
-      <div class="xlate">
-        <b>Things to try</b>
-        <p>Search <code>index.html</code> for <code>tileshade</code> and change a colour. Find the crew names and add yours. Break something, then put it back. That's how everyone learned.</p>
-      </div>
+      <div class="xlate"><b>Where to start reading</b><p><code>TileSmith-App-Spec.md</code> describes every feature, number and formula in plain English, so it doubles as a map of the code. Search <code>index.html</code> for a function name from these slides (<code>function render(</code>, <code>function pieces(</code>) to jump straight to it.</p></div>
+      <div class="xlate"><b>First experiments</b><p>Change a colour in <code>patRaw</code>'s <code>'cycle'</code> list. Change the phase times in <code>D</code> and watch the crew hurry. Add your name to the default crew. Break something, then put it back. That's how everyone learned.</p></div>
+      <p class="mu">TileSmith is made by Callum Davenport-Lambton and released under GPL-3.0-or-later. NDI® is a registered trademark of Vizrt NDI AB. <a href="https://github.com/kingof9x/TileSmith">Source on GitHub</a> · <a href="https://github.com/kingof9x/TileSmith/releases/latest">Download</a></p>
     </div>
-  </div>
-</section>
-
-<!-- 16 -->
-<section class="slide" id="s16" aria-label="Glossary and credits">
-  <div class="inner">
-    <div class="cue">Cue 16 · Curtain call</div>
-    <h2>The <em>cheat sheet</em></h2>
-    <div class="tablewrap">
-      <table class="t">
-        <thead><tr><th>Word</th><th>In the app</th><th>In your world</th></tr></thead>
-        <tbody>
-          <tr><td>HTML / CSS / JS</td><td>The page's structure, looks and logic</td><td>The document, the theme, the script</td></tr>
-          <tr><td>Canvas 2D</td><td>The drawing surface the wall is painted on</td><td>A framebuffer you draw into</td></tr>
-          <tr><td>Electron</td><td>Chromium + Node.js shipped as a desktop app</td><td>A browser in kiosk mode with a supervisor</td></tr>
-          <tr><td>IPC</td><td>Messages between the window and main.js</td><td>A local socket</td></tr>
-          <tr><td>FFI (koffi)</td><td>Calling the NDI® and Spout C libraries</td><td>Python ctypes, LD_PRELOAD's polite cousin</td></tr>
-          <tr><td>State object <code>S</code></td><td>Every setting, saved as state.json</td><td>A config file with validation</td></tr>
-          <tr><td>Render loop</td><td>Wipe and redraw, up to 60 times a second</td><td>A very impatient cron job</td></tr>
-          <tr><td>GitHub Actions</td><td>Builds, manuals and virus scans on release</td><td>CI / your deploy pipeline</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="mu">TileSmith is made by Callum Davenport-Lambton and released under GPL-3.0-or-later. NDI® is a registered trademark of Vizrt NDI AB. <a href="https://github.com/kingof9x/TileSmith">Source on GitHub</a> · <a href="https://github.com/kingof9x/TileSmith/releases/latest">Download the latest release</a></p>
   </div>
 </section>
 
 </main>
 
 <nav class="hud" aria-label="Slide navigation">
-  <span id="count">1 / 16</span>
-  <button id="prev" aria-label="Previous slide">‹</button>
-  <button id="next" aria-label="Next slide">›</button>
+  <span id="count"></span>
+  <button id="prev" aria-label="Previous section">‹</button>
+  <button id="next" aria-label="Next section">›</button>
 </nav>
 
 <script>
@@ -572,14 +1431,15 @@ npm start
       prog.style.width = ((cur + 1) / slides.length * 100) + '%';
       try { history.replaceState(null, '', '#' + e.target.id); } catch (_) {}
     } });
-  }, { root: deck, threshold: 0.5 });
+  }, { root: deck, rootMargin: '-45% 0px -50% 0px', threshold: 0 });
   slides.forEach((s) => io.observe(s));
   document.getElementById('prev').onclick = () => go(cur - 1);
   document.getElementById('next').onclick = () => go(cur + 1);
   addEventListener('keydown', (e) => {
     if (/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(cur + 1); }
-    else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+    // left / right jump a whole section; up, down and Space scroll normally (sections can be taller than the screen)
+    if (['ArrowRight', 'PageDown'].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+    else if (['ArrowLeft', 'PageUp'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
     else if (e.key === 'Home') { e.preventDefault(); go(0); }
     else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
   });
@@ -726,7 +1586,7 @@ npm start
   ['pwV', 'pwA', 'pwW', 'pwN'].forEach((id) => $(id).addEventListener('input', calcPower));
 
   /* ---------------- 12. DVD bounce with a corner dial ---------------- */
-  const dvd = document.getElementById('dvd'), dc = dvd.getContext('2d');
+  const dvd = document.getElementById('dvdc'), dc = dvd.getContext('2d');
   vio.observe(dvd);
   const L = { w: 150, h: 64, x: 120, y: 80, vx: 190, vy: 150, hue: 190, bounces: 0, corners: 0, flash: 0 };
   let lastT = 0;
