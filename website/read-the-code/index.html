@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading TileSmith's Code</title>
+<meta name="description" content="A practical guide to finding your way around TileSmith's source code: where things are, how to search a 6,400-line file, how to follow a setting from the panel to the maths, and how to poke at the app while it runs.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../guide.css">
+</head>
+<body>
+<div class="bar" aria-hidden="true"><i id="prog"></i></div>
+<a class="home" href="../">← TileSmith</a>
+
+<main class="deck" id="deck">
+
+<!-- ======================= START ======================= -->
+<section class="slide full" id="start" aria-label="Title">
+  <div class="inner">
+    <div class="cue">Field guide · TileSmith source</div>
+    <h1>Reading the <em>TileSmith</em> code</h1>
+    <p class="lead">The <a href="../how-it-works/">How TileSmith works</a> tour explains what each part of the app does and how. This guide is the other half: how to find your own way around the code, so you can answer your own questions about it. It's written for people who live in terminals and config files, not for developers.</p>
+    <div class="stats">
+      <div class="stat"><span class="v">1 file</span><span class="l"><code>tilesmith-desktop/app/index.html</code> is the whole app</span></div>
+      <div class="stat"><span class="v">~6,400</span><span class="l">lines, some of them 100,000+ characters long</span></div>
+      <div class="stat"><span class="v">~440</span><span class="l">functions, in about 50 labelled sections</span></div>
+    </div>
+    <p class="keys">Scroll, or use <kbd>←</kbd> <kbd>→</kbd> to jump between sections. Line numbers are from the current version on GitHub and are refreshed by <code>manual-src/make_code_guides.py</code>.</p>
+  </div>
+</section>
+
+<!-- ======================= CONTENTS ======================= -->
+<section class="slide" id="contents" aria-label="Contents">
+  <div class="inner">
+    <div class="cue">Running order</div>
+    <h2>What's in <em>this guide</em></h2>
+    <ol class="toc">
+      <li><a href="#folders">1 · The folders: what to read, what to skip</a></li>
+      <li><a href="#map">2 · A map of the one big file</a></li>
+      <li><a href="#tools">3 · Tools: your editor and grep</a></li>
+      <li><a href="#names">4 · Decoding the short names</a></li>
+      <li><a href="#trace">5 · Follow a setting from box to maths</a></li>
+      <li><a href="#button">6 · Follow a button to its code</a></li>
+      <li><a href="#live">7 · Read it while it runs</a></li>
+      <li><a href="#spec">8 · The spec is the manual for the code</a></li>
+      <li><a href="#tests">9 · Tests tell you what's meant to happen</a></li>
+      <li><a href="#history">10 · Ask git why</a></li>
+      <li><a href="#cheat">11 · Cheat sheet</a></li>
+      <li><a href="#onward">Next: reading Rust</a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 1 FOLDERS ======================= -->
+<section class="slide" id="folders" aria-label="The folders">
+  <div class="inner">
+    <div class="cue">1 · The folders</div>
+    <h2>Most of the repo <em>isn't the app</em></h2>
+    <div class="two">
+      <p class="lead">Clone the repository and you'll find about 400 files. Almost all of them are packaging, tests and documentation. The app itself is one HTML file. Read that first, and come back to the rest when you have a question it doesn't answer.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>Think of a server's <code>/etc</code>: hundreds of files, but on any given day you only care about the one config for the service you're working on. The rest is support.</p></div>
+    </div>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th>Folder or file</th><th>What it is</th><th>Read it when…</th></tr></thead>
+      <tbody>
+        <tr><td><code>tilesmith-desktop/app/index.html</code></td><td>The whole app: HTML, CSS and JavaScript in one page, with no framework and no build step. Every platform runs this same file.</td><td>Always. This is the code.</td></tr>
+        <tr><td><code>tilesmith-desktop/TileSmith-App-Spec.md</code></td><td>The written specification: every setting, formula and pattern in plain English.</td><td>You want to know what something is <i>supposed</i> to do (part 8).</td></tr>
+        <tr><td><code>tilesmith-desktop/main.js</code></td><td>The Electron launcher, about 90 lines. It opens the window and handles a few things the page can't do itself.</td><td>You're curious how the desktop app starts, or what the security guards are.</td></tr>
+        <tr><td><code>tilesmith-desktop/package.json</code></td><td>The desktop app's manifest: its two dependencies (Electron and koffi) and the build commands.</td><td>You want to build it yourself.</td></tr>
+        <tr><td><code>tilesmith-desktop/app/crew/</code></td><td>The 3D crew models and libraries, loaded only for the Hand-drawn style.</td><td>Rarely.</td></tr>
+        <tr><td><code>tilesmith-desktop/mobile/</code>, <code>android-aistudio/</code></td><td>The phone apps: thin wrappers that open the same <code>index.html</code>.</td><td>You care about Android or iOS.</td></tr>
+        <tr><td><code>tilesmith-desktop/bin/</code>, <code>scripts/</code>, <code>build/</code></td><td>Native helpers (NDI®, Spout, Syphon), build scripts and installer icons.</td><td>A build fails.</td></tr>
+        <tr><td><code>manual-src/tests/</code></td><td>About 50 tests that drive the real app in a headless browser.</td><td>You want proof a feature works (part 9).</td></tr>
+        <tr><td><code>manual-src/*.py</code></td><td>Scripts that take the screenshots and make the manuals, the spec and these guides.</td><td>You're changing the documentation.</td></tr>
+        <tr><td><code>docs/</code></td><td>The reviewer's guide, the code review findings and the memory measurements, plus the screenshots.</td><td>You're reviewing the project as a whole. <a href="https://github.com/kingof9x/TileSmith/blob/main/docs/REVIEW-GUIDE.md">REVIEW-GUIDE.md</a> is a good second read.</td></tr>
+        <tr><td><code>.github/workflows/</code></td><td>The automation: tests on every pull request, builds and releases, docs, virus scans and this website.</td><td>You want to know how a release is made.</td></tr>
+        <tr><td><code>website/</code></td><td>This website.</td><td>You spot a typo here.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================= 2 MAP ======================= -->
+<section class="slide" id="map" aria-label="A map of the file">
+  <div class="inner">
+    <div class="cue">2 · The map</div>
+    <h2>A map of <em>index.html</em></h2>
+    <div class="two">
+      <p class="lead">The file reads top to bottom like a show file: looks first (CSS), then the empty stage (HTML), then two scripts. The first script is the translation table. The second is the app, in about 50 sections, each starting with a <code style="white-space:nowrap">// ----------</code> header comment that says what's in it.</p>
+      <div class="xlate"><b>Start here</b><p>At the top of the second script is a 50-line comment called <b>HOW THIS FILE WORKS</b>. It's the author's own map of the code, in plain English. Read it before anything else, then use the map below to jump to a section.</p></div>
+    </div>
+    <div class="fm-key" aria-hidden="true">
+      <span><i style="background:#e6edf3"></i>map</span><span><i style="background:#22d3ee"></i>settings and saving</span><span><i style="background:#4ade80"></i>panels and input</span><span><i style="background:#ffb020"></i>engineering maths</span><span><i style="background:#f472b6"></i>drawing</span><span><i style="background:#fb923c"></i>crew</span><span><i style="background:#60a5fa"></i>outputs and updates</span><span><i style="background:#ffe066"></i>exports</span><span><i style="background:#a78bfa"></i>data tables</span><span><i style="background:#6b7280"></i>CSS and HTML</span><span><i style="background:#ff5a5a"></i>startup</span>
+    </div>
+    <div class="filemap">
+      <div class="fm-bar" id="fmBar" aria-label="The file from line 1 (top) to the last line (bottom); each block is a section"></div>
+      <div class="grid2" style="align-items:start">
+        <div class="fm-list" id="fmList"></div>
+        <div class="card explain" id="fmInfo" aria-live="polite"></div>
+      </div>
+    </div>
+    <p class="note">The bar is the file to scale, top to bottom. Click a block or a name to see its line numbers and the <code>grep</code> that finds it. The list of tile models and the embedded test-pattern images are why some blocks are so tall for so little code.</p>
+    <!--filemap--><script type="application/json" id="fmdata">{"total": 6418, "colors": {"map": "#e6edf3", "style": "#6b7280", "html": "#94a3b8", "data": "#a78bfa", "state": "#22d3ee", "ui": "#4ade80", "engine": "#ffb020", "draw": "#f472b6", "crew": "#fb923c", "outputs": "#60a5fa", "exports": "#ffe066", "startup": "#ff5a5a"}, "regions": [{"line": 12, "kind": "style", "title": "Styles (CSS)", "text": "How everything looks: colours, panels, buttons. Line 67 alone is about 370,000 characters: the app's fonts, stored as base64 text so the app works offline. Keep word wrap off or skip that line.", "grep": "'^<style>'", "start": false}, {"line": 67, "kind": "html", "title": "The page skeleton (HTML)", "text": "The top bar, the empty left panel, the viewport canvas and the right panel. Most of the left panel is not here: build() writes it later from templates.", "grep": "'id=\"vp\"'", "start": false}, {"line": 124, "kind": "data", "title": "Translations: TR", "text": "The first of two scripts. TR maps every English text in the app to nine other languages, one entry per line. setLang() at the end of this script swaps the text in place.", "grep": "'^const TR='", "start": false}, {"line": 1540, "kind": "map", "title": "Read this first: the file's own map", "text": "A 50-line comment at the top of the second script that explains state, the edit loop, the frame loop, engineering, translation and tests in plain English. Every other section starts with a // ---------- header.", "grep": "'HOW THIS FILE WORKS'", "start": true}, {"line": 1589, "kind": "data", "title": "Tile catalogue: P", "text": "Every built-in tile model with its size, pixels, weight and watts, as the maker prints them. One model per line.", "grep": "'^const P='", "start": false}, {"line": 2100, "kind": "engine", "title": "Receiving card files", "text": "A small library of NovaStar .rcfg files stored in the browser (IndexedDB), linked to tile models.", "grep": "-F 'NovaStar receiving card files'", "start": false}, {"line": 2138, "kind": "data", "title": "Where tile figures come from: PWRSRC", "text": "The datasheet link and date behind each tile model's figures, shown in the Engineering panel.", "grep": "-F '// ---------- PWRSRC'", "start": false}, {"line": 2747, "kind": "state", "title": "Settings: S", "text": "Start here. S holds every setting with its default value, one per line: canvas size, tile model, colours, processor, power, outputs. Every panel reads and writes it.", "grep": "'^const S='", "start": false}, {"line": 2982, "kind": "state", "title": "Walls: walls and WK", "text": "Each wall is an object holding its own copy of the per-wall settings (the keys listed in WK). S always shows the selected wall; storeWall() copies S back into it.", "grep": "'^const WK='", "start": false}, {"line": 3065, "kind": "state", "title": "Canvases: CVS", "text": "Each canvas is its own output picture with its own walls. Switching canvas swaps the globals.", "grep": "'function switchTo'", "start": false}, {"line": 3115, "kind": "engine", "title": "Tiles of a wall: pieces()", "text": "Turns a wall's columns, rows, removed tiles and half tiles into a list of tile rectangles. Almost everything else asks pieces() first.", "grep": "'function pieces('", "start": false}, {"line": 3198, "kind": "ui", "title": "Panels: build(), sync(), LIM, input", "text": "build() writes the left panel's HTML from templates (F() makes one labelled box). sync() brings every panel up to date. LIM holds each number's allowed range. The input and change listeners turn a typed value into S[key] with applyKey().", "grep": "-E '^function (build|sync|applyKey)'", "start": false}, {"line": 3413, "kind": "crew", "title": "Flown walls", "text": "How a flown wall is hung from motors a row at a time, top row first.", "grep": "-F '// ---------- Flown from motors'", "start": false}, {"line": 3625, "kind": "draw", "title": "Test patterns: pat()", "text": "Every test pattern, drawn onto one wall.", "grep": "'^function pat('", "start": false}, {"line": 3726, "kind": "crew", "title": "The Classic technician: worker()", "text": "The flat-shaded technician, drawn from shapes for each pose.", "grep": "'^function worker('", "start": false}, {"line": 3795, "kind": "data", "title": "Processors: PROC", "text": "Every LED processor: pixels per port, ports, and how frame rate and bit depth change them.", "grep": "'^const PROC='", "start": false}, {"line": 3871, "kind": "engine", "title": "Data wiring: portPlan()", "text": "Which processor port feeds which tiles, in which order.", "grep": "'^function portPlan'", "start": false}, {"line": 3960, "kind": "engine", "title": "Power: pwC(), powerPlan()", "text": "Usable watts per circuit (pwC) and which circuit feeds which tiles (powerPlan).", "grep": "-E '^function (pwC|powerPlan)'", "start": false}, {"line": 4072, "kind": "engine", "title": "Distros and phases", "text": "Circuits rolled up to cables, distro outputs and the three phases, with the load on each leg.", "grep": "'dsState'", "start": false}, {"line": 4240, "kind": "ui", "title": "Editing tiles", "text": "Removing tiles, half tiles and other edits made by clicking the wall.", "grep": "-F '// ---------- editing the tiles'", "start": false}, {"line": 4348, "kind": "draw", "title": "Drawing a frame: render()", "text": "Draws every wall onto the hidden master canvas: patterns, outlines, labels, data and power runs, the crew. The build animation (stepSim) is here too.", "grep": "-F '// ---------- render master'", "start": false}, {"line": 4488, "kind": "crew", "title": "Crew styles: Hand-drawn and Backlit", "text": "The 3D motion-captured crew and the backlit silhouette style.", "grep": "-F '// ---------- crew styles'", "start": false}, {"line": 4743, "kind": "crew", "title": "Tile repair", "text": "The Fix glitch animation: a technician swaps a faulty tile.", "grep": "-F '// ---------- tile repair'", "start": false}, {"line": 4845, "kind": "draw", "title": "Tile faults", "text": "Simulated LED failures: dead tiles, flicker, colour channels out and more.", "grep": "-F '// ---------- Tile faults'", "start": false}, {"line": 4883, "kind": "ui", "title": "Viewport: picking and vpDraw()", "text": "Clicking and dragging on tiles, and vpDraw(), which copies the master canvas to the screen at the current zoom.", "grep": "'^function vpDraw'", "start": false}, {"line": 4973, "kind": "engine", "title": "Cable lengths and wall totals: wst()", "text": "Cable lengths per wall, and wst(): pixels, area, weight and watts for one wall.", "grep": "-F '// ---------- cable lengths'", "start": false}, {"line": 5006, "kind": "engine", "title": "Locations", "text": "Named places where gear is staged (stage left, FOH…). In the code they are still called zones.", "grep": "-F '// ---------- locations'", "start": false}, {"line": 5082, "kind": "engine", "title": "Redundancy", "text": "Backup data paths for each wall.", "grep": "-F '// ---------- redundancy'", "start": false}, {"line": 5139, "kind": "engine", "title": "Rigging and the Engineering panel: info()", "text": "Bumpers, truss and hoist loads. info() near the end fills the right-hand Engineering panel with every figure.", "grep": "'^function info('", "start": false}, {"line": 5217, "kind": "exports", "title": "Cable labels", "text": "Printable labels for both ends of every data and power cable.", "grep": "-F '// ---------- cable labels'", "start": false}, {"line": 5304, "kind": "exports", "title": "PDF export", "text": "A PDF writer made by hand: the raster, the spec sheet and the labels.", "grep": "-F '// ---------- Export PDF'", "start": false}, {"line": 5360, "kind": "exports", "title": "SVG and PSD export", "text": "Layered files written byte by byte, with no libraries.", "grep": "-F '// ---- Layered pixel map export'", "start": false}, {"line": 5440, "kind": "exports", "title": "Show binder", "text": "The PDF with a cover, contents, a page per wall and a pull sheet.", "grep": "-F '// ---------- show binder'", "start": false}, {"line": 5463, "kind": "draw", "title": "Cabinet IDs pattern", "text": "Each tile's data address drawn on it as a test pattern.", "grep": "-F '// ---------- Cabinet IDs'", "start": false}, {"line": 5589, "kind": "outputs", "title": "Send to a display", "text": "A borderless full-screen window on another monitor.", "grep": "'outInit'", "start": false}, {"line": 5636, "kind": "exports", "title": "Processor config files", "text": "Experimental NovaStar screen files.", "grep": "-F '// ---------- processor config'", "start": false}, {"line": 5680, "kind": "exports", "title": "Resolume preset", "text": "An Advanced Output XML preset for Resolume Arena.", "grep": "-F '// ---------- Resolume'", "start": false}, {"line": 5693, "kind": "outputs", "title": "NDI® output", "text": "Loads the NDI® library through koffi and sends every frame. DESK and MOBILE, the \"where am I running\" flags, are set here.", "grep": "'^const DESK'", "start": false}, {"line": 5763, "kind": "outputs", "title": "Spout and Syphon", "text": "Shares the picture with other programs on the same computer.", "grep": "-F '// ---------- Spout (Windows)'", "start": false}, {"line": 5858, "kind": "ui", "title": "Report a bug", "text": "Screenshots the whole window, lets you draw on it and prepares an e-mail.", "grep": "-F '// ---------- Report a bug'", "start": false}, {"line": 5939, "kind": "outputs", "title": "Updates", "text": "Asks GitHub for the latest release, and Update now (download, check, install).", "grep": "'UPD_API'", "start": false}, {"line": 6021, "kind": "outputs", "title": "Add-ons: NDI® Runtime and ffmpeg", "text": "Finds, or downloads when you ask, the parts TileSmith does not ship.", "grep": "-F '// Add-ons (Info window'", "start": false}, {"line": 6113, "kind": "exports", "title": "Video export (ffmpeg)", "text": "Starts ffmpeg and pipes raw frames into it: HAP, ProRes, H.264.", "grep": "'^function recStart'", "start": false}, {"line": 6188, "kind": "draw", "title": "DVD screensaver", "text": "The bouncing logo, and the perfect-loop maths after it.", "grep": "-F '// ---------- DVD screensaver'", "start": false}, {"line": 6291, "kind": "engine", "title": "The main loop: tick() and loop()", "text": "loop() runs before every screen refresh; tick() moves the animations and redraws only when something changed.", "grep": "-E '^function (tick|loop)'", "start": false}, {"line": 6327, "kind": "state", "title": "Saving and undo", "text": "saveSoon() saves 0.4 s after a change; undo keeps 20 snapshots.", "grep": "-F '// ---------- undo / redo'", "start": false}, {"line": 6370, "kind": "state", "title": "Project files and loadState()", "text": "Writing and reading .tilesmith files, and loadState(), which reads your last settings at start.", "grep": "'^function loadState'", "start": false}, {"line": 6415, "kind": "startup", "title": "Startup", "text": "The last lines of the file. They run once, when everything above has been defined: load settings, build the panels, start the loop.", "grep": "'cc=0;loadState();'", "start": false}]}</script><!--/filemap-->
+  </div>
+</section>
+
+<!-- ======================= 3 TOOLS ======================= -->
+<section class="slide" id="tools" aria-label="Tools">
+  <div class="inner">
+    <div class="cue">3 · Tools</div>
+    <h2>Your editor and <em>grep</em> do most of the work</h2>
+    <div class="two">
+      <p class="lead">You don't need an IDE. Any editor that can jump to a line and list functions will do. VS Code is free and handles this file well. And a terminal with <code>grep</code> is often faster than either.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>Reading code is log analysis. You don't read a 6,400-line log from the top: you grep for the thing you care about, look at the lines around it, and follow the trail.</p></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>In VS Code</h3>
+        <div class="tablewrap"><table class="t">
+          <tbody>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>G</kbd></td><td>Go to a line number (Mac: <kbd>⌃</kbd>+<kbd>G</kbd>)</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd></td><td>List every function in the file; type to filter</td></tr>
+            <tr><td><kbd>F12</kbd></td><td>Jump to where the name under the cursor is defined</td></tr>
+            <tr><td><kbd>Shift</kbd>+<kbd>F12</kbd></td><td>List every place that uses it</td></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>←</kbd></td><td>Jump back to where you were</td></tr>
+            <tr><td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td><td>Search every file in the folder</td></tr>
+            <tr><td><kbd>Alt</kbd>+<kbd>Z</kbd></td><td>Word wrap on or off. Many lines hold several statements, so wrap helps, but turn it off near line 67 (the fonts).</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <h3>In a terminal</h3>
+        <p>The one habit that matters: <b>pipe grep into <code>cut</code></b>. Some lines are 100,000+ characters, and one match on those can flood your terminal.</p>
+        <div class="cmd"><pre><span class="c"># every section header, with its line number</span>
+grep -n '^// ----------' index.html | cut -c1-120
+
+<span class="c"># where is a function defined?</span>
+grep -n '^function render(' index.html | cut -c1-120
+
+<span class="c"># every place a setting is used, with 60 characters either side</span>
+grep -n -o -E '.{0,60}S\.derate.{0,60}' index.html</pre></div>
+        <p class="note">Run these from <code>tilesmith-desktop/app/</code>. <code>-o</code> prints only the match, so <code>.{0,60}</code> on both sides gives you a window of context even on a giant line.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 4 NAMES ======================= -->
+<section class="slide" id="names" aria-label="Short names">
+  <div class="inner">
+    <div class="cue">4 · Short names</div>
+    <h2>Decoding the <em>one-letter names</em></h2>
+    <div class="two">
+      <p class="lead">The code uses short names for the things it touches most, the way you'd alias <code>ll</code> or <code>k</code> for <code>kubectl</code>. Once you know the dozen big ones, most lines read fine. Type in the box to filter.</p>
+      <div class="xlate"><b>Pattern to spot</b><p>Features share a prefix: <code>gl…</code> is tile faults (glitches), <code>sh…</code> is sharing (Spout and Syphon), <code>rc…</code> receiving cards, <code>ds…</code> distros, <code>z…</code> locations (they were once called zones), <code>un…</code> undo, <code>upd…</code> updates, <code>rec…</code> video recording, <code>cv…</code> canvases.</p></div>
+    </div>
+    <input class="filter" type="search" placeholder="Filter, e.g. power or canvas" data-filter="#glossary" aria-label="Filter the names">
+    <div class="tablewrap"><table class="t" id="glossary">
+      <thead><tr><th>Name</th><th>What it is</th><th>Think of it as</th></tr></thead>
+      <tbody>
+        <tr><td><code>S</code></td><td>Every setting, for the app and for the selected wall. <code>S.cols</code>, <code>S.preset</code>, <code>S.derate</code>…</td><td>The running config</td></tr>
+        <tr><td><code>walls</code>, <code>cur</code></td><td>The list of walls on this canvas, and the number of the selected one</td><td>An inventory, and a cursor into it</td></tr>
+        <tr><td><code>WK</code></td><td>Which settings belong to a wall rather than to the whole app</td><td>The per-host keys in a config</td></tr>
+        <tr><td><code>storeWall()</code>, <code>loadWall(i)</code></td><td>Copy <code>S</code> into the selected wall, or a wall into <code>S</code></td><td>Save and load a profile</td></tr>
+        <tr><td><code>CVS</code>, <code>cc</code></td><td>The canvases (outputs) and the selected one</td><td>Virtual hosts</td></tr>
+        <tr><td><code>M</code>, <code>mc</code></td><td>The hidden master canvas at full LED resolution, and its drawing context</td><td>The framebuffer</td></tr>
+        <tr><td><code>vp</code>, <code>V</code></td><td>The on-screen viewport and its zoom and pan</td><td>The monitor and its scaling</td></tr>
+        <tr><td><code>P</code></td><td>The tile catalogue: every model's size, pixels, weight and watts</td><td>A hardware compatibility list</td></tr>
+        <tr><td><code>PROC</code></td><td>The LED processors and their port capacities</td><td>Another HCL</td></tr>
+        <tr><td><code>LIM</code></td><td>Allowed range for each number setting</td><td>Validation rules</td></tr>
+        <tr><td><code>TR</code></td><td>Translations: English text to nine languages</td><td>A locale file</td></tr>
+        <tr><td><code>DESK</code>, <code>MOBILE</code></td><td>True when running in the desktop app or a phone app</td><td><code>if [ -f /etc/debian_version ]</code></td></tr>
+        <tr><td><code>$('#id')</code></td><td>Find one element on the page by its CSS selector</td><td><code>grep -m1</code> for HTML</td></tr>
+        <tr><td><code>F()</code>, <code>B()</code></td><td>Make the HTML for one labelled setting box, or one button</td><td>A template function</td></tr>
+        <tr><td><code>build()</code></td><td>Writes the left panel's HTML from templates</td><td>Rendering a config template</td></tr>
+        <tr><td><code>sync()</code></td><td>Brings every panel up to date after a change</td><td><code>systemctl reload</code></td></tr>
+        <tr><td><code>applyKey()</code></td><td>Turns what you typed into a value in <code>S</code>, clamped to <code>LIM</code></td><td>Input validation</td></tr>
+        <tr><td><code>saveSoon()</code></td><td>Saves to disk 0.4 s after the last change</td><td>A debounced write</td></tr>
+        <tr><td><code>pieces(w)</code></td><td>The list of tiles in a wall, after removed and half tiles</td><td>Expanding a host range</td></tr>
+        <tr><td><code>wst(w)</code></td><td>Totals for one wall: pixels, area, weight, watts</td><td><code>du -s</code></td></tr>
+        <tr><td><code>pwC(w)</code></td><td>One circuit for a wall: volts, amps and usable watts</td><td>A circuit's nameplate</td></tr>
+        <tr><td><code>portPlan()</code>, <code>powerPlan()</code></td><td>Which port, or circuit, feeds which tiles</td><td>A patch list</td></tr>
+        <tr><td><code>render()</code></td><td>Draws one frame of the output onto <code>M</code></td><td>One pass of a cron job</td></tr>
+        <tr><td><code>tick()</code>, <code>loop()</code></td><td>The heartbeat: move animations, redraw when needed</td><td>The main event loop</td></tr>
+        <tr><td><code>info()</code></td><td>Fills the right-hand Engineering panel</td><td>A status report</td></tr>
+        <tr><td><code>D</code></td><td>How long each step of the build animation takes (walk in, place, lock…)</td><td>Timer settings</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================= 5 TRACE ======================= -->
+<section class="slide" id="trace" aria-label="Follow a setting">
+  <div class="inner">
+    <div class="cue">5 · Follow a setting</div>
+    <h2>From a tick box to <em>the maths</em></h2>
+    <div class="two">
+      <p class="lead">The best way to learn a codebase is to pick one thing you understand from the outside and follow it all the way in. Here's <b>Load circuits to 80%</b>, the continuous-load rule, from its default value to the number in the Engineering panel. Step through it, then try the same with a setting you care about.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>It's tracing a config key: where's the default, which daemon reads it, what does it change? Every setting in TileSmith follows these same six stops.</p></div>
+    </div>
+    <div class="stepper">
+      <div class="stops">
+        <button><b>1</b>The default</button>
+        <button><b>2</b>The tick box</button>
+        <button><b>3</b>The listener</button>
+        <button><b>4</b>Into S</button>
+        <button><b>5</b>Saved</button>
+        <button><b>6</b>The maths</button>
+      </div>
+      <div class="stop">
+        <p>Every setting starts life as one line in <code>S</code>, near the top of the second script. The key is <code>derate</code> and it's on by default. The header comment above <code>S</code> says what makes a key special: it's saved, undone and restored automatically.</p>
+        <!--code file="tilesmith-desktop/app/index.html" find="// ---------- S: default settings" lines="0:2" cut="130"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · lines 2747–2749 · long lines shortened</figcaption><pre><span class="ln">2747</span> <span class="c">// ---------- S: default settings. Every key here is saved, undone and restored; walls copy the WK subset. One key per line in</span>
+<span class="ln">2748</span> <span class="c">// &quot;// Feature&quot; groups (see the map at the top). A project saved by an older version simply lacks newer keys and gets these defaul</span><span class="more">…</span>
+<span class="ln">2749</span> <span class="k">const</span> S={</pre></figure><!--/code-->
+        <!--code file="tilesmith-desktop/app/index.html" find="derate:true," lines="-2:1"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · lines 2822–2825</figcaption><pre><span class="ln">2822</span> pvolt:<span class="n">120</span>,
+<span class="ln">2823</span> pamps:<span class="n">20</span>,
+<span class="ln">2824</span> derate:<span class="k">true</span>,
+<span class="ln">2825</span> showPow:<span class="k">true</span>,</pre></figure><!--/code-->
+        <p class="note">Search for <code>derate:</code> to find it. In the spec, the same key has a row in the settings table (part 8).</p>
+      </div>
+      <div class="stop">
+        <p>The left panel isn't written in HTML by hand. <code>build()</code> generates it, and <code>F()</code> makes one labelled box. Its first argument is the key in <code>S</code>; the type <code>'check'</code> makes a tick box.</p>
+        <!--code file="tilesmith-desktop/app/index.html" find="F('derate'" around="F('derate'" cut="110"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 3263 · long lines shortened</figcaption><pre><span class="ln">3263</span> <span class="more">…</span><span class="n">0.5</span> max=<span class="n">1</span> step=<span class="n">0.01</span><span class="s">&#x27;)}&lt;/div&gt;${F(&#x27;</span>derate<span class="s">&#x27;,&#x27;</span>Load circuits to <span class="n">80</span>% (continuous load)<span class="s">&#x27;,&#x27;</span>check<span class="s">&#x27;)}&lt;div id=&quot;dlnote&quot; st</span><span class="more">…</span></pre></figure><!--/code-->
+        <!--code file="tilesmith-desktop/app/index.html" find="const F=(k,l,t='number',o,cls='')" lines="1:1" cut="110"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 3187</figcaption><pre><span class="ln">3187</span>  t==<span class="s">&#x27;check&#x27;</span>?<span class="s">`&lt;label class=&quot;chk w&quot;&gt;&lt;input type=&quot;checkbox&quot; data-k=&quot;${k}&quot;&gt;${l}&lt;/label&gt;`</span>:</pre></figure><!--/code-->
+        <p>So the tick box comes out as <code>&lt;input type="checkbox" data-k="derate"&gt;</code>. That <code>data-k</code> attribute is the whole link between the box and the setting.</p>
+      </div>
+      <div class="stop">
+        <p>There's no code attached to that one box. Instead, a single listener on the whole page hears every edit, in any box, and hands it to <code>applyKey()</code>, then calls <code>sync()</code>.</p>
+        <!--code file="tilesmith-desktop/app/index.html" find="document.addEventListener('input',e=>{const t=e.target;" cut="80"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 3504</figcaption><pre><span class="ln">3504</span> document.addEventListener(<span class="s">&#x27;input&#x27;</span>,e=&gt;{<span class="k">const</span> t=e.target;</pre></figure><!--/code-->
+        <!--code file="tilesmith-desktop/app/index.html" find="if(t.type=='number'&&HEAVY.includes(t.dataset.k))return;applyKey(t);sync();});" cut="110"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 3526</figcaption><pre><span class="ln">3526</span> <span class="k">if</span>(t.type==<span class="s">&#x27;number&#x27;</span>&amp;&amp;HEAVY.includes(t.dataset.k))<span class="k">return</span>;applyKey(t);sync();});</pre></figure><!--/code-->
+        <p class="note">The lines in between handle special boxes first, each ending in <code>return</code>. Ordinary boxes like this one fall through to the last line. <code>HEAVY</code> lists number boxes (like columns and rows) that wait until you finish typing.</p>
+      </div>
+      <div class="stop">
+        <p><code>applyKey()</code> reads the key from <code>data-k</code>, gets the value the right way for the kind of box (a tick box gives <code>true</code> or <code>false</code>), clamps numbers to <code>LIM</code>, and writes it into <code>S</code>.</p>
+        <!--code file="tilesmith-desktop/app/index.html" find="function applyKey(t)" lines="0:1" cut="150"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · lines 3497–3498 · long lines shortened</figcaption><pre><span class="ln">3497</span> <span class="k">function</span> applyKey(t){<span class="k">const</span> k=t.dataset.k;<span class="k">if</span>(!k)<span class="k">return</span>;<span class="k">let</span> v;
+<span class="ln">3498</span> <span class="k">if</span>(t.type==<span class="s">&#x27;checkbox&#x27;</span>)v=t.checked;<span class="k">else</span> <span class="k">if</span>(t.type==<span class="s">&#x27;number&#x27;</span>||t.type==<span class="s">&#x27;range&#x27;</span>){v=+t.value;<span class="k">if</span>(t.value===<span class="s">&#x27;&#x27;</span>||!isFinite(v))<span class="k">return</span>;<span class="k">const</span> L=LIM[k];<span class="k">if</span>(L)v=Mat<span class="more">…</span></pre></figure><!--/code-->
+        <!--code file="tilesmith-desktop/app/index.html" find="const glWas=S.glOn;S[k]=v;" around="S[k]=v" cut="70"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 3499 · long lines shortened</figcaption><pre><span class="ln">3499</span> <span class="more">…</span>S.cunit,v);<span class="k">const</span> glWas=S.glOn;S[k]=v;<span class="k">if</span>(k==<span class="s">&#x27;glOn&#x27;</span>&amp;&amp;v!=glWas)glOnChange<span class="more">…</span></pre></figure><!--/code-->
+        <p><code>S[k]=v</code> is the moment the setting changes: <code>S['derate']=false</code>. Everything after it on that line is special cases for other keys.</p>
+      </div>
+      <div class="stop">
+        <p>Saving isn't wired to each box either. Every input, change, click or drag anywhere on the page calls <code>saveSoon()</code>, which waits 0.4 s and then writes everything.</p>
+        <!--code file="tilesmith-desktop/app/index.html" find="['input','change','click','pointerup'].forEach(ev=>document.addEventListener(ev,saveSoon));"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 6412</figcaption><pre><span class="ln">6412</span> [<span class="s">&#x27;input&#x27;</span>,<span class="s">&#x27;change&#x27;</span>,<span class="s">&#x27;click&#x27;</span>,<span class="s">&#x27;pointerup&#x27;</span>].forEach(ev=&gt;document.addEventListener(ev,saveSoon));</pre></figure><!--/code-->
+        <!--code file="tilesmith-desktop/app/index.html" find="function saveSoon()"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 6326</figcaption><pre><span class="ln">6326</span> <span class="k">function</span> saveSoon(){clearTimeout(saveT);saveT=setTimeout(saveNow,<span class="n">400</span>)}</pre></figure><!--/code-->
+        <p class="note"><code>clearTimeout</code> then <code>setTimeout</code> is a debounce: ten clicks in a row cause one write, 0.4 s after the last.</p>
+      </div>
+      <div class="stop">
+        <p>Finally, the power code reads the setting. <code>pwC()</code> works out one circuit for a wall. The last part of the line is the formula from the spec: usable watts = volts × amps × 0.8 (if derated) × power factor.</p>
+        <!--code file="tilesmith-desktop/app/index.html" find="function pwC(w)" lines="0:1" cut="140"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · lines 3980–3981 · long lines shortened</figcaption><pre><span class="ln">3980</span> <span class="k">function</span> pwC(w){w=w||S;<span class="k">const</span> d=pwSup(w),ks=supKinds(d);<span class="k">let</span> kind=Object.keys(OUTK).find(k=&gt;OUTK[k][<span class="n">1</span>]==w.pdt)||<span class="s">&#x27;soca&#x27;</span>;<span class="k">if</span>(ks.length&amp;&amp;!ks.inclu<span class="more">…</span>
+<span class="ln">3981</span>  <span class="k">const</span> D=PDT[OUTK[kind][<span class="n">1</span>]],V=d?+d.cv||<span class="n">120</span>:<span class="n">120</span>,A=d?Math.min(+d.cb||<span class="n">20</span>,D.rA||<span class="n">400</span>):<span class="n">20</span>;<span class="k">return</span>{d,kind,D,V,A,cw:V*A*(S.derate?.<span class="n">8</span>:<span class="n">1</span>)*(S.pf||<span class="n">1</span>)}}</pre></figure><!--/code-->
+        <p><code>S.derate?.8:1</code> reads "if derate is on, 0.8, otherwise 1". At 120 V and 20 A that's 1,920 W per circuit, so a 120 W tile fits 16 to a circuit. Grep for <code>S.derate</code> and you'll find the other places that read it: the distro legs, the notes and the PDF spec sheet.</p>
+      </div>
+      <button class="btn ghost" data-next type="button" style="justify-self:start">Next stop →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 6 BUTTON ======================= -->
+<section class="slide" id="button" aria-label="Follow a button">
+  <div class="inner">
+    <div class="cue">6 · Follow a button</div>
+    <h2>From a button to <em>its code</em></h2>
+    <div class="two">
+      <p class="lead">Buttons work like settings: no code is attached to each one. A button has a <code>data-a</code> (action) attribute, and one click listener looks the action up in a list. To find what <b>Export PDF</b> does, search for its label, read its action name, then search for that.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>It's a dispatch table, like a <code>case "$1" in start) … ;; stop) … ;; esac</code> block in an init script. The button's action name is <code>$1</code>.</p></div>
+    </div>
+    <ol class="walk">
+      <li><b>Find the label.</b> <code>grep -n -o -E ".{0,40}'Export PDF'.{0,20}" index.html</code> finds where the top bar is built. <code>B()</code> makes a button whose action is its first argument, <code>'pdf'</code>.
+        <!--code file="tilesmith-desktop/app/index.html" find="B('pdf','Export PDF')" around="B('png'" cut="110"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 3315 · long lines shortened</figcaption><pre><span class="ln">3315</span> <span class="more">…</span>one<span class="s">&quot;&#x27;}&gt;Start ${SHN}&lt;/button&gt;`+B(&#x27;png&#x27;,&#x27;Export PNG&#x27;)+B(&#x27;pdf&#x27;,&#x27;Export PDF&#x27;)+B(&#x27;binder&#x27;,&#x27;Export binder&#x27;)+`&lt;span c</span><span class="more">…</span></pre></figure><!--/code-->
+        <!--code file="tilesmith-desktop/app/index.html" find="const B=(a,l,v='')=>"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 3189</figcaption><pre><span class="ln">3189</span> <span class="k">const</span> B=(a,l,v=<span class="s">&#x27;&#x27;</span>)=&gt;<span class="s">`&lt;button data-a=&quot;${a}&quot; data-v=&quot;${v}&quot;&gt;${l}&lt;/button&gt;`</span>;</pre></figure><!--/code--></li>
+      <li><b>Find the dispatcher.</b> One click listener reads <code>data-a</code> and calls the function with that name from a long list of short handlers.
+        <!--code file="tilesmith-desktop/app/index.html" find="const a=t.dataset.a;if(!a)return;"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 3544</figcaption><pre><span class="ln">3544</span> <span class="k">const</span> a=t.dataset.a;<span class="k">if</span>(!a)<span class="k">return</span>;<span class="k">const</span> v=t.dataset.v,cw=S.cw,ch=S.ch;</pre></figure><!--/code--></li>
+      <li><b>Find the handler.</b> Search for <code>pdf(){</code>. The handler is one call, so the real work is in <code>exportPDF()</code>, and the binder is the same function with one switch flipped.
+        <!--code file="tilesmith-desktop/app/index.html" find="pdf(){exportPDF()}" around="pdf(){exportPDF()}" cut="80"--><figure class="src"><figcaption>tilesmith-desktop/app/index.html · line 3549 · long lines shortened</figcaption><pre><span class="ln">3549</span> <span class="more">…</span>cidShow()},cidPdf(){cidPDF()},pdf(){exportPDF()},binder(){exportPDF(<span class="k">true</span>)},rpadd<span class="more">…</span></pre></figure><!--/code--></li>
+      <li><b>Read the function.</b> <code>grep -n '^function exportPDF' index.html</code> takes you to it, under its section header in the map (part 2).</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 7 LIVE ======================= -->
+<section class="slide" id="live" aria-label="Read it while it runs">
+  <div class="inner">
+    <div class="cue">7 · Live</div>
+    <h2>Read it <em>while it runs</em></h2>
+    <div class="two">
+      <p class="lead">You can talk to the running app. Open <code>tilesmith-desktop/app/index.html</code> straight from disk in Chrome or Edge, press <kbd>F12</kbd> and pick <b>Console</b>. Every name from part 4 is right there. Type one and press Enter.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>It's attaching a shell to a running container. Look at the state, change a value, call a function, and watch what happens. Close the tab and nothing you did is kept, unless the app autosaves it, so use a fresh browser profile if you care about your settings.</p></div>
+    </div>
+    <div class="grid2">
+      <div class="cmd"><pre><span class="c">// look at the state</span>
+S.cols
+S.preset
+walls.length
+
+<span class="c">// change it, then tell the panels</span>
+S.cols = 12; storeWall(); sync()
+
+<span class="c">// call the maths directly</span>
+pwC(S)
+wst(walls[cur])</pre></div>
+      <div class="cmd"><pre><span class="c">// list every setting and its value</span>
+console.table(S)
+
+<span class="c">// time one frame of drawing</span>
+console.time('render'); render(); console.timeEnd('render')
+
+<span class="c">// see a function's code without searching</span>
+render.toString().slice(0, 400)</pre></div>
+    </div>
+    <p class="note">This is exactly how the tests work: they open the page in a headless Chrome and type lines like these (part 9). Changing <code>S.cols</code> without <code>storeWall()</code> works for a moment, until something reloads the wall from its saved copy. That's the <code>S</code>/<code>walls</code> mirror from part 4 in action.</p>
+  </div>
+</section>
+
+<!-- ======================= 8 SPEC ======================= -->
+<section class="slide" id="spec" aria-label="The spec">
+  <div class="inner">
+    <div class="cue">8 · The spec</div>
+    <h2>The spec is the <em>manual for the code</em></h2>
+    <div class="two">
+      <p class="lead"><code>TileSmith-App-Spec.md</code> describes every feature in plain English, and its settings table uses the same keys as <code>S</code>. When code looks odd, look its key up in the spec: it usually says what the code is aiming for, with the formula.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>It's the man page. The code is the binary; the spec is what it's documented to do. When they disagree, that's a bug in one or the other, and worth reporting.</p></div>
+    </div>
+    <!--code file="tilesmith-desktop/TileSmith-App-Spec.md" find="| `derate` |" lines="0:0"--><figure class="src"><figcaption>tilesmith-desktop/TileSmith-App-Spec.md · line 228</figcaption><pre><span class="ln">228</span> | <span class="s">`derate`</span> | <span class="k">true</span> | Load circuits to <span class="n">80</span>% (continuous load rule). |</pre></figure><!--/code-->
+    <!--code file="tilesmith-desktop/TileSmith-App-Spec.md" find="| `pf` |" lines="0:0" cut="140"--><figure class="src"><figcaption>tilesmith-desktop/TileSmith-App-Spec.md · line 284</figcaption><pre><span class="ln">284</span> | <span class="s">`pf`</span> | <span class="n">1</span> | Power factor <span class="n">0.5</span>-<span class="n">1</span> (default <span class="n">1</span>). Usable watts per circuit = V x A x (<span class="n">0.8</span>) x PF; amps everywhere = W / (V x PF). |</pre></figure><!--/code-->
+    <p class="note">Search the spec for a setting's key in backticks (<code>`derate`</code>) to land on its row. The formulas for data and power are in the Data wiring and Power sections, with worked examples.</p>
+  </div>
+</section>
+
+<!-- ======================= 9 TESTS ======================= -->
+<section class="slide" id="tests" aria-label="Tests">
+  <div class="inner">
+    <div class="cue">9 · Tests</div>
+    <h2>Tests tell you <em>what's meant to happen</em></h2>
+    <div class="two">
+      <p class="lead">Each file in <code>manual-src/tests/</code> opens the real app in a headless Chrome, sets things up through the console, and checks the result. They're short, and they're the most precise statement of what a feature should do. Here's a whole one: it checks that the power wiring patterns go the right way.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>They're health checks: put the service in a known state, poke it, and assert the answer. <code>assert</code> is <code>test … || exit 1</code>.</p></div>
+    </div>
+    <!--code file="manual-src/tests/wpat_test.py" find="import os" lines="0:16" cut="150"--><figure class="src"><figcaption>manual-src/tests/wpat_test.py · lines 1–17 · long lines shortened</figcaption><pre><span class="ln"> 1</span> <span class="k">import</span> os
+<span class="ln"> 2</span> <span class="k">from</span> _paths <span class="k">import</span> TS_APP_URL, TS_DESK
+<span class="ln"> 3</span> <span class="k">import</span> asyncio
+<span class="ln"> 4</span> <span class="k">from</span> playwright.async_api <span class="k">import</span> async_playwright
+<span class="ln"> 5</span> <span class="k">async</span> <span class="k">def</span> main():
+<span class="ln"> 6</span>     <span class="k">async</span> <span class="k">with</span> async_playwright() <span class="k">as</span> p:
+<span class="ln"> 7</span>         b=<span class="k">await</span> p.chromium.launch(); pg=<span class="k">await</span> b.new_page(viewport={<span class="s">&#x27;width&#x27;</span>:<span class="n">1500</span>,<span class="s">&#x27;height&#x27;</span>:<span class="n">1100</span>})
+<span class="ln"> 8</span>         <span class="k">await</span> pg.goto(TS_APP_URL); <span class="k">await</span> pg.evaluate(<span class="s">&quot;()=&gt;localStorage.clear()&quot;</span>); <span class="k">await</span> pg.reload(); <span class="k">await</span> pg.wait_for_timeout(<span class="n">800</span>)
+<span class="ln"> 9</span>         <span class="k">await</span> pg.evaluate(<span class="s">&quot;()=&gt;{S.cols=8;S.rows=6;(S.dists.length||distAct(&#x27;dadd&#x27;));S.showPow=true;S.pmode=&#x27;Snake&#x27;;storeWall();sync()}&quot;</span>)
+<span class="ln">10</span>         <span class="k">for</span> i <span class="k">in</span> range(<span class="n">8</span>):
+<span class="ln">11</span>             <span class="k">await</span> pg.evaluate(f<span class="s">&quot;()=&gt;document.querySelector(&#x27;[data-pp=\&quot;{i+8}\&quot;]&#x27;).click()&quot;</span>)
+<span class="ln">12</span>             assert <span class="k">await</span> pg.evaluate(<span class="s">&quot;()=&gt;S.pmode==&#x27;Snake&#x27;&amp;&amp;document.querySelectorAll(&#x27;#ppat .wpb&#x27;).length==16&quot;</span>)
+<span class="ln">13</span>             r=<span class="k">await</span> pg.evaluate(<span class="s">&quot;()=&gt;{const t=powerPlan()[0][0].tiles;const cs=new Set(t.map(x=&gt;x[0])),rs=new Set(t.map(x=&gt;x[1]));return[S.pwdir,cs.si</span><span class="more">…</span>
+<span class="ln">14</span>             V=r[<span class="n">0</span>]==<span class="s">&#x27;Vertical&#x27;</span>
+<span class="ln">15</span>             assert (r[<span class="n">1</span>]&lt;r[<span class="n">2</span>]) <span class="k">if</span> V <span class="k">else</span> (r[<span class="n">2</span>]&lt;r[<span class="n">1</span>]), (i,r)
+<span class="ln">16</span>         print(<span class="s">&#x27;ALL OK&#x27;</span>)
+<span class="ln">17</span>         <span class="k">await</span> b.close()</pre></figure><!--/code-->
+    <ol class="walk">
+      <li><b>Line 8</b> opens the app from disk and clears its saved settings, so every run starts the same.</li>
+      <li><b>Line 9</b> is console code like part 7: an 8 × 6 wall, a distro, power shown, Snake wiring.</li>
+      <li><b>Lines 10 to 15</b> click each of the 8 wiring-pattern buttons and check that the first circuit runs along columns for vertical patterns and along rows for horizontal ones.</li>
+    </ol>
+    <div class="cmd"><pre><span class="c"># one-time setup (Python 3 and Node.js already installed)</span>
+pip install playwright pillow pypdf
+python3 -m playwright install chromium
+
+<span class="c"># run one test, then all of them</span>
+python3 manual-src/tests/wpat_test.py
+python3 manual-src/tests/run_all.py</pre></div>
+  </div>
+</section>
+
+<!-- ======================= 10 HISTORY ======================= -->
+<section class="slide" id="history" aria-label="Ask git why">
+  <div class="inner">
+    <div class="cue">10 · History</div>
+    <h2>Ask git <em>why</em></h2>
+    <div class="two">
+      <p class="lead">The code says what happens. The history says why. Every change came through a pull request on GitHub with a description, so when a line puzzles you, find the change that added it.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>It's the change log for a config managed in git. <code>git log -S</code> answers "when did this value first appear?", like grepping old backups.</p></div>
+    </div>
+    <div class="cmd"><pre><span class="c"># every commit that added or removed the text "S.derate"</span>
+git log -S 'S.derate' --oneline -- tilesmith-desktop/app/index.html
+
+<span class="c"># who last changed the first two lines of pwC(), and in which commit</span>
+git blame -L '/^function pwC(/,+2' tilesmith-desktop/app/index.html | cut -c1-80
+
+<span class="c"># one commit's description and files</span>
+git show --stat &lt;commit&gt;</pre></div>
+    <p class="note">Commit titles end with the pull request number, like <code>(#57)</code>. Open <code>github.com/kingof9x/TileSmith/pull/57</code> for the full story, with screenshots and the discussion. On GitHub itself, the <b>Blame</b> button on any file does the same as <code>git blame</code>.</p>
+  </div>
+</section>
+
+<!-- ======================= 11 CHEAT ======================= -->
+<section class="slide" id="cheat" aria-label="Cheat sheet">
+  <div class="inner">
+    <div class="cue">11 · Cheat sheet</div>
+    <h2>"Where is…?" <em>Quick answers</em></h2>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th>Question</th><th>Do this (from <code>tilesmith-desktop/app/</code>)</th></tr></thead>
+      <tbody>
+        <tr><td>Where's the overview?</td><td><code>grep -n 'HOW THIS FILE WORKS' index.html</code>, then read the 50 lines after it</td></tr>
+        <tr><td>What sections are there?</td><td><code>grep -n '^// ----------' index.html | cut -c1-120</code></td></tr>
+        <tr><td>Where's function X?</td><td><code>grep -n '^function X(' index.html | cut -c1-120</code>, or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> in VS Code</td></tr>
+        <tr><td>What's setting K's default?</td><td><code>grep -n '^K:' index.html</code> (one setting per line in <code>S</code>)</td></tr>
+        <tr><td>Who reads setting K?</td><td><code>grep -n -o -E '.{0,60}S\.K\b.{0,60}' index.html</code></td></tr>
+        <tr><td>What does button "Y" do?</td><td>Search for its label, read its <code>data-a</code>, then search for <code>name(){</code> (part 6)</td></tr>
+        <tr><td>What's it supposed to do?</td><td>Search <code>../TileSmith-App-Spec.md</code> for the key in backticks</td></tr>
+        <tr><td>Does it actually work?</td><td>Find its test: <code>grep -l 'K' ../../manual-src/tests/*_test.py</code></td></tr>
+        <tr><td>Why is it like this?</td><td><code>git log -S 'text' --oneline</code>, then the pull request</td></tr>
+        <tr><td>What is it right now?</td><td>Open the app in Chrome, <kbd>F12</kbd>, Console, type <code>S.K</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================= NEXT ======================= -->
+<section class="slide" id="onward" aria-label="Next">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Curtain call</div>
+      <h2>Next: <em>reading Rust</em></h2>
+      <p class="lead">TileSmith is JavaScript today. If a Rust version arrives, the code will look very different: many small files, strict types, and a compiler that checks everything before it runs. The <a href="../read-rust/">Rust reading guide</a> gets you ready for that, using a tiny LED-wall calculator written in Rust.</p>
+    </div>
+    <div class="inner">
+      <div class="xlate"><b>Also on this site</b><p><a href="../how-it-works/">How TileSmith works</a>: the 23-part tour of what each part of the app does, and the code that does it.</p></div>
+      <p class="mu">TileSmith is made by Callum Davenport-Lambton and released under GPL-3.0-or-later. NDI® is a registered trademark of Vizrt NDI AB. <a href="https://github.com/kingof9x/TileSmith">Source on GitHub</a></p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<nav class="hud" aria-label="Section navigation">
+  <span id="count"></span>
+  <button id="prev" aria-label="Previous section">‹</button>
+  <button id="next" aria-label="Next section">›</button>
+</nav>
+<script src="../guide.js"></script>
+</body>
+</html>

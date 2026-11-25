@@ -73,6 +73,7 @@ ul.list li::before { content: ""; position: absolute; left: 0; top: .55em; width
 .xlate b { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--amber); }
 
 pre { font-variant-ligatures: none; margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font: 400 14.5px/1.6 var(--mono); color: #cfe3ef; }
+pre, pre * { font-variant-ligatures: none; }  /* the font shorthand above turns ligatures back on */
 pre .c { color: #6f7f8e; } pre .k { color: var(--cyan); } pre .s { color: var(--yellow); } pre .n { color: #f59e9e; }
 
 .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
@@ -1399,6 +1400,7 @@ npm start
     </div>
     <div class="inner">
       <div class="xlate"><b>Where to start reading</b><p><code>TileSmith-App-Spec.md</code> describes every feature, number and formula in plain English, so it doubles as a map of the code. Search <code>index.html</code> for a function name from these slides (<code>function render(</code>, <code>function pieces(</code>) to jump straight to it.</p></div>
+      <div class="xlate"><b>Find your own way</b><p><a href="../read-the-code/">Reading the TileSmith code</a> shows how to search the big file, decode its short names and follow a setting yourself. <a href="../read-rust/">How to read a Rust codebase</a> gets you ready for Rust.</p></div>
       <div class="xlate"><b>First experiments</b><p>Change a colour in <code>patRaw</code>'s <code>'cycle'</code> list. Change the phase times in <code>D</code> and watch the crew hurry. Add your name to the default crew. Break something, then put it back. That's how everyone learned.</p></div>
       <p class="mu">TileSmith is made by Callum Davenport-Lambton and released under GPL-3.0-or-later. NDI® is a registered trademark of Vizrt NDI AB. <a href="https://github.com/kingof9x/TileSmith">Source on GitHub</a> · <a href="https://github.com/kingof9x/TileSmith/releases/latest">Download</a></p>
     </div>

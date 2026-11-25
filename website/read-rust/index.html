@@ -1,0 +1,687 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Reading Rust Code</title>
+<meta name="description" content="How to read a Rust codebase if you're a power user or sysadmin, not a developer: the folder layout, where to start, the symbols, ownership, errors, threads, unsafe code and the tools, using a small LED-wall calculator as the example.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="../guide.css">
+</head>
+<body>
+<div class="bar" aria-hidden="true"><i id="prog"></i></div>
+<a class="home" href="../">← TileSmith</a>
+
+<main class="deck" id="deck">
+
+<!-- ======================= START ======================= -->
+<section class="slide full" id="start" aria-label="Title">
+  <div class="inner">
+    <div class="cue">Field guide · Rust</div>
+    <h1>How to read a <em>Rust</em> codebase</h1>
+    <p class="lead">Rust looks alarming at first: ampersands, angle brackets, question marks and exclamation marks everywhere. Most of it decodes into ideas you already use every day as a sysadmin: read-only mounts, file locks, exit codes, pipes and <code>sudo</code>. This guide teaches you to read it, not write it.</p>
+    <div class="xlate"><b>The example</b><p>TileSmith is JavaScript today, and there's no Rust TileSmith code yet. So this guide reads <b>wallcalc</b>: a small Rust program written for this guide that does one real TileSmith job, working out how many power circuits an LED wall needs, with the same formula as the app. It builds, its 5 tests pass, and its source is in the <a href="https://github.com/kingof9x/TileSmith/tree/main/website/read-rust/wallcalc">website folder on GitHub</a>.</p></div>
+    <p class="keys">Scroll, or use <kbd>←</kbd> <kbd>→</kbd> to jump between sections. Code excerpts are the real wallcalc files, with their line numbers.</p>
+  </div>
+</section>
+
+<!-- ======================= CONTENTS ======================= -->
+<section class="slide" id="contents" aria-label="Contents">
+  <div class="inner">
+    <div class="cue">Running order</div>
+    <h2>What's in <em>this guide</em></h2>
+    <ol class="toc">
+      <li><a href="#different">1 · Why Rust reads differently</a></li>
+      <li><a href="#layout">2 · The layout of a Rust project</a></li>
+      <li><a href="#main">3 · Where to start: fn main</a></li>
+      <li><a href="#modules">4 · Modules: how files find each other</a></li>
+      <li><a href="#symbols">5 · The symbol decoder</a></li>
+      <li><a href="#types">6 · Structs, enums and match</a></li>
+      <li><a href="#impl">7 · impl and traits</a></li>
+      <li><a href="#ownership">8 · Ownership and borrowing</a></li>
+      <li><a href="#errors">9 · Errors: Result, Option and ?</a></li>
+      <li><a href="#threads">10 · Threads, pipes and locks</a></li>
+      <li><a href="#unsafe">11 · unsafe: Rust's sudo</a></li>
+      <li><a href="#tests">12 · Tests live next to the code</a></li>
+      <li><a href="#tools">13 · Tools: cargo and your editor</a></li>
+      <li><a href="#quiz">14 · Quiz: will it compile?</a></li>
+      <li><a href="#tilesmith">15 · If TileSmith moves to Rust</a></li>
+      <li><a href="#try">Try it yourself</a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 1 DIFFERENT ======================= -->
+<section class="slide" id="different" aria-label="Why Rust reads differently">
+  <div class="inner">
+    <div class="cue">1 · Different</div>
+    <h2>Why Rust <em>reads differently</em></h2>
+    <div class="two">
+      <p class="lead">JavaScript, like a shell script, runs whatever you give it and fails at the line that's wrong. Rust is compiled: before a Rust program runs at all, the compiler checks every type, every name and every use of memory. Most of the odd symbols exist to give the compiler enough information to do that check.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>It's the difference between a shell script and a config that has to pass <code>nginx -t</code> before it loads. Rust code is wordier because it has to pass the check, and once it passes, a whole class of crashes can't happen.</p></div>
+    </div>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th></th><th>TileSmith today (JavaScript)</th><th>A Rust project</th></tr></thead>
+      <tbody>
+        <tr><td>Files</td><td>One 6,400-line file</td><td>Many small files, one per topic</td></tr>
+        <tr><td>Types</td><td>Any value can hold anything</td><td>Every value has a declared type, checked before it runs</td></tr>
+        <tr><td>Mistakes found</td><td>When that line runs</td><td>When you build</td></tr>
+        <tr><td>Errors</td><td><code>try</code> / <code>catch</code>, or a value that's quietly <code>undefined</code></td><td>A <code>Result</code> you can't ignore</td></tr>
+        <tr><td>Memory</td><td>A garbage collector cleans up later</td><td>Every value has one owner and is freed when the owner ends</td></tr>
+        <tr><td>Dependencies</td><td><code>package.json</code></td><td><code>Cargo.toml</code></td></tr>
+        <tr><td>Tests</td><td>Python scripts drive the page in a browser</td><td>Functions marked <code>#[test]</code>, usually in the same file</td></tr>
+        <tr><td>Running it</td><td>Open the file</td><td><code>cargo run</code> builds, then runs</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================= 2 LAYOUT ======================= -->
+<section class="slide" id="layout" aria-label="Layout">
+  <div class="inner">
+    <div class="cue">2 · Layout</div>
+    <h2>The layout of a <em>Rust project</em></h2>
+    <div class="two">
+      <div class="inner" style="gap:14px">
+        <p class="lead">A Rust project is called a <b>crate</b>, and every crate has the same shape. Learn it once and you can open any Rust repository on GitHub and know where to look.</p>
+<pre>wallcalc/
+├── <span class="s">Cargo.toml</span>      <span class="c"># name, version, dependencies</span>
+├── <span class="s">Cargo.lock</span>      <span class="c"># exact versions used (generated)</span>
+├── src/
+│   ├── <span class="k">main.rs</span>     <span class="c"># the program starts here</span>
+│   ├── <span class="k">lib.rs</span>      <span class="c"># the library: lists the modules</span>
+│   ├── tile.rs     <span class="c"># one module per file</span>
+│   ├── power.rs
+│   ├── error.rs
+│   ├── output.rs
+│   └── ffi.rs
+└── target/         <span class="c"># build output: ignore it</span></pre>
+      </div>
+      <div class="inner" style="gap:14px">
+        <!--code file="website/read-rust/wallcalc/Cargo.toml" find="[package]" lines="0:6"--><figure class="src"><figcaption>website/read-rust/wallcalc/Cargo.toml · lines 1–7</figcaption><pre><span class="ln">1</span> [package]
+<span class="ln">2</span> name = <span class="s">&quot;wallcalc&quot;</span>
+<span class="ln">3</span> version = <span class="s">&quot;0.1.0&quot;</span>
+<span class="ln">4</span> edition = <span class="s">&quot;2024&quot;</span>
+<span class="ln">5</span> description = <span class="s">&quot;A tiny, made-up Rust core for an LED wall calculator&quot;</span>
+<span class="ln">6</span> 
+<span class="ln">7</span> [dependencies]</pre></figure><!--/code-->
+        <div class="xlate"><b>Sysadmin translation</b><p><code>Cargo.toml</code> is the package manifest, like a <code>.spec</code> file or a <code>debian/control</code>. <code>Cargo.lock</code> pins the exact versions, like a lock file from <code>pip freeze</code>. wallcalc has no dependencies, so its <code>[dependencies]</code> list is empty.</p></div>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="card"><h3>Bigger projects</h3><p>A <b>workspace</b> is several crates in one repository. Its top <code>Cargo.toml</code> has a <code>[workspace]</code> section listing them under <code>members</code>. Read that list first: it's the table of contents.</p></div>
+      <div class="card"><h3>Other folders</h3><p><code>tests/</code> holds tests that use the crate from outside. <code>examples/</code> holds small programs you can run with <code>cargo run --example name</code>. <code>benches/</code> holds speed tests.</p></div>
+      <div class="card"><h3>build.rs</h3><p>If a crate has a <code>build.rs</code> next to <code>Cargo.toml</code>, it's a script that runs before the build, often to find a C library. Worth a look when a build fails.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 3 MAIN ======================= -->
+<section class="slide" id="main" aria-label="Where to start">
+  <div class="inner">
+    <div class="cue">3 · Start here</div>
+    <h2>Where to start: <em>fn main</em></h2>
+    <div class="two">
+      <p class="lead">A program starts at <code>fn main()</code> in <code>src/main.rs</code>. Read it top to bottom like an init script. In a well-organised crate, <code>main</code> is short: it reads the command line, builds the objects, calls the library and turns the result into an exit code.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p><code>ExitCode::from(2)</code> is <code>exit 2</code>. <code>eprintln!</code> writes to stderr and <code>println!</code> to stdout. This program behaves like any good CLI tool: usage errors exit 2, failures exit 1, success exits 0.</p></div>
+    </div>
+    <!--code file="website/read-rust/wallcalc/src/main.rs" find="//! wallcalc:" lines="0:34" skip="25:30"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/main.rs · lines 1–35</figcaption><pre><span class="ln"> 1</span> <span class="c">//! wallcalc: how many power circuits does an LED wall need?</span>
+<span class="ln"> 2</span> <span class="c">//! Usage: wallcalc &lt;columns&gt; &lt;rows&gt;</span>
+<span class="ln"> 3</span> 
+<span class="ln"> 4</span> <span class="k">use</span> std::env;
+<span class="ln"> 5</span> <span class="k">use</span> std::process::ExitCode;
+<span class="ln"> 6</span> 
+<span class="ln"> 7</span> <span class="k">use</span> wallcalc::power::Circuit;
+<span class="ln"> 8</span> <span class="k">use</span> wallcalc::tile::{BuildMode, Tile, Wall};
+<span class="ln"> 9</span> 
+<span class="ln">10</span> <span class="k">fn</span> main() -&gt; ExitCode {
+<span class="ln">11</span>     <span class="k">let</span> args: Vec&lt;String&gt; = env::args().collect();
+<span class="ln">12</span>     <span class="k">if</span> args.len() != <span class="n">3</span> {
+<span class="ln">13</span>         <span class="m">eprintln!</span>(<span class="s">&quot;usage: wallcalc &lt;columns&gt; &lt;rows&gt;&quot;</span>);
+<span class="ln">14</span>         <span class="k">return</span> ExitCode::from(<span class="n">2</span>);
+<span class="ln">15</span>     }
+<span class="ln">16</span> 
+<span class="ln">17</span>     <span class="k">let</span> (cols, rows) = <span class="k">match</span> (parse_count(&amp;args[<span class="n">1</span>]), parse_count(&amp;args[<span class="n">2</span>])) {
+<span class="ln">18</span>         (Ok(c), Ok(r)) =&gt; (c, r),
+<span class="ln">19</span>         (Err(e), _) | (_, Err(e)) =&gt; {
+<span class="ln">20</span>             <span class="m">eprintln!</span>(<span class="s">&quot;error: {e}&quot;</span>);
+<span class="ln">21</span>             <span class="k">return</span> ExitCode::from(<span class="n">2</span>);
+<span class="ln">22</span>         }
+<span class="ln">23</span>     };
+<span class="ln">24</span> 
+<span class="ln">25</span>     <span class="k">let</span> wall = Wall {
+<span class="ln">  </span> <span class="c">⋮</span>
+<span class="ln">32</span>     <span class="k">let</span> circuit = Circuit::default(); <span class="c">// 120 V, 20 A, loaded to 80%</span>
+<span class="ln">33</span> 
+<span class="ln">34</span>     <span class="k">match</span> wall.circuits_needed(&amp;circuit) {
+<span class="ln">35</span>         Ok(n) =&gt; {</pre></figure><!--/code-->
+    <ol class="walk">
+      <li><b>Lines 1 and 2</b> start with <code>//!</code>: documentation for the whole file. Comments starting <code>///</code> document the item below them. Plain <code>//</code> is an ordinary comment.</li>
+      <li><b>Lines 4 to 8</b>, <code>use</code>, are imports: they let the file write <code>Circuit</code> instead of <code>wallcalc::power::Circuit</code>. <code>std::</code> is Rust's standard library.</li>
+      <li><b>Line 10:</b> <code>fn main() -&gt; ExitCode</code> is a function called <code>main</code> that takes nothing and gives back an exit code. <code>-&gt;</code> always means "returns".</li>
+      <li><b>Line 11</b> collects the command-line arguments into a list of strings, <code>Vec&lt;String&gt;</code>. Read <code>Vec&lt;String&gt;</code> as "list of String".</li>
+      <li><b>Line 17</b> parses both numbers, and <code>match</code> picks a branch: if both are <code>Ok</code>, keep them; if either is an <code>Err</code>, print it and exit 2.</li>
+      <li><b>Line 34</b> asks the wall how many circuits it needs. The answer is either <code>Ok(n)</code> or an <code>Err(e)</code>, and the program must handle both. More in part 9.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 4 MODULES ======================= -->
+<section class="slide" id="modules" aria-label="Modules">
+  <div class="inner">
+    <div class="cue">4 · Modules</div>
+    <h2>How files <em>find each other</em></h2>
+    <div class="two">
+      <div class="inner" style="gap:14px">
+        <p class="lead">Rust doesn't load every file in <code>src/</code>. A file is part of the program only if something names it with <code>mod</code>. So <code>lib.rs</code> is the library's table of contents.</p>
+        <!--code file="website/read-rust/wallcalc/src/lib.rs" find="//! The engine room" lines="0:7"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/lib.rs · lines 1–8</figcaption><pre><span class="ln">1</span> <span class="c">//! The engine room: everything except reading the command line.</span>
+<span class="ln">2</span> <span class="c">//! Each `pub mod` line below pulls in the file with the same name.</span>
+<span class="ln">3</span> 
+<span class="ln">4</span> <span class="k">pub</span> <span class="k">mod</span> error;
+<span class="ln">5</span> <span class="k">pub</span> <span class="k">mod</span> ffi;
+<span class="ln">6</span> <span class="k">pub</span> <span class="k">mod</span> output;
+<span class="ln">7</span> <span class="k">pub</span> <span class="k">mod</span> power;
+<span class="ln">8</span> <span class="k">pub</span> <span class="k">mod</span> tile;</pre></figure><!--/code-->
+      </div>
+      <div class="inner" style="gap:14px">
+        <ol class="walk">
+          <li><code>pub mod power;</code> means "the module <code>power</code> is in <code>src/power.rs</code>" (or in <code>src/power/mod.rs</code> in older code). <code>pub</code> makes it visible outside the crate.</li>
+          <li>Inside the crate, files refer to each other from the top with <code>crate::</code>, like an absolute path from <code>/</code>:
+            <!--code file="website/read-rust/wallcalc/src/power.rs" find="use crate::error::PowerError;" lines="0:1"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/power.rs · lines 3–4</figcaption><pre><span class="ln">3</span> <span class="k">use</span> <span class="k">crate</span>::error::PowerError;
+<span class="ln">4</span> <span class="k">use</span> <span class="k">crate</span>::tile::{Tile, Wall};</pre></figure><!--/code--></li>
+          <li><code>::</code> is the path separator, like <code>/</code> in a file path. <code>{Tile, Wall}</code> imports two names at once, like <code>{a,b}</code> in a shell.</li>
+          <li>Anything without <code>pub</code> is private to its file. <code>parse_count</code> in <code>main.rs</code> has no <code>pub</code>, so nothing else can call it.</li>
+        </ol>
+        <div class="xlate"><b>Sysadmin translation</b><p><code>mod</code> is an <code>include</code> line in a config. <code>pub</code> is the file permission: without it, other modules get "permission denied" at build time.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 5 SYMBOLS ======================= -->
+<section class="slide" id="symbols" aria-label="The symbol decoder">
+  <div class="inner">
+    <div class="cue">5 · Decoder</div>
+    <h2>The <em>symbol decoder</em></h2>
+    <p class="lead">These lines are from wallcalc, gathered in one place. Click any highlighted piece to see what it means.</p>
+    <div class="two" style="align-items:start">
+<pre class="decode" data-target="#decoded"><button class="t" data-h="#[derive(Debug, Clone)]" data-x="An attribute: an instruction to the compiler about the item below. `derive` writes standard code for you: `Debug` lets the value be printed for debugging, `Clone` lets it be copied with .clone().">#[derive(Debug, Clone)]</button>
+<button class="t" data-x="Public: other modules can use this. Without pub, it's private to this file.">pub</button> <button class="t" data-x="Defines a new type made of named fields, like a row in a table or a record in a config file. Part 6.">struct</button> Wall {
+    <span>pub tile:</span> <button class="t" data-h="Tile" data-x="The field's type. Every field must say what it holds. Tile is another struct, defined in tile.rs.">Tile</button>,
+    <span>pub cols:</span> <button class="t" data-h="u32" data-x="An unsigned 32-bit whole number: 0 to about 4 billion, never negative. i32 is signed, f64 is a decimal number, bool is true or false, String is text.">u32</button>,
+}
+
+<button class="t" data-h="impl Wall" data-x="Implementation block: the functions (methods) that belong to Wall. Part 7.">impl Wall</button> {
+    pub <button class="t" data-x="Defines a function.">fn</button> circuits_needed(<button class="t" data-h="&amp;self" data-x="The wall this method was called on, borrowed read-only. In wall.circuits_needed(...), self is wall. &amp;mut self would mean it may change the wall.">&amp;self</button>, c: <button class="t" data-h="&amp;Circuit" data-x="A borrowed Circuit: the function may read it but doesn't take it over or change it. Like a read-only bind mount. Part 8.">&amp;Circuit</button>)
+        <button class="t" data-h="->" data-x="Returns. What follows is the type of the answer.">-&gt;</button> <button class="t" data-h="Result<u32, PowerError>" data-x="Either Ok(a u32) or Err(a PowerError). The caller must deal with both. The angle brackets fill in the types, like a list of what: Vec&lt;String&gt; is a list of strings. Part 9.">Result&lt;u32, PowerError&gt;</button> {
+        <button class="t" data-x="Makes a new variable. Variables can't be changed afterwards unless declared with let mut.">let</button> per_circuit = tiles_per_circuit(c, <button class="t" data-h="&amp;self.tile" data-x="Lends this wall's tile to the function without giving it away. Afterwards the wall still has its tile.">&amp;self.tile</button>, <button class="t" data-h="None" data-x="The empty value of an Option: no link limit. Rust has no null; a value that might be missing is an Option, either Some(value) or None.">None</button>)<button class="t" data-h="?" data-x="If the call returned an error, stop here and return that error to my caller. If it was Ok, unwrap the value and carry on. Like set -e in a shell script, but only for this one call.">?</button>;
+        <button class="t" data-h="Ok(…)" data-x="Wraps the answer as a success. The last line of a function, with no semicolon, is its return value: no return keyword needed.">Ok(</button>self.tiles()<button class="t" data-h=".div_ceil(…)" data-x="A method call on the number: divide and round up. 50 tiles at 16 per circuit gives 4.">.div_ceil(per_circuit)</button>)
+    }
+}
+
+<button class="t" data-h="let mut" data-x="A variable that may change. Without mut, assigning to it again is a build error. Spotting mut tells you where state changes.">let mut</button> tile = demo_tile();
+let n: <button class="t" data-h=": u32" data-x="A type written out. Usually Rust works out the type itself, but here parse() needs to know what kind of number to make.">u32</button> = text.parse().map_err(<button class="t" data-h="|_|" data-x="A closure: a small unnamed function written inline. |x| x + 1 takes x and returns x + 1. The underscore means the argument is ignored. Like an awk one-liner passed to another command.">|_|</button> <button class="t" data-h="format!" data-x="The ! means a macro, not a function: code that writes code at build time. println!, eprintln!, format!, vec! and assert_eq! are the common ones. {text} inside the string inserts the variable.">format!</button>("…"))?;
+
+<button class="t" data-x="Picks a branch by the shape of the value, like a case statement. The compiler refuses to build if a possible case is missing.">match</button> link_limit {
+    <button class="t" data-h="Some(max) =>" data-x="If the Option holds a value, call it max and use the expression after =>. The arrow reads as 'then'.">Some(max) =&gt;</button> fit.min(max),
+    None =&gt; fit,
+}
+
+<button class="t" data-h="use crate::tile::{Tile, Wall};" data-x="Import two names from the tile module of this crate. crate:: starts from the top of the crate, like / starts from the root of a file system.">use crate::tile::{Tile, Wall};</button>
+fn first_row(&amp;self) -&gt; <button class="t" data-h="&amp;'static str" data-x="A borrowed piece of text that lives for the whole run of the program, because it's written into the program itself (&quot;bottom&quot;, &quot;top&quot;). The 'a style names are lifetimes: labels the compiler uses to check a borrow can't outlive what it borrows. You can read past them.">&amp;'static str</button></pre>
+      <div class="card explain" id="decoded" aria-live="polite"><b>Click a highlighted piece</b><p>Start with <code>?</code>, <code>&amp;Circuit</code> and <code>Result</code>: those three are most of what makes Rust look strange.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 6 TYPES ======================= -->
+<section class="slide" id="types" aria-label="Structs, enums and match">
+  <div class="inner">
+    <div class="cue">6 · Types</div>
+    <h2>Structs, enums and <em>match</em></h2>
+    <div class="two">
+      <p class="lead">Rust code is organised around its types, so read the types before the functions. A <code>struct</code> is a record with named fields. An <code>enum</code> is a value that's exactly one of a fixed list of options. <code>match</code> handles each option.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>A struct is a row in a CSV with fixed columns. An enum is a setting that only accepts certain words, like <code>PermitRootLogin yes|no|prohibit-password</code>, except the compiler enforces it everywhere.</p></div>
+    </div>
+    <div class="grid2">
+      <!--code file="website/read-rust/wallcalc/src/tile.rs" find="/// One LED product" lines="0:8"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/tile.rs · lines 3–11</figcaption><pre><span class="ln"> 3</span> <span class="c">/// One LED product, such as a 500 mm cabinet.</span>
+<span class="ln"> 4</span> #[derive(Debug, Clone, PartialEq)]
+<span class="ln"> 5</span> <span class="k">pub</span> <span class="k">struct</span> Tile {
+<span class="ln"> 6</span>     <span class="k">pub</span> name: String,
+<span class="ln"> 7</span>     <span class="k">pub</span> px_w: u32,      <span class="c">// pixels across</span>
+<span class="ln"> 8</span>     <span class="k">pub</span> px_h: u32,      <span class="c">// pixels down</span>
+<span class="ln"> 9</span>     <span class="k">pub</span> max_watts: f64, <span class="c">// power draw at full white</span>
+<span class="ln">10</span>     <span class="k">pub</span> kg: f64,
+<span class="ln">11</span> }</pre></figure><!--/code-->
+      <!--code file="website/read-rust/wallcalc/src/tile.rs" find="/// How the crew builds the wall." lines="0:5"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/tile.rs · lines 30–35</figcaption><pre><span class="ln">30</span> <span class="c">/// How the crew builds the wall.</span>
+<span class="ln">31</span> #[derive(Debug, Clone, Copy, PartialEq, Eq)]
+<span class="ln">32</span> <span class="k">pub</span> <span class="k">enum</span> BuildMode {
+<span class="ln">33</span>     GroundStack, <span class="c">// stacked up from the floor</span>
+<span class="ln">34</span>     Flown,       <span class="c">// hung from motors, built from the top</span>
+<span class="ln">35</span> }</pre></figure><!--/code-->
+    </div>
+    <!--code file="website/read-rust/wallcalc/src/tile.rs" find="/// Which row the crew starts on." lines="0:6"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/tile.rs · lines 56–62</figcaption><pre><span class="ln">56</span>     <span class="c">/// Which row the crew starts on.</span>
+<span class="ln">57</span>     <span class="k">pub</span> <span class="k">fn</span> first_row(&amp;<span class="k">self</span>) -&gt; &amp;<span class="k">&#x27;static</span> str {
+<span class="ln">58</span>         <span class="k">match</span> <span class="k">self</span>.mode {
+<span class="ln">59</span>             BuildMode::GroundStack =&gt; <span class="s">&quot;bottom&quot;</span>,
+<span class="ln">60</span>             BuildMode::Flown =&gt; <span class="s">&quot;top&quot;</span>,
+<span class="ln">61</span>         }
+<span class="ln">62</span>     }</pre></figure><!--/code-->
+    <ol class="walk">
+      <li><b>Line 4:</b> <code>#[derive(…)]</code> asks the compiler to generate standard abilities: print for debugging, copy, compare with <code>==</code>.</li>
+      <li><b>Lines 32 to 35:</b> a <code>BuildMode</code> is either <code>GroundStack</code> or <code>Flown</code>, nothing else. No typos, no "unknown mode" at show time.</li>
+      <li><b>Lines 58 to 61:</b> <code>match</code> must cover every option. Add a third build mode to the enum and this function stops building until someone decides which row it starts on. That's the compiler doing a code review for you.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 7 IMPL ======================= -->
+<section class="slide" id="impl" aria-label="impl and traits">
+  <div class="inner">
+    <div class="cue">7 · impl</div>
+    <h2>impl and <em>traits</em></h2>
+    <div class="two">
+      <p class="lead">Functions that belong to a type live in an <code>impl</code> block. A <b>trait</b> is a named set of abilities, and <code>impl Trait for Type</code> gives a type that ability. You'll see <code>impl Default for …</code>, <code>impl Display for …</code> and <code>impl From&lt;…&gt; for …</code> in almost every crate.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>A trait is an interface contract, like "anything that speaks SNMP". <code>impl Display for PowerError</code> says "PowerError can be printed as text", so <code>println!("{e}")</code> works on it.</p></div>
+    </div>
+    <div class="grid2">
+      <!--code file="website/read-rust/wallcalc/src/power.rs" find="impl Default for Circuit {" lines="0:9"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/power.rs · lines 15–24</figcaption><pre><span class="ln">15</span> <span class="k">impl</span> Default <span class="k">for</span> Circuit {
+<span class="ln">16</span>     <span class="k">fn</span> default() -&gt; <span class="k">Self</span> {
+<span class="ln">17</span>         Circuit {
+<span class="ln">18</span>             volts: <span class="n">120.0</span>,
+<span class="ln">19</span>             amps: <span class="n">20.0</span>,
+<span class="ln">20</span>             derate: <span class="k">true</span>,
+<span class="ln">21</span>             power_factor: <span class="n">1.0</span>,
+<span class="ln">22</span>         }
+<span class="ln">23</span>     }
+<span class="ln">24</span> }</pre></figure><!--/code-->
+      <!--code file="website/read-rust/wallcalc/src/power.rs" find="impl Circuit {" lines="0:6"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/power.rs · lines 26–32</figcaption><pre><span class="ln">26</span> <span class="k">impl</span> Circuit {
+<span class="ln">27</span>     <span class="c">/// usable watts = V × A × (0.8 if derated) × power factor</span>
+<span class="ln">28</span>     <span class="k">pub</span> <span class="k">fn</span> usable_watts(&amp;<span class="k">self</span>) -&gt; f64 {
+<span class="ln">29</span>         <span class="k">let</span> derate = <span class="k">if</span> <span class="k">self</span>.derate { <span class="n">0.8</span> } <span class="k">else</span> { <span class="n">1.0</span> };
+<span class="ln">30</span>         <span class="k">self</span>.volts * <span class="k">self</span>.amps * derate * <span class="k">self</span>.power_factor
+<span class="ln">31</span>     }
+<span class="ln">32</span> }</pre></figure><!--/code-->
+    </div>
+    <!--code file="website/read-rust/wallcalc/src/error.rs" find="impl fmt::Display for PowerError" lines="-1:12"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/error.rs · lines 13–26</figcaption><pre><span class="ln">13</span> <span class="c">// Display is what you see when the error is printed with {}.</span>
+<span class="ln">14</span> <span class="k">impl</span> fmt::Display <span class="k">for</span> PowerError {
+<span class="ln">15</span>     <span class="k">fn</span> fmt(&amp;<span class="k">self</span>, f: &amp;<span class="k">mut</span> fmt::Formatter&lt;<span class="k">&#x27;_</span>&gt;) -&gt; fmt::Result {
+<span class="ln">16</span>         <span class="k">match</span> <span class="k">self</span> {
+<span class="ln">17</span>             PowerError::NoWattage(name) =&gt; <span class="m">write!</span>(f, <span class="s">&quot;tile &#x27;{name}&#x27; has no wattage in its spec&quot;</span>),
+<span class="ln">18</span>             PowerError::TileTooHungry { tile_watts, usable } =&gt; <span class="m">write!</span>(
+<span class="ln">19</span>                 f,
+<span class="ln">20</span>                 <span class="s">&quot;one tile needs {tile_watts} W but a circuit only gives {usable} W&quot;</span>
+<span class="ln">21</span>             ),
+<span class="ln">22</span>         }
+<span class="ln">23</span>     }
+<span class="ln">24</span> }
+<span class="ln">25</span> 
+<span class="ln">26</span> <span class="k">impl</span> std::error::Error <span class="k">for</span> PowerError {}</pre></figure><!--/code-->
+    <ol class="walk">
+      <li><b>Circuit::default()</b> in <code>main.rs</code> calls the first block: 120 V, 20 A, loaded to 80%, power factor 1. The same defaults as TileSmith.</li>
+      <li><b>usable_watts</b> is the formula from TileSmith's spec. <code>if … { 0.8 } else { 1.0 }</code> is an expression that gives a value, like <code>$(…)</code> in a shell.</li>
+      <li><b>Methods can be spread across files.</b> <code>Wall</code> is defined in <code>tile.rs</code>, but its <code>circuits_needed</code> method is in an <code>impl Wall</code> block in <code>power.rs</code>. Search for <code>fn circuits_needed</code>, not for the struct, or use your editor's "go to definition" (part 13).</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 8 OWNERSHIP ======================= -->
+<section class="slide" id="ownership" aria-label="Ownership and borrowing">
+  <div class="inner">
+    <div class="cue">8 · Ownership</div>
+    <h2>Ownership and <em>borrowing</em></h2>
+    <div class="two">
+      <p class="lead">This is the one genuinely new idea. Every value has exactly one owner. When the owner goes away, the value is freed. You can <b>move</b> a value to a new owner, or <b>lend</b> it: many read-only loans (<code>&amp;</code>) or one exclusive, writable loan (<code>&amp;mut</code>), never both at once.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>A move is handing over a physical drive: you don't have it any more. <code>&amp;</code> is a read-only NFS export: many clients, nobody writes. <code>&amp;mut</code> is an exclusive <code>flock</code>: one writer and no readers. Rust checks those rules when it builds, so two parts of the program can't both change the same thing at once.</p></div>
+    </div>
+    <div class="stepper">
+      <div class="stops">
+        <button><b>1</b>Create</button>
+        <button><b>2</b>Move</button>
+        <button><b>3</b>Lend read-only</button>
+        <button><b>4</b>Lend to write</button>
+        <button><b>5</b>Clone</button>
+      </div>
+      <div class="stop">
+<pre><span class="k">let</span> a = String::from(<span class="s">"Main wall"</span>);</pre>
+        <div class="own"><div class="var has"><span class="name">a</span><span class="chip">"Main wall"</span></div><div class="var"><span class="name">b</span></div><div class="var"><span class="name">c</span></div></div>
+        <p><code>a</code> owns the text. When <code>a</code> goes out of scope (at the closing <code>}</code>), the text is freed. No garbage collector needed.</p>
+      </div>
+      <div class="stop">
+<pre><span class="k">let</span> b = a;            <span class="c">// the text moves to b</span>
+println!(<span class="s">"{a}"</span>);     <span class="c">// build error: a has given it away</span></pre>
+        <div class="own"><div class="var gone"><span class="name">a (moved)</span></div><div class="var has"><span class="name">b</span><span class="chip">"Main wall"</span></div><div class="var"><span class="name">c</span></div></div>
+        <p>Assigning moves the value: there's still only one copy, and now <code>b</code> owns it. Using <code>a</code> again is a build error, "borrow of moved value".</p>
+      </div>
+      <div class="stop">
+<pre><span class="k">let</span> c = &amp;b;           <span class="c">// lend it, read-only</span>
+println!(<span class="s">"{b} {c}"</span>);  <span class="c">// fine: both can read</span></pre>
+        <div class="own"><div class="var gone"><span class="name">a (moved)</span></div><div class="var has"><span class="name">b</span><span class="chip">"Main wall"</span></div><div class="var lend"><span class="name">c</span><span class="chip ref">&amp;b (read-only)</span></div></div>
+        <p><code>&amp;b</code> lends without moving. That's why wallcalc's functions take <code>c: &amp;Circuit</code> and <code>tile: &amp;Tile</code>: they read the circuit and the tile, then give them back untouched.</p>
+      </div>
+      <div class="stop">
+<pre><span class="k">let mut</span> b = String::from(<span class="s">"Main wall"</span>);
+<span class="k">let</span> w = &amp;<span class="k">mut</span> b;       <span class="c">// exclusive loan</span>
+w.push_str(<span class="s">" (flown)"</span>);
+<span class="c">// while w is in use, nobody else can read or write b</span></pre>
+        <div class="own"><div class="var gone"><span class="name">a (moved)</span></div><div class="var lend"><span class="name">b (lent out)</span><span class="chip">"Main wall (flown)"</span></div><div class="var lend"><span class="name">w</span><span class="chip ref">&amp;mut b (writer)</span></div></div>
+        <p><code>&amp;mut</code> is the exclusive lock. When you see <code>&amp;mut</code> in a function's arguments, that function changes what it's given. Everything else is read-only. That alone tells you a lot about what a function does.</p>
+      </div>
+      <div class="stop">
+<pre><span class="k">let</span> d = b.clone();    <span class="c">// a real second copy</span></pre>
+        <div class="own"><div class="var has"><span class="name">b</span><span class="chip">"Main wall (flown)"</span></div><div class="var has"><span class="name">d</span><span class="chip">"Main wall (flown)"</span></div><div class="var"><span class="name">c</span></div></div>
+        <p><code>.clone()</code> makes an independent copy, which costs memory and time, so Rust makes you ask for it. wallcalc's <code>tile.name.clone()</code> copies a tile's name into an error message. When you see many <code>.clone()</code> calls, someone was working around the borrow rules.</p>
+      </div>
+      <button class="btn ghost" data-next type="button" style="justify-self:start">Next step →</button>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 9 ERRORS ======================= -->
+<section class="slide" id="errors" aria-label="Errors">
+  <div class="inner">
+    <div class="cue">9 · Errors</div>
+    <h2>Result, Option and <em>?</em></h2>
+    <div class="two">
+      <p class="lead">Rust has no exceptions and no null. A function that can fail returns a <code>Result</code>: <code>Ok(value)</code> or <code>Err(problem)</code>. A value that might be missing is an <code>Option</code>: <code>Some(value)</code> or <code>None</code>. The caller has to unpack them, so you can always see where failures are handled.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p><code>Result</code> is an exit code you're not allowed to ignore. <code>?</code> is <code>|| return $?</code>: pass the failure up to the caller. <code>.unwrap()</code> and <code>.expect("…")</code> mean "this can't fail, and if it does, crash": like a script with no error handling.</p></div>
+    </div>
+    <div class="grid2">
+      <!--code file="website/read-rust/wallcalc/src/main.rs" find="/// Turns" lines="0:9"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/main.rs · lines 52–61</figcaption><pre><span class="ln">52</span> <span class="c">/// Turns &quot;12&quot; into 12, or explains what was wrong.</span>
+<span class="ln">53</span> <span class="k">fn</span> parse_count(text: &amp;str) -&gt; Result&lt;u32, String&gt; {
+<span class="ln">54</span>     <span class="k">let</span> n: u32 = text
+<span class="ln">55</span>         .parse()
+<span class="ln">56</span>         .map_err(|_| <span class="m">format!</span>(<span class="s">&quot;&#x27;{text}&#x27; is not a whole number&quot;</span>))?;
+<span class="ln">57</span>     <span class="k">if</span> n == <span class="n">0</span> {
+<span class="ln">58</span>         <span class="k">return</span> Err(String::from(<span class="s">&quot;a wall needs at least one column and one row&quot;</span>));
+<span class="ln">59</span>     }
+<span class="ln">60</span>     Ok(n)
+<span class="ln">61</span> }</pre></figure><!--/code-->
+      <!--code file="website/read-rust/wallcalc/src/error.rs" find="#[derive(Debug, Clone, PartialEq)]" lines="0:7"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/error.rs · lines 5–12</figcaption><pre><span class="ln"> 5</span> #[derive(Debug, Clone, PartialEq)]
+<span class="ln"> 6</span> <span class="k">pub</span> <span class="k">enum</span> PowerError {
+<span class="ln"> 7</span>     <span class="c">/// The tile&#x27;s spec has no wattage, so nothing can be planned.</span>
+<span class="ln"> 8</span>     NoWattage(String),
+<span class="ln"> 9</span>     <span class="c">/// One tile draws more than a whole circuit can supply.</span>
+<span class="ln">10</span>     TileTooHungry { tile_watts: f64, usable: f64 },
+<span class="ln">11</span> }
+<span class="ln">12</span> </pre></figure><!--/code-->
+    </div>
+    <ol class="walk">
+      <li><b>parse_count</b> returns <code>Result&lt;u32, String&gt;</code>: a number, or a message saying what was wrong.</li>
+      <li><b>Line 56:</b> <code>.map_err(…)</code> swaps Rust's own parse error for a friendlier message, and <code>?</code> returns early with it if the text wasn't a number.</li>
+      <li><b>error.rs</b> lists every way power planning can fail, as an enum. Reading the error enum is a fast way to learn what can go wrong in a module.</li>
+    </ol>
+    <div class="cmd"><pre><span class="c"># where can this program crash on purpose? (from the crate folder)</span>
+grep -rn -E '\.unwrap\(\)|\.expect\(|panic!' src</pre></div>
+  </div>
+</section>
+
+<!-- ======================= 10 THREADS ======================= -->
+<section class="slide" id="threads" aria-label="Threads">
+  <div class="inner">
+    <div class="cue">10 · Threads</div>
+    <h2>Threads, pipes and <em>locks</em></h2>
+    <div class="two">
+      <p class="lead">A video output like NDI® should run on its own thread so a slow network never stalls the drawing. wallcalc's <code>output.rs</code> shows the pattern: a worker thread reads frames from a channel, and both threads share a counter behind a lock.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p>A channel is a pipe: <code>tx</code> is the write end, <code>rx</code> the read end, and the reader's loop ends when every writer closes. <code>Mutex</code> is a lock file around shared data. <code>Arc</code> is a reference count, like hard links: the data is freed when the last link goes.</p></div>
+    </div>
+    <!--code file="website/read-rust/wallcalc/src/output.rs" find="pub fn run_sender" lines="0:25"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/output.rs · lines 14–39</figcaption><pre><span class="ln">14</span> <span class="k">pub</span> <span class="k">fn</span> run_sender(count: u64) -&gt; u64 {
+<span class="ln">15</span>     <span class="k">let</span> handled = Arc::new(Mutex::new(<span class="n">0u64</span>)); <span class="c">// a counter both threads can reach</span>
+<span class="ln">16</span>     <span class="k">let</span> (tx, rx) = mpsc::channel::&lt;Frame&gt;(); <span class="c">// a pipe: tx is the write end, rx the read end</span>
+<span class="ln">17</span> 
+<span class="ln">18</span>     <span class="k">let</span> counter = Arc::clone(&amp;handled);
+<span class="ln">19</span>     <span class="k">let</span> worker = thread::spawn(<span class="k">move</span> || {
+<span class="ln">20</span>         <span class="k">for</span> frame <span class="k">in</span> rx {
+<span class="ln">21</span>             <span class="c">// a real sender would pass frame.pixels to the video library here</span>
+<span class="ln">22</span>             <span class="k">let</span> _bytes = frame.pixels.len();
+<span class="ln">23</span>             *counter.lock().unwrap() += <span class="n">1</span>;
+<span class="ln">24</span>         }
+<span class="ln">25</span>         <span class="c">// the loop ends when every tx has been dropped (the pipe is closed)</span>
+<span class="ln">26</span>     });
+<span class="ln">27</span> 
+<span class="ln">28</span>     <span class="k">for</span> number <span class="k">in</span> <span class="n">0..count</span> {
+<span class="ln">29</span>         <span class="k">let</span> frame = Frame {
+<span class="ln">30</span>             number,
+<span class="ln">31</span>             pixels: <span class="m">vec!</span>[<span class="n">0</span>; <span class="n">4</span> * <span class="n">192</span> * <span class="n">192</span>],
+<span class="ln">32</span>         };
+<span class="ln">33</span>         tx.send(frame).expect(<span class="s">&quot;the sender thread has stopped&quot;</span>);
+<span class="ln">34</span>     }
+<span class="ln">35</span>     drop(tx); <span class="c">// close the pipe so the worker&#x27;s loop ends</span>
+<span class="ln">36</span>     worker.join().expect(<span class="s">&quot;the sender thread crashed&quot;</span>);
+<span class="ln">37</span> 
+<span class="ln">38</span>     *handled.lock().unwrap()
+<span class="ln">39</span> }</pre></figure><!--/code-->
+    <ol class="walk">
+      <li><b>Line 15:</b> <code>Arc::new(Mutex::new(0u64))</code> is a counter wrapped in a lock, wrapped in a shareable handle.</li>
+      <li><b>Line 19:</b> <code>thread::spawn(move || { … })</code> starts a thread running the closure. <code>move</code> hands it ownership of what it uses (the read end and its own handle to the counter).</li>
+      <li><b>Line 23:</b> <code>.lock().unwrap()</code> takes the lock, and the lock is released by itself at the end of the statement. You can't touch the counter without the lock: the compiler won't allow it.</li>
+      <li><b>Lines 35 and 36:</b> <code>drop(tx)</code> closes the pipe, and <code>join()</code> waits for the worker to finish, like <code>wait</code> in a shell.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 11 UNSAFE ======================= -->
+<section class="slide" id="unsafe" aria-label="unsafe">
+  <div class="inner">
+    <div class="cue">11 · unsafe</div>
+    <h2>unsafe: <em>Rust's sudo</em></h2>
+    <div class="two">
+      <p class="lead">Some things the compiler can't check: calling a C library, or working with raw memory addresses. That code goes inside <code>unsafe</code>, which means "trust me, I checked this by hand". TileSmith calls the NDI® library from JavaScript today, and a Rust version would do it like this.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p><code>unsafe</code> is <code>sudo</code>. It doesn't make code dangerous, it marks where the safety checks are switched off. When reviewing a Rust project, <code>grep -rn unsafe</code> shows you every line that deserves a closer look.</p></div>
+    </div>
+    <!--code file="website/read-rust/wallcalc/src/ffi.rs" find="//! How Rust declares" lines="0:17"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/ffi.rs · lines 1–18</figcaption><pre><span class="ln"> 1</span> <span class="c">//! How Rust declares functions from a C library, here two from the NDI® SDK.</span>
+<span class="ln"> 2</span> <span class="c">//! Declarations only: this example never links to NDI or calls them.</span>
+<span class="ln"> 3</span> 
+<span class="ln"> 4</span> <span class="k">use</span> std::ffi::{c_char, c_void};
+<span class="ln"> 5</span> 
+<span class="ln"> 6</span> <span class="c">/// Must match the C struct byte for byte, so `repr(C)` turns off Rust&#x27;s own field ordering.</span>
+<span class="ln"> 7</span> #[repr(C)]
+<span class="ln"> 8</span> <span class="k">pub</span> <span class="k">struct</span> NdiSendCreate {
+<span class="ln"> 9</span>     <span class="k">pub</span> p_ndi_name: *<span class="k">const</span> c_char,
+<span class="ln">10</span>     <span class="k">pub</span> p_groups: *<span class="k">const</span> c_char,
+<span class="ln">11</span>     <span class="k">pub</span> clock_video: bool,
+<span class="ln">12</span>     <span class="k">pub</span> clock_audio: bool,
+<span class="ln">13</span> }
+<span class="ln">14</span> 
+<span class="ln">15</span> <span class="k">unsafe</span> <span class="k">extern</span> <span class="s">&quot;C&quot;</span> {
+<span class="ln">16</span>     <span class="k">pub</span> <span class="k">fn</span> NDIlib_initialize() -&gt; bool;
+<span class="ln">17</span>     <span class="k">pub</span> <span class="k">fn</span> NDIlib_send_create(settings: *<span class="k">const</span> NdiSendCreate) -&gt; *<span class="k">mut</span> c_void;
+<span class="ln">18</span> }</pre></figure><!--/code-->
+    <ol class="walk">
+      <li><b>Line 7:</b> <code>#[repr(C)]</code> lays the struct out exactly as C would, so the NDI® library reads the right bytes.</li>
+      <li><b>Lines 9 and 10:</b> <code>*const c_char</code> is a raw pointer to C text. Raw pointers are the one thing safe Rust never dereferences.</li>
+      <li><b>Lines 15 to 18:</b> <code>unsafe extern "C"</code> declares functions that live in a C library. Every call to them must itself sit inside an <code>unsafe { … }</code> block. wallcalc only declares them and never calls them, so it doesn't need NDI® installed.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ======================= 12 TESTS ======================= -->
+<section class="slide" id="tests" aria-label="Tests">
+  <div class="inner">
+    <div class="cue">12 · Tests</div>
+    <h2>Tests live <em>next to the code</em></h2>
+    <div class="two">
+      <p class="lead">Rust tests usually sit at the bottom of the file they test, in a block marked <code>#[cfg(test)]</code>, which is only built when testing. Each test is a function marked <code>#[test]</code>. They're the quickest way to see how a function is meant to be called and what it should return.</p>
+      <div class="xlate"><b>Sysadmin translation</b><p><code>assert_eq!(a, b)</code> is <code>[ "$a" = "$b" ] || exit 1</code>. <code>cargo test</code> runs every test in parallel and prints one line per test.</p></div>
+    </div>
+    <!--code file="website/read-rust/wallcalc/src/power.rs" find="#[cfg(test)]" lines="0:18"--><figure class="src"><figcaption>website/read-rust/wallcalc/src/power.rs · lines 64–82</figcaption><pre><span class="ln">64</span> #[cfg(test)]
+<span class="ln">65</span> <span class="k">mod</span> tests {
+<span class="ln">66</span>     <span class="k">use</span> <span class="k">super</span>::*;
+<span class="ln">67</span>     <span class="k">use</span> <span class="k">crate</span>::tile::BuildMode;
+<span class="ln">68</span> 
+<span class="ln">69</span>     <span class="k">fn</span> demo_tile() -&gt; Tile {
+<span class="ln">70</span>         Tile::new(<span class="s">&quot;Demo 500&quot;</span>, <span class="n">192</span>, <span class="n">192</span>, <span class="n">120.0</span>, <span class="n">6.3</span>)
+<span class="ln">71</span>     }
+<span class="ln">72</span> 
+<span class="ln">73</span>     #[test]
+<span class="ln">74</span>     <span class="k">fn</span> matches_the_spec_example() {
+<span class="ln">75</span>         <span class="c">// 120 V × 20 A × 0.8 = 1,920 W, and 1,920 ÷ 120 W = 16 tiles</span>
+<span class="ln">76</span>         <span class="k">let</span> c = Circuit::default();
+<span class="ln">77</span>         <span class="m">assert_eq!</span>(c.usable_watts(), <span class="n">1920.0</span>);
+<span class="ln">78</span>         <span class="m">assert_eq!</span>(tiles_per_circuit(&amp;c, &amp;demo_tile(), None), Ok(<span class="n">16</span>));
+<span class="ln">79</span>     }
+<span class="ln">80</span> 
+<span class="ln">81</span>     #[test]
+<span class="ln">82</span>     <span class="k">fn</span> link_limit_caps_the_count() {</pre></figure><!--/code-->
+    <pre>$ cargo test
+running 5 tests
+test power::tests::a_tile_bigger_than_a_circuit_is_an_error ... ok
+test power::tests::a_wall_rounds_circuits_up ... ok
+test power::tests::link_limit_caps_the_count ... ok
+test power::tests::matches_the_spec_example ... ok
+test output::tests::every_frame_is_handled ... ok
+
+test result: ok. 5 passed; 0 failed</pre>
+    <p class="note"><code>use super::*;</code> pulls in everything from the file above the test block. The first test checks the same worked example as TileSmith's spec: 120 V × 20 A × 0.8 = 1,920 W, which fits 16 tiles of 120 W.</p>
+  </div>
+</section>
+
+<!-- ======================= 13 TOOLS ======================= -->
+<section class="slide" id="tools" aria-label="Tools">
+  <div class="inner">
+    <div class="cue">13 · Tools</div>
+    <h2>cargo and <em>your editor</em></h2>
+    <div class="grid2">
+      <div class="card">
+        <h3>cargo: one tool for everything</h3>
+        <table class="t"><tbody>
+          <tr><td><code>cargo build</code></td><td>Compile. Output goes to <code>target/</code></td></tr>
+          <tr><td><code>cargo run -- 10 5</code></td><td>Build and run; arguments go after <code>--</code></td></tr>
+          <tr><td><code>cargo check</code></td><td>Check for errors without building: fast</td></tr>
+          <tr><td><code>cargo test</code></td><td>Run every test</td></tr>
+          <tr><td><code>cargo clippy</code></td><td>A linter with advice in plain English</td></tr>
+          <tr><td><code>cargo fmt</code></td><td>Format the code the standard way</td></tr>
+          <tr><td><code>cargo doc --open</code></td><td>Build a website of the crate's documentation from its <code>///</code> comments and open it</td></tr>
+          <tr><td><code>cargo tree</code></td><td>Show the dependency tree, like <code>apt-cache depends</code></td></tr>
+        </tbody></table>
+      </div>
+      <div class="card">
+        <h3>In VS Code</h3>
+        <p>Install the <b>rust-analyzer</b> extension. It shows the type of every variable as grey hints, so <code>let fit = …</code> shows <code>: u32</code> next to it. Then:</p>
+        <div class="tablewrap"><table class="t"><tbody>
+          <tr><td><kbd>F12</kbd></td><td>Go to definition: jumps across files, into the standard library and into dependencies</td></tr>
+          <tr><td><kbd>Shift</kbd>+<kbd>F12</kbd></td><td>Every place this is used</td></tr>
+          <tr><td>Hover</td><td>The documentation and type of anything</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>T</kbd></td><td>Find any type or function by name, across the crate</td></tr>
+        </tbody></table></div>
+        <p class="note">Every published crate has its documentation on <b>docs.rs</b>, in the same format <code>cargo doc</code> makes. Search crates on <b>crates.io</b>.</p>
+      </div>
+    </div>
+    <div class="cmd"><pre><span class="c"># grep recipes for any Rust repository (run from its top folder)</span>
+grep -rn 'fn main' --include=*.rs .        <span class="c"># where programs start</span>
+grep -rn '^pub fn\|^    pub fn' --include=*.rs .   <span class="c"># the public functions</span>
+grep -rn 'impl .* for ' --include=*.rs .   <span class="c"># which types get which traits</span>
+grep -rn 'unsafe' --include=*.rs .         <span class="c"># the hand-checked parts</span>
+grep -rn '#\[test\]' --include=*.rs . | wc -l   <span class="c"># how many tests</span></pre></div>
+  </div>
+</section>
+
+<!-- ======================= 14 QUIZ ======================= -->
+<section class="slide" id="quiz" aria-label="Quiz">
+  <div class="inner">
+    <div class="cue">14 · Quiz</div>
+    <h2>Will it <em>compile?</em></h2>
+    <p class="lead">Guess before you click. Every answer was checked with the real compiler.</p>
+    <div class="quiz">
+      <div class="q">
+<pre><span class="k">let</span> total = <span class="n">0</span>;
+total += <span class="n">1</span>;</pre>
+        <div class="opts"><button data-a="wrong">Compiles</button><button data-a="right">Build error</button></div>
+        <div class="ans"><span class="verdict"></span><p>Build error: "cannot assign twice to immutable variable". Variables can't change unless they're declared <code>let mut total</code>. So when you read Rust, <code>mut</code> marks every place state can change.</p></div>
+      </div>
+      <div class="q">
+<pre><span class="k">let</span> a = String::from(<span class="s">"Main wall"</span>);
+<span class="k">let</span> b = a;
+println!(<span class="s">"{a}"</span>);</pre>
+        <div class="opts"><button data-a="wrong">Compiles</button><button data-a="right">Build error</button></div>
+        <div class="ans"><span class="verdict"></span><p>Build error: "borrow of moved value: a". The text moved to <code>b</code> (part 8). <code>let b = &amp;a;</code> or <code>let b = a.clone();</code> would both work.</p></div>
+      </div>
+      <div class="q">
+<pre><span class="k">let</span> t = Tile::new(<span class="s">"Demo 500"</span>, <span class="n">192</span>, <span class="n">192</span>, <span class="n">120.0</span>, <span class="n">6.3</span>);
+<span class="k">let</span> a = t.pixels();
+<span class="k">let</span> b = t.pixels();</pre>
+        <div class="opts"><button data-a="right">Compiles</button><button data-a="wrong">Build error</button></div>
+        <div class="ans"><span class="verdict"></span><p>Compiles. <code>pixels(&amp;self)</code> only borrows the tile to read it, so you can call it as often as you like. Only a method taking <code>self</code> without the <code>&amp;</code> would use the tile up.</p></div>
+      </div>
+      <div class="q">
+<pre><span class="k">fn</span> first_row(mode: BuildMode) -&gt; &amp;<span class="k">'static</span> str {
+    <span class="k">match</span> mode {
+        BuildMode::GroundStack =&gt; <span class="s">"bottom"</span>,
+    }
+}</pre>
+        <div class="opts"><button data-a="wrong">Compiles</button><button data-a="right">Build error</button></div>
+        <div class="ans"><span class="verdict"></span><p>Build error: "non-exhaustive patterns: BuildMode::Flown not covered". <code>match</code> must handle every option of the enum (part 6). A shell <code>case</code> would just fall through and do nothing.</p></div>
+      </div>
+      <div class="q">
+<pre><span class="k">fn</span> main() {
+    <span class="k">let</span> n: u32 = <span class="s">"12"</span>.parse()?;
+}</pre>
+        <div class="opts"><button data-a="wrong">Compiles</button><button data-a="right">Build error</button></div>
+        <div class="ans"><span class="verdict"></span><p>Build error: "the ? operator can only be used in a function that returns Result or Option". <code>?</code> passes an error up to the caller, so the function needs a way to return one. wallcalc's <code>main</code> returns an <code>ExitCode</code> and handles errors with <code>match</code> instead.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ======================= 15 TILESMITH ======================= -->
+<section class="slide" id="tilesmith" aria-label="If TileSmith moves to Rust">
+  <div class="inner">
+    <div class="cue">15 · Looking ahead</div>
+    <h2>If TileSmith <em>moves to Rust</em></h2>
+    <div class="two">
+      <p class="lead">A Rust rewrite has been considered, and none of it exists yet. If it happens, it will be laid out differently from today's single file, but the ideas will carry over. Here's where to look for the things you know from the <a href="../how-it-works/">tour</a> and the <a href="../read-the-code/">JavaScript guide</a>. This is a likely shape, not a plan.</p>
+      <div class="xlate"><b>How to read it on day one</b><p>Open the top <code>Cargo.toml</code> and read the workspace members and dependencies. Then <code>src/main.rs</code>, then <code>lib.rs</code> for the module list. Then the types in the settings module. You'll know the shape of the whole app in half an hour.</p></div>
+    </div>
+    <div class="tablewrap"><table class="t">
+      <thead><tr><th>In TileSmith today</th><th>Likely in Rust</th><th>Look for</th></tr></thead>
+      <tbody>
+        <tr><td>The settings object <code>S</code></td><td>A <code>Settings</code> struct, saved and loaded as JSON with the serde crate</td><td><code>#[derive(Serialize, Deserialize)]</code></td></tr>
+        <tr><td><code>walls[]</code>, <code>CVS[]</code></td><td><code>Vec&lt;Wall&gt;</code>, <code>Vec&lt;Canvas&gt;</code></td><td><code>struct Wall</code></td></tr>
+        <tr><td>Setting names as text (<code>'Ground stack'</code>)</td><td>Enums the compiler checks</td><td><code>enum BuildMode</code></td></tr>
+        <tr><td><code>pwC()</code>, <code>portPlan()</code>, <code>powerPlan()</code></td><td>Plain functions in a <code>power</code> and a <code>data</code> module, with <code>#[test]</code>s under them</td><td><code>mod power</code></td></tr>
+        <tr><td>Errors shown as notes</td><td>Error enums returned in <code>Result</code></td><td><code>enum …Error</code></td></tr>
+        <tr><td><code>render()</code> on a 2D canvas</td><td>A drawing or GPU crate</td><td>The dependencies in <code>Cargo.toml</code></td></tr>
+        <tr><td>NDI® and Spout through koffi</td><td><code>unsafe extern "C"</code> blocks, as in part 11</td><td><code>grep -rn unsafe</code></td></tr>
+        <tr><td>The output timer and recording</td><td>Threads and channels, as in part 10</td><td><code>thread::spawn</code>, <code>mpsc</code></td></tr>
+        <tr><td>Python tests driving a browser</td><td><code>cargo test</code></td><td><code>#[cfg(test)]</code></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<!-- ======================= TRY ======================= -->
+<section class="slide" id="try" aria-label="Try it yourself">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Curtain call</div>
+      <h2>Break it <em>yourself</em></h2>
+      <p class="lead">The best Rust teacher is the compiler. Its error messages say what's wrong, point at the line, and usually suggest the fix.</p>
+      <div class="cmd"><pre><span class="c"># install Rust (Windows: download rustup-init.exe from rustup.rs)</span>
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+<span class="c"># get wallcalc and run it</span>
+git clone https://github.com/kingof9x/TileSmith
+cd TileSmith/website/read-rust/wallcalc
+cargo run -- 10 5
+cargo test</pre></div>
+    </div>
+    <div class="inner">
+      <div class="xlate"><b>Three things to break</b><p>1. In <code>tile.rs</code>, add a third build mode, <code>Truss</code>, and read what the compiler says about <code>first_row</code>.<br>2. In <code>power.rs</code>, change <code>0.8</code> to <code>0.9</code> and run <code>cargo test</code>: watch the spec test fail.<br>3. In <code>main.rs</code>, remove a <code>&amp;</code> from <code>&amp;circuit</code> and read the error. Then put everything back with <code>git checkout .</code></p></div>
+      <div class="xlate"><b>Also on this site</b><p><a href="../read-the-code/">Reading the TileSmith code</a>: how to find your way around the JavaScript app as it is today. <a href="../how-it-works/">How TileSmith works</a>: the 23-part tour.</p></div>
+      <p class="mu">wallcalc is an example written for this guide and isn't part of TileSmith. TileSmith is made by Callum Davenport-Lambton and released under GPL-3.0-or-later. NDI® is a registered trademark of Vizrt NDI AB.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<nav class="hud" aria-label="Section navigation">
+  <span id="count"></span>
+  <button id="prev" aria-label="Previous section">‹</button>
+  <button id="next" aria-label="Next section">›</button>
+</nav>
+<script src="../guide.js"></script>
+</body>
+</html>

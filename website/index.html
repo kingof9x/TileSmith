@@ -43,6 +43,8 @@ p { margin: 0; max-width: 64ch; }
 .grid div { border-top: 2px solid var(--cyan); padding-top: 12px; }
 .grid h3 { font: 700 21px/1.2 var(--display); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 6px; }
 .grid p { color: var(--mu); font-size: 16px; }
+.grid h3 a { color: var(--fg); text-decoration: none; } .grid h3 a:hover { color: var(--cyan); }
+.guides { display: grid; gap: 12px; }
 footer { color: var(--mu); font-size: 15px; border-top: 1px dashed var(--line); padding-top: 20px; }
 @media (max-width: 800px) { .feature-deck { grid-template-columns: 1fr; padding: 20px; } .grid { grid-template-columns: 1fr; } }
 </style>
@@ -70,6 +72,16 @@ footer { color: var(--mu); font-size: 15px; border-top: 1px dashed var(--line); 
       <div class="ctas"><a class="btn pri" href="how-it-works/">Start the tour</a></div>
     </div>
     <img class="shot" src="screenshots/build.gif" alt="The LED build animation: a technician placing tiles on a half built wall" width="800" height="508">
+  </section>
+
+  <section class="guides" aria-labelledby="rtc">
+    <div class="cue">Field guides</div>
+    <h2 id="rtc">Read the code yourself</h2>
+    <div class="grid">
+      <div><h3><a href="read-the-code/">Reading the TileSmith code</a></h3><p>Find your own way around the app's source: a clickable map of the one big file, the short names decoded, a setting followed from the tick box to the maths, and how to poke at the app while it runs.</p></div>
+      <div><h3><a href="read-rust/">How to read a Rust codebase</a></h3><p>Ampersands, question marks and ownership, explained with sysadmin analogies and a small LED-wall calculator written in Rust. With a symbol decoder and a "will it compile?" quiz.</p></div>
+      <div><h3><a href="how-it-works/">How TileSmith works</a></h3><p>The 23-part tour: what each part of the app does, then the real code that does it.</p></div>
+    </div>
   </section>
 
   <section class="grid" aria-label="What it does">
