@@ -6393,14 +6393,17 @@ function applyState(o){const nm0='Canvas 1';applyCore(o);const LIMc=(k,v)=>Math.
   walls=A.walls;cur=A.cur;WK.forEach(k=>S[k]=sk[k]);list[ac]=cvFromGlobals(String(o.cvs[ac]&&o.cvs[ac].name||'Canvas '+(ac+1)).slice(0,40));CVS=list;cc=ac;CVS.forEach((c,i)=>{if(i!=cc)withCv(i,()=>showAll())})}
  else{CVS=[cvFromGlobals(nm0)];cc=0}}
 function applyCore(o){{utFromProject(o);rcFromProject(o);if(o.S&&o.S.tstyle&&!TSTY.includes(o.S.tstyle))o.S.tstyle='Classic';for(const k in o.S){if(k in S&&!SKIP.includes(k)&&typeof S[k]==typeof o.S[k]){let v=o.S[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}S[k]=v}}pwMigrate(o.S);dsSanAll();zSan();
-const mk=src=>{if(!src)return null;const im=new Image();im.__src=src;im.onload=()=>{forceRen=true};im.src=src;return im};
+// pictures in a project are embedded data: URLs. Anything else (a web or file address in a hand-edited or hostile file)
+ // is ignored: it would make the app fetch from the internet or the disk on open, and a picture from another origin
+ // would block reading the canvas back for NDI®, Spout / Syphon, PNG and video export.
+ const mk=src=>{if(typeof src!='string'||!/^data:image\//i.test(src))return null;const im=new Image();im.__src=src;im.onload=()=>{forceRen=true};im.src=src;return im};
 if(Array.isArray(o.crew)&&o.crew.length)crew=o.crew.map((c,i)=>[String(c[0]||''),c[1]||'#e0ac69',mk(c[2]),c[3]||HAIR[i%HAIR.length],String(c[4]||'')]);
-if(o.logo)logoImg=mk(o.logo);if(o.dvd){dvdImg=mk(o.dvd);dvdImg.__id=++imgId}
+if(o.logo)logoImg=mk(o.logo);if(o.dvd){dvdImg=mk(o.dvd);if(dvdImg)dvdImg.__id=++imgId}
 if(Array.isArray(o.walls)&&o.walls.length){walls=o.walls.map(x=>{const w=wallFromS();w.zone=0;if(x&&!('wred' in x))w.wred=o.S&&o.S.ret===false?'None':'Loop';for(const k of WK){if(k=='patImg'||k=='boxImg'){w[k]=mk(x[k]);if(w[k])w[k].__id=++imgId;continue}
  if(k in x&&typeof x[k]==typeof w[k]&&Array.isArray(x[k])==Array.isArray(w[k])){let v=x[k];if(typeof v=='number'){if(!isFinite(v))continue;const L=LIM[k];if(L)v=Math.max(L[0],Math.min(L[1],v))}w[k]=v}}return w});walls.forEach(w=>{const q=P[w.preset];if(q)[w.wmm,w.hmm,w.tw,w.th,w.pitch,w.kg,w.wmax,w.dmm]=q;
   const g=unitG(w);if(g&&Array.isArray(w.half)&&w.half.length&&!layOn(w)){let L=layDefault(w);w.half.forEach(h=>{if(!Array.isArray(h))return;const c=h[0]|0,r=h[1]|0,i=layAt(L,c*g.ux,r*g.uy);if(i<0)return;
    const u=c*g.ux+(h[2]=='right'?1:0),v=r*g.uy+(h[2]=='bottom'?1:0);L=L.filter((x,k)=>k!=i).concat([[u,v,1,1]])});w.lay={s:g.sp,uc:g.uc,ur:g.ur,p:L};w.half=[]}});loadWall(o.cur)}
-else{const os=o.S||{};if(typeof os.wallName=='string')S.name=os.wallName;if(os.order=='column')S.dir='Vertical';if(o.pat){const im=mk(o.pat);im.__id=++imgId;S.patImg=im}walls=[wallFromS()];cur=0}
+else{const os=o.S||{};if(typeof os.wallName=='string')S.name=os.wallName;if(os.order=='column')S.dir='Vertical';if(o.pat){const im=mk(o.pat);if(im)im.__id=++imgId;S.patImg=im}walls=[wallFromS()];cur=0}
 // before v2.3 only image patterns scrolled, and fit names were stretch/contain/cover
 if(!(o.sv>=23))walls.forEach(w=>{if(w.pat!='smptescroll'&&w.pat!='SMPTEbars'&&w.pat!='custom')w.pdir='none'});
 // v2.7 renamed and removed some patterns
