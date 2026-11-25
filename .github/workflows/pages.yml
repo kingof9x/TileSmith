@@ -1,0 +1,47 @@
+# Publishes the TileSmith website (the website/ folder) to GitHub Pages: https://kingof9x.github.io/TileSmith/
+# The site is the landing page (website/index.html) and the "How TileSmith works" presentation
+# (website/how-it-works/index.html). The screenshots in docs/screenshots are copied in at publish time so the site
+# always shows the same pictures as the README.
+#
+# It runs by itself when something under website/ or docs/screenshots/ changes on the default branch, or by hand:
+# Actions tab > Publish website > Run workflow.
+#
+# One-time setup: Settings > Pages > Build and deployment > Source: "GitHub Actions".
+name: Publish website
+
+on:
+  push:
+    branches: [main]
+    paths: ['website/**', 'docs/screenshots/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Put the site together
+        run: |
+          mkdir -p _site
+          cp -r website/. _site/
+          mkdir -p _site/screenshots
+          cp docs/screenshots/*.png docs/screenshots/*.gif _site/screenshots/
+          ls -R _site
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deploy
+        uses: actions/deploy-pages@v4
