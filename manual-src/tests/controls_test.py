@@ -1,7 +1,9 @@
 # Drives every dropdown and button with real user input (select_option / click) and checks the app reacts and does not throw
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio
 from playwright.async_api import async_playwright
-APP='file:///home/claude/tilesmith-desktop/app/index.html'
+APP=TS_APP_URL
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1600,'height':1400}); errs=[]; bad=[]

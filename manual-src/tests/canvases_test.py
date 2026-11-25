@@ -1,7 +1,9 @@
 # Several canvases: add / duplicate / remove, select by click, save + open, undo, New Project, per-canvas outputs (NDI / Syphon mocked), PNG, PDF
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json
 from playwright.async_api import async_playwright
-APP='file:///home/claude/tilesmith-desktop/app/index.html'
+APP=TS_APP_URL
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); ctx=await b.new_context(viewport={'width':1500,'height':1000},accept_downloads=True); pg=await ctx.new_page(); errs=[]

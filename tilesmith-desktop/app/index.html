@@ -3072,7 +3072,11 @@ function layPieces(w){const g=unitG(w),L=w.lay,occ=new Set,out=[],ok=(a,b)=>a==1
  return out}
 // all tiles of a wall with their place (wall pixels), kind and build order; cached until the wall changes
 const PCQ=new WeakMap();
-function pieces(w){const g=unitG(w),lay=layOn(w),k=[w.cols,w.rows,w.tw,w.th,w.dir,w.corner,w.bmode,w.preset,w.kg,w.wmax,w.wmm,w.hmm].join('|');let e=PCQ.get(w);if(e&&e.k===k&&e.g===w.gone&&e.l===w.lay){wNorm(w,e.v);return e.v}
+// The cache is checked field by field before anything else: pieces() runs thousands of times per frame (every pieceOf,
+// wst and hit test), so a cache hit must not build strings or look up the half-tile model.
+const PCK=['cols','rows','tw','th','dir','corner','bmode','preset','kg','wmax','wmm','hmm'];
+function pieces(w){let e=PCQ.get(w);if(e&&e.g===w.gone&&e.l===w.lay){let i=0;while(i<12&&e.a[i]===w[PCK[i]])i++;if(i==12){wNorm(w,e.v);return e.v}}
+ const g=unitG(w),lay=layOn(w),k=PCK.map(f=>w[f]);
  const ord=new Map;for(let i=0;i<w.cols*w.rows;i++){const q=seqRC(w,i);ord.set(q[1]*w.cols+q[0],i)}const list=[];
  if(lay){const hq=P[halfOf(w)[0]];layPieces(w).forEach(([u,v,a,b])=>{const x=u*g.uw,y=v*g.uh,pw=a*g.uw,ph=b*g.uh,c=Math.floor(u/g.ux),r=Math.floor(v/g.uy),half=a*b==1,
    rot=!half&&(a!=g.full[0]),side=half?(g.sp=='h'?(v%2?'bottom':'top'):(u%2?'right':'left')):rot?'on its side':'';
@@ -3086,7 +3090,7 @@ function pieces(w){const g=unitG(w),lay=layOn(w),k=[w.cols,w.rows,w.tw,w.th,w.di
  if(lay)list.forEach(p=>{for(let i=0;i<p.a;i++)for(let j=0;j<p.b2;j++)um.set((p.v+j)*g.uc+p.u+i,p)});
  let X0=0,Y0=0,bw=w.cols*w.tw,bh=w.rows*w.th;
  if(lay&&list.length){X0=Math.min(...list.map(p=>p.x));Y0=Math.min(...list.map(p=>p.y));bw=Math.max(...list.map(p=>p.x+p.w))-X0;bh=Math.max(...list.map(p=>p.y+p.h))-Y0;list.forEach(p=>{p.x-=X0;p.y-=Y0})}
- const v={list,by,seq,lay,g,um,X0,Y0,bw,bh,nh:list.filter(p=>p.half).length,ng:lay?0:goneSet(w).size};PCQ.set(w,{k,g:w.gone,l:w.lay,v});wNorm(w,v);return v}
+ const v={list,by,seq,lay,g,um,X0,Y0,bw,bh,nh:list.filter(p=>p.half).length,ng:lay?0:goneSet(w).size};PCQ.set(w,{a:k,g:w.gone,l:w.lay,v});wNorm(w,v);return v}
 // keep tiles where they are on the canvas when the top-left of the real tiles moves inside the grid
 function wNorm(w,v){const X=v.X0,Y=v.Y0;if((w.gx||0)!==X||(w.gy||0)!==Y){w.ox=(w.ox||0)+X-(w.gx||0);w.oy=(w.oy||0)+Y-(w.gy||0);w.gx=X;w.gy=Y}}
 const tN=w=>pieces(w).list.length,bseq=w=>pieces(w).seq;
@@ -4265,7 +4269,10 @@ if(!S.play)return;sims.forEach((x,i)=>{if(walls[i])stepSim(x,i,dt)})}
 // lightning bolt h tall, centred on x,y, filled with the current fill colour (marks power circuits on the canvas)
 function bolt(c,x,y,h){const s=h/10;c.beginPath();c.moveTo(x+1.6*s,y-5*s);c.lineTo(x-3.2*s,y+1*s);c.lineTo(x-.2*s,y+1*s);c.lineTo(x-1.6*s,y+5*s);c.lineTo(x+3.2*s,y-1.2*s);c.lineTo(x+.2*s,y-1.2*s);c.closePath();c.fill()}
 // tile position indicator (any pattern, option under Test pattern), lower-left of each tile: ↑ row counted from the bottom, → column from the left
-function tposSize(c,tw,th,row,col){const s=Math.min(tw,th),f=Math.max(8,s*.11);c.font=`700 ${f}px Barlow,sans-serif`;const w1=c.measureText(String(row)).width,w2=c.measureText(String(col)).width;
+// Text widths are remembered per font and text: measureText on every tile of every frame was a large share of a frame
+// on big walls. The cache is emptied when it gets large (font sizes follow the tile size). The key is the size f, not c.font: reading c.font back is slow too.
+const MTX=new Map;function mtW(c,f,t){const k=f+'|'+t;let v=MTX.get(k);if(v===undefined){if(MTX.size>4000)MTX.clear();v=c.measureText(t).width;MTX.set(k,v)}return v}
+function tposSize(c,tw,th,row,col){const s=Math.min(tw,th),f=Math.max(8,s*.11);c.font=`700 ${f}px Barlow,sans-serif`;const w1=mtW(c,f,String(row)),w2=mtW(c,f,String(col));
  return{f,w1,w2,W:f*(.35*2+.75+.22+.6+.75+.22)+w1+w2,H:f*1.35}}
 // marker top (tile-local) that overlaps no other text: the same height on every tile (clear of the footer band), else
 // the nearest height in that tile that is clear. avoid = tile labels band, wall text boxes (wall coords) and, on the bottom row, the footer
@@ -4869,9 +4876,12 @@ function bldTrack(){const b=barBuilding(),on=b?(REC?bldRun:true):bldRun&&!!S.loo
 // The DVD screensaver, LED build and tile faults buttons light up while their effect is on.
 function fxLit(){const L=(q,on)=>document.querySelectorAll(q).forEach(b=>{if(b.classList.contains('live')!==on)b.classList.toggle('live',on)});L('[data-a=bldgo]',bldActive());L('[data-a=dvdgo]',!!S.dvdOn);L('[data-a=glgo]',!!S.glOn)}
 let ENGOPEN=false;document.addEventListener('toggle',e=>{if(e.target&&e.target.id=='engD')ENGOPEN=e.target.open},true);
-function wst(w){const P2=pieces(w),N=P2.list.length,pw=wW(w),ph=wH(w),mw=pw/w.tw*w.wmm/1000,mh=ph/w.th*w.hmm/1000;let px=0,A=0,kg=0,W=0;
+// Wall totals: tile count, size in pixels and metres, area, weight and peak power. Kept with the cached tile list (pieces)
+// so the panels, checks and canvas labels that ask many times per frame do not add up every tile again. Read-only result.
+function wst(w){const P2=pieces(w),pw=wW(w),ph=wH(w),k=pw+'|'+ph;if(P2.wst&&P2.wst.k===k)return P2.wst.v;
+ const N=P2.list.length,mw=pw/w.tw*w.wmm/1000,mh=ph/w.th*w.hmm/1000;let px=0,A=0,kg=0,W=0;
  P2.list.forEach(p=>{px+=p.w*p.h;A+=p.sp.m2;kg+=p.sp.kg;W+=p.sp.W});
- return{N,nh:P2.nh,ng:P2.ng,pw,ph,px,mw,mh,A,kg,pk:W/1000}}
+ const v={N,nh:P2.nh,ng:P2.ng,pw,ph,px,mw,mh,A,kg,pk:W/1000};P2.wst={k,v};return v}
 const ft=x=>(x*3.28084).toFixed(2),kw=v=>v.toFixed(2)+' kW',amp=(kW,v)=>(kW*1000/v/(S.pf||1)).toFixed(1)+' A';
 // ---------- cable lengths (Engineering › Cable lengths). Each wall has a distance from the processor (cdD) and from the distro (cdP)
 // to the point where its cables arrive (cin, a corner or the middle of the top or bottom edge), in S.cunit. A run is that distance

@@ -1,8 +1,10 @@
 """NovaStar controllers added Nov 2026 (MCTRL4K and the rest): each is in the Processor list, ports / pixels per port
 follow the spec sheet at 8-bit and 10-bit, and picking MCTRL4K wires a wall. Prints ALL OK."""
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, os
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 # name: (ports, px per port at 60 Hz 8-bit, at 60 Hz 10-bit, max)
 NEW = {'NovaStar MCTRL300': (2, 650000, 325000, 2304000), 'NovaStar MCTRL600': (4, 650000, 325000, 2304000),
        'NovaStar MCTRL660': (4, 650000, 325000, 2304000), 'NovaStar MCTRL660 PRO': (6, 650000, 325000, 2304000),

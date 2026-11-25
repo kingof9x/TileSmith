@@ -2,9 +2,11 @@
 for Electron's require(), then the real page. Checks the Graphics card list, Automatic (Windows high-performance card,
 or the first card that is not Intel/Microsoft), switching cards while running, a failed DirectX device, the status
 line, the log file, and that the Mac and web versions are unchanged. Prints ALL OK."""
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, sys
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 MOCK = r"""
 (()=>{const plat=window.__PLAT;const calls=window.__calls=[];const O=window.__OPT||{};
 const fsm={existsSync:p=>/SpoutDX\.dll$|syphon\.node$|Syphon\.framework$/.test(p),readFileSync(){if(O.state)return O.state;throw Error('nofile')},writeFileSync(){},mkdirSync(){},readdirSync:()=>[],unlinkSync(){}};
@@ -26,7 +28,7 @@ const impl={
 const lib={func(n,r,a){if(typeof n=='string'&&r===undefined){const m=n.match(/(\w+)\(/);n=m?m[1]:n}const s=short(n),f=impl[s]||(()=>true);
  return (...args)=>{calls.push([s,...args.slice(1).map(x=>x&&x.byteLength!==undefined?'buf':x)]);return f(...args)}}};
 const koffi={load(f){return lib},struct(){}};
-window.process={platform:plat,versions:{electron:'44.0.0'},resourcesPath:plat=='win32'?'C:\\res':'/App/Contents/Resources',cwd:()=>plat=='win32'?'C:\\proj':'/proj',env:{APPDATA:'C:\\Users\\x\\AppData\\Roaming'}};
+window.process={platform:plat,versions:{electron:'44.0.0'},execPath:plat=='win32'?'C:\\App\\TileSmith.exe':'/App/Contents/MacOS/TileSmith',resourcesPath:plat=='win32'?'C:\\res':'/App/Contents/Resources',cwd:()=>plat=='win32'?'C:\\proj':'/proj',env:{APPDATA:'C:\\Users\\x\\AppData\\Roaming'}};
 class Buf extends Uint8Array{toString(e){if(e=='latin1'||e=='utf8')return String.fromCharCode(...this);return super.toString()}}
 window.Buffer={from:(ab,o,l)=>new Uint8Array(ab,o,l),alloc:n=>new Buf(n)};
 window.require=m=>{if(m=='fs')return fsm;if(m=='path')return pathm;if(m=='os')return{homedir:()=>'C:\\Users\\x'};if(m=='koffi')return koffi;

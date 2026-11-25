@@ -1,9 +1,15 @@
 # NovaStar receiving card files: add to the library under Tile details, per-wall pick, vendor/revision, library survives reload,
 # saved project carries the file, a fresh app imports it, the processor config zip includes it, delete
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, zipfile, io, os
 from playwright.async_api import async_playwright
-APP='file:///home/claude/tilesmith-desktop/app/index.html'
+APP=TS_APP_URL
 RC=os.environ.get('RCFG','/tmp/res/novastar/cfg/Q8_ICND2153_40x40.rcfgx')
+if not os.path.exists(RC):
+    # no real NovaLCT file here: the app only stores and hashes the bytes, so a stand-in file of the same kind is enough
+    import tempfile
+    RC=os.path.join(tempfile.mkdtemp(),'Q8_ICND2153_40x40.rcfgx'); open(RC,'wb').write(bytes((i*37+11)%256 for i in range(4096)))
 async def main():
     ok=True
     def chk(c,m):

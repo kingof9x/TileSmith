@@ -1,8 +1,10 @@
 # Power cabling (2026-11-19) and power settings (2026-11-19): each wall starts on its own cable, cables run to a wall, circuit chips for drawing power by
 # hand with a hard limit, and the maker's power data (PWR): voltages a tile takes and panels per power link.
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 ok = True
 def chk(c, m):
     global ok

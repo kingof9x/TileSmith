@@ -1,7 +1,9 @@
 # Redundancy (Engineering › LED processor): per-wall method, priority, gear on hand with step-down, port map, signal path
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, os
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 SHOT = os.environ.get('RED_SHOT')
 async def main():
     ok = True

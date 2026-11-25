@@ -1,9 +1,11 @@
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio
 from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1500,'height':1100})
-        await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html'); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(800)
+        await pg.goto(TS_APP_URL); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(800)
         await pg.evaluate("()=>{S.cols=8;S.rows=6;(S.dists.length||distAct('dadd'));S.showPow=true;S.pmode='Snake';storeWall();sync()}")
         for i in range(8):
             await pg.evaluate(f"()=>document.querySelector('[data-pp=\"{i+8}\"]').click()")

@@ -1,10 +1,12 @@
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio
 from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1500,'height':1100}); errs=[]
         pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html'); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(800)
+        await pg.goto(TS_APP_URL); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(800)
         await pg.evaluate("()=>document.querySelectorAll('details').forEach(d=>d.open=true)")
         await pg.select_option('[data-brand]','Owl Vision'); await pg.select_option('[data-k=preset]','Owl Vision Black Owl 3.9 500×1000')
         await pg.evaluate("()=>{S.cols=4;S.rows=16;storeWall();sync();info()}")

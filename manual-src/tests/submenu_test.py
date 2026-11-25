@@ -1,11 +1,13 @@
 # Left panel sub menus open one at a time; double-clicking a sub menu header keeps the others open (power users)
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio
 from playwright.async_api import async_playwright
 async def main():
     ok=True
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(viewport={'width':1400,'height':1000}); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html'); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(700)
+        await pg.goto(TS_APP_URL); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(700)
         # open sub menus (direct children of the menu) in a top-level menu
         # tag the top-level menus and their direct sub menus so plain CSS selectors can reach them
         names=await pg.evaluate("""()=>{const t=[...document.querySelectorAll('#left>details')].find(d=>d.firstElementChild.textContent.includes('Animation Options'));t.id='tAnim';
