@@ -1,10 +1,17 @@
 # Screenshots for the GitHub README, taken from the running app:
 #   python3 make_readme_shots.py <app index.html> <output folder>
 # wiring.png (data + power wiring), dvd-smpte.png (DVD screensaver on SMPTEbars), build.gif (LED build half done, a tech placing a row)
-import asyncio, sys, os, subprocess, shutil, tempfile
+# Set VERSION (e.g. VERSION=3.10) to show that version in the app header, as a release build does.
+import asyncio, sys, os, re, subprocess, shutil, tempfile
 from playwright.async_api import async_playwright
 APP = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else '../tilesmith-desktop/app/index.html'); OUT = os.path.abspath(sys.argv[2] if len(sys.argv) > 2 else 'readme-shots')
 os.makedirs(OUT, exist_ok=True)
+VERSION = os.environ.get('VERSION', '').lstrip('v')
+if VERSION:  # a copy of the page next to the original (so its relative files load) showing VERSION, as set-version.js does at build time
+    src = open(APP, encoding='utf-8').read()
+    src = re.sub(r'color:var\(--am\)">v[\d.]+</span></h1>', f'color:var(--am)">v{VERSION}</span></h1>', src)
+    src = re.sub(r"const APP_VERSION='[\d.]+';", f"const APP_VERSION='{VERSION}';", src)
+    APP = os.path.join(os.path.dirname(APP), f'.readme-shot-{VERSION}.html'); open(APP, 'w', encoding='utf-8').write(src)
 async def main():
     async with async_playwright() as p:
         b = await p.chromium.launch(); pg = await b.new_page(viewport={'width': 1600, 'height': 960}, device_scale_factor=1)
@@ -34,4 +41,7 @@ async def main():
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-framerate', '10', '-i', os.path.join(tmp, 'f%03d.png'), '-vf', vf + ',palettegen=max_colors=128', pal], check=True)
     subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', '-framerate', '10', '-i', os.path.join(tmp, 'f%03d.png'), '-i', pal, '-lavfi', vf + '[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=4', os.path.join(OUT, 'build.gif')], check=True)
     shutil.rmtree(tmp)
-asyncio.run(main())
+try:
+    asyncio.run(main())
+finally:
+    if VERSION: os.remove(APP)

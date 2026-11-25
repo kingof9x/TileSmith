@@ -1,0 +1,325 @@
+{
+ "bin": "/tmp/claude-0/-home-user/4b2e5973-e4a6-5727-af6e-a6a5a7db277b/scratchpad/mem/squashfs-root/tilesmith",
+ "version": "TileSmith v3.10 - LED Wall Builder",
+ "settle_ms": 40000,
+ "samples": [
+  {
+   "processes": 6,
+   "kinds": [
+    "gpu-process",
+    "main",
+    "renderer",
+    "utility",
+    "zygote",
+    "zygote"
+   ],
+   "rss_mib": 706.4,
+   "pss_mib": 383.6,
+   "uss_mib": 255.6,
+   "per_process": [
+    {
+     "kind": "main",
+     "rss_mib": 156.4,
+     "pss_mib": 87.5,
+     "uss_mib": 57.5
+    },
+    {
+     "kind": "renderer",
+     "rss_mib": 203.5,
+     "pss_mib": 129.1,
+     "uss_mib": 93.6
+    },
+    {
+     "kind": "utility",
+     "rss_mib": 77,
+     "pss_mib": 27.2,
+     "uss_mib": 13.2
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.9,
+     "pss_mib": 18.4,
+     "uss_mib": 10
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.8,
+     "pss_mib": 13.8,
+     "uss_mib": 0.8
+    },
+    {
+     "kind": "gpu-process",
+     "rss_mib": 157.7,
+     "pss_mib": 107.7,
+     "uss_mib": 80.5
+    }
+   ],
+   "state": "Idle, default project"
+  },
+  {
+   "processes": 6,
+   "kinds": [
+    "gpu-process",
+    "main",
+    "renderer",
+    "utility",
+    "zygote",
+    "zygote"
+   ],
+   "rss_mib": 714.8,
+   "pss_mib": 392.2,
+   "uss_mib": 264.2,
+   "per_process": [
+    {
+     "kind": "main",
+     "rss_mib": 155.6,
+     "pss_mib": 86.7,
+     "uss_mib": 56.7
+    },
+    {
+     "kind": "renderer",
+     "rss_mib": 213.2,
+     "pss_mib": 138.9,
+     "uss_mib": 103.5
+    },
+    {
+     "kind": "utility",
+     "rss_mib": 76.8,
+     "pss_mib": 27,
+     "uss_mib": 13
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.9,
+     "pss_mib": 18.4,
+     "uss_mib": 10
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.8,
+     "pss_mib": 13.8,
+     "uss_mib": 0.8
+    },
+    {
+     "kind": "gpu-process",
+     "rss_mib": 157.4,
+     "pss_mib": 107.4,
+     "uss_mib": 80.3
+    }
+   ],
+   "state": "LED build animation running"
+  },
+  {
+   "processes": 6,
+   "kinds": [
+    "gpu-process",
+    "main",
+    "renderer",
+    "utility",
+    "zygote",
+    "zygote"
+   ],
+   "rss_mib": 733.1,
+   "pss_mib": 409.5,
+   "uss_mib": 280.8,
+   "per_process": [
+    {
+     "kind": "main",
+     "rss_mib": 156.9,
+     "pss_mib": 87.6,
+     "uss_mib": 57.4
+    },
+    {
+     "kind": "renderer",
+     "rss_mib": 229.8,
+     "pss_mib": 155.1,
+     "uss_mib": 119.4
+    },
+    {
+     "kind": "utility",
+     "rss_mib": 76.8,
+     "pss_mib": 27,
+     "uss_mib": 12.9
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.9,
+     "pss_mib": 18.4,
+     "uss_mib": 10
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.8,
+     "pss_mib": 13.8,
+     "uss_mib": 0.8
+    },
+    {
+     "kind": "gpu-process",
+     "rss_mib": 158,
+     "pss_mib": 107.7,
+     "uss_mib": 80.4
+    }
+   ],
+   "state": "DVD screensaver running"
+  },
+  {
+   "processes": 6,
+   "kinds": [
+    "gpu-process",
+    "main",
+    "renderer",
+    "utility",
+    "zygote",
+    "zygote"
+   ],
+   "rss_mib": 731.4,
+   "pss_mib": 407.9,
+   "uss_mib": 279.3,
+   "per_process": [
+    {
+     "kind": "main",
+     "rss_mib": 156.9,
+     "pss_mib": 87.6,
+     "uss_mib": 57.4
+    },
+    {
+     "kind": "renderer",
+     "rss_mib": 228.1,
+     "pss_mib": 153.5,
+     "uss_mib": 117.8
+    },
+    {
+     "kind": "utility",
+     "rss_mib": 76.8,
+     "pss_mib": 27,
+     "uss_mib": 12.9
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.9,
+     "pss_mib": 18.4,
+     "uss_mib": 10
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.8,
+     "pss_mib": 13.8,
+     "uss_mib": 0.8
+    },
+    {
+     "kind": "gpu-process",
+     "rss_mib": 157.9,
+     "pss_mib": 107.7,
+     "uss_mib": 80.4
+    }
+   ],
+   "state": "Idle again after both"
+  },
+  {
+   "processes": 6,
+   "kinds": [
+    "gpu-process",
+    "main",
+    "renderer",
+    "utility",
+    "zygote",
+    "zygote"
+   ],
+   "rss_mib": 822.4,
+   "pss_mib": 500.4,
+   "uss_mib": 373.3,
+   "per_process": [
+    {
+     "kind": "main",
+     "rss_mib": 156.9,
+     "pss_mib": 87.6,
+     "uss_mib": 57.4
+    },
+    {
+     "kind": "renderer",
+     "rss_mib": 320.5,
+     "pss_mib": 246.7,
+     "uss_mib": 211.7
+    },
+    {
+     "kind": "utility",
+     "rss_mib": 76.8,
+     "pss_mib": 27,
+     "uss_mib": 12.9
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.9,
+     "pss_mib": 18.4,
+     "uss_mib": 10
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.8,
+     "pss_mib": 13.8,
+     "uss_mib": 0.8
+    },
+    {
+     "kind": "gpu-process",
+     "rss_mib": 156.4,
+     "pss_mib": 107,
+     "uss_mib": 80.5
+    }
+   ],
+   "state": "Big show, idle (4 walls, 800 tiles, 4K)"
+  },
+  {
+   "processes": 6,
+   "kinds": [
+    "gpu-process",
+    "main",
+    "renderer",
+    "utility",
+    "zygote",
+    "zygote"
+   ],
+   "rss_mib": 824.3,
+   "pss_mib": 502.2,
+   "uss_mib": 375.1,
+   "per_process": [
+    {
+     "kind": "main",
+     "rss_mib": 156.9,
+     "pss_mib": 87.6,
+     "uss_mib": 57.4
+    },
+    {
+     "kind": "renderer",
+     "rss_mib": 322.4,
+     "pss_mib": 248.5,
+     "uss_mib": 213.6
+    },
+    {
+     "kind": "utility",
+     "rss_mib": 76.8,
+     "pss_mib": 27,
+     "uss_mib": 12.9
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.9,
+     "pss_mib": 18.4,
+     "uss_mib": 10
+    },
+    {
+     "kind": "zygote",
+     "rss_mib": 55.8,
+     "pss_mib": 13.8,
+     "uss_mib": 0.8
+    },
+    {
+     "kind": "gpu-process",
+     "rss_mib": 156.5,
+     "pss_mib": 107,
+     "uss_mib": 80.5
+    }
+   ],
+   "state": "Big show, LED build running"
+  }
+ ]
+}
