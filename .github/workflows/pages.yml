@@ -16,6 +16,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read     # lets the deploy step list this run's artifacts and find the github-pages upload
   contents: read
   pages: write
   id-token: write
@@ -25,11 +26,10 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish:
+  # Two jobs, like GitHub's own Pages starter workflows: build uploads the site, deploy publishes it.
+  # With a single job the deploy step ran under a second after the upload and found no artifact.
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - name: Put the site together
@@ -43,5 +43,13 @@ jobs:
       - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
       - id: deploy
         uses: actions/deploy-pages@v5
