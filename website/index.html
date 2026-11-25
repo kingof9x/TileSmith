@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TileSmith</title>
+<meta name="description" content="TileSmith: free, open source pre-production software for LED walls. Pixel maps, test patterns, engineering specs, cable labels and a build animation.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@600&display=swap">
+<style>
+/* Layout: a single column "spec sheet" for the app; same venue palette as the how-it-works deck. */
+:root {
+  --bg: #07090c; --panel: #0d1217; --line: #2a3340; --fg: #e6edf3; --mu: #8b98a5;
+  --cyan: #22d3ee; --amber: #ffb020; --yellow: #ffe066;
+  --display: "Barlow Condensed", "Arial Narrow", sans-serif;
+  --body: "Barlow", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 400 18px/1.6 var(--body); -webkit-font-smoothing: antialiased; }
+a { color: var(--cyan); }
+a:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; }
+.wrap { max-width: 1040px; margin: 0 auto; padding-block: 56px 72px;
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 40px; }
+.cue { font: 600 13px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--amber); }
+h1 { font: 800 clamp(56px, 11vw, 120px)/.9 var(--display); text-transform: uppercase; margin: 10px 0 14px; }
+h1 em { font-style: normal; color: var(--cyan); }
+h2 { font: 800 clamp(30px, 4vw, 44px)/1 var(--display); text-transform: uppercase; margin: 0 0 10px; }
+p { margin: 0; max-width: 64ch; }
+.lead { font-size: clamp(19px, 2.2vw, 23px); color: #c9d4de; }
+.ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+.btn { font: 700 18px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; text-decoration: none; border-radius: 6px; padding: 14px 20px; }
+.btn.pri { background: var(--cyan); color: var(--bg); }
+.btn.sec { border: 1px solid var(--line); color: var(--fg); background: var(--panel); }
+.btn.sec:hover { border-color: var(--cyan); color: var(--cyan); }
+.shot { border: 1px solid var(--line); border-radius: 10px; width: 100%; height: auto; display: block; }
+.feature-deck { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 28px; }
+.feature-deck > * { min-width: 0; }
+.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.grid div { border-top: 2px solid var(--cyan); padding-top: 12px; }
+.grid h3 { font: 700 21px/1.2 var(--display); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 6px; }
+.grid p { color: var(--mu); font-size: 16px; }
+footer { color: var(--mu); font-size: 15px; border-top: 1px dashed var(--line); padding-top: 20px; }
+@media (max-width: 800px) { .feature-deck { grid-template-columns: 1fr; padding: 20px; } .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="cue">LED wall pre-production · free and open source</div>
+    <h1>Tile<em>Smith</em></h1>
+    <p class="lead">Pixel maps, test patterns, engineering specs, cable labels and a little technician who builds the wall for you. For Windows, Mac, Linux, Android and iOS.</p>
+    <div class="ctas">
+      <a class="btn pri" href="https://github.com/kingof9x/TileSmith/releases/latest">Download</a>
+      <a class="btn sec" href="how-it-works/">How it works</a>
+      <a class="btn sec" href="https://github.com/kingof9x/TileSmith">Source code</a>
+    </div>
+  </header>
+
+  <img class="shot" src="screenshots/wiring.png" alt="TileSmith showing data and power wiring on two LED walls, with the engineering figures on the right" width="1600" height="960">
+
+  <section class="feature-deck" aria-labelledby="hiw">
+    <div>
+      <div class="cue">New · presentation</div>
+      <h2 id="hiw">How TileSmith works</h2>
+      <p>A 16-slide backstage tour of what happens inside the app, from the one giant web page to the render loop, the power maths and the DVD screensaver's corner dial. Written for power users and sysadmins who are curious about code. Some slides are interactive.</p>
+      <div class="ctas"><a class="btn pri" href="how-it-works/">Start the tour</a></div>
+    </div>
+    <img class="shot" src="screenshots/build.gif" alt="The LED build animation: a technician placing tiles on a half built wall" width="800" height="508">
+  </section>
+
+  <section class="grid" aria-label="What it does">
+    <div><h3>Pixel maps</h3><p>About 25 test patterns, tile IDs, pixel addresses and position arrows, sent out live over NDI®, Spout or Syphon.</p></div>
+    <div><h3>Engineering</h3><p>Weight, power, processor ports, data and power wiring for dozens of real tiles and processors, with printable cable labels.</p></div>
+    <div><h3>Show files</h3><p>Export PNG, layered PSD and SVG, PDF spec sheets, video and Resolume presets. Everything saves by itself.</p></div>
+  </section>
+
+  <footer>
+    <p>Made by Callum Davenport-Lambton · GPL-3.0-or-later · <a href="https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Manual.pdf">User manual (PDF)</a> · <a href="https://ko-fi.com/kingof9x">Ko-fi</a></p>
+    <p>NDI® is a registered trademark of Vizrt NDI AB.</p>
+  </footer>
+</div>
+</body>
+</html>

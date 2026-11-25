@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>How TileSmith Works</title>
+<meta name="description" content="A backstage tour of how TileSmith, the LED wall pixel-mapping app, works inside. Written for power users and sysadmins who are curious about programming.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one full-screen "LED wall" per slide, snapping like cues on a show file; dark venue look by design.
+   Colours are taken from TileSmith itself: the tile border cyan, the unlit-tile outline grey,
+   the pixel-address label yellow and the hi-vis amber of the technician's vest. */
+:root {
+  --bg: #07090c;        /* the app's cabinet-ID background */
+  --panel: #0d1217;     /* the app window background */
+  --panel-2: #121922;
+  --line: #2a3340;      /* dashed outline of a tile that is not built yet */
+  --fg: #e6edf3;
+  --mu: #8b98a5;
+  --cyan: #22d3ee;      /* default tile border colour (S.bc) */
+  --amber: #ffb020;     /* hi-vis vest */
+  --yellow: #ffe066;    /* pixel address label */
+  --red: #ff5a5a;
+  --green: #4ade80;
+  --display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Barlow", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  background: var(--bg); color: var(--fg); font: 400 18px/1.55 var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--cyan); }
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--yellow); outline-offset: 3px; }
+
+/* ---------- deck ---------- */
+.deck { height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+.slide {
+  min-height: 100%; scroll-snap-align: start; position: relative;
+  display: grid; align-content: center;
+  padding-block: 64px 80px;
+  padding-left: max(20px, env(safe-area-inset-left, 0px)); padding-right: max(20px, env(safe-area-inset-right, 0px));
+  border-bottom: 1px dashed var(--line);
+}
+.inner { width: 100%; max-width: 1120px; margin: 0 auto; display: grid; gap: 22px; }
+.two { display: grid; grid-template-columns: 1.05fr 1fr; gap: 36px; align-items: center; }
+.two > * { min-width: 0; }
+@media (max-width: 860px) { .two { grid-template-columns: 1fr; gap: 24px; } }
+
+.cue { font: 600 13px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--amber); display: flex; gap: 12px; align-items: center; }
+.cue::before { content: ""; width: 10px; height: 10px; background: var(--amber); border-radius: 2px; box-shadow: 0 0 12px var(--amber); }
+h1, h2 { font-family: var(--display); font-weight: 800; letter-spacing: .005em; line-height: .95; margin: 0; text-wrap: balance; text-transform: uppercase; }
+h1 { font-size: clamp(52px, 10vw, 128px); }
+h2 { font-size: clamp(36px, 5.6vw, 72px); }
+h2 em, h1 em { font-style: normal; color: var(--cyan); }
+h3 { font: 700 22px/1.2 var(--display); letter-spacing: .04em; text-transform: uppercase; margin: 0; color: var(--fg); }
+p { margin: 0; max-width: 62ch; }
+.lead { font-size: clamp(19px, 2.1vw, 23px); color: #c9d4de; }
+.mu { color: var(--mu); }
+code, .mono { font-family: var(--mono); font-size: .86em; }
+code { background: var(--panel-2); border: 1px solid var(--line); border-radius: 4px; padding: 1px 6px; color: var(--yellow); overflow-wrap: anywhere; }
+ul.list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; max-width: 62ch; }
+ul.list li { padding-left: 26px; position: relative; }
+ul.list li::before { content: ""; position: absolute; left: 0; top: .55em; width: 12px; height: 12px; border: 2px solid var(--cyan); border-radius: 2px; }
+
+/* "Sysadmin translation" box: the analogy for the slide */
+.xlate { border: 1px solid #5a4410; background: linear-gradient(180deg, #1a1408, #120e06); border-radius: 10px; padding: 16px 18px; display: grid; gap: 6px; max-width: 62ch; }
+.xlate b { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--amber); }
+
+pre { margin: 0; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; overflow-x: auto; font: 400 14.5px/1.6 var(--mono); color: #cfe3ef; }
+pre .c { color: #6f7f8e; } pre .k { color: var(--cyan); } pre .s { color: var(--yellow); } pre .n { color: #f59e9e; }
+
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 18px; display: grid; gap: 14px; min-width: 0; }
+canvas.demo { width: 100%; height: auto; display: block; background: #050608; border-radius: 8px; border: 1px solid var(--line); max-width: 100%; }
+
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 600px) { .stats { grid-template-columns: 1fr; } }
+.stat { border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; background: var(--panel); display: grid; gap: 4px; }
+.stat .v { font: 800 clamp(34px, 4vw, 48px)/1 var(--display); color: var(--cyan); font-variant-numeric: tabular-nums; }
+.stat .l { font-size: 15px; color: var(--mu); }
+
+/* diagram boxes */
+.flow { display: grid; gap: 10px; }
+.box { border: 1.5px solid var(--cyan); border-radius: 10px; padding: 12px 14px; background: #0a1a20; display: grid; gap: 3px; }
+.box.amb { border-color: var(--amber); background: #1a1408; }
+.box.gry { border-color: var(--line); background: var(--panel); }
+.box small { color: var(--mu); font-size: 14px; }
+.box strong { font: 700 19px/1.15 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+.arrow { text-align: center; font: 600 13px/1.2 var(--mono); color: var(--mu); }
+.arrow::before { content: "↓ "; color: var(--cyan); }
+.rowflow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 10px; align-items: center; }
+.rowflow .arrow::before { content: "→ "; }
+@media (max-width: 700px) { .rowflow { grid-template-columns: 1fr; } .rowflow .arrow::before { content: "↓ "; } }
+
+/* layer toggles, controls */
+.toggles { display: flex; flex-wrap: wrap; gap: 8px; }
+.toggles label { display: inline-flex; gap: 8px; align-items: center; font-size: 15px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; cursor: pointer; user-select: none; }
+.toggles input { accent-color: var(--cyan); }
+.ctl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.ctl label { display: grid; gap: 4px; font-size: 14px; color: var(--mu); }
+.ctl input, .ctl select { font: 500 17px var(--body); color: var(--fg); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; width: 100%; font-variant-numeric: tabular-nums; }
+.readout { font: 400 15px/1.7 var(--mono); color: #cfe3ef; background: var(--bg); border: 1px dashed var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+.readout .big { font: 800 30px/1.1 var(--display); color: var(--cyan); }
+.readout .warn { color: var(--amber); }
+button.btn { font: 700 16px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; color: var(--bg); background: var(--cyan); border: 0; border-radius: 6px; padding: 10px 16px; cursor: pointer; }
+button.btn.ghost { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); }
+
+table.t { border-collapse: collapse; width: 100%; font-size: 15.5px; }
+table.t th, table.t td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.t th { font: 600 12px/1.2 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--mu); }
+table.t td:first-child { font-weight: 600; white-space: nowrap; }
+.tablewrap { overflow-x: auto; }
+
+/* phases timeline for the technician */
+.phases { display: flex; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+.phases div { padding: 10px 8px; font: 600 13px/1.2 var(--mono); color: var(--bg); text-align: center; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.phases div span { display: block; font-weight: 400; opacity: .8; }
+
+/* chrome: progress bar, slide counter, nav */
+.bar { position: fixed; left: 0; right: 0; top: 0; height: 4px; background: #111821; z-index: 5; }
+.bar i { display: block; height: 100%; width: 0; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); transition: width .25s; }
+.hud {
+  position: fixed; z-index: 5; right: max(14px, env(safe-area-inset-right, 0px)); bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  display: flex; gap: 6px; align-items: center; background: rgba(13,18,23,.92); border: 1px solid var(--line); border-radius: 999px; padding: 5px 6px 5px 14px;
+  font: 600 13px/1 var(--mono); color: var(--mu); backdrop-filter: blur(6px);
+}
+.hud button { width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel-2); color: var(--fg); font: 700 16px/1 var(--body); cursor: pointer; }
+.hud button:hover { border-color: var(--cyan); color: var(--cyan); }
+.home { position: fixed; z-index: 5; left: max(14px, env(safe-area-inset-left, 0px)); top: calc(14px + env(safe-area-inset-top, 0px)); font: 600 13px/1 var(--mono); color: var(--mu); text-decoration: none; background: rgba(13,18,23,.92); border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; }
+.home:hover { color: var(--cyan); border-color: var(--cyan); }
+.keys { font: 400 13px/1.4 var(--mono); color: var(--mu); }
+kbd { font: 600 12px/1 var(--mono); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 4px; padding: 3px 6px; background: var(--panel-2); color: var(--fg); }
+
+.hero-wall { width: 100%; max-width: 100%; aspect-ratio: 16 / 7; max-height: 42vh; object-fit: contain; }
+.tag { display: inline-block; font: 600 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--bg); background: var(--yellow); padding: 5px 8px; border-radius: 3px; }
+
+@media (max-width: 600px) {
+  body { font-size: 17px; }
+  .slide { padding-block: 64px 84px; }
+  .ctl { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) { .deck { scroll-behavior: auto; } .bar i { transition: none; } }
+</style>
+</head>
+<body>
+<div class="bar" aria-hidden="true"><i id="prog"></i></div>
+<a class="home" href="../">← TileSmith</a>
+
+<main class="deck" id="deck">
+
+<!-- 1 -->
+<section class="slide" id="s1" aria-label="Title">
+  <div class="inner">
+    <div class="cue">Cue 1 · Doors at 8 AM</div>
+    <h1>How <em>TileSmith</em> works</h1>
+    <p class="lead">A backstage tour of an LED wall app, for people who run servers, write the odd script and wonder what actually happens inside a program. No developer degree needed. Hard hat optional.</p>
+    <canvas class="demo hero-wall" id="heroWall" width="1280" height="560" aria-label="An LED wall being built tile by tile"></canvas>
+    <p class="keys">Scroll, swipe, or use <kbd>←</kbd> <kbd>→</kbd> / <kbd>Space</kbd> to move between cues. Some slides have things you can click.</p>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide" id="s2" aria-label="What the app does">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 2 · The gig</div>
+      <h2>What the app is <em>for</em></h2>
+      <p class="lead">An LED wall is a grid of tiles (cabinets) bolted together. A processor feeds them video over network cable. Before load-in, somebody has to work out the pixel map, the weight, the power and the cabling.</p>
+      <ul class="list">
+        <li>Lay out one or more walls on a <b>canvas</b>, the video raster a media server sends (say 1920 × 1080).</li>
+        <li>Paint test patterns on them so the crew can spot a bad tile from across the arena.</li>
+        <li>Do the engineering maths: pixels, kilos, watts, amps, processor ports, power circuits.</li>
+        <li>Send the result out live over the network (NDI®), to other apps on the same machine (Spout / Syphon), or to video, PNG, PSD and PDF.</li>
+        <li>And, because touring is long, a little technician walks out and builds the wall tile by tile.</li>
+      </ul>
+    </div>
+    <div class="xlate">
+      <b>Sysadmin translation</b>
+      <p>Think of it as capacity planning for a rack, with a live dashboard bolted on. Tiles are servers, the processor is the core switch, power circuits are PDUs, and the test pattern is the blinkenlights that tell you which box is dead.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide" id="s3" aria-label="One web page">
+  <div class="inner">
+    <div class="cue">Cue 3 · The big reveal</div>
+    <h2>The whole app is <em>one web page</em></h2>
+    <p class="lead">Nearly everything TileSmith does lives in a single file: <code>tilesmith-desktop/app/index.html</code>. HTML for the layout, CSS for the looks and JavaScript for the brains, all in one place. No framework, no build step, no server.</p>
+    <div class="stats">
+      <div class="stat"><span class="v">~6,300</span><span class="l">lines in index.html (some of them very long)</span></div>
+      <div class="stat"><span class="v">~2 MB</span><span class="l">file size, of which about 0.8 MB is pictures stored as text (base64)</span></div>
+      <div class="stat"><span class="v">0</span><span class="l">frameworks. Plain JavaScript and the browser's own 2D drawing canvas</span></div>
+    </div>
+    <div class="xlate">
+      <b>Sysadmin translation</b>
+      <p>It is the one-giant-bash-script approach, done on purpose. Like a self-extracting installer with its payload glued to the end, the test pattern images ride inside the file as base64 text. You can copy one file to a USB stick and the app goes with it. Open it in Chrome or Firefox and it runs in web mode.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide" id="s4" aria-label="Electron">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 4 · The road case</div>
+      <h2>Electron: a browser that <em>thinks it's an app</em></h2>
+      <p class="lead">A web page can't talk to network video drivers or write files wherever it likes. So the desktop app ships the page inside <b>Electron</b>: a copy of the Chromium browser plus Node.js, the JavaScript runtime people use for servers.</p>
+      <p>The part outside the page, <code>main.js</code>, is only <b>66 lines</b>. It opens the window, loads <code>index.html</code>, keeps the app awake while it is sending video, opens full-screen output windows on other displays, takes bug-report screenshots, and hands over to the installer when you update.</p>
+    </div>
+    <div class="flow" aria-label="Diagram of Electron's two processes">
+      <div class="box amb"><strong>Main process</strong><small>main.js · window manager, displays, power blocker, updater</small></div>
+      <div class="arrow">IPC messages ("ts-displays", "ts-capture", "output-active")</div>
+      <div class="box"><strong>Renderer: index.html</strong><small>the whole app: UI, maths, drawing, patterns, animation</small></div>
+      <div class="arrow">Node.js calls straight from the page</div>
+      <div class="box gry"><strong>Your computer</strong><small>files, ffmpeg, NDI® runtime, SpoutDX.dll, Syphon</small></div>
+      <div class="xlate" style="margin-top:6px">
+        <b>Sysadmin translation</b>
+        <p>Chromium in kiosk mode, with a tiny supervisor daemon next to it. IPC is like a local socket between the two: one side asks "which monitors are plugged in?", the other answers.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide" id="s5" aria-label="State">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 5 · The show file</div>
+      <h2>Everything you set lives in <em>one object</em> called <code style="font-size:.7em">S</code></h2>
+      <p class="lead">Canvas size, border colour, which processor, the crew's names: every setting is a key in one JavaScript object. Each wall has its own object too. The UI always edits <code>S</code>; when you pick another wall, that wall's settings are copied in and out.</p>
+      <p>Change anything and, 400 ms after you stop fiddling, the app writes it all to disk as JSON. On load it checks every value's type and clamps it to its limits, so a hand-edited file can't set the canvas to minus four pixels.</p>
+    </div>
+    <div class="inner">
+<pre><span class="c">// state.json (shortened)</span>
+{
+  <span class="k">"sv"</span>: <span class="n">23</span>,            <span class="c">// save format version</span>
+  <span class="k">"S"</span>: {
+    <span class="k">"cw"</span>: <span class="n">1920</span>, <span class="k">"ch"</span>: <span class="n">1080</span>, <span class="c">// canvas size</span>
+    <span class="k">"bc"</span>: <span class="s">"#22d3ee"</span>,      <span class="c">// tile border colour</span>
+    <span class="k">"ids"</span>: <span class="k">true</span>,          <span class="c">// show tile IDs</span>
+    <span class="k">"speed"</span>: <span class="n">1</span>            <span class="c">// build animation speed</span>
+  },
+  <span class="k">"walls"</span>: [ { <span class="c">/* one per LED wall */</span> } ],
+  <span class="k">"crew"</span>: [ <span class="c">/* Marcus, Elena, ... */</span> ]
+}</pre>
+      <div class="xlate">
+        <b>Sysadmin translation</b>
+        <p>A config file that rewrites itself, with input validation on read. It lives in <code>%APPDATA%\TileSmith</code> on Windows and <code>~/Library/Application Support/TileSmith</code> on a Mac. In a browser it goes in localStorage instead. "Reset saved settings" is <code>rm state.json</code> with a nicer button.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide" id="s6" aria-label="Draw loop">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 6 · The render loop</div>
+      <h2>Redraw the wall <em>60 times a second</em></h2>
+      <p class="lead">The picture you see is not stored anywhere. Each frame the app wipes the canvas black and paints it again, layer by layer, like a scenic painter who works back to front.</p>
+      <p>When nothing moves it slows down to four redraws a second, a safety net that costs almost nothing. Tick the layers on the right to see each one go on.</p>
+      <div class="xlate">
+        <b>Sysadmin translation</b>
+        <p>A cron job that fires every 16.7 ms and regenerates a report from scratch. Stateless and dumb on purpose: if something goes wrong in one frame, the next one fixes it.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <canvas class="demo" id="layers" width="800" height="450" aria-label="Wall drawn in layers"></canvas>
+      <div class="toggles" id="layerToggles">
+        <label><input type="checkbox" id="L1" checked> 1 · Unbuilt outlines</label>
+        <label><input type="checkbox" id="L2" checked> 2 · Test pattern</label>
+        <label><input type="checkbox" id="L3" checked> 3 · Borders + IDs</label>
+        <label><input type="checkbox" id="L4" checked> 4 · Position arrows</label>
+        <label><input type="checkbox" id="L5" checked> 5 · Data path</label>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide" id="s7" aria-label="Test patterns">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 7 · Test patterns</div>
+      <h2>A test pattern is <em>just arithmetic</em></h2>
+      <p class="lead">There are about 25 patterns. Most aren't pictures at all; they're a few lines of maths run for every tile. Take <b>tileshade-cycle</b>: every tile cycles red, green, blue, and no tile ever matches its neighbour.</p>
+<pre>colour = [red, green, blue][(col + 2 × row + k) mod 3]
+<span class="c">// k goes up by one every 2.5 seconds</span></pre>
+      <p>Step one column right and the number goes up by 1. Step one row down and it goes up by 2. Neither is a multiple of 3, so neighbours always differ. That's the whole trick.</p>
+    </div>
+    <div class="panel">
+      <canvas class="demo" id="cyc" width="800" height="450" aria-label="Tiles cycling red, green and blue"></canvas>
+      <p class="mu" style="font-size:15px">Live: the same formula, running in your browser right now.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide" id="s8" aria-label="Data wiring">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 8 · Data</div>
+      <h2>Processor ports are <em>uplinks</em></h2>
+      <p class="lead">Each processor port drives a daisy chain of tiles over a network cable. A port can only carry so many pixels (a NovaStar 1G port: 650,000 at 60 Hz, 8-bit). Fill it and you need another port.</p>
+<pre>tile pixels    = tile width × tile height
+tiles per port = floor( port pixels ÷ tile pixels )</pre>
+      <p>TileSmith knows the figures for about 30 processors (Brompton, NovaStar, Megapixel, ROE), adjusts them for frame rate and bit depth, then snakes the cable through the wall and labels the ends <b>P1</b> (port) and <b>R1</b> (return).</p>
+      <div class="xlate">
+        <b>Sysadmin translation</b>
+        <p>Bandwidth planning. A 1 Gb uplink can only carry so much, and a return cable at the end of the chain is your redundant path, like closing a ring.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Try it</h3>
+      <div class="ctl">
+        <label for="dpPort">Processor port
+          <select id="dpPort">
+            <option value="650000">NovaStar 1G port (650,000 px)</option>
+            <option value="525000">Brompton 1G port (525,000 px)</option>
+            <option value="401000">Megapixel HELIOS (401,000 px)</option>
+          </select>
+        </label>
+        <label for="dpTile">Tile size (px)
+          <select id="dpTile">
+            <option value="176x176">176 × 176 (500 mm, 2.8 mm pitch)</option>
+            <option value="192x192" selected>192 × 192 (500 mm, 2.6 mm pitch)</option>
+            <option value="256x256">256 × 256 (500 mm, 1.9 mm pitch)</option>
+            <option value="128x128">128 × 128 (500 mm, 3.9 mm pitch)</option>
+          </select>
+        </label>
+        <label for="dpCols">Columns <input id="dpCols" type="number" min="1" max="60" value="20"></label>
+        <label for="dpRows">Rows <input id="dpRows" type="number" min="1" max="40" value="10"></label>
+      </div>
+      <div class="readout" id="dpOut" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide" id="s9" aria-label="Power">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 9 · Power</div>
+      <h2>Don't trip the <em>breaker</em></h2>
+      <p class="lead">Each circuit can only feed so many watts. TileSmith works out how many tiles fit on one, chains them up, and spreads circuits across the three phases of a distro so no leg is overloaded.</p>
+<pre>usable watts = volts × amps × 0.8 × power factor
+tiles per circuit = floor( usable watts ÷ tile max watts )</pre>
+      <p>The 0.8 is the "load circuits to 80%" rule electricians use for continuous loads. A Socapex cable carries 6 circuits, so circuit 7 starts cable 2.</p>
+      <div class="xlate">
+        <b>Sysadmin translation</b>
+        <p>Exactly the sum you do before racking another server on a PDU, with the same 80% headroom habit.</p>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Try it</h3>
+      <div class="ctl">
+        <label for="pwV">Volts
+          <select id="pwV"><option>120</option><option>208</option><option selected>230</option><option>240</option></select>
+        </label>
+        <label for="pwA">Breaker amps <input id="pwA" type="number" min="5" max="63" value="16"></label>
+        <label for="pwW">Tile max watts <input id="pwW" type="number" min="10" max="1500" value="150"></label>
+        <label for="pwN">Tiles on the wall <input id="pwN" type="number" min="1" max="2000" value="200"></label>
+      </div>
+      <div class="readout" id="pwOut" aria-live="polite"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 -->
+<section class="slide" id="s10" aria-label="Outputs">
+  <div class="inner">
+    <div class="cue">Cue 10 · Getting the picture out</div>
+    <h2>Three ways <em>out of the box</em></h2>
+    <p class="lead">Every frame, the app reads the finished canvas back as raw pixels (red, green, blue, alpha: 4 bytes each, so a 1920 × 1080 frame is about 8 MB) and hands the same buffer to whoever wants it.</p>
+    <div class="rowflow">
+      <div class="box"><strong>NDI®</strong><small>video over your network. Media servers on the LAN see "TileSmith" as a source.</small></div>
+      <div class="arrow">same frame</div>
+      <div class="box"><strong>Spout / Syphon</strong><small>shares the picture with other apps on the same computer through the graphics card. No network, no compression.</small></div>
+      <div class="arrow">same frame</div>
+      <div class="box"><strong>ffmpeg</strong><small>raw frames are piped into ffmpeg, which writes MP4 or HAP video.</small></div>
+    </div>
+    <div class="two" style="gap:20px">
+      <div class="xlate">
+        <b>Sysadmin translation</b>
+        <p>ffmpeg is driven exactly like you'd drive it from a shell: <code>... | ffmpeg -f rawvideo -pix_fmt rgba -i - out.mp4</code>. The app is just the thing on the left of the pipe.</p>
+      </div>
+      <div class="xlate">
+        <b>Sysadmin translation</b>
+        <p>NDI® and Spout are C libraries (a <code>.dll</code> / <code>.so</code>). A small add-on called koffi lets JavaScript call their functions directly, the way Python's ctypes does. No compiler involved.</p>
+      </div>
+    </div>
+    <p class="mu">The status line shows the per-frame budget, for example: <span class="mono" style="color:var(--yellow)">render 0.4 ms, read 10.1 ms, send 0.0 ms</span>. Reading pixels back off the graphics card is the slow part.</p>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide" id="s11" aria-label="Technician">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 11 · Enter the crew</div>
+      <h2>The technician is a <em>state machine</em></h2>
+      <p class="lead">For every tile, the tech goes through the same five phases, then starts on the next tile. The tile only "lights" (shows the pattern) once it locks in.</p>
+      <div class="phases" role="img" aria-label="Phases: walk in 0.8 s, move 1.1 s, place 0.8 s, lock 0.6 s, walk out 1.5 s">
+        <div style="flex:0.8;background:#22d3ee">walk in<span>0.8 s</span></div>
+        <div style="flex:1.1;background:#67e8f9">move<span>1.1 s</span></div>
+        <div style="flex:0.8;background:#ffb020">place<span>0.8 s</span></div>
+        <div style="flex:0.6;background:#ffe066">lock<span>0.6 s</span></div>
+        <div style="flex:1.5;background:#8b98a5">walk out<span>1.5 s</span></div>
+      </div>
+      <p>Each wall runs at a slightly different speed and starts a little later than the last, so a show with four walls doesn't look like a synchronised swimming team. The crew rotates so one person is never on two walls at once.</p>
+      <p>The <b>Hand-drawn</b> style uses real motion-captured workers rendered in 3D (three.js), then inked like a cartoon. Those files are about 5 MB, so they only load when you pick that style.</p>
+    </div>
+    <div class="xlate">
+      <b>Sysadmin translation</b>
+      <p>Same idea as a service going <code>starting → running → stopping → stopped</code>. Each phase has a timer; when it runs out, move to the next state. Loading the 3D crew only when asked is lazy loading, like a kernel module that is only inserted when the hardware shows up.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 12 -->
+<section class="slide" id="s12" aria-label="DVD screensaver">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 12 · Intermission</div>
+      <h2>Yes, it <em>hits the corner</em></h2>
+      <p class="lead">There is a DVD screensaver. Of course there is. And because this is a serious engineering tool, it has a dial for how often the logo lands exactly in the corner.</p>
+      <p>After each bounce the app rolls the dice. On a hit it "unfolds" the walls like mirrors and picks a straight line that reaches a corner. On a miss it nudges the angle just enough to dodge one.</p>
+      <p>The <b>perfect loop</b> option picks two whole numbers with no common factor so the logo ends up exactly where it started, in the same colour, after a set time. Export that as a video and it loops forever without a seam.</p>
+    </div>
+    <div class="panel">
+      <canvas class="demo" id="dvd" width="800" height="450" aria-label="A logo bouncing around a wall"></canvas>
+      <div class="toggles"><label for="dvdChance">Corner chance <input id="dvdChance" type="range" min="0" max="100" value="60" style="width:140px"></label><span class="mono mu" id="dvdStats" style="font-size:13px;align-self:center"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 -->
+<section class="slide" id="s13" aria-label="Everywhere">
+  <div class="inner">
+    <div class="cue">Cue 13 · On tour</div>
+    <h2>One page, <em>every platform</em></h2>
+    <p class="lead">Because the app is a web page, the same file becomes every version you can download.</p>
+    <div class="tablewrap">
+      <table class="t">
+        <thead><tr><th>Where</th><th>Wrapped in</th><th>What it adds</th></tr></thead>
+        <tbody>
+          <tr><td>Windows, Mac, Linux</td><td>Electron, packaged by electron-builder</td><td>NDI®, Spout (Windows), Syphon (Mac), video export, saving files</td></tr>
+          <tr><td>Android, iPhone, iPad</td><td>Capacitor, a native shell around a web view</td><td>Share sheet, keep screen awake, phone storage</td></tr>
+          <tr><td>Any browser</td><td>Nothing</td><td>Everything that doesn't need the operating system</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>The page also speaks 10 languages. Every piece of on-screen text is looked up in a table by key, so switching to Deutsch or 日本語 is a dictionary swap, not a second app.</p>
+    <div class="xlate">
+      <b>Sysadmin translation</b>
+      <p>One container image, three runtimes. The phone build even has a script, <code>sync-web.js</code>, that copies the desktop page in before each build, so there's only ever one copy of the code to fix.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 14 -->
+<section class="slide" id="s14" aria-label="Release pipeline">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 14 · Load-out</div>
+      <h2>How a release <em>ships itself</em></h2>
+      <p class="lead">Nobody builds TileSmith on their laptop. Pressing one button on GitHub starts a chain of robots (GitHub Actions) on rented machines.</p>
+      <ul class="list">
+        <li>Every proposed change gets a test build before it is merged, so a broken build never reaches the main branch.</li>
+        <li>The app's <b>Check for updates</b> reads the latest GitHub release and offers the file that matches your system.</li>
+        <li>The builds are unsigned (certificates cost money every year), which is why every file is scanned on VirusTotal and the results are published next to the code.</li>
+      </ul>
+    </div>
+    <div class="flow">
+      <div class="box amb"><strong>Build and release</strong><small>Windows .exe, Mac .dmg/.pkg, Linux AppImage, .deb, .rpm, .pacman, Snap, Flatpak, Android .apk</small></div>
+      <div class="arrow">then, by itself</div>
+      <div class="box"><strong>Build documentation</strong><small>Python drives a headless browser, takes screenshots of the real app, circles the buttons and writes the PDF manuals</small></div>
+      <div class="arrow">then, by itself</div>
+      <div class="box gry"><strong>VirusTotal scan</strong><small>uploads every file and writes the results to VIRUSTOTAL.md</small></div>
+      <div class="xlate" style="margin-top:6px">
+        <b>Sysadmin translation</b>
+        <p>A CI pipeline, or three Ansible playbooks chained with handlers. Each stage only starts when the last one succeeds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 15 -->
+<section class="slide" id="s15" aria-label="Try it yourself">
+  <div class="inner two">
+    <div class="inner">
+      <div class="cue">Cue 15 · Your turn</div>
+      <h2>Poke at it <em>yourself</em></h2>
+      <p class="lead">It's open source (GPL-3.0), so you can read every line. A good first evening:</p>
+<pre><span class="c"># get the code</span>
+git clone https://github.com/kingof9x/TileSmith
+cd TileSmith/tilesmith-desktop
+
+<span class="c"># run the desktop app (needs Node.js)</span>
+npm install
+npm start
+
+<span class="c"># or skip all that: open app/index.html in a browser</span>
+<span class="c"># (web mode: everything except NDI®, Spout, Syphon and video export)</span></pre>
+    </div>
+    <div class="inner">
+      <div class="xlate">
+        <b>Where to start reading</b>
+        <p><code>TileSmith-App-Spec.md</code> describes every feature, number and formula in plain English. It's written so that someone could rebuild the app from it, which also makes it the best map of the code.</p>
+      </div>
+      <div class="xlate">
+        <b>Things to try</b>
+        <p>Search <code>index.html</code> for <code>tileshade</code> and change a colour. Find the crew names and add yours. Break something, then put it back. That's how everyone learned.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 16 -->
+<section class="slide" id="s16" aria-label="Glossary and credits">
+  <div class="inner">
+    <div class="cue">Cue 16 · Curtain call</div>
+    <h2>The <em>cheat sheet</em></h2>
+    <div class="tablewrap">
+      <table class="t">
+        <thead><tr><th>Word</th><th>In the app</th><th>In your world</th></tr></thead>
+        <tbody>
+          <tr><td>HTML / CSS / JS</td><td>The page's structure, looks and logic</td><td>The document, the theme, the script</td></tr>
+          <tr><td>Canvas 2D</td><td>The drawing surface the wall is painted on</td><td>A framebuffer you draw into</td></tr>
+          <tr><td>Electron</td><td>Chromium + Node.js shipped as a desktop app</td><td>A browser in kiosk mode with a supervisor</td></tr>
+          <tr><td>IPC</td><td>Messages between the window and main.js</td><td>A local socket</td></tr>
+          <tr><td>FFI (koffi)</td><td>Calling the NDI® and Spout C libraries</td><td>Python ctypes, LD_PRELOAD's polite cousin</td></tr>
+          <tr><td>State object <code>S</code></td><td>Every setting, saved as state.json</td><td>A config file with validation</td></tr>
+          <tr><td>Render loop</td><td>Wipe and redraw, up to 60 times a second</td><td>A very impatient cron job</td></tr>
+          <tr><td>GitHub Actions</td><td>Builds, manuals and virus scans on release</td><td>CI / your deploy pipeline</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="mu">TileSmith is made by Callum Davenport-Lambton and released under GPL-3.0-or-later. NDI® is a registered trademark of Vizrt NDI AB. <a href="https://github.com/kingof9x/TileSmith">Source on GitHub</a> · <a href="https://github.com/kingof9x/TileSmith/releases/latest">Download the latest release</a></p>
+  </div>
+</section>
+
+</main>
+
+<nav class="hud" aria-label="Slide navigation">
+  <span id="count">1 / 16</span>
+  <button id="prev" aria-label="Previous slide">‹</button>
+  <button id="next" aria-label="Next slide">›</button>
+</nav>
+
+<script>
+(() => {
+  'use strict';
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------------- navigation ---------------- */
+  const deck = document.getElementById('deck');
+  const slides = [...document.querySelectorAll('.slide')];
+  const count = document.getElementById('count'), prog = document.getElementById('prog');
+  let cur = 0;
+  const go = (i) => { i = Math.max(0, Math.min(slides.length - 1, i)); slides[i].scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' }); };
+  const io = new IntersectionObserver((es) => {
+    es.forEach((e) => { if (e.isIntersecting) {
+      cur = slides.indexOf(e.target);
+      count.textContent = (cur + 1) + ' / ' + slides.length;
+      prog.style.width = ((cur + 1) / slides.length * 100) + '%';
+      try { history.replaceState(null, '', '#' + e.target.id); } catch (_) {}
+    } });
+  }, { root: deck, threshold: 0.5 });
+  slides.forEach((s) => io.observe(s));
+  document.getElementById('prev').onclick = () => go(cur - 1);
+  document.getElementById('next').onclick = () => go(cur + 1);
+  addEventListener('keydown', (e) => {
+    if (/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+    if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); go(cur + 1); }
+    else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); go(cur - 1); }
+    else if (e.key === 'Home') { e.preventDefault(); go(0); }
+    else if (e.key === 'End') { e.preventDefault(); go(slides.length - 1); }
+  });
+  const start = slides.findIndex((s) => '#' + s.id === location.hash);
+  if (start > 0) slides[start].scrollIntoView();
+
+  /* ---------------- shared drawing helpers ---------------- */
+  const CYAN = '#22d3ee', LINE = '#2a3340', AMBER = '#ffb020', YELLOW = '#ffe066';
+  const shade = (c, r) => (c + r) % 2 ? '#3b6f8f' : '#9db7c7';       // tileshade checkerboard (colour and colour mixed with white)
+  function tileshade(ctx, x, y, w, h, col, row) { ctx.fillStyle = shade(col, row); ctx.fillRect(x, y, w, h); }
+  function border(ctx, x, y, w, h, bt) {
+    ctx.strokeStyle = CYAN; ctx.lineWidth = bt; ctx.strokeRect(x + bt / 2, y + bt / 2, w - bt, h - bt);
+    ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1; ctx.strokeRect(x + bt + .5, y + bt + .5, w - 2 * bt - 1, h - 2 * bt - 1);
+  }
+  function label(ctx, txt, cx, cy, fs, color) {
+    ctx.font = `700 ${fs}px Barlow, sans-serif`; const tw = ctx.measureText(txt).width;
+    ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(cx - tw / 2 - 4, cy - fs * .62, tw + 8, fs * 1.24);
+    ctx.fillStyle = color || '#fff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(txt, cx, cy + 1);
+  }
+  // Only animate canvases that are on screen
+  const visible = new Set();
+  const vio = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)), { threshold: 0.05 });
+
+  /* ---------------- 1. hero: the wall builds itself ---------------- */
+  const hero = document.getElementById('heroWall'), hc = hero.getContext('2d');
+  vio.observe(hero);
+  const HC = 14, HR = 6, HT = 1.7;   // columns, rows, seconds per tile
+  function drawHero(t) {
+    const W = hero.width, H = hero.height, tw = Math.floor((W - 80) / HC), th = Math.floor((H - 60) / HR);
+    const tsz = Math.min(tw, th), ox = (W - tsz * HC) / 2, oy = (H - tsz * HR) / 2;
+    hc.fillStyle = '#050608'; hc.fillRect(0, 0, W, H);
+    const total = HC * HR, cycle = total * HT * 0.35 + 3;
+    const p = reduced ? total : Math.min(total, ((t / 1000) % cycle) / (HT * 0.35));
+    const lit = Math.floor(p);
+    for (let i = 0; i < total; i++) {
+      // ground stack from bottom-left, row by row
+      const col = i % HC, row = HR - 1 - Math.floor(i / HC), x = ox + col * tsz, y = oy + row * tsz;
+      if (i < lit) {
+        tileshade(hc, x, y, tsz, tsz, col, row); border(hc, x, y, tsz, tsz, 2);
+      } else {
+        hc.setLineDash([5, 5]); hc.strokeStyle = LINE; hc.lineWidth = 1.5; hc.strokeRect(x + 1, y + 1, tsz - 2, tsz - 2); hc.setLineDash([]);
+      }
+    }
+    if (lit >= total) {
+      const w = tsz * HC, h = tsz * HR;
+      hc.strokeStyle = 'rgba(255,255,255,.9)'; hc.lineWidth = 2;
+      hc.beginPath(); hc.moveTo(ox, oy); hc.lineTo(ox + w, oy + h); hc.moveTo(ox + w, oy); hc.lineTo(ox, oy + h);
+      hc.arc(ox + w / 2 + h / 4, oy + h / 2, h / 4, 0, Math.PI * 2); hc.stroke();
+      // wall name in a light box, size in a dark box, as on the real tileshade pattern
+      hc.font = '700 40px Barlow, sans-serif'; const nw = hc.measureText('MAIN WALL').width;
+      hc.fillStyle = 'rgba(240,240,240,.95)'; hc.fillRect(ox + w / 2 - nw / 2 - 8, oy + h / 2 - 42, nw + 16, 50);
+      hc.fillStyle = '#111'; hc.textAlign = 'center'; hc.textBaseline = 'middle'; hc.fillText('MAIN WALL', ox + w / 2, oy + h / 2 - 16);
+      label(hc, `W ${HC * 192} X H ${HR * 192}`, ox + w / 2, oy + h / 2 + 30, 26);
+    } else if (lit < total) {
+      // the tile being carried in, with a lock sparkle as it lands
+      const f = p - lit, col = lit % HC, row = HR - 1 - Math.floor(lit / HC);
+      const x = ox + col * tsz, y = oy + row * tsz;
+      const sx = ox + (col < HC / 2 ? -tsz : W - ox), cx = sx + (x - sx) * Math.min(1, f * 1.4);
+      hc.fillStyle = '#1b2028'; hc.fillRect(cx + 3, y + 3, tsz - 6, tsz - 6);
+      hc.strokeStyle = AMBER; hc.lineWidth = 2; hc.strokeRect(cx + 3, y + 3, tsz - 6, tsz - 6);
+      if (f > .75) { const r = (f - .75) * 4 * tsz; hc.strokeStyle = `rgba(255,224,102,${1 - (f - .75) * 4})`; hc.lineWidth = 3; hc.beginPath(); hc.arc(x + tsz / 2, y + tsz / 2, r, 0, 7); hc.stroke(); }
+    }
+  }
+
+  /* ---------------- 6. the layers demo ---------------- */
+  const lay = document.getElementById('layers'), lc = lay.getContext('2d');
+  function drawLayers() {
+    const on = (n) => document.getElementById('L' + n).checked;
+    const W = lay.width, H = lay.height, C = 6, R = 3, ts = 128, ox = (W - C * ts) / 2, oy = (H - R * ts) / 2;
+    const BUILT = 14;   // tiles placed so far (ground stack, bottom left, row by row)
+    lc.fillStyle = '#050608'; lc.fillRect(0, 0, W, H);
+    const cells = []; for (let i = 0; i < C * R; i++) { const col = i % C, row = R - 1 - Math.floor(i / C); cells.push({ i, col, row, x: ox + col * ts, y: oy + row * ts, lit: i < BUILT }); }
+    if (on(1)) cells.filter((c) => !c.lit).forEach((c) => { lc.setLineDash([6, 6]); lc.strokeStyle = LINE; lc.lineWidth = 2; lc.strokeRect(c.x + 1, c.y + 1, ts - 2, ts - 2); lc.setLineDash([]); });
+    if (on(2)) cells.filter((c) => c.lit).forEach((c) => tileshade(lc, c.x, c.y, ts, ts, c.col, c.row));
+    if (on(3)) cells.filter((c) => c.lit).forEach((c) => {
+      border(lc, c.x, c.y, ts, ts, 3);
+      const id = 'T' + String(c.row * C + c.col + 1).padStart(2, '0');
+      label(lc, `${id} [C${c.col + 1}:R${c.row + 1}]`, c.x + ts / 2, c.y + ts / 2 - 6, 17);
+      label(lc, `X ${c.col * 192}-${c.col * 192 + 191}`, c.x + ts / 2, c.y + ts / 2 + 18, 14, YELLOW);
+    });
+    if (on(4)) cells.filter((c) => c.lit).forEach((c) => {
+      lc.font = '700 15px Barlow, sans-serif'; const s = `↑${R - c.row} →${c.col + 1}`, w = lc.measureText(s).width;
+      lc.fillStyle = 'rgba(0,0,0,.65)'; lc.fillRect(c.x + 9, c.y + 10, w + 12, 22);
+      lc.fillStyle = '#fff'; lc.textAlign = 'left'; lc.textBaseline = 'middle'; lc.fillText(s, c.x + 15, c.y + 21);
+    });
+    if (on(5)) {
+      // a serpentine data path: row 3 left to right, row 2 right to left, row 1 left to right
+      const pts = []; for (let r = R - 1; r >= 0; r--) { const dir = (R - 1 - r) % 2 === 0; for (let k = 0; k < C; k++) { const col = dir ? k : C - 1 - k; pts.push([ox + col * ts + ts * .5, oy + r * ts + ts * .84]); } }
+      pts.length = BUILT;   // only built tiles are wired
+      lc.strokeStyle = '#ff7ad9'; lc.lineWidth = 3.5; lc.beginPath(); pts.forEach((p, i) => i ? lc.lineTo(p[0], p[1]) : lc.moveTo(p[0], p[1])); lc.stroke();
+      const dot = (p, t, col) => { lc.fillStyle = col; lc.beginPath(); lc.arc(p[0], p[1], 13, 0, 7); lc.fill(); lc.fillStyle = '#000'; lc.font = '700 12px Barlow, sans-serif'; lc.textAlign = 'center'; lc.textBaseline = 'middle'; lc.fillText(t, p[0], p[1] + 1); };
+      dot(pts[0], 'P1', '#ff7ad9'); dot(pts[pts.length - 1], 'R1', '#ffd1f0');
+    }
+  }
+  document.getElementById('layerToggles').addEventListener('change', drawLayers);
+
+  /* ---------------- 7. tileshade-cycle ---------------- */
+  const cyc = document.getElementById('cyc'), cc = cyc.getContext('2d');
+  vio.observe(cyc);
+  const TCYC = ['#ff0000', '#00ff00', '#0000ff'];
+  function drawCycle(t) {
+    const W = cyc.width, H = cyc.height, C = 8, R = 4, ts = Math.floor(Math.min((W - 40) / C, (H - 40) / R)), ox = (W - C * ts) / 2, oy = (H - R * ts) / 2;
+    const sec = reduced ? 0 : t / 1000, k = Math.floor(sec / 2.5), into = sec % 2.5;
+    // in the last 1.5 s of each 2.5 s step the next colour slides in from the left (smoothstep)
+    const s = into < 1 ? 0 : (u => u * u * (3 - 2 * u))((into - 1) / 1.5);
+    cc.fillStyle = '#050608'; cc.fillRect(0, 0, W, H);
+    for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) {
+      const x = ox + c * ts, y = oy + r * ts, now = TCYC[(c + 2 * r + k) % 3], next = TCYC[(c + 2 * r + k + 1) % 3];
+      cc.save(); cc.beginPath(); cc.rect(x, y, ts, ts); cc.clip();
+      cc.fillStyle = now; cc.fillRect(x + s * ts, y, ts, ts);
+      cc.fillStyle = next; cc.fillRect(x - ts + s * ts, y, ts, ts);
+      cc.restore();
+      border(cc, x, y, ts, ts, 2);
+      label(cc, `${(c + 2 * r + k) % 3}`, x + ts / 2, y + ts / 2, 18);
+    }
+  }
+
+  /* ---------------- 8. data calculator ---------------- */
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n) => n.toLocaleString('en-US');
+  function calcData() {
+    const ppp = +$('dpPort').value, [tw, th] = $('dpTile').value.split('x').map(Number);
+    const cols = Math.max(1, Math.min(60, +$('dpCols').value || 1)), rows = Math.max(1, Math.min(40, +$('dpRows').value || 1));
+    const tiles = cols * rows, t = Math.floor(ppp / (tw * th)), ports = Math.ceil(tiles / t), px = tiles * tw * th;
+    $('dpOut').innerHTML =
+      `wall: ${cols} × ${rows} = ${fmt(tiles)} tiles, ${fmt(cols * tw)} × ${fmt(rows * th)} px (${(px / 1e6).toFixed(2)} MP)<br>` +
+      `tiles per port = floor(${fmt(ppp)} ÷ (${tw} × ${th})) = <b>${t}</b><br>` +
+      `<span class="big">${ports} port${ports > 1 ? 's' : ''}</span> <span class="mu">+ ${ports} return${ports > 1 ? 's' : ''} for redundancy</span>`;
+  }
+  ['dpPort', 'dpTile', 'dpCols', 'dpRows'].forEach((id) => $(id).addEventListener('input', calcData));
+
+  /* ---------------- 9. power calculator ---------------- */
+  function calcPower() {
+    const V = +$('pwV').value, A = Math.max(1, +$('pwA').value || 1), W = Math.max(1, +$('pwW').value || 1), N = Math.max(1, +$('pwN').value || 1);
+    const usable = V * A * 0.8, t = Math.floor(usable / W);
+    if (t < 1) { $('pwOut').innerHTML = `usable = ${V} V × ${A} A × 0.8 = ${fmt(usable)} W<br><span class="warn">One tile needs more than a whole circuit. Pick a bigger breaker.</span>`; return; }
+    const circ = Math.ceil(N / t), soca = Math.ceil(circ / 6), kw = N * W / 1000;
+    $('pwOut').innerHTML =
+      `usable = ${V} V × ${A} A × 0.8 = <b>${fmt(usable)} W</b> per circuit<br>` +
+      `tiles per circuit = floor(${fmt(usable)} ÷ ${W}) = <b>${t}</b><br>` +
+      `<span class="big">${circ} circuit${circ > 1 ? 's' : ''}</span> <span class="mu">on ${soca} Socapex cable${soca > 1 ? 's' : ''} (${soca * 6 - circ} spare)</span><br>` +
+      `peak ${kw.toFixed(1)} kW, typical about ${(kw * 0.4).toFixed(1)} kW (40%)`;
+  }
+  ['pwV', 'pwA', 'pwW', 'pwN'].forEach((id) => $(id).addEventListener('input', calcPower));
+
+  /* ---------------- 12. DVD bounce with a corner dial ---------------- */
+  const dvd = document.getElementById('dvd'), dc = dvd.getContext('2d');
+  vio.observe(dvd);
+  const L = { w: 150, h: 64, x: 120, y: 80, vx: 190, vy: 150, hue: 190, bounces: 0, corners: 0, flash: 0 };
+  let lastT = 0;
+  function aimCorner() {
+    // pick the corner in the current direction of travel and aim straight at it
+    const W = dvd.width - L.w, H = dvd.height - L.h, sp = Math.hypot(L.vx, L.vy);
+    const tx = L.vx > 0 ? W : 0, ty = L.vy > 0 ? H : 0, dx = tx - L.x, dy = ty - L.y, d = Math.hypot(dx, dy) || 1;
+    const ang = Math.atan2(Math.abs(dy), Math.abs(dx));
+    if (ang > 0.25 && ang < 1.32) { L.vx = dx / d * sp; L.vy = dy / d * sp; }
+  }
+  function bounce() {
+    L.bounces++; L.hue = (L.hue + 70 + Math.random() * 220) % 360;
+    if (Math.random() * 100 < +$('dvdChance').value * 0.45) aimCorner();
+  }
+  function stepDvd(t) {
+    const dt = Math.min(0.05, (t - lastT) / 1000 || 0); lastT = t;
+    const W = dvd.width, H = dvd.height;
+    if (!reduced) {
+      L.x += L.vx * dt; L.y += L.vy * dt;
+      let hx = false, hy = false;
+      if (L.x <= 0) { L.x = 0; L.vx = Math.abs(L.vx); hx = true; } else if (L.x >= W - L.w) { L.x = W - L.w; L.vx = -Math.abs(L.vx); hx = true; }
+      if (L.y <= 0) { L.y = 0; L.vy = Math.abs(L.vy); hy = true; } else if (L.y >= H - L.h) { L.y = H - L.h; L.vy = -Math.abs(L.vy); hy = true; }
+      const near = (a, b) => Math.abs(a - b) < 6;
+      const corner = (hx && (near(L.y, 0) || near(L.y, H - L.h))) || (hy && (near(L.x, 0) || near(L.x, W - L.w)));
+      if (corner) { L.corners++; L.flash = 1; }
+      if (hx || hy) bounce();
+    }
+    dc.fillStyle = '#050608'; dc.fillRect(0, 0, W, H);
+    if (L.flash > 0) { dc.fillStyle = `rgba(255,224,102,${L.flash * .25})`; dc.fillRect(0, 0, W, H); L.flash = Math.max(0, L.flash - dt * 1.5); }
+    // logo: five squares + TILESMITH
+    const col = `hsl(${L.hue} 90% 60%)`; dc.fillStyle = col;
+    const q = 10; [[0, 0], [1, 0], [0, 1], [1, 1], [2, 1]].forEach(([a, b]) => dc.fillRect(L.x + 6 + a * (q + 3), L.y + 14 + b * (q + 3), q, q));
+    dc.font = '800 30px "Barlow Condensed", sans-serif'; dc.textAlign = 'left'; dc.textBaseline = 'middle'; dc.fillText('TILESMITH', L.x + 50, L.y + 34);
+    if (L.flash > .6) label(dc, 'CORNER!', W / 2, H / 2, 48, YELLOW);
+    $('dvdStats').textContent = `${L.bounces} bounces · ${L.corners} corner hits`;
+  }
+
+  /* ---------------- one animation loop for everything on screen ---------------- */
+  function frame(t) {
+    if (visible.has(hero)) drawHero(t);
+    if (visible.has(cyc)) drawCycle(t);
+    if (visible.has(dvd)) stepDvd(t); else lastT = t;
+    if (!reduced) requestAnimationFrame(frame);
+  }
+  const boot = () => { drawLayers(); calcData(); calcPower(); drawHero(0); drawCycle(0); stepDvd(0); requestAnimationFrame(frame); };
+  (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(boot, boot);
+})();
+</script>
+</body>
+</html>
