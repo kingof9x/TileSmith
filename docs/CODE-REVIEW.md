@@ -40,7 +40,11 @@ it. The new GitHub workflow `.github/workflows/tests.yml` runs everything on eac
 | 7 | Wall totals (`wst`) added up every tile on every call, and the tile cache (`pieces`) built a 12-field key string on every call, thousands of times per frame. Tile-position labels measured their text on every tile of every frame. | Low (speed) | `pieces()` checks its cache field by field first; `wst()` is kept with the cached tiles; text widths are cached. | `stress_test.py` timings: refreshing the panels (`sync`) on ten 64 × 64 walls 360 ms -> 250-290 ms; one wired 64 × 64 wall 40 ms -> 23-28 ms; drawing about 10 % faster. |
 
 Also new: a map of how the page works at the top of its main script, section headers where they were missing, a
-one-line description above the main functions, and a header for `main.js`.
+header for `main.js`, and a comment above **every** top-level function in `index.html` (what it does, its inputs and
+outputs, and why where it is not obvious), above the main data tables (`S`, `LIM`, `WK`, `walls`, `UN`, `REC`...) and
+at each step inside the largest functions (`render`, `info`, `tick`, the input handler). About 1,280 comment lines in
+all. GitHub does not show a file this size in the browser ("View raw" works); search the file for `// name(` to find
+the comment for any function.
 
 ## Stress test results
 
