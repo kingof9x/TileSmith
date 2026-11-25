@@ -5,9 +5,11 @@
 # Chinese / Japanese / Korean get a CJK system font after the UI font, and the PDF binder stays in Latin text (it is
 # written with the PDF's built-in Helvetica, which has no CJK glyphs, so nothing translated may reach it).
 # Needs Playwright with Chromium, pdftotext and pypdf. Screenshots go to $I18N_SHOTS when it is set.
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, collections, json, os, re, subprocess, sys, tempfile
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 SHOTS = os.environ.get('I18N_SHOTS')
 LANGS = ['es', 'pt-BR', 'de', 'fr', 'zh-CN', 'ja', 'ko', 'it', 'nl']
 ok = True

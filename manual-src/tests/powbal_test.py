@@ -1,10 +1,12 @@
 # Power, Fewest circuits: fewest circuits, even tiles per circuit, short snake runs (no long jumps), direction honoured
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio
 from playwright.async_api import async_playwright
 async def main():
     async with async_playwright() as p:
         b=await p.chromium.launch(); pg=await b.new_page(); errs=[]; pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html'); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(700)
+        await pg.goto(TS_APP_URL); await pg.evaluate("()=>localStorage.clear()"); await pg.reload(); await pg.wait_for_timeout(700)
         ok=True
         for cols,rows,t,d,exp in [(8,6,16,'Horizontal',[16]*3),(8,6,16,'Vertical',[12]*4),(10,6,16,'Horizontal',[15]*4),(7,5,16,'Horizontal',None),(12,4,10,'Horizontal',None)]:
             r=await pg.evaluate("""([c,r,t,d])=>{const w={cols:c,rows:r,pcorner:'Top-left',pwdir:d,pmode:'Snake',pfill:'Fewest circuits'};

@@ -1,8 +1,10 @@
 """Half tiles: Convert top/bottom row buttons (toggle), options under Size of LED Wall, STOP MARKING button, wall area follows
 the real tiles. Prints ALL OK."""
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 async def main():
     ok = True
     def chk(c, name=''):

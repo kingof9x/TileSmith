@@ -1,7 +1,9 @@
 # New Absen tiles: in the tile list, pixels match size / pitch, half tiles for PR 500x1000, wall maths sane
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 NEW = ['Absen Saturn SA2.6','Absen Saturn SA2.6 1000×500','Absen Saturn SA3.9','Absen Saturn SA3.9 1000×500','Absen PR1.9','Absen PR2.5','Absen PR2.5 500×1000',
        'Absen PR3.9','Absen PR3.9 500×1000','Absen PR5.2','Absen PR5.2 500×1000','Absen Polaris PL1.9 Pro V10','Absen Polaris PL2.9 Lite','Absen Polaris PL3.9 V10',
        'Absen KL1.5 II','Absen A27 1.5 (A2715 V3)','Absen NX2.5']

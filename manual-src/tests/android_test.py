@@ -1,10 +1,12 @@
 """Tests webview-bridge.js with a mocked Kotlin TileSmithAndroid interface (synchronous calls returning "" or an error,
 share result delivered later through window.__tsmDone like the Kotlin code does)."""
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, base64, pathlib, subprocess, sys
 from playwright.async_api import async_playwright
 SP = pathlib.Path(__file__).parent
 OUT = SP / 'aout'
-subprocess.run(['node', '/home/claude/tilesmith-desktop/android-aistudio/prepare-assets.js', str(OUT)], check=True)
+subprocess.run(['node', os.path.join(TS_DESK, 'android-aistudio', 'prepare-assets.js'), str(OUT)], check=True)
 APP = (OUT / 'tilesmith' / 'index.html').as_uri()
 MOCK = r"""
 (()=>{const calls=window.__calls=[],files=window.__files={};

@@ -1,5 +1,7 @@
 # Report a bug / feedback: button sits bottom-right of the bar next to Info, captures a
 # screenshot, lets the user mark it up, downloads the PNG and opens a pre-filled mailto: email.
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, sys
 from playwright.async_api import async_playwright
 async def m():
@@ -7,7 +9,7 @@ async def m():
         b=await p.chromium.launch(args=['--use-fake-ui-for-media-stream','--use-fake-device-for-media-stream'])
         pg=await b.new_page(viewport={'width':1400,'height':900},permissions=['camera'])
         errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html');await pg.evaluate("()=>localStorage.clear()");await pg.reload();await pg.wait_for_timeout(900)
+        await pg.goto(TS_APP_URL);await pg.evaluate("()=>localStorage.clear()");await pg.reload();await pg.wait_for_timeout(900)
         ok=True
         def chk(c,msg):
             nonlocal ok
@@ -15,7 +17,7 @@ async def m():
         bar=await pg.eval_on_selector('#bar',"e=>e.getBoundingClientRect()")
         about=await pg.eval_on_selector('[data-a=about]',"e=>e.getBoundingClientRect()")
         bug=await pg.eval_on_selector('[data-a=bugrpt]',"e=>e.getBoundingClientRect()")
-        chk(bug['right']>bar['right']-20,f"button sits at the right edge of the bar {bug} vs bar {bar}")
+        # (the right end of the bar now holds Hide Engineering Data; the bug button sits next to Info, checked below)
         chk(bug['right']>about['right'] and abs(bug['top']-about['top'])<2,f'Report a bug / feedback sits next to Info, same row {about} {bug}')
         chk(await pg.evaluate("()=>document.querySelector('[data-a=bugrpt]').textContent")=='Report a bug / feedback','button label')
         vp=await pg.eval_on_selector('#vp',"e=>e.getBoundingClientRect()")

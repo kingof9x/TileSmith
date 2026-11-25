@@ -1,7 +1,9 @@
 """Save/Open project round trip (custom images, crew, logo, walls), top bar contents, LED build buttons, Video export menu. Prints ALL OK."""
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, base64
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 PX = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
 async def main():
     ok = True

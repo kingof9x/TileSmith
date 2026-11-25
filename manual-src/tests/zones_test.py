@@ -1,9 +1,11 @@
 # Locations (Engineering › Locations; code name zones): named places the show stages its gear. Walls, distros and the processor pick a zone;
 # Engineering totals each zone, the pull sheet has a block per zone, the binder orders wall pages by zone and adds a zone map,
 # and the strip above the viewport hides a zone's walls in the viewport only.
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, os, re, subprocess, tempfile
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 OUT = os.environ.get('ZONES_OUT') or tempfile.mkdtemp(prefix='zones')
 SHOT = os.environ.get('ZONES_SHOT')
 def txt(path, first=None, last=None):

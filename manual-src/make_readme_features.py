@@ -1,6 +1,6 @@
 # Feature screenshots for the README "What's new" section, taken from the running app:
 #   python3 make_readme_features.py <app index.html> <output folder>
-# Writes one PNG per feature (power-distros, power-per-wall, cable-fibre, redundancy, rigging, cabinet-ids, locations, tile-faults, tile-catalog,
+# Writes one PNG per feature (power-distros, power-per-wall, power-draw-circuit, build-running, cable-fibre, redundancy, rigging, cabinet-ids, locations, tile-faults, tile-catalog,
 # languages, updates). Set CHROME to a Chromium binary if Playwright has no browser of its own.
 # Set VERSION (e.g. VERSION=3.8) to show that version in the app header; the updates shot then shows VERSION offered
 # to someone on the release before it. Without it the shots use the version in index.html.
@@ -63,6 +63,32 @@ async def main():
                    annot=[{'sel': 'label:has([data-k=pown])', 'n': 3, 'dx': 230, 'dy': 0, 'pad': 4},
                           {'sel': '#pcabCards .pchip.sp', 'all': True, 'n': 'S', 'dx': 230, 'dy': -45, 'pad': 4},
                           {'sel': '#ptray .ptchip', 'all': True, 'n': 4, 'dx': 120, 'dy': 95, 'pad': 6}])
+        await pg.close(); pg = await fresh()
+        # how-to: draw power circuits by hand on one wall (This wall cable card, Draw circuit, chips), numbered like the README steps
+        await pg.evaluate("""()=>{selWall(1);delWall();selWall(0);S.cols=8;S.rows=4;S.ox=200;S.oy=200;S.cw=2400;S.ch=1200;S.showPow=true;S.showData=false;S.proc='None';
+          S.wmode='None';S.pmode='Manual';S.pman=[];distAct('dadd');storeWall();sync();fit()}""")
+        await pg.evaluate(OPEN, ['Power', 'This wall'])
+        await pg.click('[data-pcx=draw]'); await pg.wait_for_timeout(300)
+        TILE = """(cr)=>{const r=document.querySelector('#vp').getBoundingClientRect(),w=walls[cur],tw=wW(w)/w.cols,th=wH(w)/w.rows;
+          return cr.map(([c,rw])=>({x:r.left+V.x+(w.ox+(c+.5)*tw)*V.z,y:r.top+V.y+(w.oy+(rw+.5)*th)*V.z}))}"""
+        async def drag(cells):
+            pts = await pg.evaluate(TILE, cells)
+            await pg.mouse.move(pts[0]['x'], pts[0]['y']); await pg.mouse.down()
+            for q in pts[1:]: await pg.mouse.move(q['x'], q['y'], steps=4)
+            await pg.mouse.up(); await pg.wait_for_timeout(300)
+        await drag([[0, 0], [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0]])   # circuit 1-1 along the top row
+        await pg.click('#pcabCards .pchip.sp'); await pg.wait_for_timeout(200)          # a spare chip starts circuit 1-2
+        await drag([[7, 1], [6, 1], [5, 1], [4, 1]])
+        drawn = await pg.evaluate("()=>S.pman.map(c=>c.length)"); assert drawn == [8, 4], drawn
+        await shot(pg, 'power-draw-circuit', """()=>{setTimeout(()=>{const k=document.querySelector('#pcabCards');if(k)k.scrollIntoView({block:'center'})},200)}""", None, None, 900,
+                   annot=[{'sel': '[data-pcx=draw]', 'n': 1, 'dx': 40, 'dy': 50, 'pad': 4},
+                          {'sel': '#vp', 'n': 2, 'corner': 'tl', 'pad': -4},
+                          {'sel': '#pcabCards .pchip.sp', 'n': 3, 'dx': -20, 'dy': -48, 'pad': 4}])
+        await pg.close(); pg = await fresh()
+        # the LED build running: the toolbar button reads Stop LED Build and is lit green while the effect is on
+        await shot(pg, 'build-running', """()=>{selWall(1);delWall();selWall(0);S.cols=10;S.rows=5;S.ox=300;S.oy=150;S.cw=2400;S.ch=1200;S.showData=false;storeWall();
+          document.querySelector('[data-a=bldgo]').click();for(let i=0;i<60*900&&sims[0].i<27;i++)step(1/60);forceRen=true}""", [], None, 1500,
+                   annot=[{'sel': '[data-a=bldgo]', 'pad': 4}])
         await pg.close(); pg = await fresh()
         await shot(pg, 'cable-fibre', """()=>{S.cabOn=true;S.cunit='m';S.cslack=10;selWall(0);S.cdD=140;S.cdP=20;S.wfib='Auto';storeWall();selWall(1);S.cdD=30;S.cdP=15;storeWall();selWall(0);sync()}""",
                    ['Cable lengths'], 'Cable lengths')

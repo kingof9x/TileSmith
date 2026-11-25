@@ -2,6 +2,8 @@
 # Info popup, saved and restored; Engineering data toggle button (desktop only, hidden on mobile where
 # the accordion caret already does the job), left-justified against Info/Report a bug on the right;
 # and the mobile layout no longer clips the Engineering data panel to a short scrollable box.
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, sys
 from playwright.async_api import async_playwright
 async def m():
@@ -15,7 +17,7 @@ async def m():
         # --- desktop: font picker + Engineering data toggle ---
         pg=await b.new_page(viewport={'width':1400,'height':900})
         errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html');await pg.evaluate("()=>localStorage.clear()");await pg.reload();await pg.wait_for_timeout(1000)
+        await pg.goto(TS_APP_URL);await pg.evaluate("()=>localStorage.clear()");await pg.reload();await pg.wait_for_timeout(1000)
 
         chk(await pg.evaluate("()=>S.font")=='JetBrains Mono','font defaults to JetBrains Mono')
         fam=await pg.evaluate("()=>getComputedStyle(document.body).fontFamily")
@@ -58,7 +60,7 @@ async def m():
         # --- mobile: Engineering data button hidden, panel not clipped when opened ---
         pg2=await b.new_page(viewport={'width':420,'height':850})
         errs2=[];pg2.on('pageerror',lambda e:errs2.append(str(e)))
-        await pg2.goto('file:///home/claude/tilesmith-desktop/app/index.html');await pg2.evaluate("()=>localStorage.clear()");await pg2.reload();await pg2.wait_for_timeout(1000)
+        await pg2.goto(TS_APP_URL);await pg2.evaluate("()=>localStorage.clear()");await pg2.reload();await pg2.wait_for_timeout(1000)
         chk(await pg2.evaluate("()=>getComputedStyle(document.querySelector('[data-a=engtog]')).display")=='none','Engineering data button is hidden on mobile (the accordion caret does its job)')
 
         await pg2.click('#engD summary');await pg2.wait_for_timeout(300)

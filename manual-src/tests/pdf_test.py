@@ -1,7 +1,9 @@
 """Export PDF (raster + spec sheet + cable labels), removed buttons, SMPTEbars image / smptescroll migration. Prints ALL OK."""
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, re
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 async def main():
     ok = True
     def chk(c, name=''):

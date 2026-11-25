@@ -1,6 +1,8 @@
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, sys, json
 from playwright.async_api import async_playwright
-APP='file:///home/claude/tilesmith-desktop/app/index.html'
+APP=TS_APP_URL
 MOCK=r"""
 (()=>{const plat=window.__PLAT;const calls=window.__calls=[];
 const fsm={existsSync:p=>/SpoutDX\.dll$|syphon\.node$|Syphon\.framework$/.test(p)&&!window.__NOLIB,readFileSync(){throw Error('nofile')},writeFileSync(){},mkdirSync(){},readdirSync:()=>[],unlinkSync(){}};
@@ -11,7 +13,7 @@ const lib={func(n,r,a){if(typeof n=='string'&&r===undefined){const m=n.match(/(\
  return (...args)=>{const short=n.replace(/^\?+|@.*$/g,'');calls.push(['fn',short,...args.slice(1).map(x=>x&&x.byteLength!==undefined?'buf'+x.byteLength:x)]);
   if(n=='NDIlib_initialize')return true;if(n=='NDIlib_send_create')return {inst:1};if(/SendImage/.test(n))return !window.__SPOUTFAIL;if(/GetName/.test(n))return 'TileSmith_1';if(/HeapAlloc/.test(n))return {ptr:1};if(/GetProcessHeap/.test(n))return {heap:1};return true}}};
 const koffi={load(f){calls.push(['koffi.load',f]);return lib},struct(){}};
-window.process={platform:plat,versions:{electron:'44.0.0'},resourcesPath:plat=='win32'?'C:\\res':'/App/Contents/Resources',cwd:()=>plat=='win32'?'C:\\proj':'/proj',env:{}};
+window.process={platform:plat,versions:{electron:'44.0.0'},execPath:plat=='win32'?'C:\\App\\TileSmith.exe':'/App/Contents/MacOS/TileSmith',resourcesPath:plat=='win32'?'C:\\res':'/App/Contents/Resources',cwd:()=>plat=='win32'?'C:\\proj':'/proj',env:{}};
 class Buf extends Uint8Array{toString(e){if(e=='latin1'||e=='utf8')return String.fromCharCode(...this).replace(/\0+$/,'');return super.toString()}}
 window.Buffer={from:(ab,o,l)=>new Uint8Array(ab,o,l),alloc:n=>new Buf(n)};
 window.require=m=>{if(m=='fs')return fsm;if(m=='path')return pathm;if(m=='os')return{homedir:()=>'/home/x'};if(m=='koffi')return koffi;

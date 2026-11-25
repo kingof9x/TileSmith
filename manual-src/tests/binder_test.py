@@ -1,7 +1,9 @@
 # Show binder (Export binder): cover, contents, canvas, a page per wall, pull sheet, spec sheet, labels
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, os, re, subprocess, tempfile
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 OUT = os.environ.get('BINDER_OUT') or tempfile.mkdtemp(prefix='binder')
 def txt(path, first=None, last=None):
     a = ['pdftotext', '-layout'] + (['-f', str(first)] if first else []) + (['-l', str(last)] if last else []) + [path, '-']

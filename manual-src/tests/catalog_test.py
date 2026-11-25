@@ -1,8 +1,10 @@
 # Tile catalog round 1: new INFiLED / AOTO / Gloshine / Absen tiles are in the list with a cited source, pixels agree with
 # size / pitch, half tiles pair up, the Model menu groups by series, and "Find a tile" jumps Brand and Model to the pick.
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, os
 from playwright.async_api import async_playwright
-APP = os.environ.get('TS_APP', 'file:///home/claude/tilesmith-desktop/app/index.html')
+APP = os.environ.get('TS_APP', TS_APP_URL)
 SAMPLE = ['INFiLED ART3.9 outdoor', 'INFiLED AR3.91mk2 Pro outdoor', 'INFiLED GX2.5 mk2', 'INFiLED NX2.5', 'AOTO RM1.5', 'AOTO DL2.6',
           'Gloshine DN2.6 500×1000', 'Gloshine CF Pro2.9', 'Absen Polaris PL3.9 Pro XL V10', 'Absen A27 2.5 (A2725 V3)']
 async def main():

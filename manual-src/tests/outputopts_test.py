@@ -1,5 +1,7 @@
 # Output options: its own section after Animation Options with display takeover first, then NDI and Spout/Syphon;
 # one button per extra display with a canvas picker (displays simulated here, the test browser has one screen).
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, sys
 from playwright.async_api import async_playwright
 FAKE="""()=>{window.__outTest=true;DISP=dispSort([{id:'a',label:'Built-in',bounds:{x:0,y:0,width:1440,height:900},px:[2880,1800],scale:2,main:true,primary:true},
@@ -10,7 +12,7 @@ async def m():
     async with async_playwright() as p:
         b=await p.chromium.launch();pg=await b.new_page(viewport={'width':1500,'height':1100})
         errs=[];pg.on('pageerror',lambda e:errs.append(str(e)))
-        await pg.goto('file:///home/claude/tilesmith-desktop/app/index.html');await pg.evaluate("()=>localStorage.clear()");await pg.reload();await pg.wait_for_timeout(900)
+        await pg.goto(TS_APP_URL);await pg.evaluate("()=>localStorage.clear()");await pg.reload();await pg.wait_for_timeout(900)
         sec=pg.locator("xpath=//aside[@id='left']/details[summary[normalize-space(.)='Output options']]")
         ok=True
         def chk(c,m):
@@ -37,11 +39,11 @@ async def m():
         pass
         btns=await pg.evaluate("()=>[...document.querySelectorAll('#dispRows button')].map(b=>b.textContent)")
         chk(btns==['Take over Display 2','Release Display 3','Take over Display 4'],f'one button per extra display {btns}')
-        outs=await pg.evaluate("()=>[...OUTW].map(([c,o])=>c.name+' -> '+o.d.label)")
+        outs=await pg.evaluate("()=>[...OUTW].map(([k,o])=>o.c.name+' -> '+o.d.label)")
         chk(outs==['Canvas 2 -> Confidence monitor'],f'chosen canvas goes to the chosen display {outs}')
         pc=await pop.evaluate("()=>{const c=document.querySelector('canvas');return [c.width,c.height]}")
         chk(pc==[1920,1080],f'output draws the canvas pixel for pixel {pc}')
-        chk(await pg.evaluate("()=>document.getElementById('outSel').value=='' && CVS[cc].name=='Canvas 1'"),'Canvases menu shows Canvas 1 is not on a display')
+        chk(await pg.evaluate("()=>![...document.querySelectorAll('#outSel input[data-outd]')].some(x=>x.checked) && CVS[cc].name=='Canvas 1'"),'Canvases menu shows Canvas 1 is not on a display')
         pass
         await pg.click('[data-a=dispoff][data-v="c"]');await pg.wait_for_timeout(300)
         chk(await pg.evaluate("()=>OUTW.size")==0,'Release closes the output')

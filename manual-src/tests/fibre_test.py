@@ -1,7 +1,9 @@
 # Fibre and breakout boxes (Engineering › Cable lengths): Auto by the copper limit, per-wall Fibre / Copper override
+import os
+from _paths import TS_APP_URL, TS_DESK
 import asyncio, json, os
 from playwright.async_api import async_playwright
-APP = 'file:///home/claude/tilesmith-desktop/app/index.html'
+APP = TS_APP_URL
 SHOT = os.environ.get('FIBRE_SHOT')
 async def main():
     ok = True
