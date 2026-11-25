@@ -10,7 +10,7 @@ Pre production software for LED walls. Engineering specs, cable labels, pixel ma
 - **Runs on:** Windows, Mac and Linux (Electron desktop app), Android and iOS (the same page in a native wrapper), or any modern browser for everything except the live outputs and video export.
 - **Current version:** 3.10. Only the Windows build has been used on real shows; the others are experimental.
 - **Licence:** GPL-3.0-or-later for the code; the animated technician artwork and the name are all rights reserved (see [Licence](#licence)).
-- **For reviewers:** [docs/REVIEW-GUIDE.md](docs/REVIEW-GUIDE.md) explains how the app is built, how to run the tests and what is known to be weak. [docs/MEMORY.md](docs/MEMORY.md) has measured memory use.
+- **For reviewers:** [docs/REVIEW-GUIDE.md](docs/REVIEW-GUIDE.md) explains how the app is built, how to run the tests and what is known to be weak; [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md) has the code review findings. [docs/MEMORY.md](docs/MEMORY.md) has measured memory use.
 
 **Contents:** [Videos](#videos) · [Screenshots](#screenshots) · [How to: own Socapex cable per wall](#how-to-give-each-led-wall-its-own-socapex-cable) · [How to: draw power circuits](#how-to-draw-power-circuits-by-hand) · [What's new](#whats-new-in-39-and-310) · [How it works](#how-it-works) · [Memory use](#memory-use) · [Download](#download) · [Software to install](#software-to-install-before-you-use-a-downloaded-build) · [Building](#building) · [Licence](#licence)
 
@@ -396,4 +396,3 @@ afterwards.
 - [ ] Test NovaStar .scr file export
 - [ ] Get Brompton project files and data from a working system with live tiles
 - [ ] Resume reverse engineering Brompton project files once that data is in hand (blocked)
-- [ ] Fix the out-of-date tests and run the tests on every pull request (see [docs/REVIEW-GUIDE.md](docs/REVIEW-GUIDE.md))

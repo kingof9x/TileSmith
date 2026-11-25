@@ -1,7 +1,8 @@
 # Reviewer's guide
 
 For someone reviewing TileSmith's code, documentation or claims: what the app is, how it is put together, how to
-check it, and what is known to be weak. Written 2026-11-25 against `main` at commit `1b9364f` (released as v3.10).
+check it, and what is known to be weak. Written 2026-11-25 against `main` at commit `1b9364f` (released as v3.10), with the test and code-review changes of
+pull request #57.
 
 ## What TileSmith is
 
@@ -50,34 +51,23 @@ disclaimer in the README).
 or `npm install && npm start` in `tilesmith-desktop` for the Electron app.
 
 **Run the tests.** The tests in `manual-src/tests/` are Python scripts that drive the real page with Playwright and
-print `PASS`/`FAIL` lines (most end with `ALL OK`).
+print `PASS`/`FAIL` lines. `run_all.py` runs them all and judges each by its exit code and its output; the GitHub
+workflow `.github/workflows/tests.yml` runs the same command on every pull request and push to `main`.
 
 ```sh
-pip install playwright && python3 -m playwright install chromium
-cd manual-src/tools && npm install && cd ../tests          # acorn + prettier, used by lists_test.py
-# 43 of the tests open file:///home/claude/tilesmith-desktop/app/index.html, so point that path at your checkout:
-sudo mkdir -p /home/claude && sudo ln -s "$PWD/../../tilesmith-desktop" /home/claude/tilesmith-desktop
-for t in *_test.py; do python3 "$t" > "/tmp/$t.log" 2>&1; echo "$t exit $?"; done
+pip install playwright pillow pypdf && python3 -m playwright install chromium   # pdftotext comes with poppler-utils
+(cd manual-src/tools && npm install)                                           # acorn + prettier, for lists_test.py
+python3 manual-src/tests/run_all.py                                            # every test, one line each
 ```
 
-**Result on 2026-11-25 (main `1b9364f`, Linux, Playwright with Chromium 158):** 39 of 49 pass. The 10 that fail, and why:
+`electron_test.py` starts the real desktop app and needs `npm install` in `tilesmith-desktop` (it prints SKIPPED
+without it). `stress_test.py` loads very large projects and long animation runs.
 
-| Test | What happens | Likely cause |
-|---|---|---|
-| `charpack_test.py` | `ReferenceError: PK is not defined` | Tests the Character pack, which was removed from the app. Test is out of date. |
-| `techstyle_test.py` | `workerPack is not defined`; style list differs | Same removal; the technician styles test still expects the old pack. |
-| `tilemenu_test.py` | Brand list assertion | New brands (Owl Vision, Aluvision) were added after the test. |
-| `output_test.py` | `#outSel` is no longer a `<select>` | The output picker changed. |
-| `outputopts_test.py` | Canvas-to-display mapping checks | Needs checking: test or app. |
-| `bugreport_test.py` | Report button not at the right edge of the top bar | Top bar layout changed. |
-| `layers_test.py` | "remembered" layer boxes differ | Needs checking: test or app. |
-| `share_test.py`, `spout_gpu_test.py` | Print `PROBLEMS` | Spout/Syphon tests with stand-ins for the native libraries; need checking. |
-| `labels_test.py` | Writes to an old, hardcoded scratch folder | Test path problem, not the app. |
-| `rcfg_test.py` | Needs a NovaStar receiving card file in `/tmp/res` that is not in the repo | Missing test fixture. |
-
-Known weaknesses of the test set itself: there is no test runner, some tests exit with code 0 even when they print
-`FAILED` or `PROBLEMS`, 43 tests hardcode the `/home/claude` path, and no GitHub workflow runs them. The `PR test
-builds` workflow builds the apps for each pull request but does not run tests.
+**History:** on `1b9364f` (v3.10), before the runner and workflow existed, 39 of 49 tests passed. The 10 failures were
+out-of-date tests (removed Character pack, new tile brands, changed output picker and top bar), two tests with
+hardcoded paths or a missing fixture, and some tests exited 0 even when they printed `FAILED`. Pull request #57 fixed
+them; [CODE-REVIEW.md](CODE-REVIEW.md) lists every finding from the code review and stress test, what was fixed and
+what is still open.
 
 **Check the numbers.** Engineering figures (tiles per port, power per circuit, phase currents) are explained with
 worked examples in the manual (chapters 10 to 13) and in `TileSmith-App-Spec.md`, with the maker's source for every
@@ -89,15 +79,16 @@ tile model shown in the Engineering panel.
 
 - **Security model.** The desktop window runs the page with `nodeIntegration: true` and `contextIsolation: false`, so
   the page has full Node.js access. That is how the native outputs and file saving work. It is acceptable only because
-  the page is local and loads no remote code; it would not be safe to load remote content in that window.
+  the page is local and loads no remote code. The code review added guards so the window cannot navigate away from the
+  app and links open in the system browser; see [CODE-REVIEW.md](CODE-REVIEW.md).
 - **Unsigned builds.** Windows SmartScreen and macOS Gatekeeper warn on first start.
 - **Tested in production on Windows only.** Mac, Linux and the mobile apps are experimental (README disclaimer).
 - **Third-party runtimes are not bundled** in the GitHub downloads: NDI® Runtime and ffmpeg are installed separately
   (or through *Info › Add-ons*).
 - **One 2 MB file.** Easy to ship and to run anywhere, hard to navigate. `manual-src/make_readable_source.py` splits it
   into `app.js` and `style.css` with a function index for reading.
-- **Version strings.** `index.html` and `main.js` carry `3.5` in the source; `scripts/set-version.js` stamps the real
-  version at build time, so a run from source shows v3.5.
+- **Version strings.** `index.html` carries `3.5` in the source; `scripts/set-version.js` stamps the real version at
+  build time, so a run from source shows v3.5.
 - **Memory.** About 380 to 500 MB on Linux, three quarters of it the Electron runtime. See [MEMORY.md](MEMORY.md).
 - **Power and rigging figures are planning figures.** They follow the makers' sheets and common practice (80% loading,
   phasor sums for line-to-line circuits) but have not been checked against a real distro meter or rigging plot.
@@ -107,4 +98,5 @@ tile model shown in the Engineering panel.
 - [README](../README.md): features, downloads, building.
 - `tilesmith-desktop/TileSmith-Manual.pdf` and `TileSmith-Mobile-Manual.pdf`: the user manuals.
 - `tilesmith-desktop/TileSmith-App-Spec.md`: the full written specification (every setting, formula and pattern).
+- [CODE-REVIEW.md](CODE-REVIEW.md): findings from the November 2026 code review and stress test.
 - `manual-src/WORKFLOW.md`: how releases and parallel pull requests are run.
