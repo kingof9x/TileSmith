@@ -1,9 +1,11 @@
 # Publishes the TileSmith website (the website/ folder) to GitHub Pages: https://kingof9x.github.io/TileSmith/
-# The site is the landing page (website/index.html) and the "How TileSmith works" presentation
-# (website/how-it-works/index.html). The screenshots in docs/screenshots are copied in at publish time so the site
-# always shows the same pictures as the README.
+# The site is the landing page (website/index.html), the "How TileSmith works" presentation
+# (website/how-it-works/index.html) and two reading guides (website/read-the-code/, website/read-rust/), whose code
+# excerpts are refreshed from the real files at publish time by manual-src/make_code_guides.py. The screenshots in
+# docs/screenshots are copied in at publish time so the site always shows the same pictures as the README.
 #
-# It runs by itself when something under website/ or docs/screenshots/ changes on the default branch, or by hand:
+# It runs by itself when something under website/ or docs/screenshots/, or a file the guides quote, changes on the
+# default branch, or by hand:
 # Actions tab > Publish website > Run workflow.
 #
 # One-time setup: Settings > Pages > Build and deployment > Source: "GitHub Actions".
@@ -12,7 +14,8 @@ name: Publish website
 on:
   push:
     branches: [main]
-    paths: ['website/**', 'docs/screenshots/**', '.github/workflows/pages.yml']
+    paths: ['website/**', 'docs/screenshots/**', '.github/workflows/pages.yml', 'tilesmith-desktop/app/index.html',
+            'tilesmith-desktop/TileSmith-App-Spec.md', 'manual-src/tests/wpat_test.py', 'manual-src/make_code_guides.py']
   workflow_dispatch:
 
 permissions:
@@ -32,6 +35,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Refresh the code excerpts in the reading guides (line numbers follow the code)
+        run: python3 manual-src/make_code_guides.py
       - name: Put the site together
         run: |
           mkdir -p _site
