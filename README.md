@@ -248,7 +248,7 @@ TileSmith 3.10 uses about **380 to 410 MB** of RAM with the default project and 
 - [TileSmith-Manual.pdf](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Manual.pdf): user manual for the desktop app (Windows, Mac, Linux)
 - [TileSmith-Mobile-Manual.pdf](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-Mobile-Manual.pdf): manual for the Android and iOS app
 - [TileSmith-App-Spec.md](https://github.com/kingof9x/TileSmith/releases/latest/download/TileSmith-App-Spec.md): full written specification of the app, for developers
-- [How TileSmith works](https://kingof9x.github.io/TileSmith/how-it-works/): a 16-slide tour of what happens inside the app, for power users and sysadmins curious about code (source in `website/`)
+- [How TileSmith works](https://kingof9x.github.io/TileSmith/how-it-works/): a 23-part tour of the code: what each part of the app does and how its code works, for power users and sysadmins curious about code (source in `website/`)
 
 ## Disclaimer & Limitation of Liability
 
